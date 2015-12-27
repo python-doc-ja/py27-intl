@@ -1,25 +1,25 @@
 .. _extending-distutils:
 
-***************
-Distutilsの拡張
-***************
+*******************
+Extending Distutils
+*******************
 
-Distutilsは様々な方法で拡張できます。ほとんどの拡張は存在するコマンド
-を新しいコマンドで置換する形でおこなわれます。新しいコマンドはたとえば
-存在するコマンドを置換して、そのコマンドでパッケージをどう処理するかの
-細部を変更することでプラットフォーム特有のパッケージ形式をサポートする
-ために書かれているかもしれません
+Distutils can be extended in various ways.  Most extensions take the form of new
+commands or replacements for existing commands.  New commands may be written to
+support new types of platform-specific packaging, for example, while
+replacements for existing commands may be made to modify details of how the
+command operates on a package.
 
-ほとんどのdistutilsの拡張は存在するコマンドを変更したい :file:`setup.py`
-スクリプト中で行われます。ほとんどはパッケージにコピーされるファイル拡
-張子を :file:`.py` の他に、いくつか追加するものです。
+Most extensions of the distutils are made within :file:`setup.py` scripts that
+want to modify existing commands; many simply add a few file extensions that
+should be copied into packages in addition to :file:`.py` files as a
+convenience.
 
-ほとんどのdistutilsのコマンド実装は :mod:`distutils.cmd` の
-:class:`distutils.cmd.Command` クラスのサブクラスとして実装されています。
-新しいコマンドは :class:`Command` を直接継承し、置換するコマンドでは
-置換対象のコマンドのサブクラスにすることで :class:`Command` を間接的に
-継承します。
-コマンドは :class:`Command` から派生したものである必要があります。
+Most distutils command implementations are subclasses of the
+:class:`distutils.cmd.Command` class.  New commands may directly inherit from
+:class:`Command`, while replacements often derive from :class:`Command`
+indirectly, directly subclassing the command they are replacing.  Commands are
+required to derive from :class:`Command`.
 
 .. % \section{Extending existing commands}
 .. % \label{extend-existing}
@@ -29,14 +29,17 @@ Distutilsは様々な方法で拡張できます。ほとんどの拡張は存�
 .. % \XXX{Would an uninstall command be a good example here?}
 
 
-新しいコマンドの統合
-====================
+Integrating new commands
+========================
 
-新しいコマンド実装を統合するにはいくつかの方法があります。一番難しいものは新機能をdistutils本体に取り込み、それのサポートを提供するPythonの
-バージョンが出ることを待つ(そして使う)ことです。これは様々な理由で本当に難しいことです。
+There are different ways to integrate new command implementations into
+distutils.  The most difficult is to lobby for the inclusion of the new features
+in distutils itself, and wait for (and require) a version of Python that
+provides that support.  This is really hard for many reasons.
 
-もっとも一般的な、そしておそらくほとんどの場合にもっとも妥当な方法は、新しい実装をあなたの :file:`setup.py` スクリプトに取り込み、
-:func:`distutils.core.setup` 関数でそれらを使うようにすることです。 ::
+The most common, and possibly the most reasonable for most needs, is to include
+the new implementations with your :file:`setup.py` script, and cause the
+:func:`distutils.core.setup` function use them::
 
    from distutils.command.build_py import build_py as _build_py
    from distutils.core import setup
@@ -49,39 +52,45 @@ Distutilsは様々な方法で拡張できます。ほとんどの拡張は存�
    setup(cmdclass={'build_py': build_py},
          ...)
 
-このアプローチは新実装をある特定のパッケージで利用したい時、
-そのパッケージに興味をもつ人全員がコマンドの新実装を必要とする時
-にもっとも価値があります。
+This approach is most valuable if the new implementations must be used to use a
+particular package, as everyone interested in the package will need to have the
+new command implementation.
 
-Python 2.4から、インストールされたPythonを変更せずに、既存の
-:file:`setup.py` スクリプトをサポートするための3つめの選択肢が利用
-できるようになりました。
-これは追加のパッケージングシステムのサポートを追加するサードパーティ拡
-張を提供することを想定していますが、これらのコマンドはdistutilsが利用
-されている何にでも利用可能です。新しい設定オプション :option:`command_packages`
-(コマンドラインオプション :option:`--command-packages`) は、
-コマンド実装モジュールを検索する追加のパッケージを指定するために利用できます。 distutilsの全てのオプショ
-ンと同様に、このオプションもコマンドラインまたは設定ファイルで指定できます。このオプションは設定ファイル中では ``[global]`` セクションか、コマン
-ドラインのコマンドより前でだけ設定できます。設定ファイル中で指定する場合、コマンドラインで上書きすることができます。
-空文字列を指定するとデフォルト値が使われます。これはパッケージと一緒に提供する設定ファイルでは指定しないでください。
+Beginning with Python 2.4, a third option is available, intended to allow new
+commands to be added which can support existing :file:`setup.py` scripts without
+requiring modifications to the Python installation.  This is expected to allow
+third-party extensions to provide support for additional packaging systems, but
+the commands can be used for anything distutils commands can be used for.  A new
+configuration option, ``command_packages`` (command-line option
+:option:`--command-packages`), can be used to specify additional packages to be
+searched for modules implementing commands.  Like all distutils options, this
+can be specified on the command line or in a configuration file.  This option
+can only be set in the ``[global]`` section of a configuration file, or before
+any commands on the command line.  If set in a configuration file, it can be
+overridden from the command line; setting it to an empty string on the command
+line causes the default to be used.  This should never be set in a configuration
+file provided with a package.
 
-この新オプションによってコマンド実装を探すためのパッケージをいくつでも追加することができます。複数のパッケージ名はコンマで区切って指定します。
-指定がなければ、検索は :mod:`distutils.command` パッケージのみで行われます。ただし :file:`setup.py` がオプション
-:option:`--command-packages`  :option:`distcmds,buildcmds` で実行されている場合には、パッケージは
-:mod:`distutils.command` 、 :mod:`distcmds` 、そして :mod:`buildcmds` を、この順番で検索します。
-新コマンドはコマンドと同じ名前のモジュールに、コマンドと同じ名前のクラスで実装されていると想定しています。上のコマドラインオプションの例では、コマンド
-:command:`bdist_openpkg` は、 :class:`distcmds.bdist_openpkg.bdist_openpkg` か、
-:class:`buildcmds.bdist_openpkg.bdist_openpkg` で実装されるかもしれません。
+This new option can be used to add any number of packages to the list of
+packages searched for command implementations; multiple package names should be
+separated by commas.  When not specified, the search is only performed in the
+:mod:`distutils.command` package.  When :file:`setup.py` is run with the option
+``--command-packages distcmds,buildcmds``, however, the packages
+:mod:`distutils.command`, :mod:`distcmds`, and :mod:`buildcmds` will be searched
+in that order.  New commands are expected to be implemented in modules of the
+same name as the command by classes sharing the same name.  Given the example
+command line option above, the command :command:`bdist_openpkg` could be
+implemented by the class :class:`distcmds.bdist_openpkg.bdist_openpkg` or
+:class:`buildcmds.bdist_openpkg.bdist_openpkg`.
 
-.. % \section{Adding new distribution types}
 
+Adding new distribution types
+=============================
 
-配布物の種類を追加する
-======================
-
-配布物 (:file:`dist/` ディレクトリの中のファイル) を作成するコマンドは、 :command:`upload`
-がその配布物をPyPIにアップロードできるように、 ``(command, filename)`` のペアを
-``self.distributions.dist_files`` に追加する必要があります。ペア中の *filename*
-はパスに関する情報を持たず、単にファイル名だけを持ちます。 dry-run モードでも、何が作成されたかを示すために、同じペアが必要になります。
+Commands that create distributions (files in the :file:`dist/` directory) need
+to add ``(command, filename)`` pairs to ``self.distribution.dist_files`` so that
+:command:`upload` can upload it to PyPI.  The *filename* in the pair contains no
+path information, only the name of the file itself.  In dry-run mode, pairs
+should still be added to represent what would have been created.
 
 

@@ -1,34 +1,38 @@
 .. _examples:
 
-**
-例
-**
+********
+Examples
+********
 
-この章は distutils を使い始めるのに役立つ幾つかの基本的な例を提供します。
-distutils を使うための追加の情報は Distutils Cookbook で見つけることができます。
+This chapter provides a number of basic examples to help get started with
+distutils.  Additional information about using distutils can be found in the
+Distutils Cookbook.
+
 
 .. seealso::
 
-   `Distutils Cookbook <http://wiki.python.org/moin/Distutils/Cookbook>`_
-      distutils をもっと制御するためのレシピ集
+   `Distutils Cookbook <https://wiki.python.org/moin/Distutils/Cookbook>`_
+      Collection of recipes showing how to achieve more control over distutils.
+
 
 .. _pure-mod:
 
-pure Python 配布物 (モジュール形式)
-===================================
+Pure Python distribution (by module)
+====================================
 
-単に二つのモジュール、特定のパッケージに属しないモジュールを配布するだけなら、setup スクリプト中で :option:`py_modules`
-オプションを使って個別に指定できます。
+If you're just distributing a couple of modules, especially if they don't live
+in a particular package, you can specify them individually using the
+``py_modules`` option in the setup script.
 
-もっとも単純なケースでは、二つのファイル: setup スクリプト自体と、配布したい単一のモジュール、この例では :file:`foo.py` について
-考えなければなりません::
+In the simplest case, you'll have two files to worry about: a setup script and
+the single module you're distributing, :file:`foo.py` in this example::
 
    <root>/
            setup.py
            foo.py
 
-(この節の全ての図において、 *<root>* は配布物ルートディレクトリを参照します。) この状況を扱うための最小の setup スクリプトは
-以下のようになります::
+(In all diagrams in this section, *<root>* will refer to the distribution root
+directory.)  A minimal setup script to describe this situation would be::
 
    from distutils.core import setup
    setup(name='foo',
@@ -36,19 +40,22 @@ pure Python 配布物 (モジュール形式)
          py_modules=['foo'],
          )
 
-配布物の名前は :option:`name` オプションで個々に指定し、配布されるモジュールの一つと配布物を同じ名前にする必要はないことに注意してください
-(とはいえ、この命名方法はよいならわしでしょう)。ただし、配布物名はファイル名を作成するときに使われるので、
-文字、数字、アンダースコア、ハイフンだけで構成しなければなりません。
+Note that the name of the distribution is specified independently with the
+``name`` option, and there's no rule that says it has to be the same as
+the name of the sole module in the distribution (although that's probably a good
+convention to follow).  However, the distribution name is used to generate
+filenames, so you should stick to letters, digits, underscores, and hyphens.
 
-:option:`py_modules` はリストなので、もちろん複数のモジュールを指定できます。例えば、モジュール :mod:`foo` と
-:mod:`bar` を配布しようとしているのなら、 setup スクリプトは以下のようになります::
+Since ``py_modules`` is a list, you can of course specify multiple
+modules, eg. if you're distributing modules :mod:`foo` and :mod:`bar`, your
+setup might look like this::
 
    <root>/
            setup.py
            foo.py
            bar.py
 
-また、セットアップスクリプトは以下のようになります． ::
+and the setup script might be  ::
 
    from distutils.core import setup
    setup(name='foobar',
@@ -56,20 +63,24 @@ pure Python 配布物 (モジュール形式)
          py_modules=['foo', 'bar'],
          )
 
-モジュールのソースファイルは他のディレクトリに置けますが、そうしなければならないようなモジュールを沢山持っているのなら、
-モジュールを個別に列挙するよりもパッケージを指定した方が簡単でしょう。
+You can put module source files into another directory, but if you have enough
+modules to do that, it's probably easier to specify modules by package rather
+than listing them individually.
 
 
 .. _pure-pkg:
 
-pure Python 配布物 (パッケージ形式)
-===================================
+Pure Python distribution (by package)
+=====================================
 
-二つ以上のモジュールを配布する場合、とりわけ二つのパッケージに分かれている場合、おそらく個々のモジュールよりもパッケージ全体を
-指定する方が簡単です。たとえモジュールがパッケージ内に入っていなくても状況は同じで、その場合はルートパッケージにモジュールが入っていると Distutils
-に教えることができ、他のパッケージと同様にうまく処理されます (ただし、 :file:`__init__.py` があってはなりません)。
+If you have more than a couple of modules to distribute, especially if they are
+in multiple packages, it's probably easier to specify whole packages rather than
+individual modules.  This works even if your modules are not in a package; you
+can just tell the Distutils to process modules from the root package, and that
+works the same as any other package (except that you don't have to have an
+:file:`__init__.py` file).
 
-最後の例で挙げた setup スクリプトは、  ::
+The setup script from the last example could also be written as  ::
 
    from distutils.core import setup
    setup(name='foobar',
@@ -77,21 +88,18 @@ pure Python 配布物 (パッケージ形式)
          packages=[''],
          )
 
-のようにも書けます (空文字はルートパッケージを意味します)
+(The empty string stands for the root package.)
 
-これら二つのファイルをサブディレクトリ下に移動しておいて、インストール先はルートパッケージのままにしておきたい、例えば::
+If those two files are moved into a subdirectory, but remain in the root
+package, e.g.::
 
    <root>/
            setup.py
            src/      foo.py
                      bar.py
 
-のような場合には、パッケージ名にはルートパッケージをそのまま指定しておきますが、ルートパッケージに置くソースファイルがどこにあるかを Distutils
-に教えなければなりません:
-
-.. %
-
-::
+then you would still specify the root package, but you have to tell the
+Distutils where source files in the root package live::
 
    from distutils.core import setup
    setup(name='foobar',
@@ -100,8 +108,10 @@ pure Python 配布物 (パッケージ形式)
          packages=[''],
          )
 
-もっと典型的なケースでは、複数のモジュールを同じパッケージ  (またはサブパッケージ) に入れて配布しようと思うでしょう。例えば、 :mod:`foo` と
-:mod:`bar` モジュールがパッケージ :mod:`foobar` に属する場合、ソースツリーをレイアウトする一案として、以下が考えられます。 ::
+More typically, though, you will want to distribute multiple modules in the same
+package (or in sub-packages).  For example, if the :mod:`foo`  and :mod:`bar`
+modules belong in package :mod:`foobar`, one way to layout your source tree is
+::
 
    <root>/
            setup.py
@@ -110,7 +120,8 @@ pure Python 配布物 (パッケージ形式)
                     foo.py
                     bar.py
 
-実際、 Distutils ではこれをデフォルトのレイアウトとして想定していて、setup スクリプトを書く際にも最小限の作業しか必要ありません::
+This is in fact the default layout expected by the Distutils, and the one that
+requires the least work to describe in your setup script::
 
    from distutils.core import setup
    setup(name='foobar',
@@ -118,8 +129,9 @@ pure Python 配布物 (パッケージ形式)
          packages=['foobar'],
          )
 
-モジュールを入れるディレクトリをパッケージの名前にしたくない場合、ここでも :option:`package_dir` オプションを使う必要があります。
-例えば、パッケージ :mod:`foobar` のモジュールが :file:`src` に入っているとします::
+If you want to put modules in directories not named for their package, then you
+need to use the ``package_dir`` option again.  For example, if the
+:file:`src` directory holds modules in the :mod:`foobar` package::
 
    <root>/
            setup.py
@@ -128,7 +140,7 @@ pure Python 配布物 (パッケージ形式)
                     foo.py
                     bar.py
 
-適切な setup スクリプトは、 ::
+an appropriate setup script would be  ::
 
    from distutils.core import setup
    setup(name='foobar',
@@ -137,11 +149,8 @@ pure Python 配布物 (パッケージ形式)
          packages=['foobar'],
          )
 
-のようになるでしょう。
-
-.. %
-
-また、メインパッケージ内のモジュールを配布物ルート下に置くことがあるかもしれません::
+Or, you might put modules from your main package right in the distribution
+root::
 
    <root>/
            setup.py
@@ -149,7 +158,7 @@ pure Python 配布物 (パッケージ形式)
            foo.py
            bar.py
 
-この場合、 setup スクリプトは ::
+in which case your setup script would be  ::
 
    from distutils.core import setup
    setup(name='foobar',
@@ -158,14 +167,13 @@ pure Python 配布物 (パッケージ形式)
          packages=['foobar'],
          )
 
-のようになるでしょう。 (空文字列も現在のディレクトリを表します。)
+(The empty string also stands for the current directory.)
 
-.. %
-
-サブパッケージがある場合、 :option:`packages` で明示的に列挙しなければなりませんが、 :option:`package_dir`
-はサブパッケージへのパスを自動的に展開します。 (別の言い方をすれば、 Distutils はソースツリーを *走査せず* 、どのディレクトリが Python
-パッケージに相当するのかを :file:`__init__.py` files. を探して調べようとします。)
-このようにして、デフォルトのレイアウトはサブパッケージ形式に展開されます::
+If you have sub-packages, they must be explicitly listed in ``packages``,
+but any entries in ``package_dir`` automatically extend to sub-packages.
+(In other words, the Distutils does *not* scan your source tree, trying to
+figure out which directories correspond to Python packages by looking for
+:file:`__init__.py` files.)  Thus, if the default layout grows a sub-package::
 
    <root>/
            setup.py
@@ -177,7 +185,7 @@ pure Python 配布物 (パッケージ形式)
                               __init__.py
                               blah.py
 
-対応する setup スクリプトは以下のようになります。 ::
+then the corresponding setup script would be  ::
 
    from distutils.core import setup
    setup(name='foobar',
@@ -185,27 +193,23 @@ pure Python 配布物 (パッケージ形式)
          packages=['foobar', 'foobar.subfoo'],
          )
 
-(ここでも、 :option:`package_dir` を空文字列にすると現在のディレクトリを表します。)
-
 
 .. _single-ext:
 
-単体の拡張モジュール
-====================
+Single extension module
+=======================
 
-拡張モジュールは、 :option:`ext_modules` オプションを使って指定します。 :option:`package_dir`
-は、拡張モジュールのソースファイルをどこで探すかには影響しません; pure Python モジュールのソースのみに影響します。
-もっとも単純なケースでは、単一の C ソースファイルで書かれた単一の拡張モジュールは::
+Extension modules are specified using the ``ext_modules`` option.
+``package_dir`` has no effect on where extension source files are found;
+it only affects the source for pure Python modules.  The simplest  case, a
+single extension module in a single C source file, is::
 
    <root>/
            setup.py
            foo.c
 
-になります。
-
-.. %
-
-:mod:`foo` 拡張をルートパッケージ下に所属させたい場合、 setup  スクリプトは ::
+If the :mod:`foo` extension belongs in the root package, the setup script for
+this could be  ::
 
    from distutils.core import setup
    from distutils.extension import Extension
@@ -214,22 +218,17 @@ pure Python 配布物 (パッケージ形式)
          ext_modules=[Extension('foo', ['foo.c'])],
          )
 
-になります。
+If the extension actually belongs in a package, say :mod:`foopkg`, then
 
-.. %
-
-同じソースツリーレイアウトで、この拡張モジュールを :mod:`foopkg` の下に置き、拡張モジュールの名前を変えるには::
+With exactly the same source tree layout, this extension can be put in the
+:mod:`foopkg` package simply by changing the name of the extension::
 
    from distutils.core import setup
    from distutils.extension import Extension
    setup(name='foobar',
-         version = '1.0',
+         version='1.0',
          ext_modules=[Extension('foopkg.foo', ['foo.c'])],
          )
-
-のようにします。
-
-.. %
 
 .. % \section{Multiple extension modules}
 .. % \label{multiple-ext}

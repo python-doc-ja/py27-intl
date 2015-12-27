@@ -1,16 +1,68 @@
+.. index::
+   single: Python Package Index (PyPI)
+   single: PyPI; (see Python Package Index (PyPI))
+
 .. _package-index:
 
-******************************
-パッケージインデクスに登録する
-******************************
+*******************************
+The Python Package Index (PyPI)
+*******************************
 
-Python パッケージインデクス (Python Package Index, PyPI) は、 distutils
-でパッケージ化された配布物に関するメタデータを保持しています。配布物のメタデータをインデクスに提出するには、  Distutils のコマンド
-:command:`register` を使います。 :command:`register` は以下のように起動します::
+The `Python Package Index (PyPI)`_ stores :ref:`meta-data <meta-data>`
+describing distributions packaged with distutils, as well as package data like
+distribution files if a package author wishes.
+
+Distutils provides the :command:`register` and :command:`upload` commands for
+pushing meta-data and distribution files to PyPI, respectively.  See
+:ref:`package-commands` for information on these commands.
+
+
+PyPI overview
+=============
+
+PyPI lets you submit any number of versions of your distribution to the index.
+If you alter the meta-data for a particular version, you can submit it again
+and the index will be updated.
+
+PyPI holds a record for each (name, version) combination submitted.  The first
+user to submit information for a given name is designated the Owner of that
+name.  Changes can be submitted through the :command:`register` command or
+through the web interface.  Owners can designate other users as Owners or
+Maintainers.  Maintainers can edit the package information, but not designate
+new Owners or Maintainers.
+
+By default PyPI displays only the newest version of a given package.  The web
+interface lets one change this default behavior and manually select which
+versions to display and hide.
+
+For each version, PyPI displays a home page.  The home page is created from
+the ``long_description`` which can be submitted via the :command:`register`
+command.  See :ref:`package-display` for more information.
+
+
+.. _package-commands:
+
+Distutils commands
+==================
+
+Distutils exposes two commands for submitting package data to PyPI: the
+:ref:`register <package-register>` command for submitting meta-data to PyPI
+and the :ref:`upload <package-upload>` command for submitting distribution
+files.  Both commands read configuration data from a special file called a
+:ref:`.pypirc file <pypirc>`.
+
+
+.. _package-register:
+
+The ``register`` command
+------------------------
+
+The distutils command :command:`register` is used to submit your distribution's
+meta-data to an index server. It is invoked as follows::
 
     python setup.py register
 
-Distutils は以下のようなプロンプトを出します::
+Distutils will respond with the following prompt::
 
     running register
     We need to know who you are, so please choose either:
@@ -20,32 +72,93 @@ Distutils は以下のようなプロンプトを出します::
         4. quit
     Your selection [default 1]:
 
-注意: ユーザ名とパスワードをローカルの計算機に保存しておくと、このメニューは表示されません。
+Note: if your username and password are saved locally, you will not see this
+menu.  Also, refer to :ref:`pypirc` for how to store your credentials in a
+:file:`.pypirc` file.
 
-まだ PyPI に登録したことがなければ、まず登録する必要があります。この場合選択肢 2 番を選び、リクエストされた詳細情報を入力して
-ゆきます。詳細情報を提出し終えると、登録情報の承認を行うためのメールを受け取るはずです。
+If you have not registered with PyPI, then you will need to do so now. You
+should choose option 2, and enter your details as required. Soon after
+submitting your details, you will receive an email which will be used to confirm
+your registration.
 
-すでに登録を行ったことがあれば、選択肢 1 を選べます。この選択肢を選ぶと、PyPI ユーザ名とパスワードを入力するよう促され、
-:command:`register` がメタデータをインデクスに自動的に提出します。
+Once you are registered, you may choose option 1 from the menu. You will be
+prompted for your PyPI username and password, and :command:`register` will then
+submit your meta-data to the index.
 
-配布物の様々なバージョンについて、好きなだけインデクスへの提出を行ってかまいません。特定のバージョンに関するメタデータを
-入れ替えたければ、再度提出を行えば、インデクス上のデータが更新されます。
+See :ref:`package-cmdoptions` for options to the :command:`register` command.
 
-PyPI は提出された配布物の (名前、バージョン) の各組み合わせについて記録を保持しています。ある配布物名について最初に情報を提出したユーザが、
-その配布物名のオーナ (owner) になります。オーナは :command:`register` コマンドか、web
-インタフェースを介して変更を提出できます。オーナは他のユーザをオーナやメンテナとして指名できます。
-メンテナはパッケージ情報を編集できますが、他の人をオーナやメンテナに指名することはできません。
 
-デフォルトでは、 PyPI はあるパッケージについて全てのバージョンを表示します。特定のバージョンを非表示にしたければ、パッケージの Hidden
-プロパティを yes に設定します。この値は web インタフェースで編集しなければなりません。
+.. _package-upload:
 
+The ``upload`` command
+----------------------
+
+.. versionadded:: 2.5
+
+The distutils command :command:`upload` pushes the distribution files to PyPI.
+
+The command is invoked immediately after building one or more distribution
+files.  For example, the command ::
+
+    python setup.py sdist bdist_wininst upload
+
+will cause the source distribution and the Windows installer to be uploaded to
+PyPI.  Note that these will be uploaded even if they are built using an earlier
+invocation of :file:`setup.py`, but that only distributions named on the command
+line for the invocation including the :command:`upload` command are uploaded.
+
+If a :command:`register` command was previously called in the same command,
+and if the password was entered in the prompt, :command:`upload` will reuse the
+entered password.  This is useful if you do not want to store a password in
+clear text in a :file:`.pypirc` file.
+
+You can use the ``--sign`` option to tell :command:`upload` to sign each
+uploaded file using GPG (GNU Privacy Guard).  The  :program:`gpg` program must
+be available for execution on the system :envvar:`PATH`.  You can also specify
+which key to use for signing using the ``--identity=name`` option.
+
+See :ref:`package-cmdoptions` for additional options to the :command:`upload`
+command.
+
+
+.. _package-cmdoptions:
+
+Additional command options
+--------------------------
+
+This section describes options common to both the :command:`register` and
+:command:`upload` commands.
+
+The ``--repository`` or ``-r`` option lets you specify a PyPI server
+different from the default.  For example::
+
+    python setup.py sdist bdist_wininst upload -r https://example.com/pypi
+
+For convenience, a name can be used in place of the URL when the
+:file:`.pypirc` file is configured to do so.  For example::
+
+    python setup.py register -r other
+
+See :ref:`pypirc` for more information on defining alternate servers.
+
+The ``--show-response`` option displays the full response text from the PyPI
+server, which is useful when debugging problems with registering and uploading.
+
+
+.. index::
+   single: .pypirc file
+   single: Python Package Index (PyPI); .pypirc file
 
 .. _pypirc:
 
-.pypirc ファイル
-==================
+The ``.pypirc`` file
+--------------------
 
-:file:`.pypirc` ファイルのフォーマットを示します。 ::
+The :command:`register` and :command:`upload` commands both check for the
+existence of a :file:`.pypirc` file at the location :file:`$HOME/.pypirc`.
+If this file exists, the command uses the username, password, and repository
+URL configured in the file.  The format of a :file:`.pypirc` file is as
+follows::
 
     [distutils]
     index-servers =
@@ -56,22 +169,24 @@ PyPI は提出された配布物の (名前、バージョン) の各組み合�
     username: <username>
     password: <password>
 
-*distutils* セクションは、 *index-servers* でリポジトリを設定する全てのセクション名の
-リストを定義しています。
+The *distutils* section defines an *index-servers* variable that lists the
+name of all sections describing a repository.
 
-リポジトリを表す各セクションは3つの変数を定義します:
+Each section describing a repository defines three variables:
 
-- *repository* は PyPI サーバーの URL を定義します。
-    デフォルトでは ``http://www.python.org/pypi`` になります。
-- *username* は PyPI サーバーに登録されたユーザー名です。
-- *password* は認証に使われます。省略された場合、必要なときに入力を求められます。
+- *repository*, that defines the url of the PyPI server. Defaults to
+    ``https://www.python.org/pypi``.
+- *username*, which is the registered username on the PyPI server.
+- *password*, that will be used to authenticate. If omitted the user
+    will be prompt to type it when needed.
 
-別のサーバーを定義した場合は、新しいセクションを作成し、 *index-servers* に追加します。 ::
+If you want to define another server a new section can be created and
+listed in the *index-servers* variable::
 
     [distutils]
     index-servers =
-      pypi
-      other
+        pypi
+        other
 
     [pypi]
     repository: <repository-url>
@@ -79,14 +194,56 @@ PyPI は提出された配布物の (名前、バージョン) の各組み合�
     password: <password>
 
     [other]
-    repository: http://example.com/pypi
+    repository: https://example.com/pypi
     username: <username>
     password: <password>
 
-:command:`register` は -r オプションで対象となるリポジトリを指定して実行することができます。 ::
+This allows the :command:`register` and :command:`upload` commands to be
+called with the ``--repository`` option as described in
+:ref:`package-cmdoptions`.
 
-    python setup.py register -r http://example.com/pypi
+Specifically, you might want to add the `PyPI Test Repository
+<https://wiki.python.org/moin/TestPyPI>`_ to your ``.pypirc`` to facilitate
+testing before doing your first upload to ``PyPI`` itself.
 
-使いやすくするために、セクション名を使ってリポジトリを指定することもできます。 ::
 
-    python setup.py register -r other
+.. _package-display:
+
+PyPI package display
+====================
+
+The ``long_description`` field plays a special role at PyPI. It is used by
+the server to display a home page for the registered package.
+
+If you use the `reStructuredText <http://docutils.sourceforge.net/rst.html>`_
+syntax for this field, PyPI will parse it and display an HTML output for
+the package home page.
+
+The ``long_description`` field can be attached to a text file located
+in the package::
+
+    from distutils.core import setup
+
+    with open('README.txt') as file:
+        long_description = file.read()
+
+    setup(name='Distutils',
+          long_description=long_description)
+
+In that case, :file:`README.txt` is a regular reStructuredText text file located
+in the root of the package besides :file:`setup.py`.
+
+To prevent registering broken reStructuredText content, you can use the
+:program:`rst2html` program that is provided by the :mod:`docutils` package and
+check the ``long_description`` from the command line::
+
+    $ python setup.py --long-description | rst2html.py > output.html
+
+:mod:`docutils` will display a warning if there's something wrong with your
+syntax.  Because PyPI applies additional checks (e.g. by passing ``--no-raw``
+to ``rst2html.py`` in the command above), being able to run the command above
+without warnings does not guarantee that PyPI will convert the content
+successfully.
+
+
+.. _Python Package Index (PyPI): https://pypi.python.org/pypi

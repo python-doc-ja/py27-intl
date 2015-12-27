@@ -1,51 +1,60 @@
 .. _distutils-intro:
 
-***************
-Distutilsの紹介
-***************
+****************************
+An Introduction to Distutils
+****************************
 
-このドキュメントで扱っている内容は、 Distutils を使った Python  モジュールの配布で、とりわけ開発者/配布者の役割に重点を置いています:
-Python モジュールのインストールに関する情報を探しているのなら、 :ref:`install-index`
-を参照してください。
+This document covers using the Distutils to distribute your Python modules,
+concentrating on the role of developer/distributor: if you're looking for
+information on installing Python modules, you should refer to the
+:ref:`install-index` chapter.
 
 
 .. _distutils-concepts:
 
-概念と用語
-==========
+Concepts & Terminology
+======================
 
-Distutils の使い方は、モジュール開発者とサードパーティ製のモジュールをインストールするユーザ/管理者のどちらにとってもきわめて単純です。
-開発者側のやるべきことは (もちろん、しっかりした実装で、詳しく文書化され、よくテストされたコードを書くことは別として！) 以下の項目になります:
+Using the Distutils is quite simple, both for module developers and for
+users/administrators installing third-party modules.  As a developer, your
+responsibilities (apart from writing solid, well-documented and well-tested
+code, of course!) are:
 
-* setup スクリプト (:file:`setup.py` という名前にするのがならわし) を書く
+* write a setup script (:file:`setup.py` by convention)
 
-* (必要があれば) setup 設定ファイルを書く
+* (optional) write a setup configuration file
 
-* ソースコード配布物を作成する
+* create a source distribution
 
-* (必要があれば) 一つまたはそれ以上のビルド済み (バイナリ) 形式の配布物を作成する
+* (optional) create one or more built (binary) distributions
 
-これらの作業については、いずれもこのドキュメントで扱っています。
+Each of these tasks is covered in this document.
 
-全てのモジュール開発者が複数の実行プラットフォームを利用できるわけではないので、全てのプラットフォーム向けにビルド済みの配布物を提供して
-もらえると期待するわけにはいきません。ですから、仲介を行う人々、いわゆる *パッケージ作成者 (packager)* がこの問題を解決すべく
-立ち上がってくれることが望ましいでしょう。パッケージ作成者はモジュール開発者がリリースしたソースコード配布物を、一つまたはそれ以上
-のプラットフォーム上でビルドして、得られたビルド済み配布物をリリースすることになります。したがって、ほとんどの一般的なプラットフォームに
-おけるユーザは、setup スクリプト一つ実行せず、コードを一行たりともコンパイルしなくても、使っているプラットフォーム向けのきわめて普通の
-方法でほとんどの一般的な Python モジュール配布物をインストールできるでしょう。
+Not all module developers have access to a multitude of platforms, so it's not
+always feasible to expect them to create a multitude of built distributions.  It
+is hoped that a class of intermediaries, called *packagers*, will arise to
+address this need.  Packagers will take source distributions released by module
+developers, build them on one or more platforms, and release the resulting built
+distributions.  Thus, users on the most popular platforms will be able to
+install most popular Python module distributions in the most natural way for
+their platform, without having to run a single setup script or compile a line of
+code.
 
 
 .. _distutils-simple-example:
 
-簡単な例
-========
+A Simple Example
+================
 
-setup スクリプトは通常単純なものですが、Python で書かれているため、スクリプト中で何かを処理しようと考えたとき特に制限はありません。とはいえ、
-setup スクリプト中に何かコストの大きな処理を行うときは十分注意してください。 autoconf 形式の設定スクリプトとは違い、 setup
-スクリプトはモジュール配布物をビルドしてインストールする中で複数回実行されることがあります。
+The setup script is usually quite simple, although since it's written in Python,
+there are no arbitrary limits to what you can do with it, though you should be
+careful about putting arbitrarily expensive operations in your setup script.
+Unlike, say, Autoconf-style configure scripts, the setup script may be run
+multiple times in the course of building and installing your module
+distribution.
 
-:file:`foo.py` という名前のファイルに収められている :mod:`foo` という名前のモジュールを配布したいだけなら、setup
-スクリプトは以下のような単純なものになります::
+If all you want to do is distribute a module called :mod:`foo`, contained in a
+file :file:`foo.py`, then your setup script can be as simple as this::
 
    from distutils.core import setup
    setup(name='foo',
@@ -53,130 +62,153 @@ setup スクリプト中に何かコストの大きな処理を行うときは�
          py_modules=['foo'],
          )
 
-以下のことに注意してください:
+Some observations:
 
-* Distutils に与えなければならない情報のほとんどは、  :func:`setup` 関数のキーワード引数として与えます。
+* most information that you supply to the Distutils is supplied as keyword
+  arguments to the :func:`setup` function
 
-* キーワード引数は二つのカテゴリ: パッケージのメタデータ  (パッケージ名、バージョン番号) 、パッケージに何が収められているかの情報 (上の場合は
-  pure Python モジュールのリスト)、に行き着きます。
+* those keyword arguments fall into two categories: package metadata (name,
+  version number) and information about what's in the package (a list of pure
+  Python modules, in this case)
 
-* モジュールはファイル名ではなく、モジュール名で指定します (パッケージと拡張モジュールについても同じです)
+* modules are specified by module name, not filename (the same will hold true
+  for packages and extensions)
 
-* 作者名、電子メールアドレス、プロジェクトの URL といった追加のメタデータを入れておくよう奨めます ( :ref:`setup-script` の
-  例を参照してください)
+* it's recommended that you supply a little more metadata, in particular your
+  name, email address and a URL for the project (see section :ref:`setup-script`
+  for an example)
 
-このモジュールのソースコード配布物を作成するには、上記のコードが入った setup スクリプト :file:`setup.py`
-を作成して、以下のコマンド::
+To create a source distribution for this module, you would create a setup
+script, :file:`setup.py`, containing the above code, and run this command from a
+terminal::
 
    python setup.py sdist
 
-を実行します。
+For Windows, open a command prompt windows (:menuselection:`Start -->
+Accessories`) and change the command to::
 
-.. %
+   setup.py sdist
 
-この操作を行うと、アーカイブファイル (例えば Unixでは tarball、Windows では ZIP ファイル) を作成します。アーカイブファイル
-には、setup スクリプト :file:`setup.py` と、配布したいモジュール :file:`foo.py`
-が入っています。アーカイブファイルの名前は :file:`foo-1.0.targ.gz` (または :file:`.zip`) になり、展開すると
-ディレクトリ :file:`foo-1.0` を作成します。
+:command:`sdist` will create an archive file (e.g., tarball on Unix, ZIP file on Windows)
+containing your setup script :file:`setup.py`, and your module :file:`foo.py`.
+The archive file will be named :file:`foo-1.0.tar.gz` (or :file:`.zip`), and
+will unpack into a directory :file:`foo-1.0`.
 
-エンドユーザが :mod:`foo` モジュールをインストールしたければ、 :file:`foo-1.0.tar.gz` (または :file:`.zip`)
-をダウンロードし、パッケージを展開して、以下のスクリプトを --- :file:`foo-1.0`  ディレクトリ中で --- 実行します::
+If an end-user wishes to install your :mod:`foo` module, all she has to do is
+download :file:`foo-1.0.tar.gz` (or :file:`.zip`), unpack it, and---from the
+:file:`foo-1.0` directory---run ::
 
    python setup.py install
 
-この操作を行うと、インストールされている Python での適切なサードパーティ製モジュール置き場に :file:`foo.py` を完璧にコピーします．
+which will ultimately copy :file:`foo.py` to the appropriate directory for
+third-party modules in their Python installation.
 
-ここで述べた簡単な例では、 Distutils の基本的な概念のいくつかを示しています。まず、開発者とインストール作業者は同じ基本インタフェース、すなわち
-setup スクリプトを使っています。二人の作業の違いは、使っている Distutils *コマンド (command)* にあります:
-:command:`sdist` コマンドは、ほぼ完全に開発者だけが対象となる一方、 :command:`install` はどちらかというとインストール
-作業者向けです (とはいえ、ほとんどの開発者は自分のコードをインストールしたくなることがあるでしょう)。
+This simple example demonstrates some fundamental concepts of the Distutils.
+First, both developers and installers have the same basic user interface, i.e.
+the setup script.  The difference is which Distutils *commands* they use: the
+:command:`sdist` command is almost exclusively for module developers, while
+:command:`install` is more often for installers (although most developers will
+want to install their own code occasionally).
 
-ユーザにとって本当に簡単なものにしたいのなら、一つまたはそれ以上のビルド済み配布物を作ってあげられます。例えば、Windows マシン
-上で作業をしていて、他の Windows ユーザにとって簡単な配布物を提供したいのなら、実行可能な形式の (このプラットフォーム向けのビルド済み配布物としては
-もっとも適切な) インストーラを作成できます。これには :command:`bdist_wininst` を使います。例えば::
+If you want to make things really easy for your users, you can create one or
+more built distributions for them.  For instance, if you are running on a
+Windows machine, and want to make things easy for other Windows users, you can
+create an executable installer (the most appropriate type of built distribution
+for this platform) with the :command:`bdist_wininst` command.  For example::
 
    python setup.py bdist_wininst
 
-とすると、実行可能なインストーラ形式、 :file:`foo-1.0.win32.exe` が現在のディレクトリに作成されます。
+will create an executable installer, :file:`foo-1.0.win32.exe`, in the current
+directory.
 
-.. %
-
-その他の有用な配布形態としては、 :command:`bdist_rpm` に実装されている RPM 形式、 Solaris
-:program:`pkgtool` (:command:`bdist_pkgtool`) 、 HP-UX :program:`swinstall`
-(:command:`bdist_sdux`) があります。例えば、以下のコマンドを実行すると、 :file:`foo-1.0.noarch.rpm`
-という名前の RPM ファイルを作成します::
+Other useful built distribution formats are RPM, implemented by the
+:command:`bdist_rpm` command, Solaris :program:`pkgtool`
+(:command:`bdist_pkgtool`), and HP-UX :program:`swinstall`
+(:command:`bdist_sdux`).  For example, the following command will create an RPM
+file called :file:`foo-1.0.noarch.rpm`::
 
    python setup.py bdist_rpm
 
-(:command:`bdist_rpm` コマンドは :command:`rpm` コマンドを使うため、 Red Hat Linux や SuSE
-Linux、 Mandrake Linux といった RPM ベースのシステムで実行しなければなりません)
+(The :command:`bdist_rpm` command uses the :command:`rpm` executable, therefore
+this has to be run on an RPM-based system such as Red Hat Linux, SuSE Linux, or
+Mandrake Linux.)
 
-どの配布形式が利用できるかは、 ::
+You can find out what distribution formats are available at any time by running
+::
 
    python setup.py bdist --help-formats
-
-を実行すれば分かります。
-
-.. %
 
 
 .. _python-terms:
 
-Python 一般の用語
-=================
+General Python terminology
+==========================
 
-このドキュメントを読んでいるのなら、モジュール (module)、拡張モジュール (extension) などが何を表すのかをよく知っているかも
-しれません。とはいえ、読者がみな共通のスタートポイントに立って Distutils の操作を始められるように、ここで一般的な Python 用語
-について以下のような用語集を示しておきます:
+If you're reading this document, you probably have a good idea of what modules,
+extensions, and so forth are.  Nevertheless, just to be sure that everyone is
+operating from a common starting point, we offer the following glossary of
+common Python terms:
 
-モジュール (module)
-   Python においてコードを再利用する際の基本単位: すなわち、他のコードから import されるひとかたまりのコード
-   です。ここでは、三種類のモジュール: pure Python モジュール、拡張モジュール、パッケージが関わってきます。
+module
+   the basic unit of code reusability in Python: a block of code imported by some
+   other code.  Three types of modules concern us here: pure Python modules,
+   extension modules, and packages.
 
-pure Python モジュール
-   Python で書かれ、単一の :file:`.py`  ファイル内に収められたモジュールです (:file:`.pyc` かつ/または
-   :file:`.pyo` ファイルと関連があります) 。 "pure モジュール  (pure module)" と呼ばれることもあります。
+pure Python module
+   a module written in Python and contained in a single :file:`.py` file (and
+   possibly associated :file:`.pyc` and/or :file:`.pyo` files).  Sometimes referred
+   to as a "pure module."
 
-拡張モジュール (extension module)
-   Python を実装している低水準言語: Python の場合は C/C++ 、 Jython の場合は Java 、で書かれたモジュールです。
-   通常は、動的にロードできるコンパイル済みの単一のファイルに入っています。例えば、Unix向け Python 拡張のための共有オブジェクト
-   (:file:`.so`) 、 Windows 向け Python 拡張のための DLL (:file:`.pyd` という拡張子が与えられています)、
-   Jython 拡張のための Java クラスといった具合です。 (現状では、 Distutils は Python 向けの C/C++ 拡張モジュールしか
-   扱わないので注意してください。)
+extension module
+   a module written in the low-level language of the Python implementation: C/C++
+   for Python, Java for Jython. Typically contained in a single dynamically
+   loadable pre-compiled file, e.g. a shared object (:file:`.so`) file for Python
+   extensions on Unix, a DLL (given the :file:`.pyd` extension) for Python
+   extensions on Windows, or a Java class file for Jython extensions.  (Note that
+   currently, the Distutils only handles C/C++ extensions for Python.)
 
-パッケージ (package)
-   他のモジュールが入っているモジュールです; 通常、ファイルシステム内のあるディレクトリに収められ、 :file:`__init__.py`
-   が入っていることで通常のディレクトリと区別できます。
+package
+   a module that contains other modules; typically contained in a directory in the
+   filesystem and distinguished from other directories by the presence of a file
+   :file:`__init__.py`.
 
-ルートパッケージ (root package)
-   階層的なパッケージの根 (root) の部分にあたるパッケージです。(この部分には :file:`__init__.py`
-   ファイルがないので、本当のパッケージではありませんが、便宜上そう呼びます。) 標準ライブラリの大部分はルートパッケージに入って
-   います、また、多くの小規模な単体のサードパーティモジュールで、他の大規模なモジュールコレクションに属していないものもここに入ります。
-   正規のパッケージと違い、ルートパッケージ上のモジュールの実体は様々なディレクトリにあります: 実際は、 ``sys.path`` に列挙されている
-   ディレクトリ全てが、ルートパッケージに配置されるモジュールの内容に影響します。
+root package
+   the root of the hierarchy of packages.  (This isn't really a package, since it
+   doesn't have an :file:`__init__.py` file.  But we have to call it something.)
+   The vast majority of the standard library is in the root package, as are many
+   small, standalone third-party modules that don't belong to a larger module
+   collection. Unlike regular packages, modules in the root package can be found in
+   many directories: in fact, every directory listed in ``sys.path`` contributes
+   modules to the root package.
 
 
 .. _distutils-term:
 
-Distutils 固有の用語
-====================
+Distutils-specific terminology
+==============================
 
-以下は Distutils を使って Python モジュールを配布する際に使われる特有の用語です:
+The following terms apply more specifically to the domain of distributing Python
+modules using the Distutils:
 
-モジュール配布物 (module distribution)
-   一個のファイルとしてダウンロード可能なリソースの形をとり、 *一括して*  インストールされることになっている形態で配られる Python モジュールの
-   コレクションです。よく知られたモジュール配布物には、Numeric Python、 PyXML、 PIL (the Python Imaging
-   Library)、 mxBase などがあります。 (*パッケージ (package)* と呼ばれることもありますが、 Python
-   用語としてのパッケージとは意味が違います: 一つのモジュール配布物の中には、場合によりゼロ個、一つ、それ以上の Python パッケージが入っています。)
+module distribution
+   a collection of Python modules distributed together as a single downloadable
+   resource and meant to be installed *en masse*.  Examples of some well-known
+   module distributions are Numeric Python, PyXML, PIL (the Python Imaging
+   Library), or mxBase.  (This would be called a *package*, except that term is
+   already taken in the Python context: a single module distribution may contain
+   zero, one, or many Python packages.)
 
-pure モジュール配布物 (pure module distribution)
-   pure Python モジュールやパッケージだけが入ったモジュール配布物です。"pure 配布物 (pure distribution)" とも呼ばれます。
+pure module distribution
+   a module distribution that contains only pure Python modules and packages.
+   Sometimes referred to as a "pure distribution."
 
-非 pure モジュール配布物 (non-pure module distribution)
-   少なくとも一つの拡張モジュールが入ったモジュール配布物です。 "非 pure 配布物"とも呼びます。
+non-pure module distribution
+   a module distribution that contains at least one extension module.  Sometimes
+   referred to as a "non-pure distribution."
 
-配布物ルートディレクトリ (distribution root)
-   ソースコードツリー (またはソース配布物) ディレクトリの最上階層で、 :file:`setup.py` のある場所です。一般的には、
-   :file:`setup.py` はこのディレクトリ上で実行します。
+distribution root
+   the top-level directory of your source tree (or  source distribution); the
+   directory where :file:`setup.py` exists.  Generally  :file:`setup.py` will be
+   run from this directory.
 
 

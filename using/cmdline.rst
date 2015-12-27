@@ -1,260 +1,289 @@
-.. highlightlang:: none
+.. highlightlang:: sh
+
+.. ATTENTION: You probably should update Misc/python.man, too, if you modify
+   this file.
 
 .. _using-on-general:
 
-コマンドラインと環境
-=====================
+Command line and environment
+============================
 
-CPython インタプリタはコマンドラインと環境を読み取って様々な設定を行ないます。
+The CPython interpreter scans the command line and the environment for various
+settings.
 
 .. impl-detail::
 
-   他の実装のコマンドラインスキームは CPython とは異なります。
-   さらなる情報は :ref:`implementations` を参照してください。
+   Other implementations' command line schemes may differ.  See
+   :ref:`implementations` for further resources.
 
 
 .. _using-on-cmdline:
 
-コマンドライン
----------------
+Command line
+------------
 
-Python を起動するとき、以下のうち任意のオプションを指定できます。 ::
+When invoking Python, you may specify any of these options::
 
-    python [-BdEiOQsStuUvVWxX3?] [-c command | -m module-name | script | - ] [args]
+    python [-BdEiOQsRStuUvVWxX3?] [-c command | -m module-name | script | - ] [args]
 
-もちろん、もっとも一般的な利用方法は、シンプルにスクリプトを実行するものです。 ::
+The most common use case is, of course, a simple invocation of a script::
 
     python myscript.py
 
 
 .. _using-on-interface-options:
 
-インターフェイスオプション
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Interface options
+~~~~~~~~~~~~~~~~~
 
-インタプリタのインターフェイスは UNIX シェルに似ていますが、
-より多くのの実行方法を提供しています。
+The interpreter interface resembles that of the UNIX shell, but provides some
+additional methods of invocation:
 
-* tty デバイスに接続された標準入力とともに起動された場合、 EOF (end-of-file
-  文字。 UNIX では *Ctrl-D* で、Windows では *Ctrl-Z, Enter* で入力可能)
-  を受け取るまで、コマンドを受け取り、それを実行します。
-* ファイル名引数を指定されるか、ファイルを標準入力に渡された場合は、
-  そのファイルから読み込んだスクリプトを実行します。
-* ディレクトリ名を引数に受け取ったときは、そのディレクトリから適切な
-  名前のスクリプトファイルを読み込んで実行します。
-* ``-c コマンド`` オプションを利用して起動された場合、 *コマンド* として渡された
-  Python の文を実行します。 *コマンド* の部分には改行で区切られた複数行を指定する
-  こともできます。行の先頭の空白文字は Python 文の重要要素です！
-* ``-m モジュール名`` として Python モジュールパスにあるモジュールを指定された場合、
-  そのモジュールをスクリプトとして実行します。
+* When called with standard input connected to a tty device, it prompts for
+  commands and executes them until an EOF (an end-of-file character, you can
+  produce that with :kbd:`Ctrl-D` on UNIX or :kbd:`Ctrl-Z, Enter` on Windows) is read.
+* When called with a file name argument or with a file as standard input, it
+  reads and executes a script from that file.
+* When called with a directory name argument, it reads and executes an
+  appropriately named script from that directory.
+* When called with ``-c command``, it executes the Python statement(s) given as
+  *command*.  Here *command* may contain multiple statements separated by
+  newlines. Leading whitespace is significant in Python statements!
+* When called with ``-m module-name``, the given module is located on the
+  Python module path and executed as a script.
 
-非インタラクティブモードでは、入力の全体が実行前にパースされます。
+In non-interactive mode, the entire input is parsed before it is executed.
 
-インタプリタによって消費されるオプションリストが終了したあと、継続する全ての
-引数は :data:`sys.argv` に渡ります。 -- ただし、添字 0 の先頭要素(``sys.argv[0]``)
-はプログラムのソース自体を示す文字列です。
+An interface option terminates the list of options consumed by the interpreter,
+all consecutive arguments will end up in :data:`sys.argv` -- note that the first
+element, subscript zero (``sys.argv[0]``), is a string reflecting the program's
+source.
 
 .. cmdoption:: -c <command>
 
-   *command* 内の Python コードを実行します。
-   *command* は改行によって区切られた1行以上の文です。
-   通常のモジュールのコードと同じく、行頭の空白文字は意味を持ちます。
+   Execute the Python code in *command*.  *command* can be one or more
+   statements separated by newlines, with significant leading whitespace as in
+   normal module code.
 
-   このオプションが指定された場合、 :data:`sys.argv` の先頭要素は ``"-c"`` になり、
-   カレントディレクトリが :data:`sys.path` の先頭に追加されます。
-   (そのディレクトリにあるモジュールをトップレベルモジュールとして import
-   することが可能になります。)
+   If this option is given, the first element of :data:`sys.argv` will be
+   ``"-c"`` and the current directory will be added to the start of
+   :data:`sys.path` (allowing modules in that directory to be imported as top
+   level modules).
 
 
 .. cmdoption:: -m <module-name>
 
-   :data:`sys.path` から指定されたモジュール名のモジュールを探し、その内容を
-   :mod:`__main__` モジュールとして実行します。
+   Search :data:`sys.path` for the named module and execute its contents as
+   the :mod:`__main__` module.
 
-   引数は *module* 名なので、拡張子 (``.py``) を含めてはいけません。
-   ``module-name`` は有効な Python のモジュール名であるべきですが、実装がそれを
-   強制しているとは限りません。 (例えば、ハイフンを名前に含める事を許可するかも
-   しれません。)
+   Since the argument is a *module* name, you must not give a file extension
+   (``.py``).  The ``module-name`` should be a valid Python module name, but
+   the implementation may not always enforce this (e.g. it may allow you to
+   use a name that includes a hyphen).
 
-   パッケージ名を指定することもできます。通常のモジュールの代わりにパッケージ名を
-   指定された場合、インタープリタは ``<pkg>.__main__`` をメインモジュールとして
-   実行します。
-   この動作はインタープリタのスクリプト引数としてディレクトリやzipファイルを
-   指定された時の動作と意図的に似せています。
+   Package names are also permitted. When a package name is supplied instead
+   of a normal module, the interpreter will execute ``<pkg>.__main__`` as
+   the main module. This behaviour is deliberately similar to the handling
+   of directories and zipfiles that are passed to the interpreter as the
+   script argument.
 
    .. note::
 
-      このオプションはビルトインモジュールや C で書かれた拡張モジュールには
-      利用できません。 Python モジュールファイルを持っていないからです。
-      しかし、コンパイル済みのモジュールは、たとえ元のソースファイルがなくても
-      利用可能です。
+      This option cannot be used with built-in modules and extension modules
+      written in C, since they do not have Python module files. However, it
+      can still be used for precompiled modules, even if the original source
+      file is not available.
 
-   このオプションが指定された場合、 :data:`sys.argv` の先頭要素はモジュールファイルの
-   フルパスになります。
-   :option:`-c` オプションのように、カレントディレクトリが :data:`sys.path`
-   の先頭に追加されます。
+   If this option is given, the first element of :data:`sys.argv` will be the
+   full path to the module file. As with the :option:`-c` option, the current
+   directory will be added to the start of :data:`sys.path`.
 
-   .. Many standard library modules contain code that is invoked on their execution
-      as a script.  An example is the :mod:`timeit` module::
-
-   多くの標準ライブラリモジュールが、スクリプトとして実行された時のコードを持っています。
-   例えば、 :mod:`timeit` モジュールは次のように実行可能です。 ::
+   Many standard library modules contain code that is invoked on their execution
+   as a script.  An example is the :mod:`timeit` module::
 
        python -mtimeit -s 'setup here' 'benchmarked code here'
        python -mtimeit -h # for details
 
    .. seealso::
       :func:`runpy.run_module`
-         Python コードから直接利用できる同等の機能
+         Equivalent functionality directly available to Python code
 
       :pep:`338` -- Executing modules as scripts
 
    .. versionadded:: 2.4
 
    .. versionchanged:: 2.5
-      パッケージ内のモジュールを指定できるようになりました。
+      The named module can now be located inside a package.
 
    .. versionchanged:: 2.7
-      パッケージ名を指定したときに ``__main__`` サブモジュールを実行するようにしました。
-      そのモジュールを検索している間の sys.argv[0] は ``"-m"`` に設定されるようになりました。
-      (以前は間違って ``"-c"`` が設定されていました)
+      Supply the package name to run a ``__main__`` submodule.
+      sys.argv[0] is now set to ``"-m"`` while searching for the module
+      (it was previously incorrectly set to ``"-c"``)
 
 
 .. describe:: -
 
-   標準入力 (:data:`sys.stdin`) からコマンドを読み込みます。
-   標準入力がターミナルだった場合、 :option:`-i` オプションを含みます。
+   Read commands from standard input (:data:`sys.stdin`).  If standard input is
+   a terminal, :option:`-i` is implied.
 
-   このオプションが指定された場合、 :data:`sys.argv` の最初の要素は
-   ``"-"`` で、カレントディレクトリが :data:`sys.path` の先頭に追加されます。
+   If this option is given, the first element of :data:`sys.argv` will be
+   ``"-"`` and the current directory will be added to the start of
+   :data:`sys.path`.
+
+   .. seealso::
+      :func:`runpy.run_path`
+         Equivalent functionality directly available to Python code
 
 
 .. describe:: <script>
 
-   *script* 内の Python コードを実行します。
-   *script* は、 Python ファイル、 ``__main__.py`` ファイルを含むディレクトリ、
-   ``__main__.py`` ファイルを含む zip ファイルのいづれかの、ファイルシステム上の
-   (絶対あるいは相対)パスでなければなりません。
+   Execute the Python code contained in *script*, which must be a filesystem
+   path (absolute or relative) referring to either a Python file, a directory
+   containing a ``__main__.py`` file, or a zipfile containing a
+   ``__main__.py`` file.
 
-   このオプションが指定された場合、 :data:`sys.argv` の先頭要素は、
-   コマンドラインで指定されたスクリプト名になります。
+   If this option is given, the first element of :data:`sys.argv` will be the
+   script name as given on the command line.
 
-   スクリプト名が Python ファイルを直接指定していた場合、そのファイルを
-   含むディレクトリが :data:`sys.path` の先頭に追加され、そのファイルは
-   :mod:`__main__` モジュールとして実行されます。
+   If the script name refers directly to a Python file, the directory
+   containing that file is added to the start of :data:`sys.path`, and the
+   file is executed as the :mod:`__main__` module.
 
-   スクリプト名がディレクトリか zip ファイルを指定していた場合、
-   スクリプト名が :data:`sys.path` に追加され、その中の ``__main__.py``
-   ファイルが :mod:`__main__` モジュールとして実行されます。
+   If the script name refers to a directory or zipfile, the script name is
+   added to the start of :data:`sys.path` and the ``__main__.py`` file in
+   that location is executed as the :mod:`__main__` module.
 
    .. versionchanged:: 2.5
-      トップレベルに ``__main__.py`` ファイルを持つディレクトリや zip ファイルが
-      有効な Python スクリプトとなりました。
+      Directories and zipfiles containing a ``__main__.py`` file at the top
+      level are now considered valid Python scripts.
 
-インターフェイスオプションが与えられなかった場合、 :option:`-i` が暗黙的に指定され、
-``sys.argv[0]`` は空白文字列 (``""``)で、カレントディレクトリが :data:`sys.path`
-の先頭に追加されます。
+If no interface option is given, :option:`-i` is implied, ``sys.argv[0]`` is
+an empty string (``""``) and the current directory will be added to the
+start of :data:`sys.path`.
 
 .. seealso::  :ref:`tut-invoking`
 
 
-一般オプション
+Generic options
 ~~~~~~~~~~~~~~~
 
 .. cmdoption:: -?
                -h
                --help
 
-   全てのコマンドラインオプションの短い説明を表示します。
+   Print a short description of all command line options.
 
    .. versionchanged:: 2.5
-      ``--help`` 形式
+      The ``--help`` variant.
 
 
 .. cmdoption:: -V
                --version
 
-   Python のバージョン番号を表示して終了します。出力の例::
+   Print the Python version number and exit.  Example output could be::
 
        Python 2.5.1
 
    .. versionchanged:: 2.5
-      ``--version`` 形式
+      The ``--version`` variant.
 
 
-その他のオプション
+Miscellaneous options
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. cmdoption:: -B
 
-   Python は import したソースモジュールの ``.pyc`` や ``.pyo`` ファイルの
-   作成を試みません。
-   :envvar:`PYTHONDONTWRITEBYTECODE` 環境変数も参照してください。
+   If given, Python won't try to write ``.pyc`` or ``.pyo`` files on the
+   import of source modules.  See also :envvar:`PYTHONDONTWRITEBYTECODE`.
 
    .. versionadded:: 2.6
 
 
 .. cmdoption:: -d
 
-   パーサーのデバッグ出力を有効にします。(魔法使い専用です。コンパイルオプションに
-   依存します)。
-   :envvar:`PYTHONDEBUG` も参照してください。
+   Turn on parser debugging output (for wizards only, depending on compilation
+   options).  See also :envvar:`PYTHONDEBUG`.
 
 
 .. cmdoption:: -E
 
-   全ての :envvar:`PYTHON*` 環境変数を無視します。
-   例えば、 :envvar:`PYTHONPATH` と :envvar:`PYTHONHOME` などです。
+   Ignore all :envvar:`PYTHON*` environment variables, e.g.
+   :envvar:`PYTHONPATH` and :envvar:`PYTHONHOME`, that might be set.
 
    .. versionadded:: 2.2
 
 
 .. cmdoption:: -i
 
-   最初の引数にスクリプトが指定された場合や :option:`-c` オプションが利用された場合、
-   :data:`sys.stdin` がターミナルに出力されない場合も含めて、
-   スクリプトかコマンドを実行した後にインタラクティブモードに入ります。
-   :envvar:`PYTHONSTARTUP` ファイルは読み込みません。
+   When a script is passed as first argument or the :option:`-c` option is used,
+   enter interactive mode after executing the script or the command, even when
+   :data:`sys.stdin` does not appear to be a terminal.  The
+   :envvar:`PYTHONSTARTUP` file is not read.
 
-   このオプションはグローバル変数や、スクリプトが例外を発生させるときにその
-   スタックトレースを調べるのに便利です。 :envvar:`PYTHONINSPECT` も参照してください。
+   This can be useful to inspect global variables or a stack trace when a script
+   raises an exception.  See also :envvar:`PYTHONINSPECT`.
 
 
 .. cmdoption:: -O
 
-   基本的な最適化を有効にします。
-   コンパイル済み (:term:`bytecode`) ファイルの拡張子を ``.pyc`` から ``.pyo``
-   に変更します。 :envvar:`PYTHONOPTIMIZE` も参照してください。
+   Turn on basic optimizations.  This changes the filename extension for
+   compiled (:term:`bytecode`) files from ``.pyc`` to ``.pyo``.  See also
+   :envvar:`PYTHONOPTIMIZE`.
 
 
 .. cmdoption:: -OO
 
-   :option:`-O` の最適化に加えて、ドキュメンテーション文字列の除去も行ないます。
+   Discard docstrings in addition to the :option:`-O` optimizations.
 
 
 .. cmdoption:: -Q <arg>
 
-   除算制御。引数は以下のうち1つでなければなりません:
+   Division control. The argument must be one of the following:
 
    ``old``
-     int/int と long/long の除算は、 int か long を返します。 (*デフォルト*)
+     division of int/int and long/long return an int or long (*default*)
    ``new``
-     新しい除算方式。 int/int や long/long の除算が float を返します。
+     new division semantics, i.e. division of int/int and long/long returns a
+     float
    ``warn``
-     古い除算方式で、 int/int や long/long 除算に警告を表示します。
+     old division semantics with a warning for int/int and long/long
    ``warnall``
-     古い除算方式で、全ての除算演算子に対して警告を表示します。
+     old division semantics with a warning for all uses of the division operator
 
    .. seealso::
       :file:`Tools/scripts/fixdiv.py`
-         ``warnall`` を使っています.
+         for a use of ``warnall``
 
       :pep:`238` -- Changing the division operator
 
 
+.. cmdoption:: -R
+
+   Turn on hash randomization, so that the :meth:`__hash__` values of str,
+   bytes and datetime objects are "salted" with an unpredictable random value.
+   Although they remain constant within an individual Python process, they are
+   not predictable between repeated invocations of Python.
+
+   This is intended to provide protection against a denial-of-service caused by
+   carefully-chosen inputs that exploit the worst case performance of a dict
+   construction, O(n^2) complexity.  See
+   http://www.ocert.org/advisories/ocert-2011-003.html for details.
+
+   Changing hash values affects the order in which keys are retrieved from a
+   dict.  Although Python has never made guarantees about this ordering (and it
+   typically varies between 32-bit and 64-bit builds), enough real-world code
+   implicitly relies on this non-guaranteed behavior that the randomization is
+   disabled by default.
+
+   See also :envvar:`PYTHONHASHSEED`.
+
+   .. versionadded:: 2.6.8
+
+
 .. cmdoption:: -s
 
-   sys.path にユーザー site ディレクトリを追加しません。
+   Don't add the :data:`user site-packages directory <site.USER_SITE>` to
+   :data:`sys.path`.
 
    .. versionadded:: 2.6
 
@@ -265,92 +294,95 @@ Python を起動するとき、以下のうち任意のオプションを指定�
 
 .. cmdoption:: -S
 
-   :mod:`site` モジュールのインポートを無効にし、そのモジュールで行われている
-   場所独自の :data:`sys.path` 操作を無効にします。
+   Disable the import of the module :mod:`site` and the site-dependent
+   manipulations of :data:`sys.path` that it entails.
 
 
 .. cmdoption:: -t
 
-   ソースファイルが、タブ幅に依存して意味が変わるような方法でタブ文字とスペースを
-   混ぜて含んでいる場合に警告を発生させます。このオプションを2重にする (:option:`-tt`)
-   とエラーになります。
+   Issue a warning when a source file mixes tabs and spaces for indentation in a
+   way that makes it depend on the worth of a tab expressed in spaces.  Issue an
+   error when the option is given twice (:option:`-tt`).
 
 
 .. cmdoption:: -u
 
-   stdin, stdout, stderr のバッファを強制的に無効にします。
-   関係するシステムでは、 stdin, stdout, stderr をバイナリモードにします。
+   Force stdin, stdout and stderr to be totally unbuffered.  On systems where it
+   matters, also put stdin, stdout and stderr in binary mode.
 
-   :meth:`file.readlines` や :ref:`bltin-file-objects` (``for line in sys.stdin``)
-   はこのオプションに影響されない内部バッファリングをしています。
-   これを回避したい場合は、 ``while 1:`` ループの中で :meth:`file.readline` します。
+   Note that there is internal buffering in :meth:`file.readlines` and
+   :ref:`bltin-file-objects` (``for line in sys.stdin``) which is not influenced
+   by this option.  To work around this, you will want to use
+   :meth:`file.readline` inside a ``while 1:`` loop.
 
-   :envvar:`PYTHONUNBUFFERED` も参照してください。
+   See also :envvar:`PYTHONUNBUFFERED`.
 
 
 .. cmdoption:: -v
 
-   モジュールが初期化されるたびに、それがどこ(ファイル名やビルトインモジュール)
-   からロードされたのかを示すメッセージを表示します。
-   2重に指定された場合(:option:`-vv`)は、モジュールを検索するときにチェックされた
-   各ファイルに対してメッセージを表示します。また、終了時のモジュールクリーンアップに
-   関する情報も提供します。 :envvar:`PYTHONVERBOSE` も参照してください。
+   Print a message each time a module is initialized, showing the place
+   (filename or built-in module) from which it is loaded.  When given twice
+   (:option:`-vv`), print a message for each file that is checked for when
+   searching for a module.  Also provides information on module cleanup at exit.
+   See also :envvar:`PYTHONVERBOSE`.
 
 
 .. cmdoption:: -W arg
 
-   警告制御。 Python の警告機構はデフォルトでは警告メッセージを :data:`sys.stderr`
-   に表示します。典型的な警告メッセージは次の形をしています::
+   Warning control.  Python's warning machinery by default prints warning
+   messages to :data:`sys.stderr`.  A typical warning message has the following
+   form::
 
        file:line: category: message
 
-   デフォルトでは、各警告は発生したソース業ごとに一度だけ表示されます。
-   このオプションは、警告をどれくらいの頻度で表示するかを制御します。
+   By default, each warning is printed once for each source line where it
+   occurs.  This option controls how often warnings are printed.
 
-   複数の :option:`-W` オプションを指定することができます。警告が1つ以上の
-   オプションとマッチしたときは、最後にマッチしたオプションのアクションが有効になります。
-   不正な :option:`-W` オプションは無視されます。(最初の警告が発生したときに、
-   不正なオプションに対する警告メッセージが表示されます。)
+   Multiple :option:`-W` options may be given; when a warning matches more than
+   one option, the action for the last matching option is performed.  Invalid
+   :option:`-W` options are ignored (though, a warning message is printed about
+   invalid options when the first warning is issued).
 
-   Python 2.7 から、 :exc:`DeprecationWarning` とその子クラスはデフォルトで無視されます。
-   :option:`-Wd` オプションを指定して有効にすることができます。
+   Starting from Python 2.7, :exc:`DeprecationWarning` and its descendants
+   are ignored by default.  The :option:`-Wd` option can be used to re-enable
+   them.
 
-   警告は Python プログラムの中から :mod:`warnings` モジュールを利用して
-   制御することができます。
+   Warnings can also be controlled from within a Python program using the
+   :mod:`warnings` module.
 
-   引数の一番シンプルな形は、以下のアクション文字列(かそのユニークな短縮形)
-   を単体で利用するものです。
+   The simplest form of argument is one of the following action strings (or a
+   unique abbreviation) by themselves:
 
    ``ignore``
-      全ての警告を無視する。
+      Ignore all warnings.
    ``default``
-      明示的にデフォルトの動作(ソース行ごとに1度警告を表示する)を要求する。
+      Explicitly request the default behavior (printing each warning once per
+      source line).
    ``all``
-      警告が発生するたびに表示する (これは、ループの中などで同じソース行により
-      繰り返し警告が発生された場合に、大量のメッセージを表示します。)
+      Print a warning each time it occurs (this may generate many messages if a
+      warning is triggered repeatedly for the same source line, such as inside a
+      loop).
    ``module``
-      各モジュールで最初に発生した警告を表示する。
+      Print each warning only the first time it occurs in each module.
    ``once``
-      プログラムで最初に発生した警告だけを表示する。
+      Print each warning only the first time it occurs in the program.
    ``error``
-      警告メッセージを表示する代わりに例外を発生させる。
+      Raise an exception instead of printing a warning message.
 
-   引数の完全形は次のようになります::
+   The full form of argument is::
 
        action:message:category:module:line
 
-   ここで、 *action* は上で説明されたものですが、残りのフィールドにマッチした
-   メッセージにだけ適用されます。空のフィールドは全ての値にマッチします。
-   空のフィールドの後ろは除外されます。 *message* フィールドは表示される
-   警告メッセージの先頭に、大文字小文字を無視してマッチします。 *category*
-   フィールドは警告カテゴリにマッチします。これはクラス名でなければなりません。
-   *category* のマッチは、メッセージの実際の警告カテゴリーが指定された警告
-   カテゴリーのサブクラスかどうかをチェックします。完全なクラス名を指定しなければ
-   なりません。
-   *module* フィールドは、(完全正規形(fully-qualified)の) モジュール名に対して
-   マッチします。このマッチは大文字小文字を区別します。
-   *line* フィールドは行番号にマッチします。 0 は全ての行番号にマッチし、
-   省略した時と同じです。
+   Here, *action* is as explained above but only applies to messages that match
+   the remaining fields.  Empty fields match all values; trailing empty fields
+   may be omitted.  The *message* field matches the start of the warning message
+   printed; this match is case-insensitive.  The *category* field matches the
+   warning category.  This must be a class name; the match tests whether the
+   actual warning category of the message is a subclass of the specified warning
+   category.  The full class name must be given.  The *module* field matches the
+   (fully-qualified) module name; this match is case-sensitive.  The *line*
+   field matches the line number, where zero matches all line numbers and is
+   thus equivalent to an omitted line number.
 
    .. seealso::
       :mod:`warnings` -- the warnings module
@@ -362,187 +394,190 @@ Python を起動するとき、以下のうち任意のオプションを指定�
 
 .. cmdoption:: -x
 
-   Unix 以外の形式の ``#!cmd`` を使うために、ソースの最初の行をスキップします。
-   これは、DOS専用のハックのみを目的としています。
+   Skip the first line of the source, allowing use of non-Unix forms of
+   ``#!cmd``.  This is intended for a DOS specific hack only.
 
-   .. note:: エラーメッセージ内の行番号は -1 されます。
+   .. note:: The line numbers in error messages will be off by one.
 
 .. cmdoption:: -3
 
-   Python 3.x との、 :ref:`2to3 <2to3-reference>` によって簡単に解決できない
-   互換性の問題について警告します。以下のものが該当します。
-
-   * :meth:`dict.has_key`
-   * :func:`apply`
-   * :func:`callable`
-   * :func:`coerce`
-   * :func:`execfile`
-   * :func:`reduce`
-   * :func:`reload`
-
-   これらを使うと、 :exc:`DeprecationWarning` を発生させます。
+   Warn about Python 3.x possible incompatibilities by emitting a
+   :exc:`DeprecationWarning` for features that are removed or significantly
+   changed in Python 3.
 
    .. versionadded:: 2.6
 
-使うべきでないオプション
+Options you shouldn't use
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. cmdoption:: -J
 
-   Jython_ のために予約されています。
+   Reserved for use by Jython_.
 
-.. _Jython: http://jython.org
+.. _Jython: http://www.jython.org/
 
 .. cmdoption:: -U
 
-   全ての文字列リテラルを、全部 unicode にします。
-   このオプションはあなたの世界を破壊してしまうかもしれないので、
-   このオプションを使おうとしないでください。
-   これは、通常とは違うマジックナンバーを使って ``.pyc`` ファイルを生成します。
-   ファイルの先頭に次のように書いて、このオプションの代わりにモジュール単位で
-   unicode リテラルを有効にできます。 ::
+   Turns all string literals into unicodes globally.  Do not be tempted to use
+   this option as it will probably break your world.  It also produces
+   ``.pyc`` files with a different magic number than normal.  Instead, you can
+   enable unicode literals on a per-module basis by using::
 
         from __future__ import unicode_literals
 
-   詳細は :mod:`__future__` を参照してください。
-
+   at the top of the file.  See :mod:`__future__` for details.
 
 .. cmdoption:: -X
 
-    別の Python の実装が独自の目的で利用するために予約されています。
+    Reserved for alternative implementations of Python to use for their own
+    purposes.
 
 .. _using-on-envvars:
 
-環境変数
----------
+Environment variables
+---------------------
 
-以下の環境変数は Python の動作に影響します。
+These environment variables influence Python's behavior, they are processed
+before the command-line switches other than -E.  It is customary that
+command-line switches override environmental variables where there is a
+conflict.
 
 .. envvar:: PYTHONHOME
 
-   標準 Python ライブラリの場所を変更します。デフォルトでは、ライブラリは
-   :file:`{prefix}/lib/python{version}` と :file:`{exec_prefix}/lib/python{version}`
-   から探されます。ここで、 :file:`{prefix}` と :file:`{exec_prefix}` は
-   インストール依存のディレクトリで、両方共デフォルトでは :file:`/usr/local`
-   です。
+   Change the location of the standard Python libraries.  By default, the
+   libraries are searched in :file:`{prefix}/lib/python{version}` and
+   :file:`{exec_prefix}/lib/python{version}`, where :file:`{prefix}` and
+   :file:`{exec_prefix}` are installation-dependent directories, both defaulting
+   to :file:`/usr/local`.
 
-   :envvar:`PYTHONHOME` が1つのディレクトリに設定されている場合、その値は
-   :file:`{prefix}` と :file:`{exec_prefix}` の両方を置き換えます。
-   それらに別々の値を指定したい場合は、 :envvar:`PYTHONHOME` を
-   :file:`{prefix}:{exec_prefix}` のように指定します。
+   When :envvar:`PYTHONHOME` is set to a single directory, its value replaces
+   both :file:`{prefix}` and :file:`{exec_prefix}`.  To specify different values
+   for these, set :envvar:`PYTHONHOME` to :file:`{prefix}:{exec_prefix}`.
 
 
 .. envvar:: PYTHONPATH
 
-   モジュールファイルのデフォルトの検索パスを追加します。
-   この環境変数のフォーマットはシェルの :envvar:`PATH` と同じで、
-   :data:`os.pathsep` (Unix ならコロン、 Windows ならセミコロン)
-   で区切られた1つ以上のディレクトリパスです。
-   存在しないディレクトリは警告なしに無視されます。
+   Augment the default search path for module files.  The format is the same as
+   the shell's :envvar:`PATH`: one or more directory pathnames separated by
+   :data:`os.pathsep` (e.g. colons on Unix or semicolons on Windows).
+   Non-existent directories are silently ignored.
 
-   通常のディレクトリに加えて、 :envvar:`PYTHONPATH` のエントリはピュアPython
-   モジュール(ソース形式でもコンパイルされた形式でも) を含む zip ファイルを
-   参照することもできます。
-   拡張モジュールは zip ファイルの中から import することはできません。
+   In addition to normal directories, individual :envvar:`PYTHONPATH` entries
+   may refer to zipfiles containing pure Python modules (in either source or
+   compiled form). Extension modules cannot be imported from zipfiles.
 
-   デフォルトの検索パスはインストール依存ですが、通常は
-   :file:`{prefix}/lib/python{version}` で始まります。 (上の :envvar:`PYTHONHOME`
-   を参照してください。)
-   これは *常に* :envvar:`PYTHONPATH` に追加されます。
+   The default search path is installation dependent, but generally begins with
+   :file:`{prefix}/lib/python{version}` (see :envvar:`PYTHONHOME` above).  It
+   is *always* appended to :envvar:`PYTHONPATH`.
 
-   上の :ref:`using-on-interface-options` で説明されているように、
-   追加の検索パスディレクトリが :envvar:`PYTHONPATH` の手前に追加されます。
-   検索パスは Python プログラムから :data:`sys.path` 変数として操作することが
-   できます。
+   An additional directory will be inserted in the search path in front of
+   :envvar:`PYTHONPATH` as described above under
+   :ref:`using-on-interface-options`. The search path can be manipulated from
+   within a Python program as the variable :data:`sys.path`.
 
 
 .. envvar:: PYTHONSTARTUP
 
-   もし読込み可能ファイルの名前であれば、インタラクティブモードで最初のプロンプトを
-   表示する前にそのファイル内の Python コマンドを実行します。
-   このファイルはインタラクティブコマンドが実行されるのと同じ名前空間の中で
-   実行されるので、このファイル内で定義されたり import されたオブジェクトは
-   インタラクティブセッションから制限無しに利用することができます。
-   このファイルで :data:`sys.ps1` と :data:`sys.ps2` を変更してプロンプトを
-   変更することもできます。
-   
+   If this is the name of a readable file, the Python commands in that file are
+   executed before the first prompt is displayed in interactive mode.  The file
+   is executed in the same namespace where interactive commands are executed so
+   that objects defined or imported in it can be used without qualification in
+   the interactive session.  You can also change the prompts :data:`sys.ps1` and
+   :data:`sys.ps2` in this file.
 
 
 .. envvar:: PYTHONY2K
 
-   この変数に空でない文字列を設定すると、 :mod:`time` モジュールが
-   文字列で指定される日付に4桁の年を含むことを要求するようになります。
-   そうでなければ、2桁の年は :mod:`time` モジュールのドキュメントに書かれている
-   ルールで変換されます。
+   Set this to a non-empty string to cause the :mod:`time` module to require
+   dates specified as strings to include 4-digit years, otherwise 2-digit years
+   are converted based on rules described in the :mod:`time` module
+   documentation.
 
 
 .. envvar:: PYTHONOPTIMIZE
 
-   この変数に空でない文字列を設定すると、 :option:`-O`
-   オプションを指定したのと同じになります。
-   整数を指定した場合、 :option:`-O` を複数回指定したのと
-   同じになります。
+   If this is set to a non-empty string it is equivalent to specifying the
+   :option:`-O` option.  If set to an integer, it is equivalent to specifying
+   :option:`-O` multiple times.
 
 
 .. envvar:: PYTHONDEBUG
 
-   この変数に空でない文字列を設定すると、 :option:`-d`
-   オプションを指定したのと同じになります。
-   整数を指定した場合、 :option:`-d` を複数回指定したのと
-   同じになります。
+   If this is set to a non-empty string it is equivalent to specifying the
+   :option:`-d` option.  If set to an integer, it is equivalent to specifying
+   :option:`-d` multiple times.
 
 
 .. envvar:: PYTHONINSPECT
 
-   この変数に空でない文字列を設定すると、 :option:`-i`
-   オプションを指定したのと同じになります。
+   If this is set to a non-empty string it is equivalent to specifying the
+   :option:`-i` option.
 
-   この変数は Python コードから :data:`os.environ` を使って変更して、
-   プログラム終了時のインスペクトモードを強制することができます。
+   This variable can also be modified by Python code using :data:`os.environ`
+   to force inspect mode on program termination.
 
 
 .. envvar:: PYTHONUNBUFFERED
 
-   この変数に空でない文字列を設定すると、 :option:`-u`
-   オプションを指定したのと同じになります。
+   If this is set to a non-empty string it is equivalent to specifying the
+   :option:`-u` option.
 
 
 .. envvar:: PYTHONVERBOSE
 
-   この変数に空でない文字列を設定すると、 :option:`-v`
-   オプションを指定したのと同じになります。
-   整数を指定した場合、 :option:`-v` を複数回指定したのと
-   同じになります。
+   If this is set to a non-empty string it is equivalent to specifying the
+   :option:`-v` option.  If set to an integer, it is equivalent to specifying
+   :option:`-v` multiple times.
 
 
 .. envvar:: PYTHONCASEOK
 
-   この環境変数が設定されていると、 Python は :keyword:`import`
-   文で大文字/小文字を区別しません。
-   これは Windows でのみ動作します。
+   If this is set, Python ignores case in :keyword:`import` statements.  This
+   only works on Windows, OS X, OS/2, and RiscOS.
 
 
 .. envvar:: PYTHONDONTWRITEBYTECODE
 
-   この環境変数が設定されていると、 Python はソースモジュールの
-   import 時に ``.pyc``, ``.pyo`` ファイルを生成しません。
+   If this is set, Python won't try to write ``.pyc`` or ``.pyo`` files on the
+   import of source modules.  This is equivalent to specifying the :option:`-B`
+   option.
 
    .. versionadded:: 2.6
 
+.. envvar:: PYTHONHASHSEED
+
+   If this variable is set to ``random``, the effect is the same as specifying
+   the :option:`-R` option: a random value is used to seed the hashes of str,
+   bytes and datetime objects.
+
+   If :envvar:`PYTHONHASHSEED` is set to an integer value, it is used as a
+   fixed seed for generating the hash() of the types covered by the hash
+   randomization.
+
+   Its purpose is to allow repeatable hashing, such as for selftests for the
+   interpreter itself, or to allow a cluster of python processes to share hash
+   values.
+
+   The integer must be a decimal number in the range [0,4294967295].
+   Specifying the value 0 will lead to the same hash values as when hash
+   randomization is disabled.
+
+   .. versionadded:: 2.6.8
+
+
 .. envvar:: PYTHONIOENCODING
 
-   stdin/stdout/stderr のエンコーディングを強制します。
-   シンタックスは ``encodingname:errorhandler`` です。
-   ``:errorhandler`` の部分はオプションで、 :func:`str.encode`
-   の引数と同じ意味です。
+   Overrides the encoding used for stdin/stdout/stderr, in the syntax
+   ``encodingname:errorhandler``.  The ``:errorhandler`` part is optional and
+   has the same meaning as in :func:`str.encode`.
 
    .. versionadded:: 2.6
 
 
 .. envvar:: PYTHONNOUSERSITE
 
-   この環境変数が設定されている場合、 Python はユーザー site ディレクトリを
-   sys.path に追加しません。
+   If this is set, Python won't add the :data:`user site-packages directory
+   <site.USER_SITE>` to :data:`sys.path`.
 
    .. versionadded:: 2.6
 
@@ -553,7 +588,10 @@ Python を起動するとき、以下のうち任意のオプションを指定�
 
 .. envvar:: PYTHONUSERBASE
 
-   ユーザー site ディレクトリのベースディレクトリを設定します。
+   Defines the :data:`user base directory <site.USER_BASE>`, which is used to
+   compute the path of the :data:`user site-packages directory <site.USER_SITE>`
+   and :ref:`Distutils installation paths <inst-alt-install-user>` for ``python
+   setup.py install --user``.
 
    .. versionadded:: 2.6
 
@@ -564,38 +602,37 @@ Python を起動するとき、以下のうち任意のオプションを指定�
 
 .. envvar:: PYTHONEXECUTABLE
 
-   この環境変数が設定されていると、 ``sys.argv[0]`` に、 C ランタイムから
-   取得した値の代わりにこの環境変数の値が設定されます。
-   Mac OS X でのみ動作します。
+   If this environment variable is set, ``sys.argv[0]`` will be set to its
+   value instead of the value got through the C runtime.  Only works on
+   Mac OS X.
 
 .. envvar:: PYTHONWARNINGS
 
-   これは :option:`-W` オプションと同じです。
-   カンマ区切りの文字列が設定されたとき、その動作は :option:`-W`
-   を複数回指定されたのと同じになります。
+   This is equivalent to the :option:`-W` option. If set to a comma
+   separated string, it is equivalent to specifying :option:`-W` multiple
+   times.
 
 
-デバッグモード変数
+Debug-mode variables
 ~~~~~~~~~~~~~~~~~~~~
 
-以下の環境変数は、 :option:`--with-pydebug` ビルドオプションを指定して
-構成されたデバッグビルド版の Python でのみ効果があります。
+Setting these variables only has an effect in a debug build of Python, that is,
+if Python was configured with the ``--with-pydebug`` build option.
 
 .. envvar:: PYTHONTHREADDEBUG
 
-   設定された場合、 Python はスレッドデバッグ情報を表示します。
+   If set, Python will print threading debug info.
 
    .. versionchanged:: 2.6
-      以前は、この変数は ``THREADDEBUG`` という名前でした。
+      Previously, this variable was called ``THREADDEBUG``.
 
 .. envvar:: PYTHONDUMPREFS
 
-   設定された場合、 Python はインタプリタのシャットダウン後に残っている
-   オブジェクトとリファレンスカウントをダンプします。
+   If set, Python will dump objects and reference counts still alive after
+   shutting down the interpreter.
 
 
 .. envvar:: PYTHONMALLOCSTATS
 
-   設定された場合、 Python は、新しいオブジェクトアリーナを作成するときと、
-   シャットダウン時に、メモリアロケーション統計情報を表示します。
-
+   If set, Python will print memory allocation statistics every time a new
+   object arena is created, and on shutdown.

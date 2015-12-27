@@ -1,19 +1,29 @@
 .. _distutils-index:
 
 ###############################
-  Python モジュールの配布
+  Distributing Python Modules
 ###############################
 
-:Release: |version|
-:Date: |today|
+:Authors: Greg Ward, Anthony Baxter
+:Email: distutils-sig@python.org
 
-このドキュメントでは、 Python 配布ユーティリティ
-(Python Distribution Utilities, "Distutils") について、
-モジュール開発者の視点に立ち、多くの人々がビルド/リリース/インストール
-の手間をほとんどかけずに Python モジュールや拡張モジュールを入手できるようにする方法について述べます。
+This document describes the Python Distribution Utilities ("Distutils") from
+the module developer's point of view, describing how to use the Distutils to
+make Python modules and extensions easily available to a wider audience with
+very little overhead for build/release/install mechanics.
+
+.. note::
+
+   This guide only covers the basic tools for building and distributing
+   extensions that are provided as part of this version of Python. Third party
+   tools offer easier to use and more secure alternatives. Refer to the `quick
+   recommendations section <https://packaging.python.org/en/latest/current/>`__
+   in the Python Packaging User Guide for more information.
+
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
 
    introduction.rst
    setupscript.rst
@@ -21,10 +31,7 @@
    sourcedist.rst
    builtdist.rst
    packageindex.rst
-   uploading.rst
    examples.rst
    extending.rst
    commandref.rst
    apiref.rst
-
-   jptranslation.rst

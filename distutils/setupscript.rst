@@ -1,626 +1,708 @@
 .. _setup-script:
 
-**********************
-setup スクリプトを書く
-**********************
+************************
+Writing the Setup Script
+************************
 
-setup スクリプトは、Distutils を使ってモジュールをビルドし、配布し、インストールする際の全ての動作の中心になります。 setup
-スクリプトの主な目的は、モジュール配布物について Distutils に伝え、モジュール配布を操作するための様々なコマンドを正しく動作させることにあります。
-上の  :ref:`distutils-simple-example` の節で見てきたように、 setup スクリプトは主に :func:`setup` の呼び出しからなり、
-開発者が distuils に対して与えるほとんどの情報は :func:`setup` のキーワード引数として指定されます。
+The setup script is the centre of all activity in building, distributing, and
+installing modules using the Distutils.  The main purpose of the setup script is
+to describe your module distribution to the Distutils, so that the various
+commands that operate on your modules do the right thing.  As we saw in section
+:ref:`distutils-simple-example` above, the setup script consists mainly of a call to
+:func:`setup`, and most information supplied to the Distutils by the module
+developer is supplied as keyword arguments to :func:`setup`.
 
-ここではもう少しだけ複雑な例: Distutils 自体の setup スクリプト、を示します。これについては、以降の二つの節でフォローします。
-(Distutils が入っているのは Python 1.6 以降であり、 Python 1.5.2
-ユーザが他のモジュール配布物をインストールできるようにするための独立したパッケージがあることを思い出してください。ここで示した、Distutils 自身の
-setup スクリプトは、Python 1.5.2 に Distutils パッケージをインストールする際に使います。) ::
+Here's a slightly more involved example, which we'll follow for the next couple
+of sections: the Distutils' own setup script.  (Keep in mind that although the
+Distutils are included with Python 1.6 and later, they also have an independent
+existence so that Python 1.5.2 users can use them to install other module
+distributions.  The Distutils' own setup script, shown here, is used to install
+the package into Python 1.5.2.) ::
 
-   #!/usr/bin/env python
+    #!/usr/bin/env python
 
-   from distutils.core import setup
+    from distutils.core import setup
 
-   setup(name='Distutils',
-         version='1.0',
-         description='Python Distribution Utilities',
-         author='Greg Ward',
-         author_email='gward@python.net',
-         url='http://www.python.org/sigs/distutils-sig/',
-         packages=['distutils', 'distutils.command'],
-        )
+    setup(name='Distutils',
+          version='1.0',
+          description='Python Distribution Utilities',
+          author='Greg Ward',
+          author_email='gward@python.net',
+          url='https://www.python.org/sigs/distutils-sig/',
+          packages=['distutils', 'distutils.command'],
+         )
 
-上の例と、  :ref:`distutils-simple-example` で示したファイル一つからなる小さな配布物とは、違うところは二つしかありません: メタデータの追加と、
-モジュールではなくパッケージとして pure Python モジュール群を指定しているという点です。この点は重要です。というのも、 Distutils は 2
-ダースものモジュールが (今のところ) 二つのパッケージに分かれて入っているからです; 各モジュールについていちいち明示的に記述したリストは、
-作成するのが面倒だし、維持するのも難しくなるでしょう。その他のメタデータについては、  :ref:`meta-data` を参照してください。
+There are only two differences between this and the trivial one-file
+distribution presented in section :ref:`distutils-simple-example`: more metadata, and the
+specification of pure Python modules by package, rather than by module.  This is
+important since the Distutils consist of a couple of dozen modules split into
+(so far) two packages; an explicit list of every module would be tedious to
+generate and difficult to maintain.  For more information on the additional
+meta-data, see section :ref:`meta-data`.
 
-setup スクリプトに与えるパス名 (ファイルまたはディレクトリ) は、 Unix におけるファイル名規約、つまりスラッシュ ('/') 区切りで
-書かねばなりません。Distutils はこのプラットフォーム中立の表記を、実際にパス名として使う前に、現在のプラットフォームに適した表記に
-注意深く変換します。この機能のおかげで、setup スクリプトを異なるオペレーティングシステム間にわたって可搬性があるものにできます。言うまでもなく、これは
-Distutils の大きな目標の一つです。この精神に従って、このドキュメントでは全てのパス名をスラッシュ区切りにしています。
+Note that any pathnames (files or directories) supplied in the setup script
+should be written using the Unix convention, i.e. slash-separated.  The
+Distutils will take care of converting this platform-neutral representation into
+whatever is appropriate on your current platform before actually using the
+pathname.  This makes your setup script portable across operating systems, which
+of course is one of the major goals of the Distutils.  In this spirit, all
+pathnames in this document are slash-separated.
 
-もちろん、この取り決めは Distutils に渡すパス名だけに適用されます。もし、例えば :func:`glob.glob` や
-:func:`os.listdir` のような、標準の Python 関数を使ってファイル群を指定するのなら、パス区切り文字 (path
-separator) をハードコーディングせず、以下のように可搬性のあるコードを書くよう注意すべきです::
+This, of course, only applies to pathnames given to Distutils functions.  If
+you, for example, use standard Python functions such as :func:`glob.glob` or
+:func:`os.listdir` to specify files, you should be careful to write portable
+code instead of hardcoding path separators::
 
-   glob.glob(os.path.join('mydir', 'subdir', '*.html'))
-   os.listdir(os.path.join('mydir', 'subdir'))
+    glob.glob(os.path.join('mydir', 'subdir', '*.html'))
+    os.listdir(os.path.join('mydir', 'subdir'))
 
 
 .. _listing-packages:
 
-パッケージを全て列挙する
-========================
+Listing whole packages
+======================
 
-:option:`packages` オプションは、 :option:`packages` リスト中で
-指定されている各々のパッケージについて、パッケージ内に見つかった全ての pure Python モジュールを処理 (ビルド、配布、インストール、等)
-するよう Distutils に指示します。このオプションを指定するためには、当然のことながら各パッケージ名はファイルシステム上のディレクトリ名と
-何らかの対応付けができなければなりません。デフォルトで使われる対応関係はきわめてはっきりしたものです。すなわち、パッケージ :mod:`distutils`
-が配布物ルートディレクトリからの相対パス :file:`distutils` で表されるディレクトリ中にあるというものです。つまり、setup スクリプト中で
-``packages = ['foo']`` と指定したら、スクリプトの置かれたディレクトリからの相対パスで :file:`foo/__init__.py`
-を探し出せると Distutils に確約したことになります。この約束を裏切ると Distutils は警告を出しますが、
-そのまま壊れたパッケージの処理を継続します。
+The ``packages`` option tells the Distutils to process (build, distribute,
+install, etc.) all pure Python modules found in each package mentioned in the
+``packages`` list.  In order to do this, of course, there has to be a
+correspondence between package names and directories in the filesystem.  The
+default correspondence is the most obvious one, i.e. package :mod:`distutils` is
+found in the directory :file:`distutils` relative to the distribution root.
+Thus, when you say ``packages = ['foo']`` in your setup script, you are
+promising that the Distutils will find a file :file:`foo/__init__.py` (which
+might be spelled differently on your system, but you get the idea) relative to
+the directory where your setup script lives.  If you break this promise, the
+Distutils will issue a warning but still process the broken package anyway.
 
-ソースコードディレクトリの配置について違った規約を使っていても、まったく問題はありません: 単に :option:`package_dir` オプションを
-指定して、 Distutils に自分の規約を教えればよいのです。例えば、全ての Python ソースコードを :file:`lib` 下に置いて、
-"ルートパッケージ" 内のモジュール (つまり、どのパッケージにも入っていないモジュール) を :file:`lib` 内に入れ、 :mod:`foo`
-パッケージを :file:`lib/foo` に入れる、といった具合にしたいのなら、 ::
+If you use a different convention to lay out your source directory, that's no
+problem: you just have to supply the ``package_dir`` option to tell the
+Distutils about your convention.  For example, say you keep all Python source
+under :file:`lib`, so that modules in the "root package" (i.e., not in any
+package at all) are in :file:`lib`, modules in the :mod:`foo` package are in
+:file:`lib/foo`, and so forth.  Then you would put ::
 
-   package_dir = {'': 'lib'}
+    package_dir = {'': 'lib'}
 
-を setup スクリプト内に入れます。辞書内のキーはパッケージ名で、空のパッケージ名はルートパッケージを表します。キーに対応する値は
-ルートパッケージからの相対ディレクトリ名です、この場合、 ``packages = ['foo']`` を指定すれば、
-:file:`lib/foo/__init__.py` が存在すると Distutils に確約したことになります。
+in your setup script.  The keys to this dictionary are package names, and an
+empty package name stands for the root package.  The values are directory names
+relative to your distribution root.  In this case, when you say ``packages =
+['foo']``, you are promising that the file :file:`lib/foo/__init__.py` exists.
 
-.. %
+Another possible convention is to put the :mod:`foo` package right in
+:file:`lib`, the :mod:`foo.bar` package in :file:`lib/bar`, etc.  This would be
+written in the setup script as ::
 
-もう一つの規約のあり方は :mod:`foo` パッケージを :file:`lib` に置き換え、 :mod:`foo.bar` パッケージが
-:file:`lib/bar` にある、などとするものです。このような規約は、 setup スクリプトでは ::
+    package_dir = {'foo': 'lib'}
 
-   package_dir = {'foo': 'lib'}
-
-のように書きます。 :option:`package_dir` 辞書に ``package: dir`` のようなエントリがあると、 *package*
-の下にある全てのパッケージに対してこの規則が暗黙のうちに適用され、その結果 :mod:`foo.bar` の場合が自動的に処理されます。この例では、
-``packages = ['foo', 'foo.bar']`` は、 Distutils に :file:`lib/__init__.py` と
-:file:`lib/bar/__init__.py` を探すように指示します。 (:option:`package_dir`
-は再帰的に適用されますが、この場合 :option:`packages` の下にある全てのパッケージを明示的に指定
-しなければならないことを心に留めておいてください: Distutils は :file:`__init__.py` を持つディレクトリを
-ソースツリーから再帰的にさがしたりは *しません* 。)
-
-.. %
+A ``package: dir`` entry in the ``package_dir`` dictionary implicitly
+applies to all packages below *package*, so the :mod:`foo.bar` case is
+automatically handled here.  In this example, having ``packages = ['foo',
+'foo.bar']`` tells the Distutils to look for :file:`lib/__init__.py` and
+:file:`lib/bar/__init__.py`.  (Keep in mind that although ``package_dir``
+applies recursively, you must explicitly list all packages in
+``packages``: the Distutils will *not* recursively scan your source tree
+looking for any directory with an :file:`__init__.py` file.)
 
 
 .. _listing-modules:
 
-個々のモジュールを列挙する
+Listing individual modules
 ==========================
 
-小さなモジュール配布物の場合、パッケージを列挙するよりも、全てのモジュールを列挙するほうがよいと思うかもしれません --- 特に、単一のモジュールが
-"ルートパッケージ" にインストールされる (すなわち、パッケージは全くない) ような場合がそうです。この最も単純なケースは
-:ref:`distutils-simple-example` で示しました;  ここではもうちょっと入り組んだ例を示します::
+For a small module distribution, you might prefer to list all modules rather
+than listing packages---especially the case of a single module that goes in the
+"root package" (i.e., no package at all).  This simplest case was shown in
+section :ref:`distutils-simple-example`; here is a slightly more involved example::
 
-   py_modules = ['mod1', 'pkg.mod2']
+    py_modules = ['mod1', 'pkg.mod2']
 
-ここでは二つのモジュールについて述べていて、一方は "ルート" パッケージに入り、他方は :mod:`pkg` パッケージに入ります。
-ここでも、デフォルトのパッケージ/ディレクトリのレイアウトは、二つのモジュールが :file:`mod1.py` と :file:`pkg/mod2.py`
-にあり、 :file:`pkg/__init__.py` が存在することを暗示しています。また、パッケージ/ディレクトリの対応関係は
-:option:`package_dir` オプションでも上書きできます。
-
-.. %
+This describes two modules, one of them in the "root" package, the other in the
+:mod:`pkg` package.  Again, the default package/directory layout implies that
+these two modules can be found in :file:`mod1.py` and :file:`pkg/mod2.py`, and
+that :file:`pkg/__init__.py` exists as well. And again, you can override the
+package/directory correspondence using the ``package_dir`` option.
 
 
 .. _describing-extensions:
 
-拡張モジュールについて記述する
-==============================
+Describing extension modules
+============================
 
-pure Python モジュールを書くより Python 拡張モジュールを書く方がちょっとだけ複雑なように、 Distutils での拡張モジュールに関する
-記述もちょっと複雑です。pure モジュールと違い、単にモジュールやパッケージを列挙して、Distutils が正しいファイルを見つけてくれる
-と期待するだけでは十分ではありません; 拡張モジュールの名前、ソースコードファイル (群) 、そして何らかのコンパイル/リンクに関する必要事項
-(include ディレクトリ、リンクすべきライブラリ、等) を指定しなければなりません。
+Just as writing Python extension modules is a bit more complicated than writing
+pure Python modules, describing them to the Distutils is a bit more complicated.
+Unlike pure modules, it's not enough just to list modules or packages and expect
+the Distutils to go out and find the right files; you have to specify the
+extension name, source file(s), and any compile/link requirements (include
+directories, libraries to link with, etc.).
 
 .. XXX read over this section
 
-こうした指定は全て、 :func:`setup` の別のキーワード引数、 :option:`ext_modules` オプションを介して行えます。
-:option:`ext_modules` は、 :class:`Extension` インスタンスから
-なるただのリストで、各インスタンスに一個の拡張モジュールを記述するようになっています。仮に、 :file:`foo.c` で実装された拡張モジュール
-:mod:`foo` が、配布物に一つだけ入ってるとします。コンパイラ/リンカに他の情報を与える必要がない場合、この拡張
-モジュールのための記述はきわめて単純です::
+All of this is done through another keyword argument to :func:`setup`, the
+``ext_modules`` option.  ``ext_modules`` is just a list of
+:class:`~distutils.core.Extension` instances, each of which describes a
+single extension module.
+Suppose your distribution includes a single extension, called :mod:`foo` and
+implemented by :file:`foo.c`.  If no additional instructions to the
+compiler/linker are needed, describing this extension is quite simple::
 
-   Extension('foo', ['foo.c'])
+    Extension('foo', ['foo.c'])
 
-:class:`Extension` クラスは、 :func:`setup` によって、  :mod:`distutils.core` から import
-されます。従って、拡張モジュールが一つだけ入っていて、他には何も入っていないモジュール配布物を作成するための setup スクリプトは、以下のように
-なるでしょう::
+The :class:`Extension` class can be imported from :mod:`distutils.core` along
+with :func:`setup`.  Thus, the setup script for a module distribution that
+contains only this one extension and nothing else might be::
 
-   from distutils.core import setup, Extension
-   setup(name='foo',
-         version='1.0',
-         ext_modules=[Extension('foo', ['foo.c'])],
+    from distutils.core import setup, Extension
+    setup(name='foo',
+          version='1.0',
+          ext_modules=[Extension('foo', ['foo.c'])],
+          )
+
+The :class:`Extension` class (actually, the underlying extension-building
+machinery implemented by the :command:`build_ext` command) supports a great deal
+of flexibility in describing Python extensions, which is explained in the
+following sections.
+
+
+Extension names and packages
+----------------------------
+
+The first argument to the :class:`~distutils.core.Extension` constructor is
+always the name of the extension, including any package names.  For example, ::
+
+    Extension('foo', ['src/foo1.c', 'src/foo2.c'])
+
+describes an extension that lives in the root package, while ::
+
+    Extension('pkg.foo', ['src/foo1.c', 'src/foo2.c'])
+
+describes the same extension in the :mod:`pkg` package.  The source files and
+resulting object code are identical in both cases; the only difference is where
+in the filesystem (and therefore where in Python's namespace hierarchy) the
+resulting extension lives.
+
+If you have a number of extensions all in the same package (or all under the
+same base package), use the ``ext_package`` keyword argument to
+:func:`setup`.  For example, ::
+
+    setup(...,
+          ext_package='pkg',
+          ext_modules=[Extension('foo', ['foo.c']),
+                       Extension('subpkg.bar', ['bar.c'])],
          )
 
-:class:`Explained` クラス (実質的には、 :class:`Explained` クラスの根底にある :command:`build_ext`
-コマンドで実装されている、拡張モジュールをビルドする機構) は、Python 拡張モジュールをきわめて柔軟に記述できるようなサポートを提供しています。
-これについては後の節で説明します。
+will compile :file:`foo.c` to the extension :mod:`pkg.foo`, and :file:`bar.c` to
+:mod:`pkg.subpkg.bar`.
 
 
-拡張モジュールの名前とパッケージ
---------------------------------
+Extension source files
+----------------------
 
-:class:`Extension` クラスのコンストラクタに与える最初の引数は、常に拡張モジュールの名前にします。これにはパッケージ名も含めます。例えば、
-::
+The second argument to the :class:`~distutils.core.Extension` constructor is
+a list of source
+files.  Since the Distutils currently only support C, C++, and Objective-C
+extensions, these are normally C/C++/Objective-C source files.  (Be sure to use
+appropriate extensions to distinguish C++\ source files: :file:`.cc` and
+:file:`.cpp` seem to be recognized by both Unix and Windows compilers.)
 
-   Extension('foo', ['src/foo1.c', 'src/foo2.c']p)
-
-とすると、拡張モジュールをルートパッケージに置くことになります。一方、 ::
-
-   Extension('pkg.foo', ['src/foo1.c', 'src/foo2.c'])
-
-は、同じ拡張モジュールを :mod:`pkg` パッケージの下に置くよう記述しています。ソースコードファイルと、作成されるオブジェクトコードは
-どちらの場合でも同じです; 作成された拡張モジュールがファイルシステム上のどこに置かれるか (すなわち Python の名前空間上のどこに置かれるか)
-が違うにすぎません。
-
-同じパッケージ内に (または、同じ基底パッケージ下に) いくつもの拡張モジュールがある場合、 :option:`ext_package` キーワード引数を
-:func:`setup` に指定します。例えば、 ::
-
-   setup(...,
-         ext_package='pkg',
-         ext_modules=[Extension('foo', ['foo.c']),
-                      Extension('subpkg.bar', ['bar.c'])],
-        )
-
-とすると、 :file:`foo.c` をコンパイルして :mod:`pkg.foo` にし、 :file:`bar.c` をコンパイルして
-:mod:`pkg.subpkg.bar` にします。
-
-
-拡張モジュールのソースファイル
-------------------------------
-
-:class:`Extension` コンストラクタの二番目の引数は、ソースファイルのリストです。 Distutils は現在のところ、C、C++、そして
-Objective-C の拡張しかサポートしていないので、引数は通常 C/C++/Objective-C ソースコードファイルになります。
-(C++ソースコードファイルを区別できるよう、正しいファイル拡張子を使ってください:  :file:`.cc` や :file:`.cpp` にすれば、
-Unix と Windows 用の双方のコンパイラで認識されるようです。)
-
-ただし、 SWIG インタフェース (:file:`.i`) ファイルはリストに含められます; :command:`build_ext` コマンドは、
-SWIG で書かれた拡張パッケージをどう扱えばよいか心得ています: :command:`build_ext`  は、インタフェースファイルを SWIG
-にかけ、得られた C/C++  ファイルをコンパイルして拡張モジュールを生成します。
+However, you can also include SWIG interface (:file:`.i`) files in the list; the
+:command:`build_ext` command knows how to deal with SWIG extensions: it will run
+SWIG on the interface file and compile the resulting C/C++ file into your
+extension.
 
 .. XXX SWIG support is rough around the edges and largely untested!
 
-この警告にかかわらず、現在次のようにしてSWIGに対してオプションを渡すことができます。 ::
+This warning notwithstanding, options to SWIG can be currently passed like
+this::
 
-   setup(...,
-         ext_modules=[Extension('_foo', ['foo.i'],
-                                swig_opts=['-modern', '-I../include'])],
-         py_modules=['foo'],
-        )
-
-もしくは、次のようにコマンドラインからオプションを渡すこともできます。 ::
-
-   > python setup.py build_ext --swig-opts="-modern -I../include"
-
-プラットフォームによっては、コンパイラで処理され、拡張モジュールに取り込まれるような非ソースコードファイルを含められます。
-非ソースコードファイルとは、現状では Visual C++向けの Windows メッセージテキスト (:file:`.mc`) ファイルや、リソース定義
-(:file:`.rc`)  ファイルを指します。これらのファイルはバイナリリソース (:file:`.res`)
-ファイルにコンパイルされ、実行ファイルにリンクされます。
-
-
-プリプロセッサオプション
-------------------------
-
-:class:`Extension` には三種類のオプション引数: ``include_dirs``,  ``define_macros``, そして
-``undef_macros`` があり、検索対象にするインクルードディレクトリを指定したり、プリプロセッサマクロを定義 (define)/定義解除
-(undefine) したりする必要があるとき役立ちます。
-
-例えば、拡張モジュールが配布物ルート下の :file:`include`  ディレクトリにあるヘッダファイルを必要とするときには、
-``include_dirs`` オプションを使います::
-
-   Extension('foo', ['foo.c'], include_dirs=['include'])
-
-ここには絶対パスも指定できます; 例えば、自分の拡張モジュールが、 :file:`/usr` の下にX11R6 をインストールした Unix システムだけで
-ビルドされると知っていれば、 ::
-
-   Extension('foo', ['foo.c'], include_dirs=['/usr/include/X11'])
-
-のように書けます。
-
-自分のコードを配布する際には、このような可搬性のない使い方は避けるべきです: おそらく、 C のコードを  ::
-
-   #include <X11/Xlib.h>
-
-のように書いた方がましでしょう。
-
-他の Python 拡張モジュール由来のヘッダを include する必要があるなら、 Distutils の
-:command:`install_header` コマンドが一貫した方法でヘッダファイルをインストールするという事実を活用できます。例えば、
-Numerical Python のヘッダファイルは、 (標準的な Unix がインストールされた環境では)
-:file:`/usr/local/include/python1.5/Numerical` にインストールされます。 (実際の場所は、プラットフォームやどの
-Python をインストールしたかで異なります。) Python の include ディレクトリ --- 今の例では
-:file:`/usr/local/include/python1.5` --- は、 Python 拡張モジュールを
-ビルドする際に常にヘッダファイル検索パスに取り込まれるので、 C コードを書く上でもっともよいアプローチは、  ::
-
-   #include <Numerical/arrayobject.h>
-
-となります。
-
-:file:`Numerical` インクルードディレクトリ自体をヘッダ検索パスに置きたいのなら、このディレクトリを Distutils の
-:mod:`distutils.sysconfig`  モジュールを使って見つけさせられます::
-
-   from distutils.sysconfig import get_python_inc
-   incdir = os.path.join(get_python_inc(plat_specific=1), 'Numerical')
-   setup(...,
-         Extension(..., include_dirs=[incdir]),
+    setup(...,
+          ext_modules=[Extension('_foo', ['foo.i'],
+                                 swig_opts=['-modern', '-I../include'])],
+          py_modules=['foo'],
          )
 
-この書き方も可搬性はあります --- プラットフォームに関わらず、どんな Python がインストールされていても動作します --- が、
-単に実践的な書き方で C コードを書く方が簡単でしょう。
+Or on the commandline like this::
 
-``define_macros`` および ``undef_macros`` オプションを使って、プリプロセッサマクロを定義 (define)
-したり、定義解除 (undefine) したりもできます。 ``define_macros`` はタプル ``(name, value)`` からなるリストを
-引数にとります。 ``name`` は定義したいマクロの名前 (文字列) で、 ``value`` はその値です: ``value`` は文字列か
-``None`` になります。(マクロ ``FOO`` を ``None`` にすると、C ソースコード内で ``#define FOO``
-と書いたのと同じになります: こう書くと、ほとんどのコンパイラは ``FOO`` を文字列 ``1`` に設定します。) ``undef_macros``
-には、定義解除したいマクロ名からなるリストを指定します。
+    > python setup.py build_ext --swig-opts="-modern -I../include"
 
-例えば、以下の指定::
-
-   Extension(...,
-             define_macros=[('NDEBUG', '1'),
-                            ('HAVE_STRFTIME', None)],
-             undef_macros=['HAVE_FOO', 'HAVE_BAR'])
-
-は、全ての C ソースコードファイルの先頭に、以下のマクロ::
-
-   #define NDEBUG 1
-   #define HAVE_STRFTIME
-   #undef HAVE_FOO
-   #undef HAVE_BAR
-
-があるのと同じになります。
+On some platforms, you can include non-source files that are processed by the
+compiler and included in your extension.  Currently, this just means Windows
+message text (:file:`.mc`) files and resource definition (:file:`.rc`) files for
+Visual C++. These will be compiled to binary resource (:file:`.res`) files and
+linked into the executable.
 
 
-ライブラリオプション
+Preprocessor options
 --------------------
 
-拡張モジュールをビルドする際にリンクするライブラリや、ライブラリを検索するディレクトリも指定できます。 ``libraries``
-はリンクするライブラリのリストで、 ``library_dirs`` はリンク時にライブラリを検索するディレクトリの
-リストです。また、 ``runtime_library_dirs`` は、実行時に共有ライブラリ (動的にロードされるライブラリ) を検索するディレクトリの
-リストです。
+Three optional arguments to :class:`~distutils.core.Extension` will help if
+you need to specify include directories to search or preprocessor macros to
+define/undefine: ``include_dirs``, ``define_macros``, and ``undef_macros``.
 
-例えば、ビルド対象システムの標準ライブラリ検索パスにあることが分かっているライブラリをリンクする時には、以下のようにします。 ::
+For example, if your extension requires header files in the :file:`include`
+directory under your distribution root, use the ``include_dirs`` option::
 
-   Extension(...,
-             libraries=['gdbm', 'readline'])
+    Extension('foo', ['foo.c'], include_dirs=['include'])
 
-非標準のパス上にあるライブラリをリンクしたいなら、その場所を ``library_dirs`` に入れておかなければなりません::
+You can specify absolute directories there; if you know that your extension will
+only be built on Unix systems with X11R6 installed to :file:`/usr`, you can get
+away with ::
 
-   Extension(...,
-             library_dirs=['/usr/X11R6/lib'],
-             libraries=['X11', 'Xt'])
+    Extension('foo', ['foo.c'], include_dirs=['/usr/include/X11'])
 
-(繰り返しになりますが、この手の可搬性のない書き方は、コードを配布するのが目的なら避けるべきです。)
+You should avoid this sort of non-portable usage if you plan to distribute your
+code: it's probably better to write C code like  ::
+
+    #include <X11/Xlib.h>
+
+If you need to include header files from some other Python extension, you can
+take advantage of the fact that header files are installed in a consistent way
+by the Distutils :command:`install_headers` command.  For example, the Numerical
+Python header files are installed (on a standard Unix installation) to
+:file:`/usr/local/include/python1.5/Numerical`. (The exact location will differ
+according to your platform and Python installation.)  Since the Python include
+directory---\ :file:`/usr/local/include/python1.5` in this case---is always
+included in the search path when building Python extensions, the best approach
+is to write C code like  ::
+
+    #include <Numerical/arrayobject.h>
+
+If you must put the :file:`Numerical` include directory right into your header
+search path, though, you can find that directory using the Distutils
+:mod:`distutils.sysconfig` module::
+
+    from distutils.sysconfig import get_python_inc
+    incdir = os.path.join(get_python_inc(plat_specific=1), 'Numerical')
+    setup(...,
+          Extension(..., include_dirs=[incdir]),
+          )
+
+Even though this is quite portable---it will work on any Python installation,
+regardless of platform---it's probably easier to just write your C code in the
+sensible way.
+
+You can define and undefine pre-processor macros with the ``define_macros`` and
+``undef_macros`` options. ``define_macros`` takes a list of ``(name, value)``
+tuples, where ``name`` is the name of the macro to define (a string) and
+``value`` is its value: either a string or ``None``.  (Defining a macro ``FOO``
+to ``None`` is the equivalent of a bare ``#define FOO`` in your C source: with
+most compilers, this sets ``FOO`` to the string ``1``.)  ``undef_macros`` is
+just a list of macros to undefine.
+
+For example::
+
+    Extension(...,
+              define_macros=[('NDEBUG', '1'),
+                             ('HAVE_STRFTIME', None)],
+              undef_macros=['HAVE_FOO', 'HAVE_BAR'])
+
+is the equivalent of having this at the top of every C source file::
+
+    #define NDEBUG 1
+    #define HAVE_STRFTIME
+    #undef HAVE_FOO
+    #undef HAVE_BAR
+
+
+Library options
+---------------
+
+You can also specify the libraries to link against when building your extension,
+and the directories to search for those libraries.  The ``libraries`` option is
+a list of libraries to link against, ``library_dirs`` is a list of directories
+to search for libraries at  link-time, and ``runtime_library_dirs`` is a list of
+directories to  search for shared (dynamically loaded) libraries at run-time.
+
+For example, if you need to link against libraries known to be in the standard
+library search path on target systems ::
+
+    Extension(...,
+              libraries=['gdbm', 'readline'])
+
+If you need to link with libraries in a non-standard location, you'll have to
+include the location in ``library_dirs``::
+
+    Extension(...,
+              library_dirs=['/usr/X11R6/lib'],
+              libraries=['X11', 'Xt'])
+
+(Again, this sort of non-portable construct should be avoided if you intend to
+distribute your code.)
 
 .. XXX Should mention clib libraries here or somewhere else!
 
 
-その他のオプション
---------------------
+Other options
+-------------
 
-他にもいくつかオプションがあり、特殊な状況を扱うために使います。
+There are still some other options which can be used to handle special cases.
 
-:option:`extra_objects` オプションには、リンカに渡すオブジェクトファイル
-のリストを指定します。ファイル名には拡張子をつけてはならず、コンパイラで使われているデフォルトの拡張子が使われます。
+The ``extra_objects`` option is a list of object files to be passed to the
+linker. These files must not have extensions, as the default extension for the
+compiler is used.
 
-:option:`extra_compile_args` および :option:`extra_link_args` には、
-それぞれコンパイラとリンカに渡す追加のコマンドライン引数を指定します。
+``extra_compile_args`` and ``extra_link_args`` can be used to
+specify additional command line options for the respective compiler and linker
+command lines.
 
-:option:`export_symbols` は Windows でのみ意味があります。このオプションには、公開 (export) する (関数や変数の)
-シンボルのリストを入れられます。コンパイルして拡張モジュールをビルドする際には、このオプションは不要です: Distutils は公開するシンボルを自動的に
-``initmodule`` に渡すからです。
+``export_symbols`` is only useful on Windows.  It can contain a list of
+symbols (functions or variables) to be exported. This option is not needed when
+building compiled extensions: Distutils  will automatically add ``initmodule``
+to the list of exported symbols.
 
-:option:`depends` オプションは、拡張モジュールが依存している(例: ヘッダーファイルなどの)
-ファイルのリストです。
-このファイルのいずれかが前回のビルドから変更された時、ビルドコマンドはこのソース
-ファイルをコンパイルしてリビルドします。
+The ``depends`` option is a list of files that the extension depends on
+(for example header files). The build command will call the compiler on the
+sources to rebuild extension if any on this files has been modified since the
+previous build.
 
+Relationships between Distributions and Packages
+================================================
 
-.. Relationships between Distributions and Packages
+A distribution may relate to packages in three specific ways:
 
-パッケージと配布物の関係 
-=========================
+#. It can require packages or modules.
 
-配布物はパッケージと3種類の方法で関係します:
+#. It can provide packages or modules.
 
-#. パッケージかモジュールを要求する。
+#. It can obsolete packages or modules.
 
-#. パッケージかモジュールを提供する。
+These relationships can be specified using keyword arguments to the
+:func:`distutils.core.setup` function.
 
-#. パッケージかモジュールを廃止する。
+Dependencies on other Python modules and packages can be specified by supplying
+the *requires* keyword argument to :func:`setup`. The value must be a list of
+strings.  Each string specifies a package that is required, and optionally what
+versions are sufficient.
 
-これらの関係は、 :func:`distutils.core.setup` 関数のキーワード引数を利用して指定することができます。
+To specify that any version of a module or package is required, the string
+should consist entirely of the module or package name. Examples include
+``'mymodule'`` and ``'xml.parsers.expat'``.
 
-他のPythonモジュールやパッケージに対する依存は、 :func:`setup` の *requires* キーワード引数で指定できます。
-引数の値は文字列のリストでなければなりません。各文字列は、必要とするパッケージと、オプションとしてパッケージのバージョンを指定します。
+If specific versions are required, a sequence of qualifiers can be supplied in
+parentheses.  Each qualifier may consist of a comparison operator and a version
+number.  The accepted comparison operators are::
 
-あるモジュールかパッケージの任意のバージョンが必要な場合、指定する文字列はモジュール名かパッケージ名になります。例えば、 ``'mymodule'`` や
-``'xml.parsers.expat'`` を含みます。
+    <    >    ==
+    <=   >=   !=
 
-特定のバージョンが必要な場合、修飾子(qualifier)の列を加えることができます。
-各修飾子は、比較演算子とバージョン番号からなります。利用できる比較演算子は::
+These can be combined by using multiple qualifiers separated by commas (and
+optional whitespace).  In this case, all of the qualifiers must be matched; a
+logical AND is used to combine the evaluations.
 
-   <    >    ==
-   <=   >=   !=
+Let's look at a bunch of examples:
 
-これらの修飾子はカンマ(空白文字を入れても良いです)で区切って複数並べることができます。その場合、全ての修飾子が適合する必要があります;
-評価する時に論理ANDでつなげられます。
++-------------------------+----------------------------------------------+
+| Requires Expression     | Explanation                                  |
++=========================+==============================================+
+| ``==1.0``               | Only version ``1.0`` is compatible           |
++-------------------------+----------------------------------------------+
+| ``>1.0, !=1.5.1, <2.0`` | Any version after ``1.0`` and before ``2.0`` |
+|                         | is compatible, except ``1.5.1``              |
++-------------------------+----------------------------------------------+
 
-いくつかの例を見てみましょう:
+Now that we can specify dependencies, we also need to be able to specify what we
+provide that other distributions can require.  This is done using the *provides*
+keyword argument to :func:`setup`. The value for this keyword is a list of
+strings, each of which names a Python module or package, and optionally
+identifies the version.  If the version is not specified, it is assumed to match
+that of the distribution.
 
-+-------------------------+-------------------------------------------------+
-| require式               | 説明                                            |
-+=========================+=================================================+
-| ``==1.0``               | version ``1.0`` のみが適合します                |
-+-------------------------+-------------------------------------------------+
-| ``>1.0, !=1.5.1, <2.0`` | ``1.5.1`` を除いて、 ``1.0`` より後ろで ``2.0`` |
-|                         | より前の全てのバージョンに適合します。          |
-+-------------------------+-------------------------------------------------+
+Some examples:
 
-これで、依存を指定することができました。同じように、この配布物が他の配布物に必要とされる何を提供するのかを指定する必要があります。
-これは、 :func:`setup` の *provide* キーワード引数によって指定できます。
-この引数の値は文字列のリストで、各要素はPythonモジュールかパッケージの名前です。バージョンを指定することもできます。
-もしバージョンが指定されなかった場合、配布物のバージョン番号が利用されます。
++---------------------+----------------------------------------------+
+| Provides Expression | Explanation                                  |
++=====================+==============================================+
+| ``mypkg``           | Provide ``mypkg``, using the distribution    |
+|                     | version                                      |
++---------------------+----------------------------------------------+
+| ``mypkg (1.1)``     | Provide ``mypkg`` version 1.1, regardless of |
+|                     | the distribution version                     |
++---------------------+----------------------------------------------+
 
-いくつかの例です:
+A package can declare that it obsoletes other packages using the *obsoletes*
+keyword argument.  The value for this is similar to that of the *requires*
+keyword: a list of strings giving module or package specifiers.  Each specifier
+consists of a module or package name optionally followed by one or more version
+qualifiers.  Version qualifiers are given in parentheses after the module or
+package name.
 
-+-------------------+--------------------------------------------------------------+
-| provide 式        | 説明                                                         |
-+===================+==============================================================+
-| ``mypkg``         | ``mypkg`` を提供します。バージョンは配布物のものを使います。 |
-+-------------------+--------------------------------------------------------------+
-| ``mypkg (1.1)``   | ``mypkg`` version 1.1 を提供します。配布物のバージョン番号は |
-|                   | 気にしません                                                 |
-+-------------------+--------------------------------------------------------------+
-
-パッケージは *obsoletes* キーワードを利用することで、他のパッケージを廃止することを宣言することもできます。
-この値は *requires* キーワードと似ています: モジュールやパッケージを指定する文字列の
-リストです。各文字列は、モジュールかパッケージの名前と、オプションとして一つ以上のバージョン
-指定から構成されています。バージョン指定は、モジュールやパッケージの名前のうしろに、丸括(parentheses)でかこわれています。
-
-指定されたバージョンは、その配布物によって廃止されるバージョンを示しています。バージョン指定が存在しない場合は、指定された名前のモジュールまたはパッケージの
-全てが廃止されたと解釈されます。
+The versions identified by the qualifiers are those that are obsoleted by the
+distribution being described.  If no qualifiers are given, all versions of the
+named module or package are understood to be obsoleted.
 
 .. _distutils-installing-scripts:
 
-スクリプトをインストールする
-============================
+Installing Scripts
+==================
 
-ここまでは、スクリプトから import され、それ自体では実行されないような pure Python モジュールおよび非 pure Python モジュール
-について扱ってきました。
+So far we have been dealing with pure and non-pure Python modules, which are
+usually not run by themselves but imported by scripts.
 
-スクリプトとは、Python ソースコードを含むファイルで、コマンドラインから実行できるよう作られているものです。スクリプトは Distutils に
-複雑なことを一切させません。唯一の気の利いた機能は、スクリプトの最初の行が ``#!`` で始まっていて、 "python" という単語が
-入っていた場合、Distutils は最初の行を現在使っているインタプリタを参照するよう置き換えます。デフォルトでは現在使っているインタプリタと
-置換しますが、オプション :option:`--executable` (または :option:`-e`)
-を指定することで、明示的にインタプリタのパスを指定して上書きすることができます。
+Scripts are files containing Python source code, intended to be started from the
+command line.  Scripts don't require Distutils to do anything very complicated.
+The only clever feature is that if the first line of the script starts with
+``#!`` and contains the word "python", the Distutils will adjust the first line
+to refer to the current interpreter location. By default, it is replaced with
+the current interpreter location.  The :option:`--executable` (or :option:`-e`)
+option will allow the interpreter path to be explicitly overridden.
 
-:option:`scripts` オプションには、単に上で述べた方法で取り扱うべきファイルのリストを指定するだけです。PyXML の setup
-スクリプトを例に示します::
+The ``scripts`` option simply is a list of files to be handled in this
+way.  From the PyXML setup script::
 
-   setup(...,
-         scripts=['scripts/xmlproc_parse', 'scripts/xmlproc_val']
-         )
+    setup(...,
+          scripts=['scripts/xmlproc_parse', 'scripts/xmlproc_val']
+          )
 
 .. versionchanged:: 2.7
-    テンプレートが提供されない時、全てのスクリプトが ``MANIFEST``
-    ファイルに追加されるようになりました。 :ref:`manifest` を参照してください
+    All the scripts will also be added to the ``MANIFEST``
+    file if no template is provided. See :ref:`manifest`.
 
 .. _distutils-installing-package-data:
 
-パッケージデータをインストールする
-==================================
+Installing Package Data
+=======================
 
-しばしばパッケージに追加のファイルをインストールする必要があります。このファイルは、パッケージの実装に強く関連したデータや、そのパッケー
-ジを使うプログラマーが必要とするドキュメントなどです。これらのファイルを :dfn:`パッケージデータ` と呼びます。
+Often, additional files need to be installed into a package.  These files are
+often data that's closely related to the package's implementation, or text files
+containing documentation that might be of interest to programmers using the
+package.  These files are called :dfn:`package data`.
 
-パッケージデータは関数 :func:`setup` にキーワード引数 ``package_data`` を与えることで追加できます。
-この値はパッケージ名から、パッケージへコピーされる相対パス名リストへのマップである必要があります。それぞれのパスは対応するパッケージが含まれ
-るディレクトリ(もし適切なら ``package_dir`` のマッピングが利用されます)からの相対パスとして扱われます。つまり、ファイルはソースディレクト
-リ中にパッケージの一部として存在すると仮定されています。この値にはグロブパターンを含むことができます。
+Package data can be added to packages using the ``package_data`` keyword
+argument to the :func:`setup` function.  The value must be a mapping from
+package name to a list of relative path names that should be copied into the
+package.  The paths are interpreted as relative to the directory containing the
+package (information from the ``package_dir`` mapping is used if appropriate);
+that is, the files are expected to be part of the package in the source
+directories. They may contain glob patterns as well.
 
-パス名にはディレクトリ部分を含むことができます。必要なディレクトリはインストール時に作成されます。
+The path names may contain directory portions; any necessary directories will be
+created in the installation.
 
-たとえば、パッケージがいくつかのデータファイルを含むサブディレクトリを含んでいる場合、ソースツリーでは以下のように配置できます::
+For example, if a package should contain a subdirectory with several data files,
+the files can be arranged like this in the source tree::
 
-   setup.py
-   src/
-       mypkg/
-           __init__.py
-           module.py
-           data/
-               tables.dat
-               spoons.dat
-               forks.dat
+    setup.py
+    src/
+        mypkg/
+            __init__.py
+            module.py
+            data/
+                tables.dat
+                spoons.dat
+                forks.dat
 
-対応する :func:`setup` 呼び出しは以下のようになります::
+The corresponding call to :func:`setup` might be::
 
-   setup(...,
-         packages=['mypkg'],
-         package_dir={'mypkg': 'src/mypkg'},
-         package_data={'mypkg': ['data/*.dat']},
-         )
+    setup(...,
+          packages=['mypkg'],
+          package_dir={'mypkg': 'src/mypkg'},
+          package_data={'mypkg': ['data/*.dat']},
+          )
 
 .. versionadded:: 2.4
 
 .. versionchanged:: 2.7
-    テンプレートが提供されない時、全ての ``package_data`` にマッチするファイルが ``MANIFEST``
-    ファイルに追加されるようになりました。 :ref:`manifest` を参照してください
+    All the files that match ``package_data`` will be added to the ``MANIFEST``
+    file if no template is provided. See :ref:`manifest`.
 
 
 .. _distutils-additional-files:
 
-追加のファイルをインストールする
-================================
+Installing Additional Files
+===========================
 
-:option:`data_files` オプションを使うと、モジュール配布物で必要な追加のファイル: 設定ファイル、メッセージカタログ、データファイル、
-その他これまで述べてきたカテゴリに収まらない全てのファイルを指定できます。
+The ``data_files`` option can be used to specify additional files needed
+by the module distribution: configuration files, message catalogs, data files,
+anything which doesn't fit in the previous categories.
 
-:option:`data_files` には、(*directory*, *files*) のペアを以下のように指定します::
+``data_files`` specifies a sequence of (*directory*, *files*) pairs in the
+following way::
 
-   setup(...,
-         data_files=[('bitmaps', ['bm/b1.gif', 'bm/b2.gif']),
-                     ('config', ['cfg/data.cfg']),
-                     ('/etc/init.d', ['init-script'])]
-        )
+    setup(...,
+          data_files=[('bitmaps', ['bm/b1.gif', 'bm/b2.gif']),
+                      ('config', ['cfg/data.cfg']),
+                      ('/etc/init.d', ['init-script'])]
+         )
 
-データファイルのインストール先ディレクトリ名は指定できますが、データファイル自体の名前の変更はできないので注意してください。
+Note that you can specify the directory names where the data files will be
+installed, but you cannot rename the data files themselves.
 
-各々の (*directory*, *files*) ペアには、インストール先のディレクトリ名と、そのディレクトリにインストールしたいファイルを
-指定します。 *directory* が相対パスの場合、インストールプレフィクス (installation prefix、 pure Python
-パッケージなら ``sys.prefix`` 、拡張モジュールの入ったパッケージなら ``sys.exec_prefix``) からの相対パスと解釈されます。
-*files* 内の各ファイル名は、パッケージソースコード配布物の最上階層の、 :file:`setup.py` のあるディレクトリからの相対パスと
-解釈されます。 *files* に書かれたディレクトリ情報は、ファイルを最終的にどこにインストールするかを決めるときには使われません;
-ファイルの名前だけが使われます。
+Each (*directory*, *files*) pair in the sequence specifies the installation
+directory and the files to install there.  If *directory* is a relative path, it
+is interpreted relative to the installation prefix (Python's ``sys.prefix`` for
+pure-Python packages, ``sys.exec_prefix`` for packages that contain extension
+modules).  Each file name in *files* is interpreted relative to the
+:file:`setup.py` script at the top of the package source distribution.  No
+directory information from *files* is used to determine the final location of
+the installed file; only the name of the file is used.
 
-:option:`data_files` オプションは、ターゲットディレクトリを指定せずに、
-単にファイルの列を指定できます。しかし、このやり方は推奨されておらず、指定すると :command:`install` コマンドが警告を出力します。
-ターゲットディレクトリにデータファイルを直接インストールしたいなら、ディレクトリ名として空文字列を指定してください。
+You can specify the ``data_files`` options as a simple sequence of files
+without specifying a target directory, but this is not recommended, and the
+:command:`install` command will print a warning in this case. To install data
+files directly in the target directory, an empty string should be given as the
+directory.
 
 .. versionchanged:: 2.7
-    テンプレートが提供されない時、全ての ``data_files`` にマッチするファイルが ``MANIFEST``
-    ファイルに追加されるようになりました。 :ref:`manifest` を参照してください
+    All the files that match ``data_files`` will be added to the ``MANIFEST``
+    file if no template is provided. See :ref:`manifest`.
+
 
 
 .. _meta-data:
 
-追加のメタデータ
-================
+Additional meta-data
+====================
 
-setup スクリプトには、名前やバージョンにとどまらず、その他のメタデータを含められます。以下のような情報を含められます:
+The setup script may include additional meta-data beyond the name and version.
+This information includes:
 
-+----------------------+---------------------------------------------------+----------------------+--------+
-| メタデータ           | 説明                                              | 値                   | 注記   |
-+======================+===================================================+======================+========+
-| ``name``             | パッケージの名前                                  | 短い文字列           | \(1)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``version``          | リリースのバージョン                              | 短い文字列           | (1)(2) |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``author``           | パッケージ作者の名前                              | 短い文字列           | \(3)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``author_email``     | パッケージ作者の電子メールアドレス                | 電子メールアドレス   | \(3)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``maintainer``       | パッケージメンテナンス担当者の名前                | 短い文字列           | \(3)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``maintainer_email`` | パッケージメンテナンス担当者の電子メールアドレス  | 電子メールアドレス   | \(3)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``url``              | パッケージのホームページ                          | URL                  | \(1)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``description``      | パッケージについての簡潔な概要説明                | 短い文字列           |        |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``long_description`` | パッケージについての詳細な説明                    | 長い文字列           | \(5)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``download_url``     | パッケージをダウンロードできる場所                | URL                  | \(4)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``classifiers``      | 分類語のリスト                                    | 文字列からなるリスト | \(4)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``platforms``        | プラットフォームのリスト                          | 文字列からなるリスト |        |
-+----------------------+---------------------------------------------------+----------------------+--------+
-| ``license``          | パッケージのライセンス                            | 文字列からなるリスト | \(6)   |
-+----------------------+---------------------------------------------------+----------------------+--------+
++----------------------+---------------------------+-----------------+--------+
+| Meta-Data            | Description               | Value           | Notes  |
++======================+===========================+=================+========+
+| ``name``             | name of the package       | short string    | \(1)   |
++----------------------+---------------------------+-----------------+--------+
+| ``version``          | version of this release   | short string    | (1)(2) |
++----------------------+---------------------------+-----------------+--------+
+| ``author``           | package author's name     | short string    | \(3)   |
++----------------------+---------------------------+-----------------+--------+
+| ``author_email``     | email address of the      | email address   | \(3)   |
+|                      | package author            |                 |        |
++----------------------+---------------------------+-----------------+--------+
+| ``maintainer``       | package maintainer's name | short string    | \(3)   |
++----------------------+---------------------------+-----------------+--------+
+| ``maintainer_email`` | email address of the      | email address   | \(3)   |
+|                      | package maintainer        |                 |        |
++----------------------+---------------------------+-----------------+--------+
+| ``url``              | home page for the package | URL             | \(1)   |
++----------------------+---------------------------+-----------------+--------+
+| ``description``      | short, summary            | short string    |        |
+|                      | description of the        |                 |        |
+|                      | package                   |                 |        |
++----------------------+---------------------------+-----------------+--------+
+| ``long_description`` | longer description of the | long string     | \(5)   |
+|                      | package                   |                 |        |
++----------------------+---------------------------+-----------------+--------+
+| ``download_url``     | location where the        | URL             | \(4)   |
+|                      | package may be downloaded |                 |        |
++----------------------+---------------------------+-----------------+--------+
+| ``classifiers``      | a list of classifiers     | list of strings | \(4)   |
++----------------------+---------------------------+-----------------+--------+
+| ``platforms``        | a list of platforms       | list of strings |        |
++----------------------+---------------------------+-----------------+--------+
+| ``license``          | license for the package   | short string    | \(6)   |
++----------------------+---------------------------+-----------------+--------+
 
-注記:
+Notes:
 
 (1)
-   必須のフィールドです。
+    These fields are required.
 
 (2)
-   バージョン番号は *major.minor[.patch[.sub]]* の形式をとるよう奨めます。
+    It is recommended that versions take the form *major.minor[.patch[.sub]]*.
 
 (3)
-   作者かメンテナのどちらかは必ず区別してください。
+    Either the author or the maintainer must be identified. If maintainer is
+    provided, distutils lists it as the author in :file:`PKG-INFO`.
 
 (4)
-   これらのフィールドは、2.2.3 および 2.3 より以前のバージョンの Python でも互換性を持たせたい場合には指定してはなりません。リストは
-   `PyPI ウェブサイト <http://pypi.python.org/pypi>`_ にあります。
+    These fields should not be used if your package is to be compatible with Python
+    versions prior to 2.2.3 or 2.3.  The list is available from the `PyPI website
+    <https://pypi.python.org/pypi>`_.
 
 (5)
-    パッケージを PyPI に登録する際、 PyPI は ``long_description`` フィールドの値を使って
-    パッケージのホームページをビルドします。
+    The ``long_description`` field is used by PyPI when you are
+    :ref:`registering <package-register>` a package, to
+    :ref:`build its home page <package-display>`.
 
 (6)
-   ``license`` フィールドは、パッケージのライセンスが Trove Classifier の
-   "License" から選べない場合に、そのライセンスを示すテキストです。
-   ``Classifier`` を参照してください。
-   非推奨ですが、 ``licence`` というオプションも存在していて、 ``license``
-   のエイリアスになっています。
+    The ``license`` field is a text indicating the license covering the
+    package where the license is not a selection from the "License" Trove
+    classifiers. See the ``Classifier`` field. Notice that
+    there's a ``licence`` distribution option which is deprecated but still
+    acts as an alias for ``license``.
 
-「短い文字列」
-   200 文字以内の一行のテキスト。
+'short string'
+    A single line of text, not more than 200 characters.
 
-「長い文字列」
-   複数行からなり、ReStructuredText 形式で書かれたプレーンテキスト (http://docutils.sf.net/
-   を参照してください)。
+'long string'
+    Multiple lines of plain text in reStructuredText format (see
+    http://docutils.sourceforge.net/).
 
-「文字列のリスト」
-   下記を参照してください。
+'list of strings'
+    See below.
 
-これらの文字列はいずれも Unicode であってはなりません。
+None of the string values may be Unicode.
 
-バージョン情報のコード化は、それ自体が一つのアートです。 Python のパッケージは一般的に、 *major.minor[.patch][sub]* という
-バージョン表記に従います。メジャー (major) 番号は最初は 0 で、これはソフトウェアが実験的リリース
-にあることを示します。メジャー番号は、パッケージが主要な開発目標を達成したとき、それを示すために加算されてゆきます。マイナー (minor)
-番号は、パッケージに重要な新機能が追加されたときに加算されてゆきます。パッチ (patch) 番号は、バグフィクス版のリリースが作成されたときに
-加算されます。末尾にバージョン情報が追加され、サブリリースを示すこともあります。これは "a1,a2,...,aN" (アルファリリースの場合で、機能や
-API が変更されているとき)、  "b1,b2,...,bN" (ベータリリースの場合で、バグフィクスのみのとき) 、そして
-"pr1,pr2,...,prN"  (プレリリースの最終段階で、リリーステストのとき) になります。以下に例を示します:
+Encoding the version information is an art in itself. Python packages generally
+adhere to the version format *major.minor[.patch][sub]*. The major number is 0
+for initial, experimental releases of software. It is incremented for releases
+that represent major milestones in a package. The minor number is incremented
+when important new features are added to the package. The patch number
+increments when bug-fix releases are made. Additional trailing version
+information is sometimes used to indicate sub-releases.  These are
+"a1,a2,...,aN" (for alpha releases, where functionality and API may change),
+"b1,b2,...,bN" (for beta releases, which only fix bugs) and "pr1,pr2,...,prN"
+(for final pre-release release testing). Some examples:
 
 0.1.0
-   パッケージの最初の実験的なリリース
+    the first, experimental release of a package
 
 1.0.1a2
-   1.0 の最初のパッチバージョンに対する、2 回目のアルファリリース
+    the second alpha release of the first patch version of 1.0
 
-:option:`classifiers` は、 Python のリスト型で指定します::
+``classifiers`` are specified in a Python list::
 
-   setup(...,
-         classifiers=[
-             'Development Status :: 4 - Beta',
-             'Environment :: Console',
-             'Environment :: Web Environment',
-             'Intended Audience :: End Users/Desktop',
-             'Intended Audience :: Developers',
-             'Intended Audience :: System Administrators',
-             'License :: OSI Approved :: Python Software Foundation License',
-             'Operating System :: MacOS :: MacOS X',
-             'Operating System :: Microsoft :: Windows',
-             'Operating System :: POSIX',
-             'Programming Language :: Python',
-             'Topic :: Communications :: Email',
-             'Topic :: Office/Business',
-             'Topic :: Software Development :: Bug Tracking',
-             ],
-         )
+    setup(...,
+          classifiers=[
+              'Development Status :: 4 - Beta',
+              'Environment :: Console',
+              'Environment :: Web Environment',
+              'Intended Audience :: End Users/Desktop',
+              'Intended Audience :: Developers',
+              'Intended Audience :: System Administrators',
+              'License :: OSI Approved :: Python Software Foundation License',
+              'Operating System :: MacOS :: MacOS X',
+              'Operating System :: Microsoft :: Windows',
+              'Operating System :: POSIX',
+              'Programming Language :: Python',
+              'Topic :: Communications :: Email',
+              'Topic :: Office/Business',
+              'Topic :: Software Development :: Bug Tracking',
+              ],
+          )
 
-:file:`setup.py` に :option:`classifiers` を入れておき、なおかつ 2.2.3 よりも以前のバージョンの Python
-と後方互換性を保ちたいなら、 :file:`setup.py` 中で :func:`setup` を呼び出す前に、以下のコードを入れます。 ::
+If you wish to include classifiers in your :file:`setup.py` file and also wish
+to remain backwards-compatible with Python releases prior to 2.2.3, then you can
+include the following code fragment in your :file:`setup.py` before the
+:func:`setup` call. ::
 
-   # patch distutils if it can't cope with the "classifiers" or
-   # "download_url" keywords
-   from sys import version
-   if version < '2.2.3':
-       from distutils.dist import DistributionMetadata
-       DistributionMetadata.classifiers = None
-       DistributionMetadata.download_url = None
-
-
-setup スクリプトをデバッグする
-==============================
-
-setup スクリプトのどこかがまずいと、開発者の思い通りに動作してくれません。
-
-Distutils は setup 実行時の全ての例外を捉えて、簡単なエラーメッセージを出力してからスクリプトを終了します。このような仕様にしているのは、
-Python にあまり詳しくない管理者がパッケージをインストールする際に混乱しなくてすむようにするためです。もし Distutils
-のはらわた深くからトレースバックした長大なメッセージを見たら、管理者はきっと Python のインストール自体が
-おかしくなっているのだと勘違いして、トレースバックを最後まで読み進んで実はファイルパーミッションの問題だったと気づいたりはしないでしょう。
-
-しかし逆に、この仕様は開発者にとってはうまくいかない理由を見つける役には立ちません。そこで、 DISTUTILS_DEBUG 環境変数を空文字以外の
-何らかの値に設定しておけば、 Distutils が何を実行しているか詳しい情報を出力し、例外が発生した場合には完全なトレースバックを出力
-するようにできます。
+    # patch distutils if it can't cope with the "classifiers" or
+    # "download_url" keywords
+    from sys import version
+    if version < '2.2.3':
+        from distutils.dist import DistributionMetadata
+        DistributionMetadata.classifiers = None
+        DistributionMetadata.download_url = None
 
 
+.. _debug-setup-script:
+
+Debugging the setup script
+==========================
+
+Sometimes things go wrong, and the setup script doesn't do what the developer
+wants.
+
+Distutils catches any exceptions when running the setup script, and print a
+simple error message before the script is terminated.  The motivation for this
+behaviour is to not confuse administrators who don't know much about Python and
+are trying to install a package.  If they get a big long traceback from deep
+inside the guts of Distutils, they may think the package or the Python
+installation is broken because they don't read all the way down to the bottom
+and see that it's a permission problem.
+
+On the other hand, this doesn't help the developer to find the cause of the
+failure. For this purpose, the :envvar:`DISTUTILS_DEBUG` environment variable can be set
+to anything except an empty string, and distutils will now print detailed
+information about what it is doing, dump the full traceback when an exception
+occurs, and print the whole command line when an external program (like a C
+compiler) fails.

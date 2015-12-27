@@ -1,110 +1,130 @@
 .. _built-dist:
 
-**************************
-ビルド済み配布物を作成する
-**************************
+****************************
+Creating Built Distributions
+****************************
 
-"ビルド済み配布物" とは、おそらく皆さんが通常 "バイナリパッケージ" とか "インストーラ" (背景にしている知識によって違います) と考えて
-いるものです。とはいえ、配布物が必然的にバイナリ形式になるわけではありません。配布物には、 Python ソースコード、かつ/またはバイトコード
-が入るからです; また、我々はパッケージという呼び方もしません。すでに Python の用語として使っているからです (また、 "インストーラ"
-という言葉は主流のデスクトップシステム特有の用語です)
+A "built distribution" is what you're probably used to thinking of either as a
+"binary package" or an "installer" (depending on your background).  It's not
+necessarily binary, though, because it might contain only Python source code
+and/or byte-code; and we don't call it a package, because that word is already
+spoken for in Python.  (And "installer" is a term specific to the world of
+mainstream desktop systems.)
 
-ビルド済み配布物は、モジュール配布物をインストール作業者にとってできるだけ簡単な状況にする方法です: ビルド済み配布物は、RPM ベースの Linux
-システムユーザにとってはバイナリ RPM 、Windows ユーザにとっては実行可能なインストーラ、 Debian ベースの Linux システムでは
-Debian パッケージ、などといった具合です。当然のことながら、一人の人間が世の中にある全てのプラットフォーム用
-にビルド済み配布物を作成できるわけではありません。そこで、 Distutils の設計は。開発者が自分の専門分野 --- コードを書き、ソース配布物を作成する
---- に集中できる一方で、 *パッケージ作成者 (packager)* と呼ばれる、開発者とエンドユーザとの中間に位置する人々が
-ソースコード配布物を多くのプラットフォームにおけるビルド済み配布物に変換できるようになっています。
+A built distribution is how you make life as easy as possible for installers of
+your module distribution: for users of RPM-based Linux systems, it's a binary
+RPM; for Windows users, it's an executable installer; for Debian-based Linux
+users, it's a Debian package; and so forth.  Obviously, no one person will be
+able to create built distributions for every platform under the sun, so the
+Distutils are designed to enable module developers to concentrate on their
+specialty---writing code and creating source distributions---while an
+intermediary species called *packagers* springs up to turn source distributions
+into built distributions for as many platforms as there are packagers.
 
-もちろん、モジュール開発者自身がパッケージ作成者かもしれません; また、パッケージを作成するのはオリジナルの作成者が利用できないプラットフォームに
-アクセスできるような "外部の" ボランティアかもしれませんし、ソース配布物を定期的に取り込んで、アクセスできるかぎりの
-プラットフォーム向けにビルド済み配布物を生成するソフトウェアかもしれません。作業を行うのが誰であれ、パッケージ作成者は setup  スクリプトを利用し、
-:command:`bdist` コマンドファミリを使ってビルド済み配布物を作成します。
+Of course, the module developer could be his own packager; or the packager could
+be a volunteer "out there" somewhere who has access to a platform which the
+original developer does not; or it could be software periodically grabbing new
+source distributions and turning them into built distributions for as many
+platforms as the software has access to.  Regardless of who they are, a packager
+uses the setup script and the :command:`bdist` command family to generate built
+distributions.
 
-単純な例として、Distutils ソースツリーから以下のコマンドを実行したとします::
+As a simple example, if I run the following command in the Distutils source
+tree::
 
    python setup.py bdist
 
-すると、Distutils はモジュール配布物 (ここでは Distutils 自体) をビルドし、"偽の (fake)" インストールを
-(:file:`build` ディレクトリで) 行います。そして現在のプラットフォームにおける標準の形式でビルド済み
-配布物を生成します。デフォルトのビルド済み形式とは、Unixでは "ダム (dumb)" の tar ファイルで、 Windows ではシンプルな実行形式の
-インストーラになります。(tar ファイルは、特定の場所に手作業で解凍しないと動作しないので、 "ダム: 賢くない" 形式とみなします。)
+then the Distutils builds my module distribution (the Distutils itself in this
+case), does a "fake" installation (also in the :file:`build` directory), and
+creates the default type of built distribution for my platform.  The default
+format for built distributions is a "dumb" tar file on Unix, and a simple
+executable installer on Windows.  (That tar file is considered "dumb" because it
+has to be unpacked in a specific location to work.)
 
-従って、 Unix システムで上記のコマンドを実行すると、 :file:`Distutils-1.0.{plat}.tar.gz` を作成します;  この
-tarball を正しい場所で解凍すると、ちょうどソース配布物をダウンロードして ``python setup.py install`` を実行したのと
-同じように、正しい場所に Distutils がインストールされます。 ("正しい場所 (right place)" とは、ファイルシステムのルート下か、
-Python の :file:`{prefix}` ディレクトリ下で、これは :command:`bdist_dumb` に指定するコマンドで変わります;
-デフォルトの設定では、 :file:`{prefix}` からの相対パスにインストールされるダム配布物が得られます。)
+Thus, the above command on a Unix system creates
+:file:`Distutils-1.0.{plat}.tar.gz`; unpacking this tarball from the right place
+installs the Distutils just as though you had downloaded the source distribution
+and run ``python setup.py install``.  (The "right place" is either the root of
+the filesystem or  Python's :file:`{prefix}` directory, depending on the options
+given to the :command:`bdist_dumb` command; the default is to make dumb
+distributions relative to :file:`{prefix}`.)
 
-言うまでもなく、 pure Python 配布物の場合なら、 ``python setup.py install`` するのに比べて大して簡単になったとは
-言えません---しかし、非 pure 配布物で、コンパイルの必要な拡張モジュールを含む場合、拡張モジュールを利用できるか否かという大きな違いになりえます。
-また、 RPM パッケージや Windows 用の実行形式インストーラのような "スマートな" ビルド済み配布物を作成しておけば、たとえ拡張モジュール
-が一切入っていなくてもユーザにとっては便利になります。
+Obviously, for pure Python distributions, this isn't any simpler than just
+running ``python setup.py install``\ ---but for non-pure distributions, which
+include extensions that would need to be compiled, it can mean the difference
+between someone being able to use your extensions or not.  And creating "smart"
+built distributions, such as an RPM package or an executable installer for
+Windows, is far more convenient for users even if your distribution doesn't
+include any extensions.
 
-:command:`bdist` コマンドには、 :option:`--formats` オプションがあります。これは :command:`sdist`
-コマンドの場合に似ていて、生成したいビルド済み配布物の形式を選択できます: 例えば、 ::
+The :command:`bdist` command has a :option:`--formats` option, similar to the
+:command:`sdist` command, which you can use to select the types of built
+distribution to generate: for example, ::
 
    python setup.py bdist --format=zip
 
-とすると、Unix システムでは、 :file:`Distutils-1.0.{plat}.zip` を作成します--- 先にも述べたように、Distutils
-をインストールするには、このアーカイブ形式をルートディレクトリ下で展開します。
+would, when run on a Unix system, create :file:`Distutils-1.0.{plat}.zip`\
+---again, this archive would be unpacked from the root directory to install the
+Distutils.
 
-.. %
+The available formats for built distributions are:
 
-ビルド済み配布物として利用できる形式を以下に示します:
++-------------+------------------------------+---------+
+| Format      | Description                  | Notes   |
++=============+==============================+=========+
+| ``gztar``   | gzipped tar file             | (1),(3) |
+|             | (:file:`.tar.gz`)            |         |
++-------------+------------------------------+---------+
+| ``ztar``    | compressed tar file          | \(3)    |
+|             | (:file:`.tar.Z`)             |         |
++-------------+------------------------------+---------+
+| ``tar``     | tar file (:file:`.tar`)      | \(3)    |
++-------------+------------------------------+---------+
+| ``zip``     | zip file (:file:`.zip`)      | (2),(4) |
++-------------+------------------------------+---------+
+| ``rpm``     | RPM                          | \(5)    |
++-------------+------------------------------+---------+
+| ``pkgtool`` | Solaris :program:`pkgtool`   |         |
++-------------+------------------------------+---------+
+| ``sdux``    | HP-UX :program:`swinstall`   |         |
++-------------+------------------------------+---------+
+| ``wininst`` | self-extracting ZIP file for | \(4)    |
+|             | Windows                      |         |
++-------------+------------------------------+---------+
+| ``msi``     | Microsoft Installer.         |         |
++-------------+------------------------------+---------+
 
-+-------------+---------------------------------------+---------+
-| 形式        | 説明                                  | 注記    |
-+=============+=======================================+=========+
-| ``gztar``   | gzip 圧縮された tar ファイル          | (1),(3) |
-|             | (:file:`.tar.gz`)                     |         |
-+-------------+---------------------------------------+---------+
-| ``ztar``    | compress 圧縮された tar ファイル      | \(3)    |
-|             | (:file:`.tar.Z`)                      |         |
-+-------------+---------------------------------------+---------+
-| ``tar``     | tar ファイル (:file:`.tar`)           | \(3)    |
-+-------------+---------------------------------------+---------+
-| ``zip``     | zip ファイル (:file:`.zip`)           | (2),(4) |
-+-------------+---------------------------------------+---------+
-| ``rpm``     | RPM 形式                              | \(5)    |
-+-------------+---------------------------------------+---------+
-| ``pkgtool`` | Solaris :program:`pkgtool` 形式       |         |
-+-------------+---------------------------------------+---------+
-| ``sdux``    | HP-UX :program:`swinstall` 形式       |         |
-+-------------+---------------------------------------+---------+
-| ``wininst`` | Windows 用の自己展開形式 ZIP ファイル | \(4)    |
-+-------------+---------------------------------------+---------+
-| ``msi``     | マイクロソフト・インストーラー        |         |
-+-------------+---------------------------------------+---------+
 
-注記:
+Notes:
 
 (1)
-   Unixでのデフォルト形式です
+   default on Unix
 
 (2)
-   Windows でのデフォルト形式です
+   default on Windows
 
 (3)
-   外部ユーティリティが必要です: :program:`tar` と、 :program:`gzip` または :program:`bzip2` または
-   :program:`compress` のいずれか
+   requires external utilities: :program:`tar` and possibly one of :program:`gzip`,
+   :program:`bzip2`, or :program:`compress`
 
 (4)
-   外部ユーティリティの :program:`zip` か、 :mod:`zipfile`  モジュール (Python 1.6 からは標準 Python
-   ライブラリの一部になっています) が必要です
+   requires either external :program:`zip` utility or :mod:`zipfile` module (part
+   of the standard Python library since Python 1.6)
 
 (5)
-   外部ユーティリティの :program:`rpm` 、バージョン 3.0.4  以上が必要です (バージョンを調べるには、 ``rpm --version``
-   とします)
+   requires external :program:`rpm` utility, version 3.0.4 or better (use ``rpm
+   --version`` to find out which version you have)
 
-:command:`bdist` コマンドを使うとき、必ず :option:`--formats`  オプションを使わなければならないわけではありません;
-自分の使いたい形式をダイレクトに実装しているコマンドも使えます。こうした :command:`bdist` "サブコマンド (sub-command)" は、
-実際には類似のいくつかの形式を生成できます; 例えば、 :command:`bdist_dumb` コマンドは、全ての "ダム" アーカイブ形式
-(``tar``, ``ztar``, ``gztar``, および ``zip``) を作成できますし、 :command:`bdist_rpm` はバイナリ
-RPM とソース RPM の両方を生成できます。 :command:`bdist` サブコマンドと、それぞれが生成する形式を以下に示します:
+You don't have to use the :command:`bdist` command with the :option:`--formats`
+option; you can also use the command that directly implements the format you're
+interested in.  Some of these :command:`bdist` "sub-commands" actually generate
+several similar formats; for instance, the :command:`bdist_dumb` command
+generates all the "dumb" archive formats (``tar``, ``ztar``, ``gztar``, and
+``zip``), and :command:`bdist_rpm` generates both binary and source RPMs.  The
+:command:`bdist` sub-commands, and the formats generated by each, are:
 
 +--------------------------+-----------------------+
-| コマンド                 | 形式                  |
+| Command                  | Formats               |
 +==========================+=======================+
 | :command:`bdist_dumb`    | tar, ztar, gztar, zip |
 +--------------------------+-----------------------+
@@ -115,246 +135,276 @@ RPM とソース RPM の両方を生成できます。 :command:`bdist` サブ�
 | :command:`bdist_msi`     | msi                   |
 +--------------------------+-----------------------+
 
-:command:`bdist_\*` コマンドについては、以下の節で詳しく述べます。
+The following sections give details on the individual :command:`bdist_\*`
+commands.
 
 
 .. _creating-dumb:
 
-ダム形式のビルド済み配布物を作成する
-====================================
+Creating dumb built distributions
+=================================
 
-.. XXX 絶対パスと相対パスのパッケージについて述べる必要があるんだけど、
-       その前に実装しなくちゃね！
+.. XXX Need to document absolute vs. prefix-relative packages here, but first
+       I have to implement it!
 
 
 .. _creating-rpms:
 
-RPM パッケージを作成する
-========================
+Creating RPM packages
+=====================
 
-RPM 形式は、Red Hat, SuSE, Mandrake といった、多くの一般的な Linux
-ディストリビューションで使われています。普段使っているのがこれらの環境のいずれか (またはその他の RPM ベースの Linux  ディストリビューション)
-なら、同じディストリビューションを使っている他のユーザ用に RPM パッケージを作成するのはとるに足らないことでしょう。一方、モジュール配布物の複雑さや、
-Linux ディストリビューション間の違いにもよりますが、他の RPM ベースのディストリビューションでも動作するような RPM
-を作成できるかもしれません。
+The RPM format is used by many popular Linux distributions, including Red Hat,
+SuSE, and Mandrake.  If one of these (or any of the other RPM-based Linux
+distributions) is your usual environment, creating RPM packages for other users
+of that same distribution is trivial. Depending on the complexity of your module
+distribution and differences between Linux distributions, you may also be able
+to create RPMs that work on different RPM-based distributions.
 
-通常、モジュール配布物の RPM を作成するには、 :command:`bdist_rpm`  コマンドを使います::
+The usual way to create an RPM of your module distribution is to run the
+:command:`bdist_rpm` command::
 
    python setup.py bdist_rpm
 
-あるいは、 :command:`bdist` コマンドを :option:`--format`  オプション付きで使います::
+or the :command:`bdist` command with the :option:`--format` option::
 
    python setup.py bdist --formats=rpm
 
-前者の場合、 RPM 特有のオプションを指定できます; 後者の場合、一度の実行で複数の形式を指定できます。両方同時にやりたければ、
-それぞれの形式について各コマンドごとにオプション付きで :command:`bdist_\*` コマンドを並べます::
+The former allows you to specify RPM-specific options; the latter allows  you to
+easily specify multiple formats in one run.  If you need to do both, you can
+explicitly specify multiple :command:`bdist_\*` commands and their options::
 
    python setup.py bdist_rpm --packager="John Doe <jdoe@example.org>" \
                    bdist_wininst --target-version="2.0"
 
-Distutils が setup スクリプトで制御されているのとほとんど同じく、 RPM パッケージの作成は、 :file:`.spec`
-で制御されています。 RPM の作成を簡便に解決するため、 :command:`bdist_rpm` コマンドでは通常、 setup
-スクリプトに与えた情報とコマンドライン、そして Distutils 設定ファイルに基づいて :file:`.spec` ファイルを作成します。
-:file:`.spec` ファイルの様々なオプションやセクション情報は、以下のようにして setup スクリプトから取り出されます:
+Creating RPM packages is driven by a :file:`.spec` file, much as using the
+Distutils is driven by the setup script.  To make your life easier, the
+:command:`bdist_rpm` command normally creates a :file:`.spec` file based on the
+information you supply in the setup script, on the command line, and in any
+Distutils configuration files.  Various options and sections in the
+:file:`.spec` file are derived from options in the setup script as follows:
 
-+--------------------------------------------------------+---------------------------------------------+
-| RPM :file:`.spec` ファイルのオプションまたはセクション | Distutils setup スクリプト内のオプション    |
-+========================================================+=============================================+
-| Name                                                   | :option:`name`                              |
-+--------------------------------------------------------+---------------------------------------------+
-| Summary (preamble 内)                                  | :option:`description`                       |
-+--------------------------------------------------------+---------------------------------------------+
-| Version                                                | :option:`version`                           |
-+--------------------------------------------------------+---------------------------------------------+
-| Vendor                                                 | :option:`author` と :option:`author_email`, |
-|                                                        | または  --- & :option:`maintainer` と       |
-|                                                        | :option:`maintainer_email`                  |
-+--------------------------------------------------------+---------------------------------------------+
-| Copyright                                              | :option:`license`                           |
-+--------------------------------------------------------+---------------------------------------------+
-| Url                                                    | :option:`url`                               |
-+--------------------------------------------------------+---------------------------------------------+
-| %description (セクション)                              | :option:`long_description`                  |
-+--------------------------------------------------------+---------------------------------------------+
++------------------------------------------+----------------------------------------------+
+| RPM :file:`.spec` file option or section | Distutils setup script option                |
++==========================================+==============================================+
+| Name                                     | ``name``                                     |
++------------------------------------------+----------------------------------------------+
+| Summary (in preamble)                    | ``description``                              |
++------------------------------------------+----------------------------------------------+
+| Version                                  | ``version``                                  |
++------------------------------------------+----------------------------------------------+
+| Vendor                                   | ``author`` and ``author_email``,             |
+|                                          | or  --- & ``maintainer`` and                 |
+|                                          | ``maintainer_email``                         |
++------------------------------------------+----------------------------------------------+
+| Copyright                                | ``license``                                  |
++------------------------------------------+----------------------------------------------+
+| Url                                      | ``url``                                      |
++------------------------------------------+----------------------------------------------+
+| %description (section)                   | ``long_description``                         |
++------------------------------------------+----------------------------------------------+
 
-また、 :file:`.spec` ファイル内の多くのオプションは、 setup スクリプト中に対応するオプションがありません。これらのほとんどは、以下に示す
-:command:`bdist_rpm` コマンドのオプションで扱えます:
+Additionally, there are many options in :file:`.spec` files that don't have
+corresponding options in the setup script.  Most of these are handled through
+options to the :command:`bdist_rpm` command as follows:
 
-+--------------------------------------+---------------------------------+-------------------------+
-| RPM :file:`.spec`                    | :command:`bdist_rpm` オプション | デフォルト値            |
-| ファイルのオプションまたはセクション |                                 |                         |
-+======================================+=================================+=========================+
-| Release                              | :option:`release`               | "1"                     |
-+--------------------------------------+---------------------------------+-------------------------+
-| Group                                | :option:`group`                 | "Development/Libraries" |
-+--------------------------------------+---------------------------------+-------------------------+
-| Vendor                               | :option:`vendor`                | (上記参照)              |
-+--------------------------------------+---------------------------------+-------------------------+
-| Packager                             | :option:`packager`              | (none)                  |
-+--------------------------------------+---------------------------------+-------------------------+
-| Provides                             | :option:`provides`              | (none)                  |
-+--------------------------------------+---------------------------------+-------------------------+
-| Requires                             | :option:`requires`              | (none)                  |
-+--------------------------------------+---------------------------------+-------------------------+
-| Conflicts                            | :option:`conflicts`             | (none)                  |
-+--------------------------------------+---------------------------------+-------------------------+
-| Obsoletes                            | :option:`obsoletes`             | (none)                  |
-+--------------------------------------+---------------------------------+-------------------------+
-| Distribution                         | :option:`distribution_name`     | (none)                  |
-+--------------------------------------+---------------------------------+-------------------------+
-| BuildRequires                        | :option:`build_requires`        | (none)                  |
-+--------------------------------------+---------------------------------+-------------------------+
-| Icon                                 | :option:`icon`                  | (none)                  |
-+--------------------------------------+---------------------------------+-------------------------+
++-------------------------------+-----------------------------+-------------------------+
+| RPM :file:`.spec` file option | :command:`bdist_rpm` option | default value           |
+| or section                    |                             |                         |
++===============================+=============================+=========================+
+| Release                       | ``release``                 | "1"                     |
++-------------------------------+-----------------------------+-------------------------+
+| Group                         | ``group``                   | "Development/Libraries" |
++-------------------------------+-----------------------------+-------------------------+
+| Vendor                        | ``vendor``                  | (see above)             |
++-------------------------------+-----------------------------+-------------------------+
+| Packager                      | ``packager``                | (none)                  |
++-------------------------------+-----------------------------+-------------------------+
+| Provides                      | ``provides``                | (none)                  |
++-------------------------------+-----------------------------+-------------------------+
+| Requires                      | ``requires``                | (none)                  |
++-------------------------------+-----------------------------+-------------------------+
+| Conflicts                     | ``conflicts``               | (none)                  |
++-------------------------------+-----------------------------+-------------------------+
+| Obsoletes                     | ``obsoletes``               | (none)                  |
++-------------------------------+-----------------------------+-------------------------+
+| Distribution                  | ``distribution_name``       | (none)                  |
++-------------------------------+-----------------------------+-------------------------+
+| BuildRequires                 | ``build_requires``          | (none)                  |
++-------------------------------+-----------------------------+-------------------------+
+| Icon                          | ``icon``                    | (none)                  |
++-------------------------------+-----------------------------+-------------------------+
 
-言うまでもなく、こうしたオプションをコマンドラインで指定するのは面倒だし、エラーの元になりますから、普通は :file:`setup.cfg` に
-書いておくのがベストです ---  :ref:`setup-config` 節を参照してください。沢山の Python
-モジュール配布物を配布したりパッケージ化したりしているのなら、配布物全部に当てはまるオプションを個人用の Distutils 設定ファイル
-(:file:`~/.pydistutils.cfg`) に入れられます。
-このファイルを一時的に無効にしたい場合、 setup.py に --no-user-cfg オプションを指定できます。
+Obviously, supplying even a few of these options on the command-line would be
+tedious and error-prone, so it's usually best to put them in the setup
+configuration file, :file:`setup.cfg`\ ---see section :ref:`setup-config`.  If
+you distribute or package many Python module distributions, you might want to
+put options that apply to all of them in your personal Distutils configuration
+file (:file:`~/.pydistutils.cfg`).  If you want to temporarily disable
+this file, you can pass the --no-user-cfg option to setup.py.
 
-バイナリ形式の RPM パッケージを作成する際には三つの段階があり、 Distutils はこれら全ての段階を自動的に処理します:
+There are three steps to building a binary RPM package, all of which are
+handled automatically by the Distutils:
 
-#. RPM パッケージの内容を記述する :file:`.spec` ファイルを作成します (:file:`.spec` ファイルは setup
-   スクリプトに似たファイルです; 実際、 setup スクリプトのほとんどの情報が :file:`.spec` ファイルから引き揚げられます)
+#. create a :file:`.spec` file, which describes the package (analogous  to the
+   Distutils setup script; in fact, much of the information in the  setup script
+   winds up in the :file:`.spec` file)
 
-#. ソース RPM を作成します
+#. create the source RPM
 
-#. "バイナリ (binary)" RPM を生成します (モジュール配布物に Python 拡張モジュールが入っているか否かで、バイナリコードが
-   含まれることも含まれないこともあります)
+#. create the "binary" RPM (which may or may not contain binary code, depending
+   on whether your module distribution contains Python extensions)
 
-通常、RPM は最後の二つのステップをまとめて行います; Distutils を使うと、普通は三つのステップ全てをまとめて行います。
+Normally, RPM bundles the last two steps together; when you use the Distutils,
+all three steps are typically bundled together.
 
-望むなら、これらの三つのステップを分割できます。 :command:`bdist_rpm`  コマンドに :option:`--spec-only`
-を指定すれば、単に :file:`.spec` を作成して終了します; この場合、 :file:`.spec` ファイルは "配布物ディレクトリ
-(distribution directory)"--- 通常は :file:`dist/` に作成されますが、 :option:`--dist-dir`
-オプションで変更することもできます。(通常、 :file:`.spec` ファイルは "ビルドツリー (build tree)"、すなわち
-:command:`build_rpm` が作成する一時ディレクトリの中から引き揚げられます。)
+If you wish, you can separate these three steps.  You can use the
+:option:`--spec-only` option to make :command:`bdist_rpm` just create the
+:file:`.spec` file and exit; in this case, the :file:`.spec` file will be
+written to the "distribution directory"---normally :file:`dist/`, but
+customizable with the :option:`--dist-dir` option.  (Normally, the :file:`.spec`
+file winds up deep in the "build tree," in a temporary directory created by
+:command:`bdist_rpm`.)
 
-.. % \XXX{この機能はまだ実装されていません---必要なの?!}
-.. % 自作の \file{.spec} ファイルを \longprogramopt{spec-file} オプションで
-.. % 指定することもできます; \longprogramopt{spec-only} と併せて利用すれば、
-.. % \file{.spec} ファイルを手作業でカスタマイズする機会が生まれます:
+.. % \XXX{this isn't implemented yet---is it needed?!}
+.. % You can also specify a custom \file{.spec} file with the
+.. % \longprogramopt{spec-file} option; used in conjunction with
+.. % \longprogramopt{spec-only}, this gives you an opportunity to customize
+.. % the \file{.spec} file manually:
 .. %
-.. % begin{verbatim}
+.. % \ begin{verbatim}
 .. % > python setup.py bdist_rpm --spec-only
-.. % # ... dist/FooBar-1.0.spec を編集
+.. % # ...edit dist/FooBar-1.0.spec
 .. % > python setup.py bdist_rpm --spec-file=dist/FooBar-1.0.spec
-.. % end{verbatim}
+.. % \ end{verbatim}
 .. %
-.. % (とはいえ、\file{.spec} の内容をカスタマイズしたいのなら、
-.. % 標準の \command{bdist\_rpm} を上書きして、自分の思い通りに
-.. % \file{.spec} ファイルを書かせる方がおそらくましでしょう。)
+.. % (Although a better way to do this is probably to override the standard
+.. % \command{bdist\_rpm} command with one that writes whatever else you want
+.. % to the \file{.spec} file.)
 
 
 .. _creating-wininst:
 
-Windows インストーラを作成する
-==============================
+Creating Windows Installers
+===========================
 
-実行可能なインストーラは、Windows 環境ではごく自然なバイナリ配布形式です。インストーラは結構なグラフィカルユーザインタフェースを表示して、
-モジュール配布物に関するいくつかの情報を setup スクリプト内のメタデータから取り出して示し、ユーザがいくつかのオプションを選んだり、インストール
-を決行するか取りやめるか選んだりできるようにします。
+Executable installers are the natural format for binary distributions on
+Windows.  They display a nice graphical user interface, display some information
+about the module distribution to be installed taken from the metadata in the
+setup script, let the user select a few options, and start or cancel the
+installation.
 
-メタデータは setup スクリプトから取り出されるので、Windows インストーラの作成は至って簡単で、以下を実行するだけです::
+Since the metadata is taken from the setup script, creating Windows installers
+is usually as easy as running::
 
    python setup.py bdist_wininst
 
-あるいは、 :command:`bdist` コマンドを :option:`--formats`  オプション付きで実行します::
+or the :command:`bdist` command with the :option:`--formats` option::
 
    python setup.py bdist --formats=wininst
 
-(pure Python モジュールとパッケージだけの入った) pure モジュール配布物の場合、作成されるインストーラは実行バージョンに依存しない
-形式になり、 :file:`foo-1.0.win32.exe` のような名前になります。 pure モジュールの Windows インストーラは Unix や
-Mac OS X でも作成できます。
+If you have a pure module distribution (only containing pure Python modules and
+packages), the resulting installer will be version independent and have a name
+like :file:`foo-1.0.win32.exe`.  These installers can even be created on Unix
+platforms or Mac OS X.
 
-非 pure 配布物の場合、拡張モジュールは Windows プラットフォーム上だけで作成でき、Python のバージョンに依存したインストーラになります。
-インストーラのファイル名もバージョン依存性を反映して、 :file:`foo-1.0.win32-py2.0.exe` のような形式になります。
-従って、サポートしたい全てのバージョンの Python に対して、別々のインストーラを作成しなければなりません。
+If you have a non-pure distribution, the extensions can only be created on a
+Windows platform, and will be Python version dependent. The installer filename
+will reflect this and now has the form :file:`foo-1.0.win32-py2.0.exe`.  You
+have to create a separate installer for every Python version you want to
+support.
 
-インストーラは、ターゲットとなるシステムにインストールを実行した後、 pure モジュールを通常 (normal) モードと最適化 (optimizing)
-モードでバイトコード(:term:`bytecode`)にコンパイルしようと試みます。
-何らかの理由があってコンパイルさせたくなければ、 :command:`bdist_wininst` コマンドを
-:option:`--no-target-compile` かつ/または :option:`--no-target-optimize`
-オプション付きで実行します。
+The installer will try to compile pure modules into :term:`bytecode` after installation
+on the target system in normal and optimizing mode.  If you don't want this to
+happen for some reason, you can run the :command:`bdist_wininst` command with
+the :option:`--no-target-compile` and/or the :option:`--no-target-optimize`
+option.
 
-デフォルトでは、インストーラは実行時にクールな "Python Powered"  ロゴを表示しますが、
-自作の152x261ビットマップ画像も指定できます。
-画像は Windows の :file:`.bmp` ファイル形式でなくてはならず、 :option:`--bitmap` オプションで指定します。
+By default the installer will display the cool "Python Powered" logo when it is
+run, but you can also supply your own 152x261 bitmap which must be a Windows
+:file:`.bmp` file with the :option:`--bitmap` option.
 
-インストーラを起動すると、デスクトップの背景ウィンドウ上にでっかいタイトルも表示します。タイトルは配布物の名前とバージョン番号から
-作成します。 :option:`--title` オプションを使えば、タイトルを別のテキストに変更できます。
+The installer will also display a large title on the desktop background window
+when it is run, which is constructed from the name of your distribution and the
+version number.  This can be changed to another text by using the
+:option:`--title` option.
 
-インストーラファイルは "配布物ディレクトリ (distribution directory)" --- 通常は :file:`dist/`
-に作成されますが、 :option:`--dist-dir`  オプションで指定することもできます。
+The installer file will be written to the "distribution directory" --- normally
+:file:`dist/`, but customizable with the :option:`--dist-dir` option.
 
 .. _cross-compile-windows:
 
-Windowsでのクロスコンパイル
-============================
+Cross-compiling on Windows
+==========================
 
-Python 2.6 から、 distutils は Windows プラットフォーム間でのクロスコンパイルに対応しました。
-これによって、必要なツールがインストールされていれば、 32bit 版の Windows で 64bit 版の
-拡張を作成したり、その逆が可能になりました。
+Starting with Python 2.6, distutils is capable of cross-compiling between
+Windows platforms.  In practice, this means that with the correct tools
+installed, you can use a 32bit version of Windows to create 64bit extensions
+and vice-versa.
 
-別のプラットフォーム用にビルドするには、 build コマンドの :option:`--plat-name`
-オプションを指定します。有効な値は、現在のところ、 'win32', 'win-amd64',
-'win-ia64' です。
-例えば、次のようにして 32bit 版の Windows で 64bit 版の拡張をビルドできます。 ::
+To build for an alternate platform, specify the :option:`--plat-name` option
+to the build command.  Valid values are currently 'win32', 'win-amd64' and
+'win-ia64'.  For example, on a 32bit version of Windows, you could execute::
 
    python setup.py build --plat-name=win-amd64
 
-Windows インストーラもこのオプションをサポートしています。なので次のコマンドを実行すると::
+to build a 64bit version of your extension.  The Windows Installers also
+support this option, so the command::
 
    python setup.py build --plat-name=win-amd64 bdist_wininst
 
-64bit のインストーラを32bitのWindowsで作成できます。
+would create a 64bit installation executable on your 32bit version of Windows.
 
-クロスコンパイルするためには、Python のソースコードをダウンロードして Python
-自体をターゲットのプラットフォーム用にクロスコンパイルしなければなりません。
-Python のバイナリインストールからではクロスコンパイルできません。(他のプラット
-フォーム用の .lib などのファイルが含まれないからです。)
-具体的に言えば、拡張のクロスコンパイルができるようになるには、 32bit OS
-のユーザーは Visual Studio 2008 を使って Python ソースツリー内の
-:file:`PCBuild/PCbuild.sln` ソリューションファイルを開き、
-"x64" コンフィギュレーションで 'pythoncore' プロジェクトをビルドしなければなりません。
+To cross-compile, you must download the Python source code and cross-compile
+Python itself for the platform you are targetting - it is not possible from a
+binary installation of Python (as the .lib etc file for other platforms are
+not included.)  In practice, this means the user of a 32 bit operating
+system will need to use Visual Studio 2008 to open the
+:file:`PCBuild/PCbuild.sln` solution in the Python source tree and build the
+"x64" configuration of the 'pythoncore' project before cross-compiling
+extensions is possible.
 
-デフォルトでは、 Visual Studio 2008 は 64bit のコンパイラーなどのツールを
-インストールしないことに注意してください。
-Visual Studio セットアッププロセスを再実行して、それらのツールを選択する
-必要があるでしょう。(コントロールパネル -> [追加と削除] から簡単に既存の
-インストールをチェック、修正できます。)
+Note that by default, Visual Studio 2008 does not install 64bit compilers or
+tools.  You may need to reexecute the Visual Studio setup process and select
+these tools (using Control Panel->[Add/Remove] Programs is a convenient way to
+check or modify your existing install.)
 
 .. _postinstallation-script:
 
-インストール後実行スクリプト (postinstallation script)
-------------------------------------------------------
+The Postinstallation script
+---------------------------
 
-Python 2.3 からは、インストール実行後スクリプトを :option:`--install-script` オプションで指定できるように
-なりました。スクリプトはディレクトリを含まないベースネーム (basename) で指定しなければならず、スクリプトファイル名は setup 関数の
-scripts 引数中に挙げられていなければなりません。
+Starting with Python 2.3, a postinstallation script can be specified with the
+:option:`--install-script` option.  The basename of the script must be
+specified, and the script filename must also be listed in the scripts argument
+to the setup function.
 
-指定したスクリプトは、インストール時、ターゲットとなるシステム上で全てのファイルがコピーされた後に実行されます。このとき ``argv[1]`` を
-:option:`-install` に設定します。また、アンインストール時には、ファイルを削除する前に ``argv[1]`` を
-:option:`-remove` に設定して実行します。
+This script will be run at installation time on the target system after all the
+files have been copied, with ``argv[1]`` set to :option:`-install`, and again at
+uninstallation time before the files are removed with ``argv[1]`` set to
+:option:`-remove`.
 
-Windows インストーラでは、インストールスクリプトは埋め込みで実行され、全ての出力 (``sys.stdout`` 、 ``sys.stderr``)
-はバッファにリダイレクトされ、スクリプトの終了後に GUI 上に表示されます。
+The installation script runs embedded in the windows installer, every output
+(``sys.stdout``, ``sys.stderr``) is redirected into a buffer and will be
+displayed in the GUI after the script has finished.
 
-インストールスクリプトでは、インストール/アンインストールのコンテキストで特に有用ないくつかの機能を、追加の組み込み関数として利用することができます。
+Some functions especially useful in this context are available as additional
+built-in functions in the installation script.
 
 
 .. function:: directory_created(path)
               file_created(path)
 
-   これらの関数は、インストール後実行スクリプトがディレクトリやファイルを作成した際に呼び出さなければなりません。この関数はアンインストーラ
-   に作成された *path* を登録し、配布物をアンインストールする際にファイルが消されるようにします。安全を期すために、ディレクトリは空の時にのみ削除されます。
+   These functions should be called when a directory or file is created by the
+   postinstall script at installation time.  It will register *path* with the
+   uninstaller, so that it will be removed when the distribution is uninstalled.
+   To be safe, directories are only removed if they are empty.
 
 
 .. function:: get_special_folder_path(csidl_string)
 
-   この関数は、「スタートメニュー」や「デスクトップ」といった、 Windows における特殊なフォルダ位置を取得する際に使えます。
-   この関数はフォルダのフルパスを返します。 *csidl_string* は以下の文字列のいずれかでなければなりません::
+   This function can be used to retrieve special folder locations on Windows like
+   the Start Menu or the Desktop.  It returns the full path to the folder.
+   *csidl_string* must be one of the following strings::
 
       "CSIDL_APPDATA"
 
@@ -372,26 +422,29 @@ Windows インストーラでは、インストールスクリプトは埋め込
 
       "CSIDL_FONTS"
 
-   該当するフォルダを取得できなかった場合、 :exc:`OSError` が送出されます。
+   If the folder cannot be retrieved, :exc:`OSError` is raised.
 
-   どの種類のフォルダを取得できるかは、特定の Windows のバージョンごとに異なります。また、おそらく設定によっても異なるでしょう。詳細については、
-   :c:func:`SHGetSpecialFolderPath` 関数に関する Microsoft のドキュメントを参照してください。
-
+   Which folders are available depends on the exact Windows version, and probably
+   also the configuration.  For details refer to Microsoft's documentation of the
+   :c:func:`SHGetSpecialFolderPath` function.
 
 
 .. function:: create_shortcut(target, description, filename[, arguments[, workdir[, iconpath[, iconindex]]]])
 
-   この関数はショートカットを作成します。 *target* はショートカットによって起動されるプログラムへのパスです。 *description*
-   はショートカットに対する説明です。 *filename* はユーザから見えるショートカットの名前です。コマンドライン引数があれば、 *arguments*
-   に指定します。 *workdir* はプログラムの作業ディレクトリです。 *iconpath* はショートカットのためのアイコンが入ったファイルで、
-   *iconindex* はファイル *iconpath* 中のアイコンへのインデクスです。これについても、詳しくは :class:`IShellLink`
-   インタフェースに関する Microsoft のドキュメントを参照してください。
+   This function creates a shortcut. *target* is the path to the program to be
+   started by the shortcut. *description* is the description of the shortcut.
+   *filename* is the title of the shortcut that the user will see. *arguments*
+   specifies the command line arguments, if any. *workdir* is the working directory
+   for the program. *iconpath* is the file containing the icon for the shortcut,
+   and *iconindex* is the index of the icon in the file *iconpath*.  Again, for
+   details consult the Microsoft documentation for the :class:`IShellLink`
+   interface.
 
 
 Vista User Access Control (UAC)
 ===============================
 
-Python 2.6 から、 bdist_wininst は :option:`--user-access-control` オプションをサポートしています。
-デフォルトは 'none' (UAC制御をしないことを意味します) で、それ以外の有効な値は
-'auto' (Python が全ユーザー用にインストールされていれば UAC 昇格を行う)、
-'force' (常に昇格を行う) です。
+Starting with Python 2.6, bdist_wininst supports a :option:`--user-access-control`
+option.  The default is 'none' (meaning no UAC handling is done), and other
+valid values are 'auto' (meaning prompt for UAC elevation if Python was
+installed for all users) and 'force' (meaning always prompt for elevation).

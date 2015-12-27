@@ -1,261 +1,282 @@
 .. _source-dist:
 
-****************************
-ソースコード配布物を作成する
-****************************
+******************************
+Creating a Source Distribution
+******************************
 
-:ref:`distutils-simple-example` 節で示したように、ソースコード配布物を作成するには :command:`sdist`
-コマンドを使います。最も単純な例では、 ::
+As shown in section :ref:`distutils-simple-example`, you use the :command:`sdist` command
+to create a source distribution.  In the simplest case, ::
 
    python setup.py sdist
 
-のようにします (ここでは、 :command:`sdist` に関するオプションを setup スクリプトや設定ファイル中で行っていないものと仮定します)。
-:command:`sdist` は、現在のプラットフォームでのデフォルトのアーカイブ形式でアーカイブを生成します。デフォルトの形式は Unixでは gzip
-で圧縮された tar ファイル形式 (:file:`.tar.gz`) で、Windows では ZIP 形式です。
+(assuming you haven't specified any :command:`sdist` options in the setup script
+or config file), :command:`sdist` creates the archive of the default format for
+the current platform.  The default format is a gzip'ed tar file
+(:file:`.tar.gz`) on Unix, and ZIP file on Windows.
 
-:option:`--formats` オプションを使えば、好きなだけ圧縮形式を指定できます。例えば::
+You can specify as many formats as you like using the :option:`--formats`
+option, for example::
 
    python setup.py sdist --formats=gztar,zip
 
-は、gzip された tarball と zip ファイルを作成します。利用可能な形式は以下の通りです:
+to create a gzipped tarball and a zip file.  The available formats are:
 
-+-----------+----------------------------------+---------+
-| 形式      | 説明                             | 注記    |
-+===========+==================================+=========+
-| ``zip``   | zip ファイル (:file:`.zip`)      | (1),(3) |
-+-----------+----------------------------------+---------+
-| ``gztar`` | gzip 圧縮された tar ファイル     | \(2)    |
-|           | (:file:`.tar.gz`)                |         |
-+-----------+----------------------------------+---------+
-| ``bztar`` | bzip2 圧縮された tar ファイル    |         |
-|           | (:file:`.tar.bz2`)               |         |
-+-----------+----------------------------------+---------+
-| ``ztar``  | compress 圧縮された tar ファイル | \(4)    |
-|           | (:file:`.tar.Z`)                 |         |
-+-----------+----------------------------------+---------+
-| ``tar``   | tar ファイル (:file:`.tar`)      |         |
-+-----------+----------------------------------+---------+
++-----------+-------------------------+---------+
+| Format    | Description             | Notes   |
++===========+=========================+=========+
+| ``zip``   | zip file (:file:`.zip`) | (1),(3) |
++-----------+-------------------------+---------+
+| ``gztar`` | gzip'ed tar file        | \(2)    |
+|           | (:file:`.tar.gz`)       |         |
++-----------+-------------------------+---------+
+| ``bztar`` | bzip2'ed tar file       |         |
+|           | (:file:`.tar.bz2`)      |         |
++-----------+-------------------------+---------+
+| ``ztar``  | compressed tar file     | \(4)    |
+|           | (:file:`.tar.Z`)        |         |
++-----------+-------------------------+---------+
+| ``tar``   | tar file (:file:`.tar`) |         |
++-----------+-------------------------+---------+
 
-注記:
+Notes:
 
 (1)
-   Windows でのデフォルトです
+   default on Windows
 
 (2)
-   Unixでのデフォルトです
+   default on Unix
 
 (3)
-   外部ユーティリティの :program:`zip` か、 :mod:`zipfile`  モジュールが必要です (Python 1.6 からは
-   標準ライブラリになっています)
+   requires either external :program:`zip` utility or :mod:`zipfile` module (part
+   of the standard Python library since Python 1.6)
 
 (4)
-   外部ユーティリティ :program:`compress` が必要です。
-   このフォーマットは廃止待ちで、将来のバージョンの Python では削除されるでしょう。
+   requires the :program:`compress` program.
 
-``tar`` フォーマットのどれか (``gztar``, ``bztar``, ``ztar``, ``tar``) を Unix で利用する時、
-アーカイブ内の各メンバに設定される ``owner`` と ``group`` 名を指定することができます。
+When using any ``tar`` format (``gztar``, ``bztar``, ``ztar`` or
+``tar``) under Unix, you can specify the ``owner`` and ``group`` names
+that will be set for each member of the archive.
 
-例えば、アーカイブ内の全てのファイルの所有者を root にするには、次のようにします。 ::
+For example, if you want all files of the archive to be owned by root::
 
     python setup.py sdist --owner=root --group=root
 
+
 .. _manifest:
 
-配布するファイルを指定する
-==========================
+Specifying the files to distribute
+==================================
 
-明確なファイルのリスト (またはファイルリストを生成する方法) を明示的に与えなかった場合、 :command:`sdist`
-コマンドはソース配布物に以下のような最小のデフォルトのセットを含めます:
+If you don't supply an explicit list of files (or instructions on how to
+generate one), the :command:`sdist` command puts a minimal default set into the
+source distribution:
 
-* :option:`py_modules` と :option:`packages` オプションに指定された Python ソースファイル全て
+* all Python source files implied by the ``py_modules`` and
+  ``packages`` options
 
-* :option:`ext_modules` や :option:`libraries` オプションに記載された C ソースファイル
+* all C source files mentioned in the ``ext_modules`` or
+  ``libraries`` options
 
-  .. XXX C ライブラリソースの取得機構は現状ではうまく動きません -- :file:`build_clib.py` には、
-    :meth:`get_source_files` メソッドがありません!
+  .. XXX Getting C library sources is currently broken -- no
+     :meth:`get_source_files` method in :file:`build_clib.py`!
 
-* :option:`scripts` オプションで指定されたスクリプト。
-  :ref:`distutils-installing-scripts` を参照してください。
+* scripts identified by the ``scripts`` option
+  See :ref:`distutils-installing-scripts`.
 
-* テストスクリプトと思しきファイル全て: :file:`test/test\*.py` (現状では、Distutils
-  はテストスクリプトをただソース配布物に含めるだけですが、将来は Python モジュール配布物に対するテスト標準ができるかもしれません)
+* anything that looks like a test script: :file:`test/test\*.py` (currently, the
+  Distutils don't do anything with test scripts except include them in source
+  distributions, but in the future there will be a standard for testing Python
+  module distributions)
 
-* :file:`README.txt` (または :file:`README`)、 :file:`setup.py`  (または setup
-  スクリプトにしているもの) 、および :file:`setup.cfg`
+* :file:`README.txt` (or :file:`README`), :file:`setup.py` (or whatever  you
+  called your setup script), and :file:`setup.cfg`
 
-* ``package_data`` メタデータにマッチする全てのファイル。
-  :ref:`distutils-installing-package-data` を参照してください。
+* all files that matches the ``package_data`` metadata.
+  See :ref:`distutils-installing-package-data`.
 
-* ``data_files`` メタデータにマッチする全てのファイル。
-  :ref:`distutils-additional-files` を参照してください。
+* all files that matches the ``data_files`` metadata.
+  See :ref:`distutils-additional-files`.
 
-上記のセットで十分なこともありますが、大抵他のファイルを配布物に含めたいと思うでしょう。普通は、 :file:`MANIFEST.in` と呼ばれる
-*マニフェストテンプレート (manifest template)* を使ってこれを行います。マニフェストテンプレートは、ソース配布物に
-含めるファイルの正確なリストであるマニフェストファイル :file:`MANIFEST` をどうやって作成するか指示しているリストです。
-:command:`sdist` コマンドはこのテンプレートを処理し、書かれた指示とファイルシステム上に見つかったファイルに基づいて
-マニフェストファイルを作成します。
+Sometimes this is enough, but usually you will want to specify additional files
+to distribute.  The typical way to do this is to write a *manifest template*,
+called :file:`MANIFEST.in` by default.  The manifest template is just a list of
+instructions for how to generate your manifest file, :file:`MANIFEST`, which is
+the exact list of files to include in your source distribution.  The
+:command:`sdist` command processes this template and generates a manifest based
+on its instructions and what it finds in the filesystem.
 
-自分用のマニフェストファイルを書きたいなら、その形式は簡単です: 一行あたり一つの通常ファイル (または通常ファイルに対するシンボリックリンク)
-だけを書きます。自分で :file:`MANIFEST` を提供する場合、全てを自分で指定しなければなりません:
-ただし、上で説明したデフォルトのファイルセットは、この中には含まれません。
+If you prefer to roll your own manifest file, the format is simple: one filename
+per line, regular files (or symlinks to them) only.  If you do supply your own
+:file:`MANIFEST`, you must specify everything: the default set of files
+described above does not apply in this case.
 
-.. versionadded:: 2.7
-   :file:`MANIFEST` のコメントで始まるファイルは、それが生成されたものであることを表します。
-   そうでないファイルは上書きされたり削除されたりしません。
+.. versionchanged:: 2.7
+   An existing generated :file:`MANIFEST` will be regenerated without
+   :command:`sdist` comparing its modification time to the one of
+   :file:`MANIFEST.in` or :file:`setup.py`.
 
-シンタックスリファレンスは :ref:`manifest_template` を参照してください。
+.. versionchanged:: 2.7.1
+   :file:`MANIFEST` files start with a comment indicating they are generated.
+   Files without this comment are not overwritten or removed.
+
+.. versionchanged:: 2.7.3
+   :command:`sdist` will read a :file:`MANIFEST` file if no :file:`MANIFEST.in`
+   exists, like it did before 2.7.
+
+See :ref:`manifest_template` section for a syntax reference.
 
 
 .. _manifest-options:
 
-マニフェスト (manifest) 関連のオプション
-========================================
+Manifest-related options
+========================
 
-:command:`sdist` コマンドが通常行う処理の流れは、以下のようになっています:
+The normal course of operations for the :command:`sdist` command is as follows:
 
-* マニフェストファイル :file:`MANIFEST` が存在しなければ、 :file:`MANIFEST.in`
-  を読み込んでマニフェストファイルを作成します
+* if the manifest file (:file:`MANIFEST` by default) exists and the first line
+  does not have a comment indicating it is generated from :file:`MANIFEST.in`,
+  then it is used as is, unaltered
 
-* :file:`MANIFEST` も :file:`MANIFEST.in` もなければ、デフォルトのファイルセット
-  だけでできたマニフェストファイルを作成します
+* if the manifest file doesn't exist or has been previously automatically
+  generated, read :file:`MANIFEST.in` and create the manifest
 
-* :file:`MANIFEST.in` か :file:`setup.py` が :file:`MANIFEST` より新しければ、
-  :file:`MANIFEST.in` を読み込んで :file:`MANIFEST` を再生成します。
+* if neither :file:`MANIFEST` nor :file:`MANIFEST.in` exist, create a manifest
+  with just the default file set
 
-* (生成されたか、読み出された) :file:`MANIFEST` 内にあるファイルのリストを使って
-  ソース配布物アーカイブを作成します
+* use the list of files now in :file:`MANIFEST` (either just generated or read
+  in) to create the source distribution archive(s)
 
-上の動作は二種類のオプションを使って変更できます。
-まず、標準の "include" および "exclude" セットを無効化するには
-:option:`--no-defaults` および :option:`--no-prune`  を使います。
+There are a couple of options that modify this behaviour.  First, use the
+:option:`--no-defaults` and :option:`--no-prune` to disable the standard
+"include" and "exclude" sets.
 
-第2に、単にマニフェストを (再)生成したいだけで、ソース配布物は作成したくない
-場合があるかもしれません::
+Second, you might just want to (re)generate the manifest, but not create a
+source distribution::
 
    python setup.py sdist --manifest-only
 
-:option:`-o` は :option:`--manifest-only` のショートカットです。
-
+:option:`-o` is a shortcut for :option:`--manifest-only`.
 
 .. _manifest_template:
 
-MANIFEST.in テンプレート
+The MANIFEST.in template
 ========================
 
-:command:`sdist` コマンドがビルドする配布物に含めるファイルのリストを定義するために、
-プロジェクトに :file:`MANIFEST.in` ファイルを追加することができます。
+A :file:`MANIFEST.in` file can be added in a project to define the list of
+files to include in the distribution built by the :command:`sdist` command.
 
-:command:`sdist` が実行された時、 :file:`MANIFEST.in` ファイルを探して、
-それを解釈して、パッケージに含めるファイルのリストを含んだ :file:`MANIFEST`
-ファイルを生成します。
+When :command:`sdist` is run, it will look for the :file:`MANIFEST.in` file
+and interpret it to generate the :file:`MANIFEST` file that contains the
+list of files that will be included in the package.
 
-この機構は、デフォルトのファイルリストが十分でないときに利用できます。
-(:ref:`manifest` を参照)
+This mechanism can be used when the default list of files is not enough.
+(See :ref:`manifest`).
 
-.. Principle
-
-原則
+Principle
 ---------
 
-マニフェストテンプレートには一行あたり一つのコマンドがあります。
-各コマンドはソース配布物に入れたり配布物から除外したりするファイルのセットを指定します。
-例えば、Distutils 自体のマニフェストテンプレートを見てみましょう::
+The manifest template has one command per line, where each command specifies a
+set of files to include or exclude from the source distribution.  For an
+example, let's look at the Distutils' own manifest template::
 
    include *.txt
    recursive-include examples *.txt *.py
    prune examples/sample?/build
 
-各行はかなり明確に意味を取れるはずです: 上の指定では、 ``*.txt`` にマッチする配布物ルート下の全てのファイル、 :file:`examples`
-ディレクトリ下にある ``*.txt`` か ``*.py`` にマッチする全てのファイルを含め、 ``examples/sample?/build``
-にマッチする全てのファイルを除外します。これらの処理はすべて、標準的に含められるファイルセットの評価よりも *後に*
-行われるので、マニフェストテンプレートに明示的に指示をしておけば、標準セット中のファイルも除外できます。
-(:option:`--no-defaults` オプションを設定して、標準セット自体を無効にもできます。)
+The meanings should be fairly clear: include all files in the distribution root
+matching :file:`\*.txt`, all files anywhere under the :file:`examples` directory
+matching :file:`\*.txt` or :file:`\*.py`, and exclude all directories matching
+:file:`examples/sample?/build`.  All of this is done *after* the standard
+include set, so you can exclude files from the standard set with explicit
+instructions in the manifest template.  (Or, you can use the
+:option:`--no-defaults` option to disable the standard set entirely.)
 
-マニフェストテンプレート中のコマンドの順番には意味があります;  初期状態では、上で述べたようなデフォルトのファイルがあり、
-テンプレート中の各コマンドによって、逐次ファイルを追加したり除去したりしていいます。マニフェストテンプレートを完全に
-処理し終えたら、ソース配布物中に含めるべきでない以下のファイルをリストから除去します:
+The order of commands in the manifest template matters: initially, we have the
+list of default files as described above, and each command in the template adds
+to or removes from that list of files.  Once we have fully processed the
+manifest template, we remove files that should not be included in the source
+distribution:
 
-* Distutls の "build" (デフォルトの名前は :file:`build`) ツリー下にある全てのファイル
+* all files in the Distutils "build" tree (default :file:`build/`)
 
-* :file:`RCS`, :file:`CVS`, :file:`.svn`, :file:`.hg`, :file:`.git`, :file:`.bzr`, :file:`_darcs`
-  といった名前のディレクトリ下にある全てのファイル
+* all files in directories named :file:`RCS`, :file:`CVS`, :file:`.svn`,
+  :file:`.hg`, :file:`.git`, :file:`.bzr` or :file:`_darcs`
 
-こうして完全なファイルのリストができ、後で参照するためにマニフェストに書き込まれます。この内容は、ソース配布物のアーカイブを作成する際に使われます。
+Now we have our complete list of files, which is written to the manifest for
+future reference, and then used to build the source distribution archive(s).
 
-含めるファイルのデフォルトセットは :option:`--no-defaults` で無効化でき、標準で除外するセットは
-:option:`--no-prune` で無効化できます。
+You can disable the default set of included files with the
+:option:`--no-defaults` option, and you can disable the standard exclude set
+with :option:`--no-prune`.
 
-Distutils 自体のマニフェストテンプレートから、 :command:`sdist` コマンドがどのようにして Distutils
-ソース配布物に含めるファイルのリストを作成するか見てみましょう:
+Following the Distutils' own manifest template, let's trace how the
+:command:`sdist` command builds the list of files to include in the Distutils
+source distribution:
 
-#. :file:`distutils` ディレクトリ、および :file:`distutils/command` サブディレクトリの下にある全ての
-   Python ソースファイルを含めます (これらの二つのディレクトリが、setup スクリプト下の :option:`packages`
-   オプションに記載されているからです ---  :ref:`setup-script` を参照してください)
+#. include all Python source files in the :file:`distutils` and
+   :file:`distutils/command` subdirectories (because packages corresponding to
+   those two directories were mentioned in the ``packages`` option in the
+   setup script---see section :ref:`setup-script`)
 
-#. :file:`README.txt`, :file:`setup.py`, および :file:`setup.cfg` (標準のファイルセット)
-   を含めます
+#. include :file:`README.txt`, :file:`setup.py`, and :file:`setup.cfg` (standard
+   files)
 
-#. :file:`test/test\*.py` (標準のファイルセット) を含めます
+#. include :file:`test/test\*.py` (standard files)
 
-#. 配布物ルート下の :file:`\*.txt` を含めます (この処理で、 :file:`README.txt`
-   がもう一度見つかりますが、こうした冗長性は後で刈り取られます)
+#. include :file:`\*.txt` in the distribution root (this will find
+   :file:`README.txt` a second time, but such redundancies are weeded out later)
 
-#. :file:`examples` 下にあるサブツリー内で :file:`\*.txt` または :file:`\*.py`
-   にマッチする全てのファイルを含めます
+#. include anything matching :file:`\*.txt` or :file:`\*.py` in the sub-tree
+   under :file:`examples`,
 
-#. ディレクトリ名が :file:`examples/sample?/build` にマッチする
-   ディレクトリ以下のサブツリー内にあるファイル全てを除外します--- この操作によって、上の二つのステップでリストに含められたファイルが
-   除外されることがあるので、マニフェストテンプレート内では ``recursive-include`` コマンドの後に ``prune`` コマンドを
-   持ってくることが重要です
+#. exclude all files in the sub-trees starting at directories matching
+   :file:`examples/sample?/build`\ ---this may exclude files included by the
+   previous two steps, so it's important that the ``prune`` command in the manifest
+   template comes after the ``recursive-include`` command
 
-#. :file:`build` ツリー全体、および :file:`RCS`, :file:`CVS`, :file:`.svn`,
-   :file:`.hg`, :file:`.git`, :file:`.bzr`, :file:`_darcs` ディレクトリ全てを除外します。
+#. exclude the entire :file:`build` tree, and any :file:`RCS`, :file:`CVS`,
+   :file:`.svn`, :file:`.hg`, :file:`.git`, :file:`.bzr` and :file:`_darcs`
+   directories
 
-setup スクリプトと同様、マニフェストテンプレート中のディレクトリ名は常にスラッシュ区切りで表記します; Distutils は、こうしたディレクトリ
-名を注意深くプラットフォームでの標準的な表現に変換します。このため、マニフェストテンプレートは複数のオペレーティングシステムにわたって可搬性を持ちます。
+Just like in the setup script, file and directory names in the manifest template
+should always be slash-separated; the Distutils will take care of converting
+them to the standard representation on your platform. That way, the manifest
+template is portable across operating systems.
 
-
-.. Commands
-
-コマンド
+Commands
 --------
 
-マニフェストテンプレートコマンド一覧:
+The manifest template commands are:
 
 +-------------------------------------------+-----------------------------------------------+
-| コマンド                                  | 説明                                          |
+| Command                                   | Description                                   |
 +===========================================+===============================================+
-| :command:`include pat1 pat2 ...`          | リストされたパターンのどれかにマッチする全て  |
-|                                           | のファイルを含める                            |
+| :command:`include pat1 pat2 ...`          | include all files matching any of the listed  |
+|                                           | patterns                                      |
 +-------------------------------------------+-----------------------------------------------+
-| :command:`exclude pat1 pat2 ...`          | リストされたパターンのどれかにマッチする全て  |
-|                                           | のファイルを除外する                          |
+| :command:`exclude pat1 pat2 ...`          | exclude all files matching any of the listed  |
+|                                           | patterns                                      |
 +-------------------------------------------+-----------------------------------------------+
-| :command:`recursive-include dir pat1 pat2 | *dir* 配下の、リストされたパターンのどれかに  |
-| ...`                                      | マッチする全てのファイルを含める              |
+| :command:`recursive-include dir pat1 pat2 | include all files under *dir* matching any of |
+| ...`                                      | the listed patterns                           |
 +-------------------------------------------+-----------------------------------------------+
-| :command:`recursive-exclude dir pat1 pat2 | *dir* 配下の、リストされたパターンのどれかに  |
-| ...`                                      | マッチする全てのファイルを除外する            |
+| :command:`recursive-exclude dir pat1 pat2 | exclude all files under *dir* matching any of |
+| ...`                                      | the listed patterns                           |
 +-------------------------------------------+-----------------------------------------------+
-| :command:`global-include pat1 pat2 ...`   | ソースツリー内にある、リストされたパターンの  |
-|                                           | どれかにマッチする全てのファイルを含める      |
+| :command:`global-include pat1 pat2 ...`   | include all files anywhere in the source tree |
+|                                           | matching --- & any of the listed patterns     |
 +-------------------------------------------+-----------------------------------------------+
-| :command:`global-exclude pat1 pat2 ...`   | ソースツリー内にある、リストされたパターンの  |
-|                                           | どれかにマッチする全てのファイルを除外する    |
+| :command:`global-exclude pat1 pat2 ...`   | exclude all files anywhere in the source tree |
+|                                           | matching --- & any of the listed patterns     |
 +-------------------------------------------+-----------------------------------------------+
-| :command:`prune dir`                      | *dir* 配下の全てのファイルを除外する          |
+| :command:`prune dir`                      | exclude all files under *dir*                 |
 +-------------------------------------------+-----------------------------------------------+
-| :command:`graft dir`                      | *dir* 配下の全てのファイルを含める            |
+| :command:`graft dir`                      | include all files under *dir*                 |
 +-------------------------------------------+-----------------------------------------------+
 
-ここで使うパターンは、 Unix スタイルの "glob" パターンです。
-``*`` は通常のファイル名文字の任意のシーケンスにマッチします。
-``?`` は通常のファイル名文字の1文字にマッチします。
-``[range]`` は *range* に含まれる全ての文字にマッチします (例: ``a-z``, ``a-zA-Z``, ``a-f0-9_.``)
-通常のファイル名文字は、プラットフォーム依存になります。 Unix ではスラッシュ以外の全ての文字で、
-Windows ではコロンとバックスラッシュ以外の全ての文字です。
-
-.. versionchanged:: 2.7
-    :command:`sdist` は既存の生成された :file:`MANIFEST` ファイルを
-    :file:`MANIFEST.in` や :file:`setup.py` の変更時刻と比較すること無しに
-    再生成します。
+The patterns here are Unix-style "glob" patterns: ``*`` matches any sequence of
+regular filename characters, ``?`` matches any single regular filename
+character, and ``[range]`` matches any of the characters in *range* (e.g.,
+``a-z``, ``a-zA-Z``, ``a-f0-9_.``).  The definition of "regular filename
+character" is platform-specific: on Unix it is anything except slash; on Windows
+anything except backslash or colon.

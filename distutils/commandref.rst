@@ -1,17 +1,32 @@
 .. _reference:
 
-**********************
-コマンドリファレンス
-**********************
+*****************
+Command Reference
+*****************
+
+.. % \section{Building modules: the \protect\command{build} command family}
+.. % \label{build-cmds}
+.. % \subsubsection{\protect\command{build}}
+.. % \label{build-cmd}
+.. % \subsubsection{\protect\command{build\_py}}
+.. % \label{build-py-cmd}
+.. % \subsubsection{\protect\command{build\_ext}}
+.. % \label{build-ext-cmd}
+.. % \subsubsection{\protect\command{build\_clib}}
+.. % \label{build-clib-cmd}
 
 
 .. _install-cmd:
 
-モジュールをインストールする:  :command:`install` コマンド群
-============================================================
+Installing modules: the :command:`install` command family
+=========================================================
 
-:command:`install` コマンドは最初にビルドコマンドを実行しておいてから、サブコマンド :command:`install_lib`
-を実行します。 :command:`install_data` and :command:`install_scripts`.
+The install command ensures that the build commands have been run and then runs
+the subcommands :command:`install_lib`, :command:`install_data` and
+:command:`install_scripts`.
+
+.. % \subsubsection{\protect\command{install\_lib}}
+.. % \label{install-lib-cmd}
 
 
 .. _install-data-cmd:
@@ -19,7 +34,7 @@
 :command:`install_data`
 -----------------------
 
-このコマンドは配布物中に提供されている全てのデータファイルをインストールします。
+This command installs all data files provided with the distribution.
 
 
 .. _install-scripts-cmd:
@@ -27,5 +42,19 @@
 :command:`install_scripts`
 --------------------------
 
-このコマンドは配布物中の全ての (Python) スクリプトをインストールします。
+This command installs all (Python) scripts in the distribution.
+
+.. % \subsection{Cleaning up: the \protect\command{clean} command}
+.. % \label{clean-cmd}
+
+
+.. % \section{Creating a built distribution: the
+.. % \protect\command{bdist} command family}
+.. % \label{bdist-cmds}
+
+.. % \subsection{\protect\command{bdist}}
+.. % \subsection{\protect\command{bdist\_dumb}}
+.. % \subsection{\protect\command{bdist\_rpm}}
+.. % \subsection{\protect\command{bdist\_wininst}}
+
 

@@ -1,154 +1,152 @@
-.. highlightlang:: none
+.. highlightlang:: sh
 
 .. _using-on-unix:
 
-***************************************
- Unix プラットフォームで Python を使う
-***************************************
+********************************
+ Using Python on Unix platforms
+********************************
 
 .. sectionauthor:: Shriphani Palakodety
 
 
-最新バージョンの Python の取得とインストール
-==============================================
+Getting and installing the latest version of Python
+===================================================
 
-Linux
+On Linux
 --------
 
-ほとんどの Linux ディストリビューションでは Python はプリインストールされており、
-それ以外の Linux ディストリビューションでも パッケージとして利用可能です。
-しかし、ディストリビューションのパッケージでは、利用したい機能が使えない場合があります。
-最新版の Python をソースから簡単にコンパイルすることができます。
+Python comes preinstalled on most Linux distributions, and is available as a
+package on all others.  However there are certain features you might want to use
+that are not available on your distro's package.  You can easily compile the
+latest version of Python from source.
 
-Python がプリインストールされておらず、リポジトリにも無い場合、ディストリビューション用の
-パッケージを簡単につくることができます。以下のリンクを参照してください。
+In the event that Python doesn't come preinstalled and isn't in the repositories as
+well, you can easily make packages for your own distro.  Have a look at the
+following links:
 
 .. seealso::
 
-   http://www.linux.com/articles/60383
+   http://www.debian.org/doc/manuals/maint-guide/first.en.html
       for Debian users
-   http://linuxmafia.com/pub/linux/suse-linux-internals/chapter35.html
+   http://en.opensuse.org/Portal:Packaging
       for OpenSuse users
-   http://docs.fedoraproject.org/drafts/rpm-guide-en/ch-creating-rpms.html
+   http://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/ch-creating-rpms.html
       for Fedora users
    http://www.slackbook.org/html/package-management-making-packages.html
       for Slackware users
 
 
-FreeBSD と OpenBSD
+On FreeBSD and OpenBSD
 ----------------------
 
-* FreeBSD ユーザーは、 Python のパッケージを追加するために次のようにしてください。 ::
+* FreeBSD users, to add the package use::
 
      pkg_add -r python
 
-* OpenBSD ユーザーはこうです。 ::
+* OpenBSD users use::
 
-     pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/4.2/packages/<アーキテクチャ>/python-<バージョン>.tgz
+     pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/4.2/packages/<insert your architecture here>/python-<version>.tgz
 
-  たとえば、 i386 ユーザーが Python 2.5.1 を取得するには、次のようにします。 ::
+  For example i386 users get the 2.5.1 version of Python using::
 
      pkg_add ftp://ftp.openbsd.org/pub/OpenBSD/4.2/packages/i386/python-2.5.1p2.tgz
 
 
-OpenSolaris
+On OpenSolaris
 --------------
 
-OpenSolaris に最新版の Python をインストールするには、 blastwave
-(http://www.blastwave.org/howto.html) をインストールして、プロンプトから
-"pkg_get -i python" とタイプしてください。
+You can get Python from `OpenCSW <http://www.opencsw.org/>`_.  Various versions
+of Python are available and can be installed with e.g. ``pkgutil -i python27``.
 
 
-Python のビルド
+.. _building-python-on-unix:
+
+Building Python
 ===============
 
-CPython を自分でコンパイルしたい場合、最初にするべきことは
-`ソース <http://python.org/download/source/>`_ を取得することです。
-最新リリース版のソースか、新しい
-`チェックアウト
-<http://docs.python.org/devguide/setup#getting-the-source-code>`_
-をダウンロードすることができます。
+If you want to compile CPython yourself, first thing you should do is get the
+`source <https://www.python.org/download/source/>`_. You can download either the
+latest release's source or just grab a fresh `clone
+<https://docs.python.org/devguide/setup.html#getting-the-source-code>`_.  (If you want
+to contribute patches, you will need a clone.)
 
-ビルド手順は通常次のステップで構成されます。 ::
+The build process consists in the usual ::
 
    ./configure
    make
    make install
 
-configure のオプションと特定の Unix プラットフォームにおける注意点は
-Python のソースツリーのルートにある :file:`README` の中に細かく記載されています。
+invocations. Configuration options and caveats for specific Unix platforms are
+extensively documented in the :source:`README` file in the root of the Python
+source tree.
 
 .. warning::
 
-   ``make install`` は :file:`python` バイナリを上書きまたは覆い隠すかもしれません。
-   そのため、 ``make install`` の代わりに :file:`{exec_prefix}/bin/python{version}`
-   しかインストールしない ``make altinstall`` が推奨されます。
+   ``make install`` can overwrite or masquerade the :file:`python` binary.
+   ``make altinstall`` is therefore recommended instead of ``make install``
+   since it only installs :file:`{exec_prefix}/bin/python{version}`.
 
 
-Python に関係するパスとファイル
-================================
+Python-related paths and files
+==============================
 
-これらはローカルインストール時の規約に応じて変化します;
-:envvar:`prefix` (``${prefix}``) と :envvar:`exec_prefix` (``${exec_prefix}``) は
-インストール状況に依存していて、GNU ソフトウェアによって解釈されます;
-この二つは同じかもしれません。
+These are subject to difference depending on local installation conventions;
+:envvar:`prefix` (``${prefix}``) and :envvar:`exec_prefix` (``${exec_prefix}``)
+are installation-dependent and should be interpreted as for GNU software; they
+may be the same.
 
-例えば、ほとんどの Linux システムでは、デフォルトでは両方が :file:`/usr` です。
+For example, on most Linux systems, the default for both is :file:`/usr`.
 
-+-----------------------------------------------+------------------------------------------------+
-| ファイル/ディレクトリ                         | 意味                                           |
-+===============================================+================================================+
-| :file:`{exec_prefix}/bin/python`              | インタプリタの推奨される場所                   |
-+-----------------------------------------------+------------------------------------------------+
-| :file:`{prefix}/lib/python{version}`,         | 標準モジュールを格納するディレクトリの、       |
-| :file:`{exec_prefix}/lib/python{version}`     | 推奨される場所                                 |
-+-----------------------------------------------+------------------------------------------------+
-| :file:`{prefix}/include/python{version}`,     | Python 拡張や Python の埋込みに必要となる      |
-| :file:`{exec_prefix}/include/python{version}` | include ファイルを格納するディレクトリの       |
-|                                               | 推奨される場所                                 |
-+-----------------------------------------------+------------------------------------------------+
-| :file:`~/.pythonrc.py`                        | user モジュールによって読み込まれる、          |
-|                                               | ごとの初期化ファイル。デフォルトでは、         |
-|                                               | ほとんどのアプリケーションは利用しません。     |
-+-----------------------------------------------+------------------------------------------------+
++-----------------------------------------------+------------------------------------------+
+| File/directory                                | Meaning                                  |
++===============================================+==========================================+
+| :file:`{exec_prefix}/bin/python`              | Recommended location of the interpreter. |
++-----------------------------------------------+------------------------------------------+
+| :file:`{prefix}/lib/python{version}`,         | Recommended locations of the directories |
+| :file:`{exec_prefix}/lib/python{version}`     | containing the standard modules.         |
++-----------------------------------------------+------------------------------------------+
+| :file:`{prefix}/include/python{version}`,     | Recommended locations of the directories |
+| :file:`{exec_prefix}/include/python{version}` | containing the include files needed for  |
+|                                               | developing Python extensions and         |
+|                                               | embedding the interpreter.               |
++-----------------------------------------------+------------------------------------------+
+| :file:`~/.pythonrc.py`                        | User-specific initialization file loaded |
+|                                               | by the user module; not used by default  |
+|                                               | or by most applications.                 |
++-----------------------------------------------+------------------------------------------+
 
 
-その他
+Miscellaneous
 =============
 
-Python スクリプトを Unix で簡単に使うために、例えば次のようにして、
-そのスクリプトを実行ファイルにし ::
+To easily use Python scripts on Unix, you need to make them executable,
+e.g. with ::
 
    $ chmod +x script
 
-そして適切な shebang 行をスクリプトの先頭に置きます。
-たいていの場合良い方法は ::
+and put an appropriate Shebang line at the top of the script.  A good choice is
+usually ::
 
    #!/usr/bin/env python
 
-で、 :envvar:`PATH` 全体から Python インタプリタを探します。
-しかし、幾つかの Unix は :program:`env` コマンドをもっていないので、
-インタプリタのパスを ``/usr/bin/python`` のようにハードコードしなければ
-ならないかもしれません。
+which searches for the Python interpreter in the whole :envvar:`PATH`.  However,
+some Unices may not have the :program:`env` command, so you may need to hardcode
+``/usr/bin/python`` as the interpreter path.
 
-シェルコマンドを Python スクリプトから使うには、 :mod:`subprocess`
-モジュールを参照してください。
+To use shell commands in your Python scripts, look at the :mod:`subprocess` module.
 
 
-エディタ
-=========
+Editors
+=======
 
-Vim と Emacs は Python をよくサポートした、素晴らしいエディタです。
-これらのエディタで Python のコードを書く方法についての詳しい情報は、
-次の場所を参照してください。
+Vim and Emacs are excellent editors which support Python very well.  For more
+information on how to code in Python in these editors, look at:
 
 * http://www.vim.org/scripts/script.php?script_id=790
 * http://sourceforge.net/projects/python-mode
 
-Geany はたくさんの言語をサポートした素晴らしい IDE です。
-さらなる情報は、 http://geany.uvena.de/ を読んでください。
+Geany is an excellent IDE with support for a lot of languages. For more
+information, read: http://www.geany.org/
 
-Komodo edit も非常に良い IDE です。これもたくさんの言語をサポートしています。
-さらなる情報は、
-http://www.activestate.com/store/productdetail.aspx?prdGuid=20f4ed15-6684-4118-a78b-d37ff4058c5f
-を読んでください。
+Komodo edit is another extremely good IDE.  It also has support for a lot of
+languages. For more information, read http://komodoide.com/.

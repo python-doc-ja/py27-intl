@@ -2,49 +2,43 @@
 
 .. _using-on-windows:
 
-**************************
- Windows で Python を使う
-**************************
+*************************
+ Using Python on Windows
+*************************
 
 .. sectionauthor:: Robert Lehmann <lehmannro@gmail.com>
 
-このドキュメントは、 Python を Microsoft Windows で使うときに知っておくべき、
-Windows 独特の動作についての概要を伝えることを目的としています。
+This document aims to give an overview of Windows-specific behaviour you should
+know about when using Python on Microsoft Windows.
 
 
-Python のインストール
-======================
+Installing Python
+=================
 
-ほとんどの Unix システムやサービスと異なり、 Windows は Python に依存しておらず、
-プリインストールの Python はありません。
-しかし、 CPython チームは長年にわたり、コンパイル済みの Windows インストーラ
-(MSI パッケージ)を `リリース <http://www.python.org/download/releases/>`_
-毎に用意しています。
+Unlike most Unix systems and services, Windows does not require Python natively
+and thus does not pre-install a version of Python.  However, the CPython team
+has compiled Windows installers (MSI packages) with every `release
+<https://www.python.org/download/releases/>`_ for many years.
 
+With ongoing development of Python, some platforms that used to be supported
+earlier are no longer supported (due to the lack of users or developers).
+Check :pep:`11` for details on all unsupported platforms.
 
-Python の継続的な開発の中で、過去にサポートされていた幾つかのプラットフォームが
-(ユーザーと開発者の不足のために) サポートされなくなっています。
-全てのサポートされないプラットフォームについての詳細は :pep:`11` をチェックしてください。
-
-* DOS と Windows 3.x は Python 2.0 から廃止予定になり、Python 2.1 でこれらのシステム
-  専用のコードは削除されました。
-* 2.5 まで、 Python は Windows 95, 98, ME で動きました (ですが、すでにインストール時に
-  廃止予定の警告をだしていました)。 Python 2.6 (とその後の全てのリリース) は、
-  これらの OS のサポートが止められ、新しいリリースは Windows NT ファミリーしか
-  考慮されていません。
-* `Windows CE <http://pythonce.sourceforge.net/>`_ は今でもサポートされています。
-* `Cygwin <http://cygwin.com/>`_ インストーラも `Python インタープリタ
-  <http://cygwin.com/packages/python>`_ のインストールを提供しています。
-  これは "Interpreters" の下に置かれています。(cf. `Cygwin package source
+* DOS and Windows 3.x are deprecated since Python 2.0 and code specific to these
+  systems was removed in Python 2.1.
+* Up to 2.5, Python was still compatible with Windows 95, 98 and ME (but already
+  raised a deprecation warning on installation).  For Python 2.6 (and all
+  following releases), this support was dropped and new releases are just
+  expected to work on the Windows NT family.
+* `Windows CE <http://pythonce.sourceforge.net/>`_ is still supported.
+* The `Cygwin <http://cygwin.com/>`_ installer offers to install the Python
+  interpreter as well (cf. `Cygwin package source
   <ftp://ftp.uni-erlangen.de/pub/pc/gnuwin32/cygwin/mirrors/cygnus/
   release/python>`_, `Maintainer releases
   <http://www.tishler.net/jason/software/python/>`_)
 
-
-コンパイル済みインストーラが提供されているプラットフォームについての詳細な情報は
-`Python for Windows (and DOS) <http://www.python.org/download/windows/>`_
-を参照してください。
-
+See `Python for Windows (and DOS) <https://www.python.org/download/windows/>`_
+for detailed information about platforms with precompiled installers.
 
 .. seealso::
 
@@ -52,214 +46,197 @@ Python の継続的な開発の中で、過去にサポートされていた幾�
       "7 Minutes to "Hello World!""
       by Richard Dooling, 2006
 
-   `Installing on Windows <http://diveintopython.org/installing_python/windows.html>`_
+   `Installing on Windows <http://www.diveintopython.net/installing_python/windows.html>`_
       in "`Dive into Python: Python from novice to pro
-      <http://diveintopython.org/index.html>`_"
+      <http://www.diveintopython.net/>`_"
       by Mark Pilgrim, 2004,
       ISBN 1-59059-356-1
 
-   `For Windows users <http://swaroopch.com/text/Byte_of_Python:Installing_Python#For_Windows_users>`_
+   `For Windows users <http://www.swaroopch.com/notes/python/#install_windows>`_
       in "Installing Python"
-      in "`A Byte of Python <http://www.byteofpython.info>`_"
+      in "`A Byte of Python <http://www.swaroopch.com/notes/python/>`_"
       by Swaroop C H, 2003
 
 
-別のバンドル
+Alternative bundles
 ===================
 
-標準の CPython の配布物の他に、追加の機能を持っている修正されたパッケージがあります。
-以下は人気のあるバージョンとそのキーとなる機能です。
+Besides the standard CPython distribution, there are modified packages including
+additional functionality.  The following is a list of popular versions and their
+key features:
 
 `ActivePython <http://www.activestate.com/Products/activepython/>`_
-    マルチプラットフォーム互換のインストーラー、ドキュメント、 PyWin32
+    Installer with multi-platform compatibility, documentation, PyWin32
 
-`Enthought Python Distribution <http://www.enthought.com/products/epd.php>`_
-    (PyWin32 などの) 人気のあるモジュールとそのドキュメント、 Python の
-    拡張をビルドするためのツールスイート
+`Enthought Python Distribution <https://www.enthought.com/products/epd/>`_
+    Popular modules (such as PyWin32) with their respective documentation, tool
+    suite for building extensible Python applications
 
-これらのパッケージは *古い* バージョンの Python をインストールするかもしれないことに
-気をつけてください。
-
+Notice that these packages are likely to install *older* versions of Python.
 
 
-Python を構成する
+
+Configuring Python
 ==================
 
-Python を完全に動かすために、幾つかの環境設定を変更しなければならないかもしれません。
+In order to run Python flawlessly, you might have to change certain environment
+settings in Windows.
 
 
-補足: 環境変数の設定
-----------------------
+.. _setting-envvars:
 
-Windows は環境変数を変更するためのビルトインのダイアログを持っています。
-(以降のガイドは XP のクラシカルビューに適用されます。)
-マシンのアイコン(たいていデスクトップにあって "マイ コンピュータ" と呼ばれます)
-を右クリックして、そこにある :menuselection:`プロパティ` を選択します。
-:guilabel:`詳細設定` タブを開いて、 :guilabel:`環境変数` ボタンをクリックします。
+Excursus: Setting environment variables
+---------------------------------------
 
-ここまでのパスをまとめると:
+Windows has a built-in dialog for changing environment variables (following
+guide applies to XP classical view): Right-click the icon for your machine
+(usually located on your Desktop and called "My Computer") and choose
+:menuselection:`Properties` there.  Then, open the :guilabel:`Advanced` tab
+and click the :guilabel:`Environment Variables` button.
 
-    :menuselection:`マイ コンピュータ
-    --> プロパティ
-    --> 詳細設定
-    --> 環境変数`
+In short, your path is:
 
-このダイアログで、ユーザーとシステムの環境変数を追加したり修正できます。
-システム変数を変更するには、マシンへの無制限アクセス(管理者権限)が必要です。
+    :menuselection:`My Computer
+    --> Properties
+    --> Advanced
+    --> Environment Variables`
 
-環境に変数を追加するもう一つの方法は、 :command:`set` コマンドを使うことです。 ::
+In this dialog, you can add or modify User and System variables. To change
+System variables, you need non-restricted access to your machine
+(i.e. Administrator rights).
+
+Another way of adding variables to your environment is using the :command:`set`
+command::
 
     set PYTHONPATH=%PYTHONPATH%;C:\My_python_lib
 
-この設定を永続化するために、このコマンドラインを :file:`autoexec.bat`
-に追加することができます。 :program:`msconfig` はこのファイルを編集するGUIです。
+To make this setting permanent, you could add the corresponding command line to
+your :file:`autoexec.bat`. :program:`msconfig` is a graphical interface to this
+file.
 
-もっと直接的な方法で環境変数を見ることができます。
-コマンドプロンプトはパーセント記号で囲まれた文字列を自動的に展開します。 ::
+Viewing environment variables can also be done more straight-forward: The
+command prompt will expand strings wrapped into percent signs automatically::
 
     echo %PATH%
 
-この動作についての詳細は :command:`set /?` を見てください。
+Consult :command:`set /?` for details on this behaviour.
 
 .. seealso::
 
    http://support.microsoft.com/kb/100843
-      Windows NT の環境変数
+      Environment variables in Windows NT
 
    http://support.microsoft.com/kb/310519
-      Windows XP での環境変数の管理方法
+      How To Manage Environment Variables in Windows XP
 
    http://www.chem.gla.ac.uk/~louis/software/faq/q1.html
       Setting Environment variables, Louis J. Farrugia
 
 
-Python 実行ファイルを見つける
+Finding the Python executable
 -----------------------------
 
-スタートメニューに自動的に作られた Python interpreter のメニューエントリを
-使うのと別に、DOSプロンプトから Python を実行したいかもしれません。
-そのためには、 :envvar:`%PATH%` 環境変数に Python ディストリビューションの
-ディレクトリを、セミコロンで他のエントリと区切って含めるように設定する
-必要があります。
-変数の設定例は次のようになります (最初の2つのエントリが Windows のデフォルト
-だと仮定します)::
+Besides using the automatically created start menu entry for the Python
+interpreter, you might want to start Python in the DOS prompt.  To make this
+work, you need to set your :envvar:`%PATH%` environment variable to include the
+directory of your Python distribution, delimited by a semicolon from other
+entries.  An example variable could look like this (assuming the first two
+entries are Windows' default)::
 
-    C:\WINDOWS\system32;C:\WINDOWS;C:\Python26
+    C:\WINDOWS\system32;C:\WINDOWS;C:\Python25
 
-コマンドプロンプトから :command:`python` をタイプすると、 Python インタプリタを
-起動します。これで、スクリプトをコマンドラインオプション付きで実行することも
-可能です。 :ref:`using-on-cmdline` ドキュメントを参照してください。
-
-
-モジュールの検索
-------------------
-
-Python は通常そのライブラリ(と site-packages フォルダ)をインストールした
-ディレクトリに格納する。
-なので、 Python を :file:`C:\\Python\\` ディレクトリにインストールしたとすると、
-デフォルトのライブラリは :file:`C:\\Python\\Lib\\` に存在し、
-サードパーティーのモジュールは :file:`C:\\Python\\Lib\\site-packages\\`
-に格納されます。
-
-.. `` エディタのシンタックスハイライトの問題回避用コメント
-
-以下は、 Windows で :data:`sys.path` が構築される方法です。 
-
-* 最初に空のエントリが追加されます。これはカレントディレクトリを指しています。
-
-* その次に、 :envvar:`PYTHONPATH` 環境変数が存在するとき、 :ref:`using-on-envvars` で
-  解説されているように追加されます。 Windows ではドライブ識別子 (``C:\`` など)と
-  区別するために、この環境変数に含まれるパスの区切り文字はセミコロンでなければ
-  ならない事に注意してください。
-
-* 追加で "アプリケーションのパス" を ``HKEY_CURRENT_USER`` か ``HKEY_LOCAL_MACHINE``
-  の中の :samp:`\\SOFTWARE\\Python\\PythonCore\\{version}\\PythonPath` の
-  サブキーとして登録することができます。
-  サブキーはデフォルト値としてセミコロンで区切られたパス文字列を持つことができ、
-  書くパスが :data:`sys.path` に追加されます。
-  (既存のインストーラーは全て HKLM しか利用しないので、 HKCU は通常空です)
-
-* :envvar:`PYTHONHOME` が設定されている場合、それは "Python Home" として扱われます。
-  それ以外の場合、 "Python Home" を推定するために Python の実行ファイルのパスから
-  "目標ファイル" (``Lib\os.py``) が探されます。 Python home が見つかった場合、
-  そこからいくつかのサブディレクトリ (``Lib``, ``plat-win``, など) が :data:`sys.path`
-  に追加されます。見つからなかった場合、 core Python path はレジストリに登録された
-  PythonPath から構築されます。
-
-* Python Home が見つからず、環境変数 :envvar:`PYTHONPATH` が指定されず、
-  レジストリエントリが見つからなかった場合、関連するデフォルトのパスが利用されます。
-  (例: ``.\Lib;.\plat-win`` など)
-
-結果としてこうなります:
-
-* :file:`python.exe` かそれ以外の Python ディレクトリにある .exe ファイルを
-  実行したとき (インストールされている場合でも PCbuild から直接実行されている場合でも)
-  core path が利用され、レジストリ内の core path は無視されます。
-  それ以外のレジストリの "application paths" は常に読み込まれます。
-
-* Python が他の .exe ファイル (他のディレクトリに存在する場合や、COM経由で組み込まれる場合など)
-  にホストされている場合は、 "Python Home" は推定されず、レジストリにある core path
-  が利用されます。
-  それ以外のレジストリの "application paths" は常に読み込まれます。
-
-* Python が Python home ディレクトリを見つけられずレジストリも存在しない場合
-  (例: freeze された .exe, いくつかのとても奇妙なインストール構成)、
-  デフォルトの、ただし相対パスが利用されます。
-
-追加のフォルダを Python の import 機構の検索対象に含めることもできます。
-:envvar:`PYTHONPATH` を :ref:`using-on-envvars` で解説されているように利用し、
-:data:`sys.path` を変更してください。
-Windowsでは、 ドライブ識別子 (:file:`C:\\` など) と区別するために、パスはセミコロンで
-区切られています。
-
-.. ``
-
-モジュール検索パスの変更は、レジストリの
-:file:`HKLM\\SOFTWARE\\Python\\PythonCore\\{version}\\PythonPath` キーからも
-可能です。
-このキーのデフォルト値と同じように、セミコロンで区切られたパス文字列を持った
-サブキーがあれば、その各パスを探します。複数のサブキーを作成することができ、
-path に辞書順で追加されます。
-便利なレジストリエディタは :program:`regedit` です。
-(:menuselection:`スタート --> ファイル名を指定して実行` から "regedit"
-とタイプすることで起動することができます。)
+Typing :command:`python` on your command prompt will now fire up the Python
+interpreter.  Thus, you can also execute your scripts with command line options,
+see :ref:`using-on-cmdline` documentation.
 
 
-スクリプトを実行する
----------------------
+Finding modules
+---------------
 
-Python スクリプト (``.py`` 拡張子を持ったファイル) はデフォルトで :program:`python.exe`
-に起動されます。この実行ファイルは、プログラムがGUIを使う場合でもターミナルを開きます。
-ターミナル無しでスクリプトを実行したい場合は、拡張子 ``.pyw`` を使うとそのスクリプトが
-デフォルトでは :program:`pythonw.exe` で実行されるようになります。
-(2つの実行ファイルは両方とも Python をインストールしたディレクトリの直下にあります。)
-:program:`pythonw.exe` は起動時にターミナルを開きません。
+Python usually stores its library (and thereby your site-packages folder) in the
+installation directory.  So, if you had installed Python to
+:file:`C:\\Python\\`, the default library would reside in
+:file:`C:\\Python\\Lib\\` and third-party modules should be stored in
+:file:`C:\\Python\\Lib\\site-packages\\`.
+
+This is how :data:`sys.path` is populated on Windows:
+
+* An empty entry is added at the start, which corresponds to the current
+  directory.
+
+* If the environment variable :envvar:`PYTHONPATH` exists, as described in
+  :ref:`using-on-envvars`, its entries are added next.  Note that on Windows,
+  paths in this variable must be separated by semicolons, to distinguish them
+  from the colon used in drive identifiers (``C:\`` etc.).
+
+* Additional "application paths" can be added in the registry as subkeys of
+  :samp:`\\SOFTWARE\\Python\\PythonCore\\{version}\\PythonPath` under both the
+  ``HKEY_CURRENT_USER`` and ``HKEY_LOCAL_MACHINE`` hives.  Subkeys which have
+  semicolon-delimited path strings as their default value will cause each path
+  to be added to :data:`sys.path`.  (Note that all known installers only use
+  HKLM, so HKCU is typically empty.)
+
+* If the environment variable :envvar:`PYTHONHOME` is set, it is assumed as
+  "Python Home".  Otherwise, the path of the main Python executable is used to
+  locate a "landmark file" (``Lib\os.py``) to deduce the "Python Home".  If a
+  Python home is found, the relevant sub-directories added to :data:`sys.path`
+  (``Lib``, ``plat-win``, etc) are based on that folder.  Otherwise, the core
+  Python path is constructed from the PythonPath stored in the registry.
+
+* If the Python Home cannot be located, no :envvar:`PYTHONPATH` is specified in
+  the environment, and no registry entries can be found, a default path with
+  relative entries is used (e.g. ``.\Lib;.\plat-win``, etc).
+
+The end result of all this is:
+
+* When running :file:`python.exe`, or any other .exe in the main Python
+  directory (either an installed version, or directly from the PCbuild
+  directory), the core path is deduced, and the core paths in the registry are
+  ignored.  Other "application paths" in the registry are always read.
+
+* When Python is hosted in another .exe (different directory, embedded via COM,
+  etc), the "Python Home" will not be deduced, so the core path from the
+  registry is used.  Other "application paths" in the registry are always read.
+
+* If Python can't find its home and there is no registry (eg, frozen .exe, some
+  very strange installation setup) you get a path with some default, but
+  relative, paths.
+
+
+Executing scripts
+-----------------
+
+Python scripts (files with the extension ``.py``) will be executed by
+:program:`python.exe` by default.  This executable opens a terminal, which stays
+open even if the program uses a GUI.  If you do not want this to happen, use the
+extension ``.pyw`` which will cause the script to be executed by
+:program:`pythonw.exe` by default (both executables are located in the top-level
+of your Python installation directory).  This suppresses the terminal window on
+startup.
 
 You can also make all ``.py`` scripts execute with :program:`pythonw.exe`,
 setting this through the usual facilities, for example (might require
 administrative rights):
-全ての ``.py`` スクリプトを :program:`pythonw.exe` で実行するように
-設定することもできます。例えば (管理者権限が必要):
 
-#. コマンドプロンプトを起動する
-#. ``.py`` スクリプトに正しいファイルグループを関連付ける::
+#. Launch a command prompt.
+#. Associate the correct file group with ``.py`` scripts::
 
       assoc .py=Python.File
 
-#. 全ての Python ファイルを新しい実行ファイルにリダイレクトする::
+#. Redirect all Python files to the new executable::
 
       ftype Python.File=C:\Path\to\pythonw.exe "%1" %*
 
 
-追加のモジュール
-=================
+Additional modules
+==================
 
-Python は全プラットフォーム互換を目指していますが、 Windows にしかない
-ユニークな機能もあります。標準ライブラリと外部のライブラリの両方で、
-幾つかのモジュールと、そういった機能を使うためのスニペットがあります。
+Even though Python aims to be portable among all platforms, there are features
+that are unique to Windows.  A couple of modules, both in the standard library
+and external, and snippets exist to use these features.
 
-Windows 専用の標準モジュールは、
-:ref:`mswin-specific-services` に書かれています。
+The Windows-specific standard modules are documented in
+:ref:`mswin-specific-services`.
 
 
 PyWin32
@@ -268,21 +245,17 @@ PyWin32
 The `PyWin32 <http://python.net/crew/mhammond/win32/>`_ module by Mark Hammond
 is a collection of modules for advanced Windows-specific support.  This includes
 utilities for:
-Mark Hammond によって開発された `PyWin32 <http://python.net/crew/mhammond/win32/>`_
-モジュールは、進んだ Windows 専用のサポートをするモジュール群です。
-このモジュールは以下のユーティリティを含んでいます。
 
 * `Component Object Model <http://www.microsoft.com/com/>`_ (COM)
-* Win32 API 呼び出し
-* レジストリ
-* イベントログ
+* Win32 API calls
+* Registry
+* Event log
 * `Microsoft Foundation Classes <http://msdn.microsoft.com/en-us/library/fe1cf721%28VS.80%29.aspx>`_ (MFC)
-  ユーザーインターフェイス
+  user interfaces
 
 `PythonWin <http://web.archive.org/web/20060524042422/
-http://www.python.org/windows/pythonwin/>`_ は PyWin32 に付属している、
-サンプルのMFCアプリケーションです。
-これはビルトインのデバッガを含む、組み込み可能なIDEです。
+https://www.python.org/windows/pythonwin/>`_ is a sample MFC application
+shipped with PyWin32.  It is an embeddable IDE with a built-in debugger.
 
 .. seealso::
 
@@ -296,57 +269,56 @@ http://www.python.org/windows/pythonwin/>`_ は PyWin32 に付属している、
 Py2exe
 ------
 
-`Py2exe <http://www.py2exe.org/>`_ は :mod:`distutils` 拡張 (:ref:`extending-distutils`
-を参照) で、 Python スクリプトを Windows 実行可能プログラム (:file:`{*}.exe` ファイル)
-にラップします。
-これを使えば、ユーザーに Python のインストールをさせなくても、
-アプリケーションを配布することができます。
+`Py2exe <http://www.py2exe.org/>`_ is a :mod:`distutils` extension (see
+:ref:`extending-distutils`) which wraps Python scripts into executable Windows
+programs (:file:`{*}.exe` files).  When you have done this, you can distribute
+your application without requiring your users to install Python.
+
 
 WConio
 ------
 
-Python の進んだターミナル制御レイヤである :mod:`curses` は、 Unix ライクシステムでしか
-使うことができません。逆に Windows 専用のライブラリ、 Windows Console I/O for Python
-があります。
+Since Python's advanced terminal handling layer, :mod:`curses`, is restricted to
+Unix-like systems, there is a library exclusive to Windows as well: Windows
+Console I/O for Python.
 
-`WConio <http://newcenturycomputers.net/projects/wconio.html>`_ は
-Turbo-C の :file:`CONIO.H` のラッパーで、テキストユーザーインタフェースを
-作成するために利用することができます。
-
-
-Windows 上で Python をコンパイルする
-=====================================
-
-CPython を自分でコンパイルしたい場合、最初にすることは
-`ソース <http://python.org/download/source/>`_ を取得することです。
-最新版リリースのソースをダウンロードするか、最新の `チェックアウト
-<http://docs.python.org/devguide/setup#checking-out-the-code>`_
-を取得することができます。
-
-公式の Python リリースをビルドするのに使われている Microsoft Visual C++ コンパイラのために、
-ソースツリーは ソリューション・プロジェクトファイルを含んでいます。
-適切なディレクトリにある :file:`readme.txt` を参照してください。
-
-+--------------------+-----------------+--------------------------+
-| ディレクトリ       | MSVC バージョン | Visual Studio バージョン |
-+====================+=================+==========================+
-| :file:`PC/VC6/`    | 6.0             | 97                       |
-+--------------------+-----------------+--------------------------+
-| :file:`PC/VS7.1/`  | 7.1             | 2003                     |
-+--------------------+-----------------+--------------------------+
-| :file:`PC/VS8.0/`  | 8.0             | 2005                     |
-+--------------------+-----------------+--------------------------+
-| :file:`PCbuild/`   | 9.0             | 2008                     |
-+--------------------+-----------------+--------------------------+
-
-これらのビルドディレクトリの全てが完全にサポートされているわけではありません。
-使用しているバージョンの公式リリースが利用しているコンパイラのバージョンについては、
-リリースノートを参照してください。
-
-ビルドプロセスに関する一般的な情報は :file:`PC/readme.txt` をチェックしてください。
+`WConio <http://newcenturycomputers.net/projects/wconio.html>`_ is a wrapper for
+Turbo-C's :file:`CONIO.H`, used to create text user interfaces.
 
 
-拡張モジュールについては、 :ref:`building-on-windows` を参照してください。
+
+Compiling Python on Windows
+===========================
+
+If you want to compile CPython yourself, first thing you should do is get the
+`source <https://www.python.org/download/source/>`_. You can download either the
+latest release's source or just grab a fresh `checkout
+<https://docs.python.org/devguide/setup.html#getting-the-source-code>`_.
+
+For Microsoft Visual C++, which is the compiler with which official Python
+releases are built, the source tree contains solutions/project files.  View the
+:file:`readme.txt` in their respective directories:
+
++--------------------+--------------+-----------------------+
+| Directory          | MSVC version | Visual Studio version |
++====================+==============+=======================+
+| :file:`PC/VC6/`    | 6.0          | 97                    |
++--------------------+--------------+-----------------------+
+| :file:`PC/VS7.1/`  | 7.1          | 2003                  |
++--------------------+--------------+-----------------------+
+| :file:`PC/VS8.0/`  | 8.0          | 2005                  |
++--------------------+--------------+-----------------------+
+| :file:`PCbuild/`   | 9.0          | 2008                  |
++--------------------+--------------+-----------------------+
+
+Note that not all of these build directories are fully supported.  Read the
+release notes to see which compiler version the official releases for your
+version are built with.
+
+Check :file:`PC/readme.txt` for general information on the build process.
+
+
+For extension modules, consult :ref:`building-on-windows`.
 
 .. seealso::
 
@@ -359,12 +331,12 @@ CPython を自分でコンパイルしたい場合、最初にすることは
       by Trent Apted et al, 2007
 
 
-その他のリソース
-=================
+Other resources
+===============
 
 .. seealso::
 
-   `Python Programming On Win32 <http://www.oreilly.com/catalog/pythonwin32/>`_
+   `Python Programming On Win32 <http://shop.oreilly.com/product/9781565926219.do>`_
       "Help for Windows Programmers"
       by Mark Hammond and Andy Robinson, O'Reilly Media, 2000,
       ISBN 1-56592-621-8
