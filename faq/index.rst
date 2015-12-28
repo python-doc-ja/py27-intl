@@ -1,9 +1,8 @@
-#####################
- Python よくある質問
-#####################
+.. _faq-index:
 
-:Release: |version|
-:Date: |today|
+###################################
+  Python Frequently Asked Questions
+###################################
 
 .. toctree::
    :maxdepth: 1
@@ -16,5 +15,3 @@
    windows.rst
    gui.rst
    installed.rst
-   
-   jptranslation.rst
