@@ -1,57 +1,66 @@
 
 .. _expressions:
 
-***************
-式 (expression)
-***************
+***********
+Expressions
+***********
 
 .. index:: single: expression
 
-この章では、Python の式における個々の要素の意味について解説します。
+This chapter explains the meaning of the elements of expressions in Python.
 
-**表記法に関する注意:** この章と以降の章での拡張BNF  (extended BNF) 表記は、字句解析規則ではなく、構文規則を記述する
-ために用いられています。ある構文規則 (のある表現方法) が、以下の形式
+.. index:: single: BNF
+
+**Syntax Notes:** In this and the following chapters, extended BNF notation will
+be used to describe syntax, not lexical analysis.  When (one alternative of) a
+syntax rule has the form
 
 .. productionlist:: *
    name: `othername`
 
 .. index:: single: syntax
 
-で記述されていて、この構文特有の意味付け (semantics) が記述されていない場合、 ``name``
-の形式をとる構文の意味付けは ``othername`` の意味付けと同じになります。
+and no semantics are given, the semantics of this form of ``name`` are the same
+as for ``othername``.
 
 
 .. _conversions:
 
-算術変換 (arithmetic conversion)
-================================
+Arithmetic conversions
+======================
 
 .. index:: pair: arithmetic; conversion
 
-以下の算術演算子の記述で、「数値引数は共通の型に変換されます」と書かれている場合、引数は :ref:`coercion-rules` に記載されている
-型強制規則に基づいて型強制されます。引数がいずれも標準の数値型である場合、以下の型強制が適用されます:
+When a description of an arithmetic operator below uses the phrase "the numeric
+arguments are converted to a common type," the arguments are coerced using the
+coercion rules listed at  :ref:`coercion-rules`.  If both arguments are standard
+numeric types, the following coercions are applied:
 
-* 片方の引数が複素数型であれば、他方は複素数型に変換されます;
+* If either argument is a complex number, the other is converted to complex;
 
-* それ以外の場合で、片方の引数が浮動小数点数であれば、他方は浮動小数点型に変換されます;
+* otherwise, if either argument is a floating point number, the other is
+  converted to floating point;
 
-* それ以外の場合で、片方の引数が長整数型であれば、他方は長整数型に変換されます;
+* otherwise, if either argument is a long integer, the other is converted to
+  long integer;
 
-* それ以外の場合で、両方の引数が通常の整数型であれば、変換の必要はありません。
+* otherwise, both must be plain integers and no conversion is necessary.
 
-特定の演算子 (文字列を左引数とする '%' 演算子など) では、さらに別の規則が適用されます。拡張をおこなうことで、個々の演算子に対する
-型強制を定義できます。
+Some additional rules apply for certain operators (e.g., a string left argument
+to the '%' operator). Extensions can define their own coercions.
 
 
 .. _atoms:
 
-アトム、原子的要素 (atom)
-=========================
+Atoms
+=====
 
 .. index:: single: atom
 
-アトム (原子的要素: atom) は、式を構成する基本単位です。もっとも単純なアトムは、識別子またはリテラルになります。逆クオートや丸括弧、波括弧、
-または角括弧で囲われた形式 (form) もまた、文法的にはアトムに分類されます。アトムの構文定義は以下のようになります:
+Atoms are the most basic elements of expressions.  The simplest atoms are
+identifiers or literals.  Forms enclosed in reverse quotes or in parentheses,
+brackets or braces are also categorized syntactically as atoms.  The syntax for
+atoms is:
 
 .. productionlist::
    atom: `identifier` | `literal` | `enclosure`
@@ -62,132 +71,154 @@
 
 .. _atom-identifiers:
 
-識別子 (identifier、または名前 (name))
---------------------------------------
+Identifiers (Names)
+-------------------
 
 .. index::
    single: name
    single: identifier
 
-アトムの形になっている識別子 (identifier) は名前 (name) です。
-字句定義については :ref:`identifiers` 節を、名前付けや束縛については :ref:`naming` 節を参照してください。
+An identifier occurring as an atom is a name.  See section :ref:`identifiers`
+for lexical definition and section :ref:`naming` for documentation of naming and
+binding.
 
 .. index:: exception: NameError
 
-名前があるオブジェクトに束縛されている場合、名前アトムを評価するとそのオブジェクトになります。名前が束縛されていない場合、アトムを
-評価しようとすると :exc:`NameError` 例外を送出します。
+When the name is bound to an object, evaluation of the atom yields that object.
+When a name is not bound, an attempt to evaluate it raises a :exc:`NameError`
+exception.
 
 .. index::
    pair: name; mangling
    pair: private; names
 
-**プライベートな名前の難号化 (mangling):** クラス定義内にテキストの形で書かれた識別子で、二つ以上のアンダースコア
-から始まり、末尾が二つ以上のアンダースコアになっていないものは、そのクラスの :dfn:`プライベートな名前 (private name)` とみなされます。
-プライベートな名前は、コードが生成される前に、より長い形式の名前に変換されます。この変換では、クラス名の先頭にあるアンダースコアを全て
-はぎとり、先頭にアンダースコアを一つ挿入して、名前の前に付加します。例えば、クラス ``Ham`` 内の識別子 ``__spam`` は、
-``_Ham__spam`` に変換されます。変換は識別子が使われている構文的コンテキストとは独立しています。変換された名前が非常に長い (255 文字以上)
-の場合には、実装によっては名前の切り詰めが起きるかもしれません。クラス名がアンダースコアだけから成り立つ場合には、変換は行われません。
+**Private name mangling:** When an identifier that textually occurs in a class
+definition begins with two or more underscore characters and does not end in two
+or more underscores, it is considered a :dfn:`private name` of that class.
+Private names are transformed to a longer form before code is generated for
+them.  The transformation inserts the class name, with leading underscores
+removed and a single underscore inserted, in front of the name.  For example,
+the identifier ``__spam`` occurring in a class named ``Ham`` will be transformed
+to ``_Ham__spam``.  This transformation is independent of the syntactical
+context in which the identifier is used.  If the transformed name is extremely
+long (longer than 255 characters), implementation defined truncation may happen.
+If the class name consists only of underscores, no transformation is done.
+
+
 
 .. _atom-literals:
 
-リテラル
+Literals
 --------
 
 .. index:: single: literal
 
-Python では、文字列リテラルと、様々な数値リテラルをサポートしています:
+Python supports string literals and various numeric literals:
 
 .. productionlist::
-    literal: `stringliteral` | `integer` | `longinteger`
-           : | `floatnumber` | `imagnumber`
+   literal: `stringliteral` | `integer` | `longinteger`
+          : | `floatnumber` | `imagnumber`
+
+Evaluation of a literal yields an object of the given type (string, integer,
+long integer, floating point number, complex number) with the given value.  The
+value may be approximated in the case of floating point and imaginary (complex)
+literals.  See section :ref:`literals` for details.
 
 .. index::
    triple: immutable; data; type
    pair: immutable; object
 
-リテラルを評価すると、指定した型 (文字列、整数、長整数、浮動小数点数、複素数) の指定した値を持つオブジェクトになります。浮動小数点や虚数 (複素数)
-リテラルの場合、値は近似値になる場合があります。詳しくは :ref:`literals` を参照してください。
-リテラルは全て変更不能なデータ型に対応します。このため、オブジェクトのアイデンティティはオブジェクトの値ほど重要ではありません。
-同じ値を持つ複数のリテラルを評価した場合、(それらのリテラルがプログラムの同じ場所由来のものであっても、そうでなくても)
-同じオブジェクトを指しているか、まったく同じ値を持つ別のオブジェクトになります。
+All literals correspond to immutable data types, and hence the object's identity
+is less important than its value.  Multiple evaluations of literals with the
+same value (either the same occurrence in the program text or a different
+occurrence) may obtain the same object or a different object with the same
+value.
 
 
 .. _parenthesized:
 
-丸括弧形式 (parenthesized form)
--------------------------------
+Parenthesized forms
+-------------------
 
 .. index:: single: parenthesized form
 
-丸括弧形式とは、式リストの一形態で、丸括弧で囲ったものです:
+A parenthesized form is an optional expression list enclosed in parentheses:
 
 .. productionlist::
    parenth_form: "(" [`expression_list`] ")"
 
-丸括弧で囲われた式のリストは、個々の式が表現するものになります: リスト内に少なくとも一つのカンマが入っていた場合、タプルになります;
-そうでない場合、式のリストを構成している単一の式自体の値になります。
+A parenthesized expression list yields whatever that expression list yields: if
+the list contains at least one comma, it yields a tuple; otherwise, it yields
+the single expression that makes up the expression list.
 
 .. index:: pair: empty; tuple
 
-中身が空の丸括弧のペアは、空のタプルオブジェクトを表します。タプルは変更不能なので、リテラルと同じ規則が適用されます (すなわち、
-空のタプルが二箇所で使われると、それらは同じオブジェクトになることもあるし、ならないこともあります)。
+An empty pair of parentheses yields an empty tuple object.  Since tuples are
+immutable, the rules for literals apply (i.e., two occurrences of the empty
+tuple may or may not yield the same object).
 
 .. index::
    single: comma
    pair: tuple; display
 
-タプルは丸括弧で作成されるのではなく、カンマによって作成されることに注意してください。例外は空のタプルで、この場合には丸括弧が *必要です* ---
-丸括弧のつかない "何も記述しない式 (nothing)" を使えるようにしてしまうと、文法があいまいなものになってしまい、よくあるタイプミスが検出されなく
-なってしまいます。
+Note that tuples are not formed by the parentheses, but rather by use of the
+comma operator.  The exception is the empty tuple, for which parentheses *are*
+required --- allowing unparenthesized "nothing" in expressions would cause
+ambiguities and allow common typos to pass uncaught.
 
 
 .. _lists:
 
-リスト表現
-----------
+List displays
+-------------
 
 .. index::
    pair: list; display
    pair: list; comprehensions
 
-リスト表現は、角括弧で囲われた式の系列です。系列は空の系列であってもかまいません:
+A list display is a possibly empty series of expressions enclosed in square
+brackets:
 
 .. productionlist::
-    list_display: "[" [`expression_list` | `list_comprehension`] "]"
-    list_comprehension: `expression` `list_for`
-    list_for: "for" `target_list` "in" `old_expression_list` [`list_iter`]
-    old_expression_list: `old_expression` [("," `old_expression`)+ [","]]
-    old_expression: `or_test` | `old_lambda_form`
-    list_iter: `list_for` | `list_if`
-    list_if: "if" `old_expression` [`list_iter`]
+   list_display: "[" [`expression_list` | `list_comprehension`] "]"
+   list_comprehension: `expression` `list_for`
+   list_for: "for" `target_list` "in" `old_expression_list` [`list_iter`]
+   old_expression_list: `old_expression` [("," `old_expression`)+ [","]]
+   old_expression: `or_test` | `old_lambda_expr`
+   list_iter: `list_for` | `list_if`
+   list_if: "if" `old_expression` [`list_iter`]
 
 .. index::
    pair: list; comprehensions
    object: list
    pair: empty; list
 
-リスト表現は、新に作成されたリストオブジェクトを表します。新たなリストの内容は、式のリストを与えるか、リストの内包表記 (list
-comprehension) で指定します。  カンマで区切られた式のリストを与えた場合、リストの各要素は左から
-右へと順に評価され、評価された順番にリスト内に配置されます。リストの内包表記を与える場合、内包表記はまず単一の式、続いて少なくとも一つの
-:keyword:`for` 節、続いてゼロ個以上の :keyword:`for` 節か :keyword:`if` 節になります。
-この場合、新たに作成されるリストの各要素は、各々の :keyword:`for` や :keyword:`if`
-節を左から右の順にネストしたブロックとみなして実行し、ネストの最内ブロックに到達する度に式を評価した値となります。  [#]_
+A list display yields a new list object.  Its contents are specified by
+providing either a list of expressions or a list comprehension.  When a
+comma-separated list of expressions is supplied, its elements are evaluated from
+left to right and placed into the list object in that order.  When a list
+comprehension is supplied, it consists of a single expression followed by at
+least one :keyword:`for` clause and zero or more :keyword:`for` or :keyword:`if`
+clauses.  In this case, the elements of the new list are those that would be
+produced by considering each of the :keyword:`for` or :keyword:`if` clauses a
+block, nesting from left to right, and evaluating the expression to produce a
+list element each time the innermost block is reached [#]_.
 
 
 .. _comprehensions:
 
-集合と辞書の表現
-----------------
+Displays for sets and dictionaries
+----------------------------------
 
-Python は、集合や辞書を構成するために、"表現 (display)" と
-呼ばれる特殊な構文を、それぞれ二種類づつ提供していて、コンテナの内容は:
+For constructing a set or a dictionary Python provides special syntax
+called "displays", each of them in two flavors:
 
-* 明示的に列挙される、または
+* either the container contents are listed explicitly, or
 
-* :dfn:`内包表記 (comprehension)` と呼ばれる、
-  ループ処理とフィルター処理の命令の組み合わせを通じて計算されます。
+* they are computed via a set of looping and filtering instructions, called a
+  :dfn:`comprehension`.
 
-内包表記の共通の構文要素はこの通りです:
+Common syntax elements for comprehensions are:
 
 .. productionlist::
    comprehension: `expression` `comp_for`
@@ -195,56 +226,57 @@ Python は、集合や辞書を構成するために、"表現 (display)" と
    comp_iter: `comp_for` | `comp_if`
    comp_if: "if" `expression_nocond` [`comp_iter`]
 
-内包表記はまず単一の式、続いて :keyword:`for` 節、
-さらに続いて 0 個以上の :keyword:`for` 節や :keyword:`if` 節からなります。
-この場合、新たなコンテナの各要素は、各々の :keyword:`for` や :keyword:`if`
-節を、左から右にネストしたブロックとみなして実行し、ネストの最内のブロックに
-到達する度に式を評価することで作成されたものになります。
+The comprehension consists of a single expression followed by at least one
+:keyword:`for` clause and zero or more :keyword:`for` or :keyword:`if` clauses.
+In this case, the elements of the new container are those that would be produced
+by considering each of the :keyword:`for` or :keyword:`if` clauses a block,
+nesting from left to right, and evaluating the expression to produce an element
+each time the innermost block is reached.
 
-なお、これらの内包表記は別のスコープで実行されるので、対象のリスト内で
-代入された名前が外側のスコープに "漏れる" ことはありません。
+Note that the comprehension is executed in a separate scope, so names assigned
+to in the target list don't "leak" in the enclosing scope.
 
 
 .. _genexpr:
 
-ジェネレータ式
---------------
+Generator expressions
+---------------------
 
 .. index:: pair: generator; expression
+           object: generator
 
-.. % Generator expressions
-
-ジェネレータ式 (generator expression) とは、丸括弧を使ったコンパクトなジェネレータ表記法です:
+A generator expression is a compact generator notation in parentheses:
 
 .. productionlist::
    generator_expression: "(" `expression` `comp_for` ")"
 
-ジェネレータ式は新たなジェネレータオブジェクトを与えます。
-この構文は内包表記とほぼ同じですが、角括弧や波括弧ではなく、
-丸括弧で囲まれます。
+A generator expression yields a new generator object.  Its syntax is the same as
+for comprehensions, except that it is enclosed in parentheses instead of
+brackets or curly braces.
 
-ジェネレータ式で使われる変数は、ジェネレータオブジェクトに
-:meth:`next` メソッドが呼び出されたときに遅延評価されます (通常の
-ジェネレータと同じ流儀です)。しかし、最も左に位置する
-:keyword:`for` 節は直ちに評価されるため、そこで生じたエラーは、
-ジェネレータ式を扱うコードで起こりえる他のエラーの前に現れることがあります。
-その後に続く :keyword:`for` 節は、その前の
-:keyword:`for` ループに依存しているため、直ちには評価されません。
-例: ``(x*y for x in range(10) for y in bar(x))``
+Variables used in the generator expression are evaluated lazily when the
+:meth:`__next__` method is called for generator object (in the same fashion as
+normal generators).  However, the leftmost :keyword:`for` clause is immediately
+evaluated, so that an error produced by it can be seen before any other possible
+error in the code that handles the generator expression.  Subsequent
+:keyword:`for` clauses cannot be evaluated immediately since they may depend on
+the previous :keyword:`for` loop. For example: ``(x*y for x in range(10) for y
+in bar(x))``.
 
-関数の唯一の引数として渡す場合には、丸括弧を省略できます。詳しくは :ref:`calls` 節を参照してください。
-
+The parentheses can be omitted on calls with only one argument.  See section
+:ref:`calls` for the detail.
 
 .. _dict:
 
-辞書表現
---------
+Dictionary displays
+-------------------
 
 .. index:: pair: dictionary; display
            key, datum, key/datum pair
            object: dictionary
 
-辞書表現は、波括弧で囲われた、キーと値のペアからなる系列です。系列は空の系列であってもかまいません:
+A dictionary display is a possibly empty series of key/datum pairs enclosed in
+curly braces:
 
 .. productionlist::
    dict_display: "{" [`key_datum_list` | `dict_comprehension`] "}"
@@ -252,52 +284,57 @@ Python は、集合や辞書を構成するために、"表現 (display)" と
    key_datum: `expression` ":" `expression`
    dict_comprehension: `expression` ":" `expression` `comp_for`
 
-辞書表現は、新たな辞書オブジェクトを表します。
+A dictionary display yields a new dictionary object.
 
-カンマ区切りの一連のキー/データの対が与えられたときは、その要素は
-左から右へ評価され、辞書の項目を定義します。すなわち、それぞれの
-キーオブジェクトが、辞書内で対応するデータを保存するキーとして使われます。
-これにより、キー/データリストの中で同じキーを複数回指定することができ、
-そのキーに対する最終的な辞書の値は、最後に与えられたものになります。
+If a comma-separated sequence of key/datum pairs is given, they are evaluated
+from left to right to define the entries of the dictionary: each key object is
+used as a key into the dictionary to store the corresponding datum.  This means
+that you can specify the same key multiple times in the key/datum list, and the
+final dictionary's value for that key will be the last one given.
 
-辞書内包表記は、リストや集合の内包表記とは対照的に、通常の "for" や "if" 節の
-前に、コロンで分けられた 2 つの式が必要です。内包表記が起動すると、
-結果のキーと値の要素が、作られた順に新しい辞書に挿入されます。
+A dict comprehension, in contrast to list and set comprehensions, needs two
+expressions separated with a colon followed by the usual "for" and "if" clauses.
+When the comprehension is run, the resulting key and value elements are inserted
+in the new dictionary in the order they are produced.
 
 .. index:: pair: immutable; object
            hashable
 
-キーの値として使える型に関する制限は :ref:`types` 節ですでに列挙しています。(一言でいうと、キーは変更可能なオブジェクトを
-全て排除した :term:`hashable` でなければなりません。) 重複するキー間で衝突が起きても、衝突が検出されることはありません; あるキーに対して、最後に渡されたデータ
-(プログラムテキスト上では、辞書表記の最も右側値となるもの) が使われます。
+Restrictions on the types of the key values are listed earlier in section
+:ref:`types`.  (To summarize, the key type should be :term:`hashable`, which excludes
+all mutable objects.)  Clashes between duplicate keys are not detected; the last
+datum (textually rightmost in the display) stored for a given key value
+prevails.
 
 
 .. _set:
 
-集合表現
---------
+Set displays
+------------
 
 .. index:: pair: set; display
            object: set
 
-集合表現は波括弧で表され、キーと値を分けるコロンがないことで
-辞書表現と区別されます:
+A set display is denoted by curly braces and distinguishable from dictionary
+displays by the lack of colons separating keys and values:
 
 .. productionlist::
    set_display: "{" (`expression_list` | `comprehension`) "}"
 
-集合表示は、一連の式または内包表記によって指定された内容の、ミュータブルな
-集合オブジェクトを与えます。カンマ区切りの一連の式が与えられたときは、
-その要素は左から右へ順に評価され、集合オブジェクトに加えられます。
-内包表記が与えられたときは、内包表記の結果となる要素で集合が構成されます。
+A set display yields a new mutable set object, the contents being specified by
+either a sequence of expressions or a comprehension.  When a comma-separated
+list of expressions is supplied, its elements are evaluated from left to right
+and added to the set object.  When a comprehension is supplied, the set is
+constructed from the elements resulting from the comprehension.
 
-空集合は ``{}`` で構成できません。このリテラルは空の辞書を構成します。
+An empty set cannot be constructed with ``{}``; this literal constructs an empty
+dictionary.
 
 
 .. _string-conversions:
 
-文字列変換
-----------
+String conversions
+------------------
 
 .. index::
    pair: string; conversion
@@ -305,37 +342,44 @@ Python は、集合や辞書を構成するために、"表現 (display)" と
    pair: backward; quotes
    single: back-quotes
 
-文字列変換は、逆クオート (reverse quite, 別名バッククオート:  backward quote) で囲われた式のリストです:
+A string conversion is an expression list enclosed in reverse (a.k.a. backward)
+quotes:
 
 .. productionlist::
-   string_conversion: "'" `expression_list` "'"
+   string_conversion: "`" `expression_list` "`"
 
-文字列変換は、逆クオート内の式リストを評価して、評価結果のオブジェクトを各オブジェクトの型特有の規則に従って文字列に変換します。
+A string conversion evaluates the contained expression list and converts the
+resulting object into a string according to rules specific to its type.
 
-オブジェクトが文字列、数値、 ``None`` か、それらの型のオブジェクトのみを含むタプル、リストまたは辞書の場合、評価結果の文字列は有効な Python
-式となり、組み込み関数 :func:`eval` に渡した場合に同じ値となります  (浮動小数点が含まれている場合には近似値の場合もあります)。
+If the object is a string, a number, ``None``, or a tuple, list or dictionary
+containing only objects whose type is one of these, the resulting string is a
+valid Python expression which can be passed to the built-in function
+:func:`eval` to yield an expression with the same value (or an approximation, if
+floating point numbers are involved).
 
-(特に、文字列を変換すると、値を安全に出力するために文字列の両側にクオートが付けられ、"変 (funny) な" 文字はエスケープシーケンスに
-変換されます。)
+(In particular, converting a string adds quotes around it and converts "funny"
+characters to escape sequences that are safe to print.)
 
 .. index:: object: recursive
 
-再帰的な構造をもつオブジェクト (例えば自分自身を直接または間接的に含むリストや辞書) では ``...`` を使って再帰的参照であることが
-示され、オブジェクトの評価結果は :func:`eval` に渡しても等価な値を得ることができません (:exc:`SyntaxError` が
-送出されます)。
+Recursive objects (for example, lists or dictionaries that contain a reference
+to themselves, directly or indirectly) use ``...`` to indicate a recursive
+reference, and the result cannot be passed to :func:`eval` to get an equal value
+(:exc:`SyntaxError` will be raised instead).
 
 .. index::
    builtin: repr
    builtin: str
 
-組み込み関数 :func:`repr` は、括弧内の引数に対して、逆クオート表記で囲われた中身と全く同じ変換を実行します。組み込み関数
-:func:`str` は似たような動作をしますが、もっとユーザフレンドリな変換になります。
+The built-in function :func:`repr` performs exactly the same conversion in its
+argument as enclosing it in parentheses and reverse quotes does.  The built-in
+function :func:`str` performs a similar but more user-friendly conversion.
 
 
 .. _yieldexpr:
 
-Yield 式
---------
+Yield expressions
+-----------------
 
 .. index::
    keyword: yield
@@ -348,71 +392,94 @@ Yield 式
 
 .. versionadded:: 2.5
 
-:keyword:`yield` 式はジェネレータ関数を定義するときにその関数の内部でのみ使用されます。
-関数内で :keyword:`yield` 式を使用すると、普通の関数ではなくジェネレータ関数が作成されます。
+The :keyword:`yield` expression is only used when defining a generator function,
+and can only be used in the body of a function definition. Using a
+:keyword:`yield` expression in a function definition is sufficient to cause that
+definition to create a generator function instead of a normal function.
 
-ジェネレータ関数が呼び出されるとき、ジェネレータとしてのイテレータを返します。
-そのジェネレータはジェネレータ関数の実行を制御します。
-ジェネレータのメソッドが呼び出されるときに実行が開始されます。
-メソッドを呼び出すと、実行は :keyword:`yield` の最初の位置まで処理されて一時停止します。
-そして、ジェネレータの呼び出し元へ :token:`expression_list` の値を返します。
-ここで言う一時停止とは、ローカル変数の束縛、命令ポインタや内部の評価スタックを
-含めたローカルの全ての状態が保持されることを指します。
-再度、ジェネレータのメソッドを呼び出して実行を再開するとき、
-そのジェネレータ関数はまさに :keyword:`yield` 式がただの外部呼び出しであったかのように処理が継続されます。
-再開した後の :keyword:`yield` 式の値は実行を再開するメソッドに依存します。
+When a generator function is called, it returns an iterator known as a
+generator.  That generator then controls the execution of a generator function.
+The execution starts when one of the generator's methods is called.  At that
+time, the execution proceeds to the first :keyword:`yield` expression, where it
+is suspended again, returning the value of :token:`expression_list` to
+generator's caller.  By suspended we mean that all local state is retained,
+including the current bindings of local variables, the instruction pointer, and
+the internal evaluation stack.  When the execution is resumed by calling one of
+the generator's methods, the function can proceed exactly as if the
+:keyword:`yield` expression was just another external call. The value of the
+:keyword:`yield` expression after resuming depends on the method which resumed
+the execution.
 
 .. index:: single: coroutine
 
-これまで説明した内容から、ジェネレータ関数はコルーチンにとてもよく似ています。
-ジェネレータ関数は何度も生成し、1つ以上のエントリポイントを持ち、その実行は一時停止されます。
-ジェネレータ関数は yield した後で実行の継続を制御できないことが唯一の違いです。
-その制御は常にジェネレータの呼び出し元へ移されます。
+All of this makes generator functions quite similar to coroutines; they yield
+multiple times, they have more than one entry point and their execution can be
+suspended.  The only difference is that a generator function cannot control
+where should the execution continue after it yields; the control is always
+transferred to the generator's caller.
 
 .. index:: object: generator
 
-以下のジェネレータメソッドはジェネレータ関数の実行を制御するために使用されます。
+
+Generator-iterator methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This subsection describes the methods of a generator iterator.  They can
+be used to control the execution of a generator function.
+
+Note that calling any of the generator methods below when the generator
+is already executing raises a :exc:`ValueError` exception.
 
 .. index:: exception: StopIteration
 
 
 .. method:: generator.next()
 
-   ジェネレータ関数の実行を開始する、または最後に :keyword:`yield` 式が実行された位置から再開します。
-   ジェネレータ関数が :meth:`next` メソッドで再開されるとき、カレントの :keyword:`yield` は
-   常に :const:`None` に対して評価されます。それから実行は、次の :keyword:`yield` 式の位置まで
-   継続されて、再度そのジェネレータは一時停止します。そして :token:`expression_list` の値が
-   :meth:`next` の呼び出し元へ返されます。ジェネレータが値を生成することなく終了すると :exc:`StopIteration` が発生します。
+   Starts the execution of a generator function or resumes it at the last executed
+   :keyword:`yield` expression.  When a generator function is resumed with a
+   :meth:`~generator.next` method, the current :keyword:`yield` expression
+   always evaluates to
+   :const:`None`.  The execution then continues to the next :keyword:`yield`
+   expression, where the generator is suspended again, and the value of the
+   :token:`expression_list` is returned to :meth:`~generator.next`'s caller.
+   If the generator
+   exits without yielding another value, a :exc:`StopIteration` exception is
+   raised.
 
 .. method:: generator.send(value)
 
-   ジェネレータ関数の内部へ値を "送り"、実行を再開します。
-   引数の ``value`` はカレントの :keyword:`yield` 式の結果になります。
-   :meth:`send` メソッドはジェネレータが生成した次の値、またはジェネレータが値を
-   生成することなく終了すると :exc:`StopIteration` が発生します。
-   ジェネレータが再開するために :meth:`send` を呼び出すときは、
-   引数として :const:`None` を指定しなければなりません。
-   そうしないと、値を受け取る :keyword:`yield` 式が存在しないからです。
+   Resumes the execution and "sends" a value into the generator function.  The
+   ``value`` argument becomes the result of the current :keyword:`yield`
+   expression.  The :meth:`send` method returns the next value yielded by the
+   generator, or raises :exc:`StopIteration` if the generator exits without
+   yielding another value. When :meth:`send` is called to start the generator, it
+   must be called with :const:`None` as the argument, because there is no
+   :keyword:`yield` expression that could receive the value.
+
 
 .. method:: generator.throw(type[, value[, traceback]])
 
-   ジェネレータが中断した位置で ``type`` 型の例外を発生させて、ジェネレータ関数が
-   生成する次の値を返します。ジェネレータが値を生成することなく終了すると
-   :exc:`StopIteration` が発生します。ジェネレータ関数が渡された例外を捕捉しない、
-   もしくは違う例外を発生させるなら、その例外は呼び出し元へ伝搬されます。
+   Raises an exception of type ``type`` at the point where generator was paused,
+   and returns the next value yielded by the generator function.  If the generator
+   exits without yielding another value, a :exc:`StopIteration` exception is
+   raised.  If the generator function does not catch the passed-in exception, or
+   raises a different exception, then that exception propagates to the caller.
 
 .. index:: exception: GeneratorExit
 
 
 .. method:: generator.close()
 
-   ジェネレータ関数が中断した位置で :exc:`GeneratorExit` を発生させます。
-   ジェネレータ関数が (通常の終了または既にクローズされたことで) :exc:`StopIteration` 、
-   もしくは (例外を捕捉しないことで) :exc:`GeneratorExit` を発生させる場合 close() は
-   呼び出し元へ返されます。ジェネレータが値を生成する場合 :exc:`RuntimeError` が発生します。
-   :meth:`close` はジェネレータが通常の終了または例外により既に終了している場合は何もしません。
+   Raises a :exc:`GeneratorExit` at the point where the generator function was
+   paused.  If the generator function then raises :exc:`StopIteration` (by exiting
+   normally, or due to already being closed) or :exc:`GeneratorExit` (by not
+   catching the exception), close returns to its caller.  If the generator yields a
+   value, a :exc:`RuntimeError` is raised.  If the generator raises any other
+   exception, it is propagated to the caller.  :meth:`close` does nothing if the
+   generator has already exited due to an exception or normal exit.
 
-以下の簡単なサンプルはジェネレータとジェネレータ関数の振る舞いを実際に紹介します::
+Here is a simple example that demonstrates the behavior of generators and
+generator functions::
 
    >>> def echo(value=None):
    ...     print "Execution starts when 'next()' is called for the first time."
@@ -441,17 +508,20 @@ Yield 式
 
 .. seealso::
 
-   :pep:`0342` - 拡張されたジェネレータを用いたコルーチン
-      シンプルなコルーチンとして利用できるように、ジェネレータの構文と API を拡張する提案です。
+   :pep:`0342` - Coroutines via Enhanced Generators
+      The proposal to enhance the API and syntax of generators, making them usable as
+      simple coroutines.
+
 
 .. _primaries:
 
-一次語 (primary)
-================
+Primaries
+=========
 
 .. index:: single: primary
 
-一次語は、言語において最も結合の強い操作を表します。文法は以下のようになります:
+Primaries represent the most tightly bound operations of the language. Their
+syntax is:
 
 .. productionlist::
    primary: `atom` | `attributeref` | `subscription` | `slicing` | `call`
@@ -459,12 +529,12 @@ Yield 式
 
 .. _attribute-references:
 
-属性参照
---------
+Attribute references
+--------------------
 
 .. index:: pair: attribute; reference
 
-属性参照は、一次語の後ろにピリオドと名前を連ねたものです:
+An attribute reference is a primary followed by a period and a name:
 
 .. productionlist::
    attributeref: `primary` "." `identifier`
@@ -474,16 +544,18 @@ Yield 式
    object: module
    object: list
 
-一次語の値評価結果は、例えばモジュール、リスト、インスタンスといった、属性参照をサポートする型でなければなりません。
-オブジェクトは次に、指定した名前が識別子名となっているような属性を生成するよう問い合わせされます。問い合わせた属性が得られない場合、例外
-:exc:`AttributeError` が送出されます。それ以外の場合、オブジェクトは属性オブジェクトの型と
-値を決定し、生成して返します。同じ属性参照を複数回評価したとき、互いに異なる属性オブジェクトになることがあります。
+The primary must evaluate to an object of a type that supports attribute
+references, e.g., a module, list, or an instance.  This object is then asked to
+produce the attribute whose name is the identifier.  If this attribute is not
+available, the exception :exc:`AttributeError` is raised. Otherwise, the type
+and value of the object produced is determined by the object.  Multiple
+evaluations of the same attribute reference may yield different objects.
 
 
 .. _subscriptions:
 
-添字表記 (subscription)
------------------------
+Subscriptions
+-------------
 
 .. index:: single: subscription
 
@@ -496,31 +568,38 @@ Yield 式
    object: dictionary
    pair: sequence; item
 
-添字表記は、シーケンス (文字列、タプルまたはリスト) やマップ (辞書) オブジェクトから、要素を一つ選択します:
+A subscription selects an item of a sequence (string, tuple or list) or mapping
+(dictionary) object:
 
 .. productionlist::
    subscription: `primary` "[" `expression_list` "]"
 
-一次語の値評価結果は、シーケンス型かマップ型のオブジェクトでなければなりません。
+The primary must evaluate to an object of a sequence or mapping type.
 
-一次語がマップであれば、式リストの値評価結果はマップ内のいずれかのキー値に相当するオブジェクトにならなければなりません。添字表記は、
-そのキーに対応するマップ内の値 (value) を選択します。 (式リストの要素が単独である場合を除き、式リストはタプルでなければなりません。)
+If the primary is a mapping, the expression list must evaluate to an object
+whose value is one of the keys of the mapping, and the subscription selects the
+value in the mapping that corresponds to that key.  (The expression list is a
+tuple except if it has exactly one item.)
 
-一次語がシーケンスの場合、式 (リスト) の値評価結果は (通常の) 整数でなければなりません。値が負の場合、シーケンスの長さが加算されます
-(``x[-1]`` が ``x`` の最後の要素を指すことになります)。加算結果はシーケンス内の要素数よりも小さな非負の整数とならなければなりません。
-添字表記は、添字と同じシーケンス中の (ゼロから数えた) インデクスを持つ要素を選択します。
+If the primary is a sequence, the expression (list) must evaluate to a plain
+integer.  If this value is negative, the length of the sequence is added to it
+(so that, e.g., ``x[-1]`` selects the last item of ``x``.)  The resulting value
+must be a nonnegative integer less than the number of items in the sequence, and
+the subscription selects the item whose index is that value (counting from
+zero).
 
 .. index::
    single: character
    pair: string; item
 
-文字列型の要素は文字 (character) です。文字は個別の型ではなく、 1 文字だけからなる文字列です。
+A string's items are characters.  A character is not a separate data type but a
+string of exactly one character.
 
 
 .. _slicings:
 
-スライス表記 (slicing)
-----------------------
+Slicings
+--------
 
 .. index::
    single: slicing
@@ -532,8 +611,9 @@ Yield 式
    object: tuple
    object: list
 
-スライス表記はシーケンスオブジェクト (文字列、タプルまたはリスト) におけるある範囲の要素を選択します。スライス表記は式として用いたり、代入や
-:keyword:`del` 文の対象として用いたりできます。スライス表記の構文は以下のようになります:
+A slicing selects a range of items in a sequence object (e.g., a string, tuple
+or list).  Slicings may be used as expressions or as targets in assignment or
+:keyword:`del` statements.  The syntax for a slicing:
 
 .. productionlist::
    slicing: `simple_slicing` | `extended_slicing`
@@ -551,43 +631,54 @@ Yield 式
 
 .. index:: pair: extended; slicing
 
-上記の形式的な構文法にはあいまいさがあります: 式リストに見えるものは、スライスリストにも見えるため、添字表記はスライス表記としても解釈されうる
-ということです。この場合には、(スライスリストの評価結果が、適切なスライスや省略表記 (ellipsis)
-にならない場合)、スライス表記としての解釈よりも添字表記としての解釈の方が高い優先順位を持つように定義することで、構文法をより
-難解にすることなくあいまいさを取り除いています。同様に、スライスリストが厳密に一つだけの短いスライスで、末尾にカンマが
-続いていない場合、拡張スライスとしての解釈より、単純なスライスとしての解釈が優先されます。
+There is ambiguity in the formal syntax here: anything that looks like an
+expression list also looks like a slice list, so any subscription can be
+interpreted as a slicing.  Rather than further complicating the syntax, this is
+disambiguated by defining that in this case the interpretation as a subscription
+takes priority over the interpretation as a slicing (this is the case if the
+slice list contains no proper slice nor ellipses).  Similarly, when the slice
+list has exactly one short slice and no trailing comma, the interpretation as a
+simple slicing takes priority over that as an extended slicing.
 
-単純なスライスに対する意味付けは以下のようになります。一次語の値評価結果は、シーケンス型のオブジェクトでなければなりません。
-下境界および上境界を表す式がある場合、それらの値評価結果は整数でなくてはなりません; デフォルトの値は、それぞれゼロと ``sys.maxint``
-です。どちらかの境界値が負である場合、シーケンスの長さが加算されます。こうして、スライスは *i* および *j* をそれぞれ指定した下境界、上境界として、
-インデクス *k* が ``i <= k < j`` となる全ての要素を選択します。選択の結果、空のシーケンスになることもあります。 *i* や *j* が
-有効なインデクス範囲の外側にある場合でも、エラーにはなりません (範囲外の要素は存在しないので、選択されないだけです)。
+The semantics for a simple slicing are as follows.  The primary must evaluate to
+a sequence object.  The lower and upper bound expressions, if present, must
+evaluate to plain integers; defaults are zero and the ``sys.maxint``,
+respectively.  If either bound is negative, the sequence's length is added to
+it.  The slicing now selects all items with index *k* such that ``i <= k < j``
+where *i* and *j* are the specified lower and upper bounds.  This may be an
+empty sequence.  It is not an error if *i* or *j* lie outside the range of valid
+indexes (such items don't exist so they aren't selected).
 
 .. index::
    single: start (slice object attribute)
    single: stop (slice object attribute)
    single: step (slice object attribute)
 
-拡張スライスに対する意味付けは、以下のようになります。一次語の値評価結果は、辞書型のオブジェクトでなければなりません。
-また、辞書は以下に述べるようにしてスライスリストから生成されたキーによってインデクス指定できなければなりません。
-スライスリストに少なくとも一つのカンマが含まれている場合、キーは各スライス要素を値変換したものからなるタプルになります;
-それ以外の場合、単一のスライス要素自体を値変換したものがキーになります。一個の式でできたスライス要素の変換は、その式になります。
-省略表記スライス要素の変換は、組み込みの ``Ellipsis`` オブジェクトになります。適切なスライスの変換は、スライスオブジェクト
-(:ref:`types` 参照) で :attr:`start`, :attr:`stop` および :attr:`step`
-属性は、それぞれ指定した下境界、上境界、およびとび幅 (stride) になります。式がない場合には ``None`` に置き換えられます。
+The semantics for an extended slicing are as follows.  The primary must evaluate
+to a mapping object, and it is indexed with a key that is constructed from the
+slice list, as follows.  If the slice list contains at least one comma, the key
+is a tuple containing the conversion of the slice items; otherwise, the
+conversion of the lone slice item is the key.  The conversion of a slice item
+that is an expression is that expression.  The conversion of an ellipsis slice
+item is the built-in ``Ellipsis`` object.  The conversion of a proper slice is a
+slice object (see section :ref:`types`) whose :attr:`~slice.start`,
+:attr:`~slice.stop` and :attr:`~slice.step` attributes are the values of the
+expressions given as lower bound, upper bound and stride, respectively,
+substituting ``None`` for missing expressions.
 
+
+.. index::
+   object: callable
+   single: call
+   single: argument; call semantics
 
 .. _calls:
 
-呼び出し (call)
----------------
+Calls
+-----
 
-.. index:: single: call
-
-.. index:: object: callable
-
-呼び出し (call) は、呼び出し可能オブジェクト (callable object, 例えば関数など)
-を、引数列とともに呼び出します。引数列は空のシーケンスでもかまいません:
+A call calls a callable object (e.g., a :term:`function`) with a possibly empty
+series of :term:`arguments <argument>`:
 
 .. productionlist::
    call: `primary` "(" [`argument_list` [","]
@@ -597,53 +688,77 @@ Yield 式
                 :   ["," "**" `expression`]
                 : | `keyword_arguments` ["," "*" `expression`]
                 :   ["," "**" `expression`]
-                : | "*" `expression` ["," "*" `expression`] ["," "**" `expression`]
+                : | "*" `expression` ["," `keyword_arguments`] ["," "**" `expression`]
                 : | "**" `expression`
    positional_arguments: `expression` ("," `expression`)*
    keyword_arguments: `keyword_item` ("," `keyword_item`)*
    keyword_item: `identifier` "=" `expression`
 
-固定引数やキーワード引数の後ろにカンマをつけてもかまいません。構文の意味付けに影響を及ぼすことはありません。
+A trailing comma may be present after the positional and keyword arguments but
+does not affect the semantics.
 
-一次語の値評価結果は、呼び出し可能オブジェクトでなければなりません (ユーザ定義関数、組み込み関数、組み込みオブジェクトのメソッド、
-クラスオブジェクト、クラスインスタンスのメソッド、そして特定のクラスインスタンス自体が呼び出し可能です; 拡張によって、
-その他の呼び出し可能オブジェクト型を定義することができます)。引数式は全て、呼び出しを試みる前に値評価されます。仮引数 (formal parameter)
-リストの構文については :ref:`function`  を参照してください。
+.. index::
+   single: parameter; call semantics
 
-キーワード引数が存在する場合、以下のようにして最初に固定引数 (positional argument) に変換されます。まず、値の入っていない
-スロットが仮引数に対して生成されます。N 個の固定引数がある場合、固定引数は先頭の N スロットに配置されます。
-次に、各キーワード引数について、識別子を使って対応するスロットを決定します (識別子が最初の仮引数パラメタ名と同じなら、最初の
-スロットを使う、といった具合です)。スロットがすでにすべて埋まっていたなら :exc:`TypeError` 例外が送出されます。
-それ以外の場合、引数値をスロットに埋めていきます。 (式が ``None`` であっても、その式でスロットを埋めます)。
-全ての引数が処理されたら、まだ埋められていないスロットをそれぞれに対応する関数定義時のデフォルト値で埋めます。(デフォルト値は、
-関数が定義されたときに一度だけ計算されます; 従って、リストや辞書のような変更可能なオブジェクトがデフォルト値として使われると、
-対応するスロットに引数を指定しない限り、このオブジェクトが全ての呼び出しから共有されます; このような状況は通常避けるべきです。)
-デフォルト値が指定されていない、値の埋められていないスロットが残っている場合 :exc:`TypeError` 例外が送出されます。
-そうでない場合、値の埋められたスロットからなるリストが呼び出しの引数として使われます。
+The primary must evaluate to a callable object (user-defined functions, built-in
+functions, methods of built-in objects, class objects, methods of class
+instances, and certain class instances themselves are callable; extensions may
+define additional callable object types).  All argument expressions are
+evaluated before the call is attempted.  Please refer to section :ref:`function`
+for the syntax of formal :term:`parameter` lists.
+
+If keyword arguments are present, they are first converted to positional
+arguments, as follows.  First, a list of unfilled slots is created for the
+formal parameters.  If there are N positional arguments, they are placed in the
+first N slots.  Next, for each keyword argument, the identifier is used to
+determine the corresponding slot (if the identifier is the same as the first
+formal parameter name, the first slot is used, and so on).  If the slot is
+already filled, a :exc:`TypeError` exception is raised. Otherwise, the value of
+the argument is placed in the slot, filling it (even if the expression is
+``None``, it fills the slot).  When all arguments have been processed, the slots
+that are still unfilled are filled with the corresponding default value from the
+function definition.  (Default values are calculated, once, when the function is
+defined; thus, a mutable object such as a list or dictionary used as default
+value will be shared by all calls that don't specify an argument value for the
+corresponding slot; this should usually be avoided.)  If there are any unfilled
+slots for which no default value is specified, a :exc:`TypeError` exception is
+raised.  Otherwise, the list of filled slots is used as the argument list for
+the call.
 
 .. impl-detail::
 
-   実際の実装では、名前を持たない固定引数を受け取る組み込み関数を提供するかもしれません。
-   そういった組み込み関数がドキュメント化の目的で '名前' を設けていたとしても、
-   実際には持っていないのでキーワードによって提供されません。
-   CPython では、C 言語で実装された関数の名前を持たない固定引数を解析するために
-   :c:func:`PyArg_ParseTuple` を使用します。
+   An implementation may provide built-in functions whose positional parameters
+   do not have names, even if they are 'named' for the purpose of documentation,
+   and which therefore cannot be supplied by keyword.  In CPython, this is the
+   case for functions implemented in C that use :c:func:`PyArg_ParseTuple` to
+   parse their arguments.
 
-仮引数スロットの数よりも多くの固定引数がある場合、構文  ``*identifier`` を使って指定された仮引数がないかぎり、
-:exc:`TypeError` 例外が送出されます;  仮引数 ``*identifier`` がある場合、この仮引数は余分な固定引数が入ったタプル
-(もしくは、余分な固定引数がない場合には空のタプル) を受け取ります。
+If there are more positional arguments than there are formal parameter slots, a
+:exc:`TypeError` exception is raised, unless a formal parameter using the syntax
+``*identifier`` is present; in this case, that formal parameter receives a tuple
+containing the excess positional arguments (or an empty tuple if there were no
+excess positional arguments).
 
-キーワード引数のいずれかが仮引数名に対応しない場合、構文 ``**identifier`` を使って指定された仮引数がない限り、
-:exc:`TypeError` 例外が送出されます; 仮引数 ``**identifier`` がある場合、この仮引数は余分なキーワード引数が入った
-(キーワードをキーとし、引数値をキーに対応する値とした) 辞書を受け取ります。余分なキーワード引数がない場合には、空の (新たな) 辞書を受け取ります。
+If any keyword argument does not correspond to a formal parameter name, a
+:exc:`TypeError` exception is raised, unless a formal parameter using the syntax
+``**identifier`` is present; in this case, that formal parameter receives a
+dictionary containing the excess keyword arguments (using the keywords as keys
+and the argument values as corresponding values), or a (new) empty dictionary if
+there were no excess keyword arguments.
 
-関数呼び出しの際に ``*expression`` 構文が使われる場合、 ``expression`` の値評価結果はシーケンスでなくてはなりません。
-このシーケンスの要素は、追加の固定引数のように扱われます; すなわち、固定引数 *x1* ,..., *xN* と、 *y1* ,..., *yM* になるシーケンス
-``expression`` を使った場合、M+N 個の固定引数 *x1* ,..., *xN* , *y1* ,..., *yM* を使った呼び出しと同じになります。
+.. index::
+   single: *; in function calls
 
-``*expression`` 構文はキーワード引数の *後ろ* で指定しても良いですが、
-キーワード引数よりも *前* で指定されたものとして処理されます
-( ``**expression`` 引数を指定したときの振る舞いは以下を参照)。従って::
+If the syntax ``*expression`` appears in the function call, ``expression`` must
+evaluate to an iterable.  Elements from this iterable are treated as if they
+were additional positional arguments; if there are positional arguments
+*x1*, ..., *xN*, and ``expression`` evaluates to a sequence *y1*, ..., *yM*, this
+is equivalent to a call with M+N positional arguments *x1*, ..., *xN*, *y1*,
+..., *yM*.
+
+A consequence of this is that although the ``*expression`` syntax may appear
+*after* some keyword arguments, it is processed *before* the keyword arguments
+(and the ``**expression`` argument, if any -- see below).  So::
 
    >>> def f(a, b):
    ...  print a, b
@@ -657,35 +772,44 @@ Yield 式
    >>> f(1, *(2,))
    1 2
 
-となります。
+It is unusual for both keyword arguments and the ``*expression`` syntax to be
+used in the same call, so in practice this confusion does not arise.
 
-キーワード引数と ``*expression`` 構文を同じ呼び出しで一緒に使うことはあまりないので、実際に上記のような混乱が生じることはありません。
+.. index::
+   single: **; in function calls
 
-関数呼び出しで ``**expression`` 構文が使われた場合、 ``expression`` の値評価結果はマップ型でなければなりません。
-辞書の内容は追加のキーワード引数として扱われます。明示的なキーワード引数が ``expression`` 内のキーワード
-と重複した場合には :exc:`TypeError` 例外が送出されます。
+If the syntax ``**expression`` appears in the function call, ``expression`` must
+evaluate to a mapping, the contents of which are treated as additional keyword
+arguments.  In the case of a keyword appearing in both ``expression`` and as an
+explicit keyword argument, a :exc:`TypeError` exception is raised.
 
-``*identifier`` や ``**identifier`` 構文を使った仮引数は、固定引数スロットやキーワード引数名にすることができません。
-``(sublist)`` 構文を使った仮引数は、キーワード引数名には使えません; sublist は、リスト全体が一つの無名の引数スロット
-に対応しており、sublist 中の引数は、他の全てのパラメタに対する処理が終わった後に、通常のタプル形式の代入規則を使ってスロットに入れられます。
+Formal parameters using the syntax ``*identifier`` or ``**identifier`` cannot be
+used as positional argument slots or as keyword argument names.  Formal
+parameters using the syntax ``(sublist)`` cannot be used as keyword argument
+names; the outermost sublist corresponds to a single unnamed argument slot, and
+the argument value is assigned to the sublist using the usual tuple assignment
+rules after all other parameter processing is done.
 
-呼び出しを行うと、例外を送出しない限り、常に何らかの値を返します。 ``None`` を返す場合もあります。戻り値がどのように算出されるかは、
-呼び出し可能オブジェクトの形態によって異なります。
+A call always returns some value, possibly ``None``, unless it raises an
+exception.  How this value is computed depends on the type of the callable
+object.
 
-呼び出し可能オブジェクトが。。。
+If it is---
 
-ユーザ定義関数のとき:
+a user-defined function:
    .. index::
       pair: function; call
       triple: user-defined; function; call
       object: user-defined function
       object: function
 
-   関数のコードブロックに引数リストが渡され、実行されます。コードブロックは、まず仮引数を実引数に結合 (bind) します; この動作については
-   :ref:`function` で記述しています。コードブロックで :keyword:`return` 文が実行される際に、関数呼び出しの戻り値
-   (return value) が決定されます。
+   The code block for the function is executed, passing it the argument list.  The
+   first thing the code block will do is bind the formal parameters to the
+   arguments; this is described in section :ref:`function`.  When the code block
+   executes a :keyword:`return` statement, this specifies the return value of the
+   function call.
 
-組み込み関数や組み込みメソッドのとき:
+a built-in function or method:
    .. index::
       pair: function; call
       pair: built-in function; call
@@ -696,69 +820,78 @@ Yield 式
       object: method
       object: function
 
-   結果はインタプリタに依存します; 組み込み関数やメソッドの詳細は :ref:`built-in-funcs` を参照してください。
+   The result is up to the interpreter; see :ref:`built-in-funcs` for the
+   descriptions of built-in functions and methods.
 
-クラスオブジェクトのとき:
+a class object:
    .. index::
       object: class
       pair: class object; call
 
-   そのクラスの新しいインスタンスが返されます。
+   A new instance of that class is returned.
 
-クラスインスタンスメソッドのとき:
+a class instance method:
    .. index::
       object: class instance
       object: instance
       pair: class instance; call
 
-   対応するユーザ定義の関数が呼び出されます。このとき、呼び出し時の引数リストより一つ長い引数リストで呼び出されます: インスタンスが引数リストの先頭に追加
-   されます。
+   The corresponding user-defined function is called, with an argument list that is
+   one longer than the argument list of the call: the instance becomes the first
+   argument.
 
-クラスインスタンスのとき:
+a class instance:
    .. index::
       pair: instance; call
       single: __call__() (object method)
 
-   クラスで :meth:`__call__` メソッドが定義されていなければなりません; :meth:`__call__`
-   メソッドが呼び出された場合と同じ効果をもたらします。
+   The class must define a :meth:`__call__` method; the effect is then the same as
+   if that method was called.
 
 
 .. _power:
 
-べき乗演算 (power operator)
-===========================
+The power operator
+==================
 
-べき乗演算は、左側にある単項演算子よりも強い結合優先順位があります; 一方、右側にある単項演算子よりは低い結合優先順位に
-なっています。構文は以下のようになります:
+The power operator binds more tightly than unary operators on its left; it binds
+less tightly than unary operators on its right.  The syntax is:
 
 .. productionlist::
    power: `primary` ["**" `u_expr`]
 
-従って、べき乗演算子と単項演算子からなる演算列が丸括弧で囲われていない場合、演算子は右から左へと評価されます (この場合は
-演算子の評価順序を強制しません。つまり ``-1**2`` は ``-1`` になります)。
+Thus, in an unparenthesized sequence of power and unary operators, the operators
+are evaluated from right to left (this does not constrain the evaluation order
+for the operands): ``-1**2`` results in ``-1``.
 
-べき乗演算子は、二つの引数で呼び出される組み込み関数 :func:`pow`  と同じ意味付けを持っています。引数はまず共通の型に変換されます。
-結果の型は、型強制後の引数の型になります。
+The power operator has the same semantics as the built-in :func:`pow` function,
+when called with two arguments: it yields its left argument raised to the power
+of its right argument.  The numeric arguments are first converted to a common
+type.  The result type is that of the arguments after coercion.
 
-引数型を混合すると、二項算術演算における型強制規則が適用されます。整数や長整数の被演算子の場合、第二引数が負でない限り、結果は  (型強制後の)
-被演算子と同じになります; 第二引数が負の場合、全ての引数は浮動小数点型に変換され、浮動小数点型が返されます。例えば ``10**2`` は ``100``
-を返しますが、 ``10**-2``  は ``0.01`` を返します。 (上述の仕様のうち、最後のものは Python 2.2 で追加されました。
-Python 2.1 以前では、双方の引数が整数型で、第二引数が負の場合、例外が送出されていました。)
+With mixed operand types, the coercion rules for binary arithmetic operators
+apply. For int and long int operands, the result has the same type as the
+operands (after coercion) unless the second argument is negative; in that case,
+all arguments are converted to float and a float result is delivered. For
+example, ``10**2`` returns ``100``, but ``10**-2`` returns ``0.01``. (This last
+feature was added in Python 2.2. In Python 2.1 and before, if both arguments
+were of integer types and the second argument was negative, an exception was
+raised).
 
-``0.0`` を負の数でべき乗すると :exc:`ZeroDivisionError` を送出します。負の数を小数でべき乗すると
-:exc:`ValueError` になります。
+Raising ``0.0`` to a negative power results in a :exc:`ZeroDivisionError`.
+Raising a negative number to a fractional power results in a :exc:`ValueError`.
 
 
 .. _unary:
 
-単項算術演算とビット単位演算(unary arithmetic and bitwise operation)
-====================================================================
+Unary arithmetic and bitwise operations
+=======================================
 
 .. index::
    triple: unary; arithmetic; operation
    triple: unary; bitwise; operation
 
-全ての単項算術演算とビット単位演算は、同じ優先順位を持っています:
+All unary arithmetic and bitwise operations have the same priority:
 
 .. productionlist::
    u_expr: `power` | "-" `u_expr` | "+" `u_expr` | "~" `u_expr`
@@ -767,31 +900,35 @@ Python 2.1 以前では、双方の引数が整数型で、第二引数が負の
    single: negation
    single: minus
 
-単項演算子 ``-`` (マイナス) は、引数となる数値の符号を反転 (invert) します。
+The unary ``-`` (minus) operator yields the negation of its numeric argument.
 
 .. index:: single: plus
 
-単項演算子 ``+`` (プラス) は、数値引数を変更しません。
+The unary ``+`` (plus) operator yields its numeric argument unchanged.
 
 .. index:: single: inversion
 
-単項演算子 ``~`` (反転) は、整数または長整数の引数をビット単位反転 (bitwise invert) します。 ``x`` のビット単位反転は、
-``-(x+1)`` として定義されています。この演算子は整数にのみ適用されます。
+The unary ``~`` (invert) operator yields the bitwise inversion of its plain or
+long integer argument.  The bitwise inversion of ``x`` is defined as
+``-(x+1)``.  It only applies to integral numbers.
 
 .. index:: exception: TypeError
 
-上記の三つはいずれも、引数が正しい型でない場合には :exc:`TypeError` 例外が送出されます。
+In all three cases, if the argument does not have the proper type, a
+:exc:`TypeError` exception is raised.
 
 
 .. _binary:
 
-二項算術演算 (binary arithmetic operation)
-==========================================
+Binary arithmetic operations
+============================
 
 .. index:: triple: binary; arithmetic; operation
 
-二項算術演算は、慣習的な優先順位を踏襲しています。演算子のいずれかは、特定の非数値型にも適用されるので注意してください。べき乗 (power)
-演算子を除き、演算子には二つのレベル、すなわち乗算的 (multiplicatie) 演算子と加算的 (additie) 演算子しかありません:
+The binary arithmetic operations have the conventional priority levels.  Note
+that some of these operations also apply to certain non-numeric types.  Apart
+from the power operator, there are only two levels, one for multiplicative
+operators and one for additive operators:
 
 .. productionlist::
    m_expr: `u_expr` | `m_expr` "*" `u_expr` | `m_expr` "//" `u_expr` | `m_expr` "/" `u_expr`
@@ -800,107 +937,125 @@ Python 2.1 以前では、双方の引数が整数型で、第二引数が負の
 
 .. index:: single: multiplication
 
-``*`` (乗算: multiplication) 演算は、引数間の積になります。引数の組は、双方ともに数値型であるか、片方が整数 (通常の整数または
-長整数) 型で他方がシーケンス型かのどちらかでなければなりません。前者の場合、数値は共通の型に変換された後乗算されます。
-後者の場合、シーケンスの繰り返し操作が行われます。繰り返し数を負にすると、空のシーケンスになります。
+The ``*`` (multiplication) operator yields the product of its arguments.  The
+arguments must either both be numbers, or one argument must be an integer (plain
+or long) and the other must be a sequence. In the former case, the numbers are
+converted to a common type and then multiplied together.  In the latter case,
+sequence repetition is performed; a negative repetition factor yields an empty
+sequence.
 
 .. index::
    exception: ZeroDivisionError
    single: division
 
-``/`` (除算: division) および ``//`` (切り捨て除算: floor division)
-は、引数間の商になります。数値引数はまず共通の型に変換されます。整数または長整数の除算結果は、同じ型の整数になります; この場合、結果は数学的な除算に関数
-'floor' を適用したものになります。ゼロによる除算を行うと :exc:`ZeroDivisionError` 例外を送出します。
+The ``/`` (division) and ``//`` (floor division) operators yield the quotient of
+their arguments.  The numeric arguments are first converted to a common type.
+Plain or long integer division yields an integer of the same type; the result is
+that of mathematical division with the 'floor' function applied to the result.
+Division by zero raises the :exc:`ZeroDivisionError` exception.
 
 .. index:: single: modulo
 
-``%`` (モジュロ: modulo) 演算は、第一引数を第二引数で除算したときの剰余になります。数値引数はまず共通の型に変換されます。
-右引数値がゼロの場合には :exc:`ZeroDivisionError` 例外が送出されます。引数値は浮動小数点でもよく。例えば ``3.14%0.7``
-は ``0.34`` になります (``3.14`` は ``4*0.7 + 0.34``  だからです)。モジュロ演算子は常に第二引数と同じ符号
-(またはゼロ) の結果になります; モジュロ演算の結果の絶対値は、常に第二引数の絶対値よりも小さくなります。 [#]_
+The ``%`` (modulo) operator yields the remainder from the division of the first
+argument by the second.  The numeric arguments are first converted to a common
+type.  A zero right argument raises the :exc:`ZeroDivisionError` exception.  The
+arguments may be floating point numbers, e.g., ``3.14%0.7`` equals ``0.34``
+(since ``3.14`` equals ``4*0.7 + 0.34``.)  The modulo operator always yields a
+result with the same sign as its second operand (or zero); the absolute value of
+the result is strictly smaller than the absolute value of the second operand
+[#]_.
 
-整数による除算演算やモジュロ演算は、恒等式:  ``x == (x/y)*y + (x%y)`` と関係しています。整数除算やモジュロはまた、組み込み関数
-:func:`divmod`: ``divmod(x, y) == (x/y, x%y)`` と関係しています。
-これらの恒等関係は浮動小数点の場合には維持されません; ``x/y`` が ``floor(x/y)`` や ``floor(x/y) - 1`` に
-置き換えられた場合、これらの恒等式は近似性を維持します。  [#]_
+The integer division and modulo operators are connected by the following
+identity: ``x == (x/y)*y + (x%y)``.  Integer division and modulo are also
+connected with the built-in function :func:`divmod`: ``divmod(x, y) == (x/y,
+x%y)``.  These identities don't hold for floating point numbers; there similar
+identities hold approximately where ``x/y`` is replaced by ``floor(x/y)`` or
+``floor(x/y) - 1`` [#]_.
 
-数値に対するモジュロ演算の実行に加えて ``%`` 演算子は文字列 (string) とユニコードオブジェクトにオーバーロードされ、文字列の書式化
-(文字列の挿入としても知られる) を行います。文字列の書式化の構文は Python ライブラリリファレンス :ref:`string-formatting` 節を参照してください。
+In addition to performing the modulo operation on numbers, the ``%`` operator is
+also overloaded by string and unicode objects to perform string formatting (also
+known as interpolation). The syntax for string formatting is described in the
+Python Library Reference, section :ref:`string-formatting`.
 
 .. deprecated:: 2.3
-   切り捨て除算演算子、モジュロ演算子、および :func:`divmod` 関数は、複素数に対してはもはや定義されていません。目的に合うならば、代わりに
-   :func:`abs` を使って浮動小数点に変換してください。
+   The floor division operator, the modulo operator, and the :func:`divmod`
+   function are no longer defined for complex numbers.  Instead, convert to a
+   floating point number using the :func:`abs` function if appropriate.
 
 .. index:: single: addition
 
-``+`` (加算) 演算は、引数を加算した値を返します。引数は双方とも数値型か、双方とも同じ型のシーケンスでなければなりません。
-前者の場合、数値は共通の型に変換され、加算されます。後者の場合、シーケンスは結合 (concatenate) されます。
+The ``+`` (addition) operator yields the sum of its arguments. The arguments
+must either both be numbers or both sequences of the same type.  In the former
+case, the numbers are converted to a common type and then added together.  In
+the latter case, the sequences are concatenated.
 
 .. index:: single: subtraction
 
-``-`` (減算) 演算は、引数間で減算を行った値を返します。数値引数はまず共通の型に変換されます。
+The ``-`` (subtraction) operator yields the difference of its arguments.  The
+numeric arguments are first converted to a common type.
 
 
 .. _shifting:
 
-シフト演算 (shifting operation)
-===============================
+Shifting operations
+===================
 
 .. index:: pair: shifting; operation
 
-シフト演算は、算術演算よりも低い優先順位を持っています:
+The shifting operations have lower priority than the arithmetic operations:
 
 .. productionlist::
    shift_expr: `a_expr` | `shift_expr` ( "<<" | ">>" ) `a_expr`
 
-シフトの演算子は整数または長整数を引数にとります。引数は共通の型に変換されます。シフト演算では、最初の引数を
-二つ目の引数に応じたビット数だけ、左または右にビットシフトします。
+These operators accept plain or long integers as arguments.  The arguments are
+converted to a common type.  They shift the first argument to the left or right
+by the number of bits given by the second argument.
 
 .. index:: exception: ValueError
 
-*n* ビットの右シフトは ``pow(2,n)`` による除算として定義されています。 *n* ビットの左シフトは ``pow(2,n)``
-による乗算として定義されます。負のビット数でシフトを行うと :exc:`ValueError` 例外を送出します。
+A right shift by *n* bits is defined as division by ``pow(2, n)``.  A left shift
+by *n* bits is defined as multiplication with ``pow(2, n)``.  Negative shift
+counts raise a :exc:`ValueError` exception.
 
 .. note::
 
-   現在の実装では、右辺被演算子は最大でも :attr:`sys.maxsize` でなければ
-   なりません。右辺被演算子が :attr:`sys.maxsize` よりも大きいと、
-   :exc:`OverflowError` 例外が送出されます。
+   In the current implementation, the right-hand operand is required
+   to be at most :attr:`sys.maxsize`.  If the right-hand operand is larger than
+   :attr:`sys.maxsize` an :exc:`OverflowError` exception is raised.
 
 .. _bitwise:
 
-ビット単位演算の二項演算 (binary bitwise operation)
-====================================================
+Binary bitwise operations
+=========================
 
 .. index:: triple: binary; bitwise; operation
 
-以下の三つのビット単位演算には、それぞれ異なる優先順位レベルがあります:
+Each of the three bitwise operations has a different priority level:
 
 .. productionlist::
    and_expr: `shift_expr` | `and_expr` "&" `shift_expr`
    xor_expr: `and_expr` | `xor_expr` "^" `and_expr`
    or_expr: `xor_expr` | `or_expr` "|" `xor_expr`
 
-.. index:: pair: bit-wise; and
+.. index:: pair: bitwise; and
 
-``&`` 演算子は、引数間でビット単位の AND をとった値になります。引数は整数または長整数でなければなりません。引数は共通の型に変換されます。
+The ``&`` operator yields the bitwise AND of its arguments, which must be plain
+or long integers.  The arguments are converted to a common type.
 
 .. index::
    pair: bitwise; xor
    pair: exclusive; or
 
-``^`` 演算子は、引数間でビット単位の XOR (排他的 OR) をとった値になります。引数は整数または長整数でなければなりません。引数は共通の型に変換
-されます。
+The ``^`` operator yields the bitwise XOR (exclusive OR) of its arguments, which
+must be plain or long integers.  The arguments are converted to a common type.
 
 .. index::
    pair: bitwise; or
    pair: inclusive; or
 
-``|`` 演算子は、引数間でビット単位の OR (非排他的 OR) をとった値になります。引数は整数または長整数でなければなりません。引数は共通の型に変換
-されます。
+The ``|`` operator yields the bitwise (inclusive) OR of its arguments, which
+must be plain or long integers.  The arguments are converted to a common type.
 
-
-.. is以下のラベルは、WARNING対策のために Python 3.x のドキュメントから持ってきた。
 
 .. _comparisons:
 .. _is:
@@ -908,101 +1063,120 @@ Python 2.1 以前では、双方の引数が整数型で、第二引数が負の
 .. _in:
 .. _not in:
 
-比較 (comparison)
-=================
+Comparisons
+===========
 
 .. index:: single: comparison
 
 .. index:: pair: C; language
 
-C 言語と違って、Python における比較演算子は同じ優先順位をもっており、全ての算術演算子、シフト演算子、ビット単位演算子よりも低くなっています。
-また ``a < b < c`` が数学で伝統的に用いられているのと同じ解釈になる点も C 言語と違います:
+Unlike C, all comparison operations in Python have the same priority, which is
+lower than that of any arithmetic, shifting or bitwise operation.  Also unlike
+C, expressions like ``a < b < c`` have the interpretation that is conventional
+in mathematics:
 
 .. productionlist::
    comparison: `or_expr` ( `comp_operator` `or_expr` )*
    comp_operator: "<" | ">" | "==" | ">=" | "<=" | "<>" | "!="
                 : | "is" ["not"] | ["not"] "in"
 
-比較演算の結果はブール値: ``True`` または ``False`` になります。
+Comparisons yield boolean values: ``True`` or ``False``.
 
 .. index:: pair: chaining; comparisons
 
-比較はいくらでも連鎖することができます。例えば ``x < y <= z``  は ``x < y and y <= z``
-と等価になります。ただしこの場合、前者では ``y`` はただ一度だけ評価される点が異なります (どちらの場合でも、 ``x < y`` が偽になると
-``z`` の値はまったく評価されません)。
+Comparisons can be chained arbitrarily, e.g., ``x < y <= z`` is equivalent to
+``x < y and y <= z``, except that ``y`` is evaluated only once (but in both
+cases ``z`` is not evaluated at all when ``x < y`` is found to be false).
 
-形式的には、 *a*, *b*, *c*, ..., *y*, *z*  が式で *op1*, *op2*, ..., *opN* が比較演算子で
-ある場合、 ``a op1 b op2 c ... y opN z`` は ``a op1 b and b op2 c and ... y opN z``
-と等価になります。ただし、前者では各式は多くても一度しか評価されません。
+Formally, if *a*, *b*, *c*, ..., *y*, *z* are expressions and *op1*, *op2*, ...,
+*opN* are comparison operators, then ``a op1 b op2 c ... y opN z`` is equivalent
+to ``a op1 b and b op2 c and ... y opN z``, except that each expression is
+evaluated at most once.
 
-``a op1 b op2 c`` と書いた場合、 *a* から *c* までの範囲にあるかどうかのテストを指すのではないことに注意してください。
-例えば ``x < y > z`` は (きれいな書き方ではありませんが) 完全に正しい文法です。
+Note that ``a op1 b op2 c`` doesn't imply any kind of comparison between *a* and
+*c*, so that, e.g., ``x < y > z`` is perfectly legal (though perhaps not
+pretty).
 
-``<>`` と ``!=`` の二つの形式は等価です; C との整合性を持たせるためには ``!=`` を推奨します; 以下で ``!=`` について
-触れている部分では ``<>`` を使うこともできます。 ``<>`` のような書き方は、現在では古い書き方とみなされています。
+The forms ``<>`` and ``!=`` are equivalent; for consistency with C, ``!=`` is
+preferred; where ``!=`` is mentioned below ``<>`` is also accepted.  The ``<>``
+spelling is considered obsolescent.
 
-演算子 ``<``, ``>``, ``==``, ``>=``, ``<=``, および ``!=`` は、
-二つのオブジェクト間の値を比較します。オブジェクトは同じ型である必要はありません。双方のオブジェクトが数値であれば、
-共通型への変換が行われます。それ以外の場合、異なる型のオブジェクトは *常に* 不等であるとみなされ、一貫してはいるが規定されていない
-方法で並べられます。組み込み型でないオブジェクト比較の振る舞いは  ``__cmp__`` メソッドや ``__gt__`` といったリッチな比較メソッドを
-定義することでコントロールすることができます。これは  :ref:`specialnames` セクションで説明されています。
+The operators ``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=`` compare the
+values of two objects.  The objects need not have the same type. If both are
+numbers, they are converted to a common type.  Otherwise, objects of different
+types *always* compare unequal, and are ordered consistently but arbitrarily.
+You can control comparison behavior of objects of non-built-in types by defining
+a ``__cmp__`` method or rich comparison methods like ``__gt__``, described in
+section :ref:`specialnames`.
 
-(このような比較演算の変則的な定義は、ソートのような操作や :keyword:`in` および :keyword:`not in` といった演算子の定義を
-単純化するためのものです。将来、異なる型のオブジェクト間における比較規則は変更されるかもしれません。)
+(This unusual definition of comparison was used to simplify the definition of
+operations like sorting and the :keyword:`in` and :keyword:`not in` operators.
+In the future, the comparison rules for objects of different types are likely to
+change.)
 
-同じ型のオブジェクト間における比較は、型によって異なります:
+Comparison of objects of the same type depends on the type:
 
-* 数値間の比較では、算術的な比較が行われます。
+* Numbers are compared arithmetically.
 
-* 文字列間の比較では、各文字に対する等価な数値型 (組み込み関数  :func:`ord` の結果) を使って辞書的な (lexicographically)
-  比較が行われます。Unicode および 8 ビット文字列は、この動作に関しては完全に互換です。 [#]_
+* Strings are compared lexicographically using the numeric equivalents (the
+  result of the built-in function :func:`ord`) of their characters.  Unicode and
+  8-bit strings are fully interoperable in this behavior. [#]_
 
-* タプルやリスト間の比較では、対応する各要素の比較結果を使って辞書的な比較が行われます。このため、二つのシーケンスを等価にするためには、各要素が
-  完全に等価でなくてはならず、シーケンスは同じ型で同じ長さをもっていなければなりません。
+* Tuples and lists are compared lexicographically using comparison of
+  corresponding elements.  This means that to compare equal, each element must
+  compare equal and the two sequences must be of the same type and have the same
+  length.
 
-  二つのシーケンスが等価でない場合、異なる値を持つ最初の要素間での比較に従った順序関係になります。例えば ``cmp([1,2,x], [1,2,y])`` は
-  ``cmp(x,y)`` と等しい結果を返します。片方の要素に対応する要素が他方にない場合、より短いシーケンスが前に並びます
-  (例えば、 ``[1,2] < [1,2,3]`` となります)。
+  If not equal, the sequences are ordered the same as their first differing
+  elements.  For example, ``cmp([1,2,x], [1,2,y])`` returns the same as
+  ``cmp(x,y)``.  If the corresponding element does not exist, the shorter sequence
+  is ordered first (for example, ``[1,2] < [1,2,3]``).
 
-* マップ (辞書) 間の比較では、(key, value) からなるリストをソートしたものが等しい場合に等価になります。 [#]_
-  等価性評価以外の結果は一貫したやりかたで解決されるか、定義されないかのいずれかです。 [#]_
+* Mappings (dictionaries) compare equal if and only if their sorted (key, value)
+  lists compare equal. [#]_ Outcomes other than equality are resolved
+  consistently, but are not otherwise defined. [#]_
 
-* その他のほとんどの組み込み型のオブジェクト比較では、同じオブジェクトでないかぎり等価にはなりません；あるオブジェクトの他のオブジェクトに対する
-  大小関係は任意に決定され、一つのプログラムの実行中は一貫したものとなります。
+* Most other objects of built-in types compare unequal unless they are the same
+  object; the choice whether one object is considered smaller or larger than
+  another one is made arbitrarily but consistently within one execution of a
+  program.
 
 .. _membership-test-details:
 
-演算子 :keyword:`in` および :keyword:`not in` は、コレクション型の要素であるかどうか (メンバシップ、membership)
-を調べます。 ``x in s`` は、 *x* がコレクション型 *s* のメンバである場合には真となり、それ以外の場合には偽となります。 ``x not in s``
-は ``x in s`` の否定 (negation) を返します。コレクション型のメンバシップテストは、伝統的にはシーケンス型に限定されてきました;
-すなわち、あるオブジェクトがコレクション型のメンバとなるのは、そのコレクション型がシーケンスであり、シーケンスがオブジェクトと等価な
-要素を含む場合でした。しかし、他の多くのオブジェクトのためにシーケンスでなくてもメンバシップテストをサポートしています。
-特に、辞書型では、(キーのための)メンバシップテストをサポートしています。
+The operators :keyword:`in` and :keyword:`not in` test for collection
+membership.  ``x in s`` evaluates to true if *x* is a member of the collection
+*s*, and false otherwise.  ``x not in s`` returns the negation of ``x in s``.
+The collection membership test has traditionally been bound to sequences; an
+object is a member of a collection if the collection is a sequence and contains
+an element equal to that object.  However, it make sense for many other object
+types to support membership tests without being a sequence.  In particular,
+dictionaries (for keys) and sets support membership testing.
 
-リストやタプル型について ``x in y`` は ``x == y[i]`` となるようなインデクス *i*
-が存在するとき、かつそのときに限り真になります。
+For the list and tuple types, ``x in y`` is true if and only if there exists an
+index *i* such that ``x == y[i]`` is true.
 
-Unicode 文字列または文字列型については、 ``x in y``  は *x* が *y* の部分文字列であるとき、かつそのときに限り
-真になります。この演算と等価なテストは ``y.find(x) != -1`` です。 *x* および *y* は同じ型である必要はないので注意してください。
-すなわち ``u'ab' in 'abc'`` は ``True`` を返すことになります。
-空文字列は、他のどんな文字列に対しても常に部分文字列とみなされます。従って ``"" in "abc"`` は ``True`` を返すことになります。
+For the Unicode and string types, ``x in y`` is true if and only if *x* is a
+substring of *y*.  An equivalent test is ``y.find(x) != -1``.  Note, *x* and *y*
+need not be the same type; consequently, ``u'ab' in 'abc'`` will return
+``True``. Empty strings are always considered to be a substring of any other
+string, so ``"" in "abc"`` will return ``True``.
 
 .. versionchanged:: 2.3
-   以前は、 *x* は長さ ``1`` の文字列型でなければなりませんでした.
+   Previously, *x* was required to be a string of length ``1``.
 
-:meth:`__contains__` メソッドの定義されたユーザ定義クラスでは、 ``x in y`` が真となるのは
-``y.__contains__(x)`` が真となるとき、かつそのときに限ります。
+For user-defined classes which define the :meth:`__contains__` method, ``x in
+y`` is true if and only if ``y.__contains__(x)`` is true.
 
-:meth:`__contains__` を定義していないが :meth:`__iter__` は定義しているユーザ定義クラスでは、
-``x in y`` は ``x == z`` となるようなある値 `z` が ``y`` 内にわたる反復で生成された場合、
-true となります。
-もし、反復の間に例外が発生すれば、 :keyword:`in` が例外を発生させたようにみえます。
+For user-defined classes which do not define :meth:`__contains__` but do define
+:meth:`__iter__`, ``x in y`` is true if some value ``z`` with ``x == z`` is
+produced while iterating over ``y``.  If an exception is raised during the
+iteration, it is as if :keyword:`in` raised that exception.
 
-最終的には、旧式の反復プロトコルの実行を試みます、もし
-:meth:`__getitem__` を定義しているようなユーザ定義クラスでは、 ``x in y``  は
-``x == y[i]`` となるような非負の整数インデクス *i* が存在するとき、かつそのときにかぎり真となります。
-インデクス *i* が負である場合に :exc:`IndexError` 例外が送出されることはありません。
-(別の何らかの例外が送出された場合、例外は :keyword:`in` から送出されたかのようになります)。
+Lastly, the old-style iteration protocol is tried: if a class defines
+:meth:`__getitem__`, ``x in y`` is true if and only if there is a non-negative
+integer index *i* such that ``x == y[i]``, and all lower integer indices do not
+raise :exc:`IndexError` exception. (If any other exception is raised, it is as
+if :keyword:`in` raised that exception).
 
 .. index::
    operator: in
@@ -1010,24 +1184,26 @@ true となります。
    pair: membership; test
    object: sequence
 
-演算子 :keyword:`not in` は :keyword:`in` の真値を反転した値として定義されています。
+The operator :keyword:`not in` is defined to have the inverse true value of
+:keyword:`in`.
 
 .. index::
    operator: is
    operator: is not
    pair: identity; test
 
-演算子 :keyword:`is` および :keyword:`is not` は、オブジェクトのアイデンティティに対するテストを行います:
-``x is y`` は、 *x* と *y* が同じオブジェクトを指すとき、かつそのときに限り真になります。 ``x is not y`` は :keyword:`is`
-の真値を反転したものになります。 [#]_
+The operators :keyword:`is` and :keyword:`is not` test for object identity: ``x
+is y`` is true if and only if *x* and *y* are the same object.  ``x is not y``
+yields the inverse truth value. [#]_
+
 
 .. _booleans:
 .. _and:
 .. _or:
 .. _not:
 
-ブール演算 (boolean operation)
-==============================
+Boolean operations
+==================
 
 .. index::
    pair: Conditional; expression
@@ -1038,84 +1214,90 @@ true となります。
    and_test: `not_test` | `and_test` "and" `not_test`
    not_test: `comparison` | "not" `not_test`
 
-ブール演算のコンテキストや、式が制御フロー文中で使われる最には、以下の値: ``False`` 、 ``None`` 、すべての型における数値のゼロ、空の文字列と
-コンテナ (文字列、タプル、リスト、辞書、set、frozenset を含む) は偽 (false) であると解釈されます。それ以外の値は真 (true)
-であると解釈されます。
-(この振る舞いを変更する方法については特殊メソッド :meth:`~object.__nonzero__` を参照してください)
+In the context of Boolean operations, and also when expressions are used by
+control flow statements, the following values are interpreted as false:
+``False``, ``None``, numeric zero of all types, and empty strings and containers
+(including strings, tuples, lists, dictionaries, sets and frozensets).  All
+other values are interpreted as true.  (See the :meth:`~object.__nonzero__`
+special method for a way to change this.)
 
 .. index:: operator: not
 
-演算子 :keyword:`not` は、引数が偽である場合には ``1`` を、それ以外の場合には ``0`` になります。
+The operator :keyword:`not` yields ``True`` if its argument is false, ``False``
+otherwise.
 
 .. index:: operator: and
 
-式 ``x and y`` は、まず *x* を評価します; *x* が偽なら *x* の値を返します; それ以外の場合には、 *y*
-の値を評価し、その結果を返します。
+The expression ``x and y`` first evaluates *x*; if *x* is false, its value is
+returned; otherwise, *y* is evaluated and the resulting value is returned.
 
 .. index:: operator: or
 
-式 ``x or y`` は、まず *x* を評価します;  *x* が真なら *x* の値を返します; それ以外の場合には、 *y*
-の値を評価し、その結果を返します。
+The expression ``x or y`` first evaluates *x*; if *x* is true, its value is
+returned; otherwise, *y* is evaluated and the resulting value is returned.
 
-(:keyword:`and` も :keyword:`not` も、返す値を ``0`` や ``1`` に
-制限するのではなく、最後に評価した引数の値を返すので注意してください。この仕様は、例えば ``s`` を文字列として ``s`` が空文字列の
-場合にデフォルトの値に置き換えるような場合に、 ``s or 'foo'``  と書くと期待通りの値になるために便利なことがあります。
-:keyword:`not` は、式の値でなく独自に値を作成して返すので、引数と同じ型の値を返すような処理に煩わされることはありません。例えば、 ``not
-'foo'`` は、 ``''`` ではなく ``0`` になります)
+(Note that neither :keyword:`and` nor :keyword:`or` restrict the value and type
+they return to ``False`` and ``True``, but rather return the last evaluated
+argument. This is sometimes useful, e.g., if ``s`` is a string that should be
+replaced by a default value if it is empty, the expression ``s or 'foo'`` yields
+the desired value.  Because :keyword:`not` has to invent a value anyway, it does
+not bother to return a value of the same type as its argument, so e.g., ``not
+'foo'`` yields ``False``, not ``''``.)
 
 
-条件演算 (Conditional Expressions)
-==================================
- 
+Conditional Expressions
+=======================
+
 .. versionadded:: 2.5
- 
+
 .. index::
    pair: conditional; expression
    pair: ternary; operator
- 
+
 .. productionlist::
    conditional_expression: `or_test` ["if" `or_test` "else" `expression`]
-   expression: `conditional_expression` | `lambda_form`
- 
-条件演算式 (しばしば、"三項演算子" と呼ばれます) は最も優先度が低いPython の操作です。
- 
-``x if C else y`` という式は最初に条件 *C* (*x* では *ありません*) を評価します;
-*C* が true の場合 *x* が評価され値が返されます; それ以外の場合には *y* が評価され返されます。
- 
-条件演算に関してより詳しくは :pep:`308` を参照してください。
-    
+   expression: `conditional_expression` | `lambda_expr`
 
+Conditional expressions (sometimes called a "ternary operator") have the lowest
+priority of all Python operations.
+
+The expression ``x if C else y`` first evaluates the condition, *C* (*not* *x*);
+if *C* is true, *x* is evaluated and its value is returned; otherwise, *y* is
+evaluated and its value is returned.
+
+See :pep:`308` for more details about conditional expressions.
+
+
+.. _lambdas:
 .. _lambda:
 
-ラムダ (lambda)
-===============
+Lambdas
+=======
 
 .. index::
    pair: lambda; expression
-   pair: lambda; form
    pair: anonymous; function
 
 .. productionlist::
-   lambda_form: "lambda" [`parameter_list`]: `expression`
-   old_lambda_form: "lambda" [`parameter_list`]: `old_expression`
+   lambda_expr: "lambda" [`parameter_list`]: `expression`
+   old_lambda_expr: "lambda" [`parameter_list`]: `old_expression`
 
-ラムダ形式 (lambda form, ラムダ式 (lambda expression)) は、
-構文法的には式と同じ位置付けになります。ラムダは、無名関数を作成できる省略記法です; 式 ``lambda arguments: expression``
-は、関数オブジェクトになります。ラムダが表す無名オブジェクトは、以下のコード ::
+Lambda expressions (sometimes called lambda forms) have the same syntactic position as
+expressions.  They are a shorthand to create anonymous functions; the expression
+``lambda arguments: expression`` yields a function object.  The unnamed object
+behaves like a function object defined with ::
 
    def name(arguments):
        return expression
 
-で定義された関数と同様に動作します。
-
-引数リストの構文法については :ref:`function` 節を参照してください。ラムダ形式で作成された関数は、実行文 (statement)
-を含むことができないので注意してください。
+See section :ref:`function` for the syntax of parameter lists.  Note that
+functions created with lambda expressions cannot contain statements.
 
 
 .. _exprlists:
 
-式のリスト
-==========
+Expression lists
+================
 
 .. index:: pair: expression; list
 
@@ -1124,24 +1306,31 @@ true となります。
 
 .. index:: object: tuple
 
-少なくとも一つのカンマを含む式のリストは、タプルになります。タプルの長さは、リスト中の式の数に等しくなります。リスト中の式は左から右へと順に評価されます。
+An expression list containing at least one comma yields a tuple.  The length of
+the tuple is the number of expressions in the list.  The expressions are
+evaluated from left to right.
 
 .. index:: pair: trailing; comma
 
-単一要素のタプル (別名 *単集合 (singleton)* ) を作りたければ、末尾にカンマが必要です。単一の式だけで、末尾にカンマをつけない場合
-には、タプルではなくその式の値になります (空のタプルを作りたいなら、中身が空の丸括弧ペア: ``()`` を使います。)
+The trailing comma is required only to create a single tuple (a.k.a. a
+*singleton*); it is optional in all other cases.  A single expression without a
+trailing comma doesn't create a tuple, but rather yields the value of that
+expression. (To create an empty tuple, use an empty pair of parentheses:
+``()``.)
 
 
 .. _evalorder:
 
-評価順序
-========
+Evaluation order
+================
 
 .. index:: pair: evaluation; order
 
-Python は、式を左から右へと順に評価してゆきます。ただし、代入式を評価する最には、代入演算子の右側項が左側項よりも先に評価されるので注意してください。
+Python evaluates expressions from left to right. Notice that while evaluating an
+assignment, the right-hand side is evaluated before the left-hand side.
 
-以下に示す実行文の各行での評価順序は、添え字の数字順序と同じになります::
+In the following lines, expressions will be evaluated in the arithmetic order of
+their suffixes::
 
    expr1, expr2, expr3, expr4
    (expr1, expr2, expr3, expr4)
@@ -1151,95 +1340,107 @@ Python は、式を左から右へと順に評価してゆきます。ただし�
    expr3, expr4 = expr1, expr2
 
 
-.. _summary:
+.. _operator-summary:
 
-まとめ
-======
+Operator precedence
+===================
 
 .. index:: pair: operator; precedence
 
-以下の表は、Python における演算子を、優先順位  の最も低い (結合度が最も低い) ものから最も高い (結合度が最も高い) ものの順に並べたものです。
-同じボックス内に示された演算子は同じ優先順位を持ちます。演算子の文法が示されていないかぎり、演算子は全て二項演算子です。
-同じボックス内の演算子は、左から右へとグループ化されます (値のテストを含む比較演算子を除きます。比較演算子は、左から右に連鎖します ---
-:ref:`comparisons` を参照してください。また、べき乗演算子も除きます。べき乗演算子は右から左にグループ化されます)。
+The following table summarizes the operator precedences in Python, from lowest
+precedence (least binding) to highest precedence (most binding). Operators in
+the same box have the same precedence.  Unless the syntax is explicitly given,
+operators are binary.  Operators in the same box group left to right (except for
+comparisons, including tests, which all have the same precedence and chain from
+left to right --- see section :ref:`comparisons` --- and exponentiation, which
+groups from right to left).
 
-+-----------------------------------------------+--------------------------------+
-| 演算子                                        | 説明                           |
-+===============================================+================================+
-| :keyword:`lambda`                             | ラムダ式                       |
-+-----------------------------------------------+--------------------------------+
-| :keyword:`if` -- :keyword:`else`              | 条件演算                       |
-+-----------------------------------------------+--------------------------------+
-| :keyword:`or`                                 | ブール演算 OR                  |
-+-----------------------------------------------+--------------------------------+
-| :keyword:`and`                                | ブール演算 AND                 |
-+-----------------------------------------------+--------------------------------+
-| :keyword:`not` *x*                            | ブール演算 NOT                 |
-+-----------------------------------------------+--------------------------------+
-| ``==``                                        |                                |
-| :keyword:`in`, :keyword:`not` :keyword:`in`,  | メンバシップテスト、           |
-| :keyword:`is`, :keyword:`is not`, ``<``,      | アイデンティティテスト         |
-| ``<=``, ``>``, ``>=``, ``<>``, ``!=``, ``==`` | を含めた比較                   |
-+-----------------------------------------------+--------------------------------+
-| ``|``                                         | ビット単位 OR                  |
-+-----------------------------------------------+--------------------------------+
-| ``^``                                         | ビット単位 XOR                 |
-+-----------------------------------------------+--------------------------------+
-| ``&``                                         | ビット単位 AND                 |
-+-----------------------------------------------+--------------------------------+
-| ``<<``, ``>>``                                | シフト演算                     |
-+-----------------------------------------------+--------------------------------+
-| ``+``, ``-``                                  | 加算および減算                 |
-+-----------------------------------------------+--------------------------------+
-| ``*``, ``/``, ``//``, ``%``                   | 乗算、除算、剰余               |
-+-----------------------------------------------+--------------------------------+
-| ``+x``, ``-x``, ``~x``                        | 正符号、負符号、ビット単位 NOT |
-+-----------------------------------------------+--------------------------------+
-| ``**``                                        | べき乗 [#]_                    |
-+-----------------------------------------------+--------------------------------+
-| ``x[index]``, ``x[index:index]``,             | 添字指定、スライス操作         |
-| ``x(arguments...)``, ``x.attribute``          | 属性参照                       |
-+-----------------------------------------------+--------------------------------+
-| ``(expressions...)``,                         | 式結合またはタプル表現、       |
-| ``[expressions...]``,                         | リスト表現、                   |
-| ``{key:datum...}``,                           | 辞書表現、                     |
-| ```expressions...```                          | 文字列への型変換               |
-+-----------------------------------------------+--------------------------------+
++-----------------------------------------------+-------------------------------------+
+| Operator                                      | Description                         |
++===============================================+=====================================+
+| :keyword:`lambda`                             | Lambda expression                   |
++-----------------------------------------------+-------------------------------------+
+| :keyword:`if` -- :keyword:`else`              | Conditional expression              |
++-----------------------------------------------+-------------------------------------+
+| :keyword:`or`                                 | Boolean OR                          |
++-----------------------------------------------+-------------------------------------+
+| :keyword:`and`                                | Boolean AND                         |
++-----------------------------------------------+-------------------------------------+
+| :keyword:`not` ``x``                          | Boolean NOT                         |
++-----------------------------------------------+-------------------------------------+
+| :keyword:`in`, :keyword:`not in`,             | Comparisons, including membership   |
+| :keyword:`is`, :keyword:`is not`, ``<``,      | tests and identity tests            |
+| ``<=``, ``>``, ``>=``, ``<>``, ``!=``, ``==`` |                                     |
++-----------------------------------------------+-------------------------------------+
+| ``|``                                         | Bitwise OR                          |
++-----------------------------------------------+-------------------------------------+
+| ``^``                                         | Bitwise XOR                         |
++-----------------------------------------------+-------------------------------------+
+| ``&``                                         | Bitwise AND                         |
++-----------------------------------------------+-------------------------------------+
+| ``<<``, ``>>``                                | Shifts                              |
++-----------------------------------------------+-------------------------------------+
+| ``+``, ``-``                                  | Addition and subtraction            |
++-----------------------------------------------+-------------------------------------+
+| ``*``, ``/``, ``//``, ``%``                   | Multiplication, division, remainder |
+|                                               | [#]_                                |
++-----------------------------------------------+-------------------------------------+
+| ``+x``, ``-x``, ``~x``                        | Positive, negative, bitwise NOT     |
++-----------------------------------------------+-------------------------------------+
+| ``**``                                        | Exponentiation [#]_                 |
++-----------------------------------------------+-------------------------------------+
+| ``x[index]``, ``x[index:index]``,             | Subscription, slicing,              |
+| ``x(arguments...)``, ``x.attribute``          | call, attribute reference           |
++-----------------------------------------------+-------------------------------------+
+| ``(expressions...)``,                         | Binding or tuple display,           |
+| ``[expressions...]``,                         | list display,                       |
+| ``{key: value...}``,                          | dictionary display,                 |
+| ```expressions...```                          | string conversion                   |
++-----------------------------------------------+-------------------------------------+
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] Python 2.3 以降のリスト内包は ``for`` の中で使う制御変数を内包表記内のスコープに「リーク」します。
-   しかし、この挙動は廃止予定です。Python 3.0 ではこの挙動に依存したコードは動作しなくなります。
+.. [#] In Python 2.3 and later releases, a list comprehension "leaks" the control
+   variables of each ``for`` it contains into the containing scope.  However, this
+   behavior is deprecated, and relying on it will not work in Python 3.
 
-.. [#] ``abs(x%y) < abs(y)`` は数学的には真となりますが、浮動小数点に対する演算の場合には、値丸め (roundoff) のために数値計算的に
-   真にならない場合があります。例えば、Python の浮動小数点型が IEEE754 倍精度数型になっているプラットフォームを仮定すると、 ``-1e-100 %
-   1e100`` は ``1e100`` と同じ符号になるはずなのに、計算結果は ``-1e-100 + 1e100`` となります。これは
-   数値計算的には厳密に ``1e100`` と等価です。関数 :func:`math.fmod` は、最初の引数と符号が一致する
-   ような値を返すので、上記の場合には ``-1e-100`` を返します。どちらのアプローチが適切かは、アプリケーションに依存します。
+.. [#] While ``abs(x%y) < abs(y)`` is true mathematically, for floats it may not be
+   true numerically due to roundoff.  For example, and assuming a platform on which
+   a Python float is an IEEE 754 double-precision number, in order that ``-1e-100 %
+   1e100`` have the same sign as ``1e100``, the computed result is ``-1e-100 +
+   1e100``, which is numerically exactly equal to ``1e100``.  The function
+   :func:`math.fmod` returns a result whose sign matches the sign of the
+   first argument instead, and so returns ``-1e-100`` in this case. Which approach
+   is more appropriate depends on the application.
 
-.. [#] x が y の整数倍に非常に近い場合、丸め誤差によって ``floor(x/y)`` は ``(x-x%y)/y`` よりも大きな値になる可能性があります。
-   そのような場合、 Python は ``divmod(x,y)[0] * y + x % y`` が ``x``
-   に非常に近くなるという関係を保つために、後者の値を返します。
+.. [#] If x is very close to an exact integer multiple of y, it's possible for
+   ``floor(x/y)`` to be one larger than ``(x-x%y)/y`` due to rounding.  In such
+   cases, Python returns the latter result, in order to preserve that
+   ``divmod(x,y)[0] * y + x % y`` be very close to ``x``.
 
-.. [#] ユニコード文字列間の比較はバイトレベルでは当然とはいえ、ユーザにとっては直感的ではないかもしれません。
-   例えば、文字列 ``u"\u00C7"`` と ``u"\u0043\u0327"`` の比較は、
-   両方の文字列が同じユニコード文字(LATIN CAPITAL LETTER C WITH CEDILLA)で表されたとしても違います。
-   人間が分かり易い方法で文字列を比較するために :func:`unicodedata.normalize` を使用して比較してください。
+.. [#] While comparisons between unicode strings make sense at the byte
+   level, they may be counter-intuitive to users. For example, the
+   strings ``u"\u00C7"`` and ``u"\u0043\u0327"`` compare differently,
+   even though they both represent the same unicode character (LATIN
+   CAPITAL LETTER C WITH CEDILLA). To compare strings in a human
+   recognizable way, compare using :func:`unicodedata.normalize`.
 
-.. [#] 実装では、この演算をリストを構築したりソートしたりすることなく効率的に行います。
+.. [#] The implementation computes this efficiently, without constructing lists or
+   sorting.
 
-.. [#] Python の初期のバージョンでは、ソートされた (key, value) のリストに対して辞書的な比較を行っていましたが、
-   これは等価性の計算のようなよくある操作を実現するには非常にコストの高い操作でした。もっと以前のバージョンの Python では、辞書は
-   アイデンティティだけで比較されていました。しかしこの仕様は、 ``{}`` との比較によって辞書が空であるか確かめられると期待して
-   いた人々を混乱させていました。
+.. [#] Earlier versions of Python used lexicographic comparison of the sorted (key,
+   value) lists, but this was very expensive for the common case of comparing for
+   equality.  An even earlier version of Python compared dictionaries by identity
+   only, but this caused surprises because people expected to be able to test a
+   dictionary for emptiness by comparing it to ``{}``.
 
-.. [#] 自動的なガベージコレクション、フリーリスト、ディスクリプタの動的特性のために、
-       インスタンスメソッドや定数の比較を行うようなときに :keyword:`is` 演算子の利用は、
-       一見すると普通ではない振る舞いだと気付くかもしれません。
-       詳細はそれぞれのドキュメントを確認してください。
+.. [#] Due to automatic garbage-collection, free lists, and the dynamic nature of
+   descriptors, you may notice seemingly unusual behaviour in certain uses of
+   the :keyword:`is` operator, like those involving comparisons between instance
+   methods, or constants.  Check their documentation for more info.
 
-.. [#] ``%`` 演算子は文字列フォーマットにも使われ、同じ優先順位が当てはまります。
+.. [#] The ``%`` operator is also used for string formatting; the same
+   precedence applies.
 
-.. [#] べき乗演算子 ``**`` はその右側にある単項演算子かビット単位演算子よりも優先して束縛されます。
-   つまり ``2**-1`` は ``0.5`` になります。
-
+.. [#] The power operator ``**`` binds less tightly than an arithmetic or
+   bitwise unary operator on its right, that is, ``2**-1`` is ``0.5``.

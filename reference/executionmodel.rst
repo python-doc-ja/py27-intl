@@ -1,17 +1,17 @@
 
 .. _execmodel:
 
-**********
-実行モデル
-**********
+***************
+Execution model
+***************
 
 .. index:: single: execution model
 
 
 .. _naming:
 
-名前づけと束縛 (naming and binding)
-===================================
+Naming and binding
+==================
 
 .. index::
    pair: code; block
@@ -22,34 +22,39 @@
    single: name
    pair: binding; name
 
-:dfn:`名前 (name)` とは、オブジェクトを参照するものを指します。名前への束縛 (name binding) 操作を行うと、
-名前を導入できます。プログラムテキスト中に名前が出現するたびに、その名前が使われている最も内側の関数ブロック中で作成された :dfn:`束縛
-(binding)` を使って名前の参照が行われます。
+:dfn:`Names` refer to objects.  Names are introduced by name binding operations.
+Each occurrence of a name in the program text refers to the :dfn:`binding` of
+that name established in the innermost function block containing the use.
 
 .. index:: single: block
 
-ブロック(:dfn:`block`)は、Python のプログラムテキストからなる断片で、一つの実行単位となるものです。
-モジュール、関数本体、そしてクラス定義はブロックです。また、対話的に入力された個々のコマンドもブロックです。スクリプトファイル
-(インタプリタに標準入力として与えたり、コマンドラインの第一引数として指定したファイル) は、コードブロックです。スクリプトコマンド
-(インタプリタのコマンドライン上で '**-c**' オプションを使って指定したコマンド) もコードブロックです。組み込み関数 :func:`eval` や
-:keyword:`exec` 文に渡した文字列もコードブロックになります。組み込み関数 :func:`input` から読み取られ、評価される
-式もまた、コードブロックです。
+A :dfn:`block` is a piece of Python program text that is executed as a unit.
+The following are blocks: a module, a function body, and a class definition.
+Each command typed interactively is a block.  A script file (a file given as
+standard input to the interpreter or specified on the interpreter command line
+the first argument) is a code block.  A script command (a command specified on
+the interpreter command line with the '**-c**' option) is a code block.  The
+file read by the built-in function :func:`execfile` is a code block.  The string
+argument passed to the built-in function :func:`eval` and to the :keyword:`exec`
+statement is a code block. The expression read and evaluated by the built-in
+function :func:`input` is a code block.
 
 .. index:: pair: execution; frame
 
-コードブロックは、実行フレーム(:dfn:`execution frame`) 上で実行されます。実行フレームには、 (デバッグに使われる)
-管理情報が収められています。また、現在のコードブロックの実行が完了した際に、どのようにプログラムの実行を継続するかを決定しています。
+A code block is executed in an :dfn:`execution frame`.  A frame contains some
+administrative information (used for debugging) and determines where and how
+execution continues after the code block's execution has completed.
 
 .. index:: single: scope
 
-スコープ(:dfn:`scope`)は、ある名前があるブロック内で参照できるかどうかを決めます。
-ローカル変数があるブロック内で定義されている場合、変数のスコープはそのブロックを含みます。
-関数ブロック内で名前の定義を行った場合、その名前に対して別の束縛を行っているブロックを除いた、
-関数内の全てのブロックを含むようにスコープが拡張されます。
-クラス内で定義された名前のスコープは、クラスのブロック内に制限されます;
-スコープがメソッドのコードブロックを含むよう拡張されることはありません。
--- ジェネレータ式も関数スコープを利用して実装されているのでスコープの拡張範囲外です。
-つまり、次のようなコードは失敗します。 ::
+A :dfn:`scope` defines the visibility of a name within a block.  If a local
+variable is defined in a block, its scope includes that block.  If the
+definition occurs in a function block, the scope extends to any blocks contained
+within the defining one, unless a contained block introduces a different binding
+for the name.  The scope of names defined in a class block is limited to the
+class block; it does not extend to the code blocks of methods -- this includes
+generator expressions since they are implemented using a function scope.  This
+means that the following will fail::
 
    class A:
        a = 42
@@ -57,109 +62,129 @@
 
 .. index:: single: environment
 
-ある名前がコードブロック内で使われると、その名前を最も近傍から囲うようなスコープ (最内スコープ: nearest enclosing scope)
-を使って束縛の解決を行います。こうしたスコープからなる、あるコードブロック内で参照できるスコープ全ての集合は、ブロックの
-環境(:dfn:`environment`)と呼ばれます。
+When a name is used in a code block, it is resolved using the nearest enclosing
+scope.  The set of all such scopes visible to a code block is called the block's
+:dfn:`environment`.
 
 .. index:: pair: free; variable
 
-ある名前がブロック内で束縛されている場合、名前はそのブロックにおけるローカル変数 (local variable) です。
-ある名前がモジュールレベルで束縛されている場合、名前はグローバル変数 (global variable) です。
-(モジュールコードブロックの変数は、ローカル変数でもあるし、グローバル変数でもあります。) ある変数がコードブロック内で使われているが、そのブロックでは定義
-されていない場合、変数は自由変数(:dfn:`free variable`)です。
+If a name is bound in a block, it is a local variable of that block. If a name
+is bound at the module level, it is a global variable.  (The variables of the
+module code block are local and global.)  If a variable is used in a code block
+but not defined there, it is a :dfn:`free variable`.
 
 .. index::
    single: NameError (built-in exception)
    single: UnboundLocalError
 
-ある名前の定義がどこにもない場合、 :exc:`NameError` 例外が送出されます。名前がまだ束縛されていないローカルな変数を参照
-した場合、 :exc:`UnboundLocalError`  例外が送出されます。 :exc:`UnboundLocalError` は、
-:exc:`NameError` のサブクラスです。
+When a name is not found at all, a :exc:`NameError` exception is raised.  If the
+name refers to a local variable that has not been bound, a
+:exc:`UnboundLocalError` exception is raised.  :exc:`UnboundLocalError` is a
+subclass of :exc:`NameError`.
 
 .. index:: statement: from
 
-名前への束縛は、以下の文構成(construct)で行われます: 関数の仮引数 (formal parameter) 指定、 :keyword:`import`
-文、クラスや関数の定義 (定義を行ったブロック中で、クラスや関数名の束縛が行われます)、
-代入時に代入対象が識別子である場合、 :keyword:`for` ループのヘッダ、 :keyword:`except` 文ヘッダの
-第二要素、 :keyword:`with` 文の中の :keyword:`as` の後ろ。
+The following constructs bind names: formal parameters to functions,
+:keyword:`import` statements, class and function definitions (these bind the
+class or function name in the defining block), and targets that are identifiers
+if occurring in an assignment, :keyword:`for` loop header, in the second
+position of an :keyword:`except` clause header or after :keyword:`as` in a
+:keyword:`with` statement.  The :keyword:`import` statement
+of the form ``from ... import *`` binds all names defined in the imported
+module, except those beginning with an underscore.  This form may only be used
+at the module level.
 
-"``from...import *``" 形式の import 文は、 import しようとするモジュール内で定義されている名前について、
-アンダースコアから始まっている名前以外の全てを束縛します。
-この形式は、モジュールレベルでしか使うことができません。
+A target occurring in a :keyword:`del` statement is also considered bound for
+this purpose (though the actual semantics are to unbind the name).  It is
+illegal to unbind a name that is referenced by an enclosing scope; the compiler
+will report a :exc:`SyntaxError`.
 
-:keyword:`del` 文で指定された対象は、(:keyword:`del` の意味付けは、実際は名前の解放 (unbind) ですが)
-文の目的上、束縛済みのものとみなされます。外側のスコープで参照されている名前の解放は、不正な操作になります; コンパイラは
-:exc:`SyntaxError` を報告するでしょう。
+Each assignment or import statement occurs within a block defined by a class or
+function definition or at the module level (the top-level code block).
 
-代入文や import 文はいずれも、クラスや関数定義、モジュールレベル (トップレベルのコードブロック) 内で起こります。
+If a name binding operation occurs anywhere within a code block, all uses of the
+name within the block are treated as references to the current block.  This can
+lead to errors when a name is used within a block before it is bound. This rule
+is subtle.  Python lacks declarations and allows name binding operations to
+occur anywhere within a code block.  The local variables of a code block can be
+determined by scanning the entire text of the block for name binding operations.
 
-ある名前束縛操作がコードブロック内のどこかにある場合、ブロック内でその名前を使うと、全て現在のブロックで束縛されている名前を
-指すものとみなされます。このため、ある名前が束縛される前にブロック内で使われるとエラーを引き起こす可能性があります。
-
-この規則はやや微妙です。Python には宣言文がなく、コードブロックのどこで名前束縛操作を行ってもかまいません。あるコードブロックにおけるローカル変数は、
-ブロック全体から名前束縛操作が行われている部分を走査して決定します。
-
-global 文で指定された名前がブロック内にある場合、その名前は常にトップレベルの名前空間で束縛された名前を参照します。
-それらの名前はグローバル名前空間、すなわちコードブロックが収められているモジュールの名前空間とモジュール名 :mod:`__builtin__`
-で表される組み込み名前空間、を検索することによって、トップレベルの名前空間で解決されます。グローバル名前空間は、常に最初に検索
-されます。名前がグローバル名前空間中に見つからない場合、組み込み名前空間が検索されます。global 文は、その名前が使われている全て
-の文に先立って記述されていなければなりません。
+If the global statement occurs within a block, all uses of the name specified in
+the statement refer to the binding of that name in the top-level namespace.
+Names are resolved in the top-level namespace by searching the global namespace,
+i.e. the namespace of the module containing the code block, and the builtins
+namespace, the namespace of the module :mod:`__builtin__`.  The global namespace
+is searched first.  If the name is not found there, the builtins namespace is
+searched.  The global statement must precede all uses of the name.
 
 .. index:: pair: restricted; execution
 
-あるコードブロックの実行時に関連付けられる組み込み名前空間は、実際にはコードブロックのグローバル名前空間内に入っている名前 ``__builtins__``
-を参照する形になっています; ``__builtins__``  は辞書かモジュール (後者の場合にはモジュールの辞書が使われます)
-でなければなりません。デフォルトで ``__main__`` モジュール中においては、 ``__builtins__`` は組み込みモジュール
-:mod:`__builtin__` です (注意: 's' なし)；それ以外のモジュールでは、 ``__builtins__`` は
-:mod:`__builtin__` モジュールそれ自身の辞書のエイリアスです。 ``__builtins__`` はユーザが作成した辞書を
-設定して、弱い形態の制限実行  を作成することが可能です。
+The builtins namespace associated with the execution of a code block is actually
+found by looking up the name ``__builtins__`` in its global namespace; this
+should be a dictionary or a module (in the latter case the module's dictionary
+is used).  By default, when in the :mod:`__main__` module, ``__builtins__`` is
+the built-in module :mod:`__builtin__` (note: no 's'); when in any other module,
+``__builtins__`` is an alias for the dictionary of the :mod:`__builtin__` module
+itself.  ``__builtins__`` can be set to a user-created dictionary to create a
+weak form of restricted execution.
 
 .. impl-detail::
 
-   ユーザは ``__builtins__`` に触れるべきではありません；これはくれぐれも実装の詳細であるのです。組み込みの名前空間の中の値を
-   オーバーライドしたいユーザは、 :mod:`__builtin__` ('s'はありません)  モジュールを :keyword:`import`
-   して、その属性を好きに変更するべきです。
+   Users should not touch ``__builtins__``; it is strictly an implementation
+   detail.  Users wanting to override values in the builtins namespace should
+   :keyword:`import` the :mod:`__builtin__` (no 's') module and modify its
+   attributes appropriately.
 
 .. index:: module: __main__
 
-あるモジュールの名前空間は、そのモジュールが最初に import された時に自動的に作成されます。スクリプトの主モジュール (main module)は常に
-:mod:`__main__` と呼ばれます。
+The namespace for a module is automatically created the first time a module is
+imported.  The main module for a script is always called :mod:`__main__`.
 
-:keyword:`global` 文は、同じブロックの束縛操作と同じスコープを持ちます。ある自由変数の最内スコープに global 文がある場合、その自由変数は
-グローバル変数とみなされます。
+The :keyword:`global` statement has the same scope as a name binding operation
+in the same block.  If the nearest enclosing scope for a free variable contains
+a global statement, the free variable is treated as a global.
 
-クラス定義は一つの実行文で、名前の使用や定義を行います。クラス定義への参照は、通常の名前解決規則に従います。
-クラス定義の名前空間は、そのクラスの属性辞書になります。クラスのスコープで定義された名前は、メソッドからは見えません。
+A class definition is an executable statement that may use and define names.
+These references follow the normal rules for name resolution. The namespace of
+the class definition becomes the attribute dictionary of the class.  Names
+defined at the class scope are not visible in methods.
 
 
 .. _dynamic-features:
 
-動的な機能とのやりとり
-----------------------
+Interaction with dynamic features
+---------------------------------
 
-自由変数の入った入れ子スコープ (nested scope) を併用すると、 Python の文が不正な文になる場合がいくつかあります。
+There are several cases where Python statements are illegal when used in
+conjunction with nested scopes that contain free variables.
 
-ある変数がスコープの外側から参照された場合、その名前に対する削除操作は不正になります。この場合、コンパイル時にエラーが報告されることになります。
+If a variable is referenced in an enclosing scope, it is illegal to delete the
+name.  An error will be reported at compile time.
 
-ワイルドカード形式の import 文  --- ``import *`` ---  を関数内で使った場合や、関数が自由変数を含んでいたり、自由変数
-を伴う入れ子ブロックである場合、コンパイラは :exc:`SyntaxError` を送出します。
+If the wild card form of import --- ``import *`` --- is used in a function and
+the function contains or is a nested block with free variables, the compiler
+will raise a :exc:`SyntaxError`.
 
-:keyword:`exec` が関数内で使われており、関数が自由変数を含んでいたり、自由変数を伴う入れ子ブロックである場合、 :keyword:`exec`
-に明示的にローカル名前空間を指定しないかぎりコンパイラは SyntaxError を送出します。 (別の言い方をすれば、 ``exec obj``
-は不正になることがあり、 ``exec obj in ns`` はならない、ということです。)
+If :keyword:`exec` is used in a function and the function contains or is a
+nested block with free variables, the compiler will raise a :exc:`SyntaxError`
+unless the exec explicitly specifies the local namespace for the
+:keyword:`exec`.  (In other words, ``exec obj`` would be illegal, but ``exec obj
+in ns`` would be legal.)
 
-:func:`eval` 、 :func:`execfile` 、および :func:`input` 関数、そして :keyword:`exec`
-文は、名前の解決を行う際に、現在の環境に対して完全にアクセスできるわけではありません。名前が呼び出し側の
-ローカル名前空間やグローバル名前空間から解決されることはあります。自由変数は最内名前空間ではなく、グローバル名前空間から解決されます。  [#]_
-
-:keyword:`exec` 文と、関数 :func:`eval` および :func:`execfile` にはオプションの引数があり、グローバルおよび
-ローカル名前空間をオーバライドできます。名前空間を一つしか指定しなければ、両方の名前空間として使われます。
+The :func:`eval`, :func:`execfile`, and :func:`input` functions and the
+:keyword:`exec` statement do not have access to the full environment for
+resolving names.  Names may be resolved in the local and global namespaces of
+the caller.  Free variables are not resolved in the nearest enclosing namespace,
+but in the global namespace. [#]_ The :keyword:`exec` statement and the
+:func:`eval` and :func:`execfile` functions have optional arguments to override
+the global and local namespace.  If only one namespace is specified, it is used
+for both.
 
 
 .. _exceptions:
 
-例外
-====
+Exceptions
+==========
 
 .. index:: single: exception
 
@@ -170,43 +195,53 @@ global 文で指定された名前がブロック内にある場合、その名�
    single: errors
    single: error handling
 
-例外とは、コードブロックの通常の制御フローを中断して、エラーやその他の例外的な状況を処理できるようにするための手段です。例外はエラーが検出された時点で
-*送出 (raise)* されます; 例外は、エラーが発生部の周辺のコードブロックか、エラーが発生した
-コードブロック直接または間接的に呼び出しているコードブロックで *処理 (handle)* することができます。
+Exceptions are a means of breaking out of the normal flow of control of a code
+block in order to handle errors or other exceptional conditions.  An exception
+is *raised* at the point where the error is detected; it may be *handled* by the
+surrounding code block or by any code block that directly or indirectly invoked
+the code block where the error occurred.
 
-Python インタプリタは、ランタイムエラー (ゼロによる除算など) が検出されると例外を送出します。Python
-プログラムから、 :keyword:`raise` 文を使って明示的に例外を送出することもできます。例外ハンドラ (exception handler) は、
-:keyword:`try` ... :keyword:`except` 文で指定することができます。
-:keyword:`try` 文の :keyword:`finally` 節を使うとクリーンアップコード (cleanup code) を指定できます。
-このコードは例外は処理しませんが、先行するコードブロックで例外が起きても起きなくても実行されます。
+The Python interpreter raises an exception when it detects a run-time error
+(such as division by zero).  A Python program can also explicitly raise an
+exception with the :keyword:`raise` statement. Exception handlers are specified
+with the :keyword:`try` ... :keyword:`except` statement.  The :keyword:`finally`
+clause of such a statement can be used to specify cleanup code which does not
+handle the exception, but is executed whether an exception occurred or not in
+the preceding code.
 
 .. index:: single: termination model
 
-Python は、エラー処理に "プログラムの終了 (termination)"  モデルを用いています: 例外ハンドラは、
-プログラムに何が発生したかを把握することができ、ハンドラの外側のレベルに処理を継続することはできますが、(問題のあったコード部分を
-最初から実行しなおすのでない限り) エラーの原因を修復したり、実行に失敗した操作をやり直すことはできません。
+Python uses the "termination" model of error handling: an exception handler can
+find out what happened and continue execution at an outer level, but it cannot
+repair the cause of the error and retry the failing operation (except by
+re-entering the offending piece of code from the top).
 
 .. index:: single: SystemExit (built-in exception)
 
-例外が全く処理されない場合、インタプリタはプログラムの実行を終了させるか、対話メインループに処理を戻します。どちらの場合も、例外が
-:exc:`SystemExit` でない限りバックトレース (backtrace) を出力します。
+When an exception is not handled at all, the interpreter terminates execution of
+the program, or returns to its interactive main loop.  In either case, it prints
+a stack backtrace, except when the exception is  :exc:`SystemExit`.
 
-例外は、クラスインスタンスによって識別されます。 :keyword:`except` 節はインスタンスのクラスにもとづいて選択されます：
-これはインスタンスのクラスか、そのベースクラスを参照します。このインスタンスはハンドラによって受け取られ、例外条件に関する追加情報を伝えることができます。
+Exceptions are identified by class instances.  The :keyword:`except` clause is
+selected depending on the class of the instance: it must reference the class of
+the instance or a base class thereof.  The instance can be received by the
+handler and can carry additional information about the exceptional condition.
 
-例外は文字列 (strings) によっても識別することができ、このような場合には :keyword:`except`
-節はオブジェクトの同一性によって選択されます。任意の値をハンドラに渡される識別文字列に伴って送出することができます。
+Exceptions can also be identified by strings, in which case the
+:keyword:`except` clause is selected by object identity.  An arbitrary value can
+be raised along with the identifying string which can be passed to the handler.
 
 .. note::
 
-   例外に対するメッセージは、Python API 仕様には含まれていません。メッセージの内容は、ある Python のバージョンから次のバージョンに
-   なるときに、警告なしに変更される可能性があります。したがって、複数バージョンのインタプリタで動作するようなコードにおいては、
-   例外メッセージの内容に依存した記述をすべきではありません。
+   Messages to exceptions are not part of the Python API.  Their contents may
+   change from one version of Python to the next without warning and should not be
+   relied on by code which will run under multiple versions of the interpreter.
 
-:keyword:`try` 文については、 :ref:`try` 節、 :keyword:`raise` 文については  :ref:`raise`
-節も参照してください。
+See also the description of the :keyword:`try` statement in section :ref:`try`
+and :keyword:`raise` statement in section :ref:`raise`.
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] この制限は、上記の操作によって実行されるコードが、モジュールをコンパイルしたときには利用できないために起こります。
+.. [#] This limitation occurs because the code that is executed by these operations is
+   not available at the time the module is compiled.
 

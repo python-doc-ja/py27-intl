@@ -1,30 +1,21 @@
 .. _reference-index:
 
-##########################
- Python 言語リファレンス
-##########################
+#################################
+  The Python Language Reference
+#################################
 
-:Release: |version|
-:Date: |today|
-
-このリファレンスマニュアルでは、Python 言語の文法と、
-"コアとなるセマンティクス" について記述します。
-このマニュアルはそっけない書き方かもしれませんが、
-正確さと完全さを優先しています。
-必須でない組み込みオブジェクト型や組み込み関数、
-組み込みモジュールに関するセマンティクスは、
-:ref:`library-index` で述べられています。
-形式ばらない Python 言語入門には、 :ref:`tutorial-index`
-を参照してください。
-C 言語あるいはC++プログラマ向けには、このマニュアルとは別に二つの
-マニュアルがあります。
-:ref:`extending-index` では、Python 拡張モジュールを書くための
-高レベルな様式について述べています。
-また、 :ref:`c-api-index` では、C/C++ プログラマが利用できる
-インタフェースについて詳細に記述しています。
+This reference manual describes the syntax and "core semantics" of the
+language. It is terse, but attempts to be exact and complete. The semantics of
+non-essential built-in object types and of the built-in functions and modules
+are described in :ref:`library-index`. For an informal introduction to the
+language, see :ref:`tutorial-index`. For C or C++ programmers, two additional
+manuals exist: :ref:`extending-index` describes the high-level picture of how to
+write a Python extension module, and the :ref:`c-api-index` describes the
+interfaces available to C/C++ programmers in detail.
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
 
    introduction.rst
    lexical_analysis.rst
@@ -35,5 +26,3 @@ C 言語あるいはC++プログラマ向けには、このマニュアルとは
    compound_stmts.rst
    toplevel_components.rst
    grammar.rst
-
-   jptranslation.rst
