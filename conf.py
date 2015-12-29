@@ -23,7 +23,7 @@ extensions = ['sphinx.ext.doctest',
 
 # General substitutions.
 project = 'Python'
-copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
+copyright = u'1990-%s, Python Software Foundation (translated by Python ドキュメント日本語翻訳プロジェクト)' % time.strftime('%Y')
 
 # The default replacements for |version| and |release|.
 #
@@ -38,7 +38,7 @@ copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
 # JP: ../Include が無いので patchlevel モジュールを使わない
 #import patchlevel
 #version, release = patchlevel.get_version_info()
-version, release = '2.7', '2.7ja1'
+version, release = '2.7', '2.7.x'
 
 language = 'ja'
 
@@ -53,12 +53,12 @@ exclude_patterns = [
     'maclib/scrap.rst',
     'library/xmllib.rst',
     'library/xml.etree.rst',
+    'refs',
+    'tools',
 ]
 
-exclude_dirnames = ['diff', 'orig', 'tools']
-
 # Require Sphinx 1.2 for build.
-needs_sphinx = '1.2'
+needs_sphinx = '1.3'
 
 
 # Options for HTML output
