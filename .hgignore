@@ -5,4 +5,4 @@ build
 tools/pygments
 tools/jinja2
 tools/docutils
-locale/pot
+locale/
