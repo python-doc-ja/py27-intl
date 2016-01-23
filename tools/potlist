@@ -15,6 +15,7 @@ c-api/iterator.rst
 c-api/memory.rst
 c-api/objimpl.rst
 c-api/refcounting.rst
+c-api/string.rst
 c-api/utilities.rst
 c-api/weakref.rst
 copyright.rst
@@ -98,6 +99,7 @@ library/fnmatch.rst
 library/formatter.rst
 library/frameworks.rst
 library/ftplib.rst
+library/functions.rst
 library/future_builtins.rst
 library/grp.rst
 library/hashlib.rst
