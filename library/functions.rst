@@ -1,13 +1,14 @@
+
 .. _built-in-funcs:
 
-組み込み関数
-============
+Built-in Functions
+==================
 
-Python インタプリタは数多くの組み込み関数を持っていて、いつでも利用す
-ることができます。それらの関数をアルファベット順に挙げます。
+The Python interpreter has a number of functions built into it that are always
+available.  They are listed here in alphabetical order.
 
 ===================  =================  ==================  =================  ====================
-..                   ..                 組み込み関数        ..                 ..
+..                   ..                 Built-in Functions  ..                 ..
 ===================  =================  ==================  =================  ====================
 :func:`abs`          :func:`divmod`     :func:`input`       :func:`open`       :func:`staticmethod`
 :func:`all`          :func:`enumerate`  :func:`int`         :func:`ord`        :func:`str`
@@ -17,28 +18,42 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 :func:`bool`         :func:`filter`     :func:`len`         :func:`range`      :func:`type`
 :func:`bytearray`    :func:`float`      :func:`list`        :func:`raw_input`  :func:`unichr`
 :func:`callable`     :func:`format`     :func:`locals`      :func:`reduce`     :func:`unicode`
-:func:`chr`          :func:`frozenset`  :func:`long`        :func:`reload`     :func:`vars`
-:func:`classmethod`  :func:`getattr`    :func:`map`         :func:`repr`       :func:`xrange`
+:func:`chr`          |func-frozenset|_  :func:`long`        :func:`reload`     :func:`vars`
+:func:`classmethod`  :func:`getattr`    :func:`map`         |func-repr|_       :func:`xrange`
 :func:`cmp`          :func:`globals`    :func:`max`         :func:`reversed`   :func:`zip`
-:func:`compile`      :func:`hasattr`    :func:`memoryview`  :func:`round`      :func:`__import__`
-:func:`complex`      :func:`hash`       :func:`min`         :func:`set`        :func:`apply`
-:func:`delattr`      :func:`help`       :func:`next`        :func:`setattr`    :func:`buffer`
-:func:`dict`         :func:`hex`        :func:`object`      :func:`slice`      :func:`coerce`
-:func:`dir`          :func:`id`         :func:`oct`         :func:`sorted`     :func:`intern`
+:func:`compile`      :func:`hasattr`    |func-memoryview|_  :func:`round`      :func:`__import__`
+:func:`complex`      :func:`hash`       :func:`min`         |func-set|_        ..
+:func:`delattr`      :func:`help`       :func:`next`        :func:`setattr`    ..
+|func-dict|_         :func:`hex`        :func:`object`      :func:`slice`      ..
+:func:`dir`          :func:`id`         :func:`oct`         :func:`sorted`     ..
 ===================  =================  ==================  =================  ====================
- 
+
+In addition, there are other four built-in functions that are no longer
+considered essential: :func:`apply`, :func:`buffer`, :func:`coerce`, and
+:func:`intern`.  They are documented in the :ref:`non-essential-built-in-funcs`
+section.
+
+.. using :func:`dict` would create a link to another page, so local targets are
+   used, with replacement texts to make the output in the table consistent
+
+.. |func-dict| replace:: ``dict()``
+.. |func-frozenset| replace:: ``frozenset()``
+.. |func-memoryview| replace:: ``memoryview()``
+.. |func-repr| replace:: ``repr()``
+.. |func-set| replace:: ``set()``
+
 
 .. function:: abs(x)
 
-   数値の絶対値を返します。引数として通常の整数、長整数、浮動小数点数
-   をとることができます。引数が複素数の場合、その大きさ (magnitude) が
-   返されます。
+   Return the absolute value of a number.  The argument may be a plain or long
+   integer or a floating point number.  If the argument is a complex number, its
+   magnitude is returned.
 
 
 .. function:: all(iterable)
 
-   *iterable* の全ての要素が真ならば (もしくは iterable が空ならば)
-   :const:`True` を返します。以下のコードと等価です。 ::
+   Return ``True`` if all elements of the *iterable* are true (or if the iterable
+   is empty).  Equivalent to::
 
       def all(iterable):
           for element in iterable:
@@ -51,9 +66,8 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
 .. function:: any(iterable)
 
-   *iterable* のいずれかの要素が真ならば :const:`True` を返します。
-   iterable が空なら :const:`False` を返します。
-   以下のコードと等価です。 ::
+   Return ``True`` if any element of the *iterable* is true.  If the iterable
+   is empty, return ``False``.  Equivalent to::
 
       def any(iterable):
           for element in iterable:
@@ -66,434 +80,434 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
 .. function:: basestring()
 
-   この抽象型は、 :class:`str` および :class:`unicode` の
-   スーパークラスです。
-   この型は呼び出したりインスタンス化したりはできませんが、
-   オブジェクトが :class:`str` や :class:`unicode` の
-   インスタンスであるかどうかを調べる際に利用できます。
-   ``isinstance(obj, basestring)`` は
-   ``isinstance(obj, (str, unicode))`` と等価です。
+   This abstract type is the superclass for :class:`str` and :class:`unicode`. It
+   cannot be called or instantiated, but it can be used to test whether an object
+   is an instance of :class:`str` or :class:`unicode`. ``isinstance(obj,
+   basestring)`` is equivalent to ``isinstance(obj, (str, unicode))``.
 
    .. versionadded:: 2.3
 
 
 .. function:: bin(x)
 
-   整数を二進文字列に変換します。結果は Python の式としても使える形式になります。
-   *x* が Python の :class:`int` オブジェクトでない場合、整数値を返す
-   :meth:`__index__` メソッドが定義されていなければなりません。
+   Convert an integer number to a binary string. The result is a valid Python
+   expression.  If *x* is not a Python :class:`int` object, it has to define an
+   :meth:`__index__` method that returns an integer.
 
    .. versionadded:: 2.6
 
 
-.. function:: bool([x])
+.. class:: bool([x])
 
-   標準の真値テストを使って、値をブール値に変換します。
-   *x* が偽か省略された場合、 :const:`False` を返します;
-   そうでなければ :const:`True` を返します。
-   ``bool`` はクラスでもあり、 ``int`` のサブクラスになります。
-   ``bool`` クラスはそれ以上サブクラス化できません。このクラスのインス
-   タンスは :const:`False` および :const:`True` だけです。
+   Return a Boolean value, i.e. one of ``True`` or ``False``.  *x* is converted
+   using the standard truth testing procedure.  If *x* is false or omitted, this
+   returns :const:`False`; otherwise it returns :const:`True`. :class:`bool` is
+   also a class, which is a subclass of :class:`int`. Class :class:`bool` cannot
+   be subclassed further.  Its only instances are :const:`False` and
+   :const:`True`.
 
    .. index:: pair: Boolean; type
 
    .. versionadded:: 2.2.1
 
    .. versionchanged:: 2.3
-      引数が与えられなかった場合、この関数は :const:`False` を返します。
+      If no argument is given, this function returns :const:`False`.
 
 
-.. function:: bytearray([source[, encoding[, errors]]])
+.. class:: bytearray([source[, encoding[, errors]]])
 
-   新しいバイトの配列を返します。 :class:`bytearray` 型は範囲 0 <= x < 256 の
-   整数のミュータブルなシーケンスです。これは、 :ref:`typesseq-mutable` で
-   書かれているような、ミュータブルなシーケンスの通常のメソッドのほとんどを
-   持ちますし、 :ref:`string-methods` にあるような、 :class:`str` 型が持つ
-   メソッドのほとんども持っています。
+   Return a new array of bytes.  The :class:`bytearray` class is a mutable
+   sequence of integers in the range 0 <= x < 256.  It has most of the usual
+   methods of mutable sequences, described in :ref:`typesseq-mutable`, as well
+   as most methods that the :class:`str` type has, see :ref:`string-methods`.
 
-   オプションの *source* パラメタは、配列をいくつかの異なる方法で
-   初期化するのに使われます。
+   The optional *source* parameter can be used to initialize the array in a few
+   different ways:
 
-   * これが *文字列* なら、 *encoding* (と、オプションの *errors*) パラメタも
-     与えなければなりません。このとき :func:`bytearray` は文字列を
-     :meth:`str.encode` でバイト列に変換して返します。
+   * If it is *unicode*, you must also give the *encoding* (and optionally,
+     *errors*) parameters; :func:`bytearray` then converts the unicode to
+     bytes using :meth:`unicode.encode`.
 
-   * これが *整数* なら、配列はそのサイズになり、null バイトで
-     初期化されます。
+   * If it is an *integer*, the array will have that size and will be
+     initialized with null bytes.
 
-   * これが *バッファ* インタフェースに適合するオブジェクトなら、
-     そのオブジェクトの読み込み専用バッファがバイト配列の初期化に使われます。
+   * If it is an object conforming to the *buffer* interface, a read-only buffer
+     of the object will be used to initialize the bytes array.
 
-   * これが *イテラブル* なら、それは範囲 ``0 <= x < 256`` 内の整数の
-     イテラブルであることが必要で、それらが配列の初期の内容になります。
+   * If it is an *iterable*, it must be an iterable of integers in the range
+     ``0 <= x < 256``, which are used as the initial contents of the array.
 
-   引数がなければ、長さ 0 の配列が生成されます。
+   Without an argument, an array of size 0 is created.
+
+   .. versionadded:: 2.6
 
 
 .. function:: callable(object)
 
-   引数 *object* が呼び出し可能オブジェクトであれば、 :const:`True` を
-   返します。そうでなければ、 :const:`False` を返します。
-   この関数が真を返しても *object* の呼び出しは失敗する可能性がありま
-   すが、偽を返した場合は決して成功することはありません。クラスは呼び
-   出し可能 (クラスを呼び出すと新しいインスタンスを返します) なことと、
-   クラスのインスタンスがメソッド :meth:`__call__` を持つ場合には呼び
-   出しが可能なことに注意してください。
+   Return :const:`True` if the *object* argument appears callable,
+   :const:`False` if not.  If this
+   returns true, it is still possible that a call fails, but if it is false,
+   calling *object* will never succeed.  Note that classes are callable (calling a
+   class returns a new instance); class instances are callable if they have a
+   :meth:`__call__` method.
 
 
 .. function:: chr(i)
 
-   ASCII コードが整数 *i* となるような文字 1 字からなる文字列を返しま
-   す。例えば、 ``chr(97)`` は文字列 ``'a'`` を返します。
-   この関数は :func:`ord` の逆です。引数は [0..255] の両端を含む範囲内
-   に収まらなければなりません; *i* が範囲外の値のときには
-   :exc:`ValueError` が送出されます。 :func:`unichr` も参照下さい。
+   Return a string of one character whose ASCII code is the integer *i*.  For
+   example, ``chr(97)`` returns the string ``'a'``. This is the inverse of
+   :func:`ord`.  The argument must be in the range [0..255], inclusive;
+   :exc:`ValueError` will be raised if *i* is outside that range. See
+   also :func:`unichr`.
 
 
 .. function:: classmethod(function)
 
-   *function* のクラスメソッドを返します。
+   Return a class method for *function*.
 
-   クラスメソッドは、インスタンスメソッドが暗黙の第一引数としてインス
-   タンスをとるように、第一引数としてクラスをとります。
-   クラスメソッドを宣言するには、以下の書きならわしを使います。::
+   A class method receives the class as implicit first argument, just like an
+   instance method receives the instance. To declare a class method, use this
+   idiom::
 
-      class C:
+      class C(object):
           @classmethod
-          def f(cls, arg1, arg2, ...): ...
+          def f(cls, arg1, arg2, ...):
+              ...
 
-   ``@classmethod`` は関数 :term:`decorator` (デコレータ)形式です。
-   詳しくは :ref:`function` の関数定義についての説明を参照してください。
+   The ``@classmethod`` form is a function :term:`decorator` -- see the description
+   of function definitions in :ref:`function` for details.
 
-   このメソッドはクラスで呼び出すこと (例えば C.f() ) も、インスタンス
-   として呼び出すこと (例えば C().f()) もできます。
-   インスタンスはそのクラスが何であるかを除いて無視されます。クラスメ
-   ソッドが派生クラスに対して呼び出された場合、派生したクラスオブジェ
-   クトが暗黙の第一引数として渡されます。
+   It can be called either on the class (such as ``C.f()``) or on an instance (such
+   as ``C().f()``).  The instance is ignored except for its class. If a class
+   method is called for a derived class, the derived class object is passed as the
+   implied first argument.
 
-   クラスメソッドは C++ や Java における静的メソッドとは異なります。そ
-   のような機能を求めているなら、 :func:`staticmethod` を参照してくだ
-   さい。
+   Class methods are different than C++ or Java static methods. If you want those,
+   see :func:`staticmethod` in this section.
 
-   クラスメソッドについてさらに情報が必要ならば、 :ref:`types` の型階
-   層の項を参照下さい。
+   For more information on class methods, consult the documentation on the standard
+   type hierarchy in :ref:`types`.
 
    .. versionadded:: 2.2
 
    .. versionchanged:: 2.4
-      関数デコレータ構文を追加しました.
+      Function decorator syntax added.
 
 
 .. function:: cmp(x, y)
 
-   二つのオブジェクト *x* および *y* を比較し、その結果に従って整数を
-   返します。戻り値は ``x`` < ``y`` のときには負、 ``x == y`` の時には
-   ゼロ、 ``x > y`` には厳密に正の値になります。
+   Compare the two objects *x* and *y* and return an integer according to the
+   outcome.  The return value is negative if ``x < y``, zero if ``x == y`` and
+   strictly positive if ``x > y``.
 
 
 .. function:: compile(source, filename, mode[, flags[, dont_inherit]])
 
-   *source* をコード、もしくは、 AST オブジェクトにコンパイルします。
-   コードオブジェクトは :keyword:`exec` 文により実行したり、
-   :func:`eval` で評価したりすることができます。
-   *source* は、文字列と AST オブジェクトのどちらでもかまいません。
-   AST オブジェクトへの、また、 AST オブジェクトからのコンパイルの方法
-   は、 :mod:`_ast` モジュールのドキュメントを参照下さい。
+   Compile the *source* into a code or AST object.  Code objects can be executed
+   by an :keyword:`exec` statement or evaluated by a call to :func:`eval`.
+   *source* can either be a Unicode string, a *Latin-1* encoded string or an
+   AST object.
+   Refer to the :mod:`ast` module documentation for information on how to work
+   with AST objects.
 
-   引数 *filename* には、コードの読み出し元のファイルを与えなければなり
-   ません;
-   ファイルから読み出されたもので無い場合は、認識可能な値を渡して下さ
-   い (``'<string>'`` が一般的に使われます ) 。
+   The *filename* argument should give the file from which the code was read;
+   pass some recognizable value if it wasn't read from a file (``'<string>'`` is
+   commonly used).
 
-   引数 *mode* は、どのような種類のコードがコンパイルされるべきかを指
-   定します。 ;
-   もし、 *source* が一連の文から成る場合、 ``'exec'`` 、単一の式の場
-   合、 ``'eval'`` 、単一の対話的文の場合 ``'single'`` が指定できます
-   ( 後者の場合、 ``None`` 以外のものを評価する式が印字されます ) 。
+   The *mode* argument specifies what kind of code must be compiled; it can be
+   ``'exec'`` if *source* consists of a sequence of statements, ``'eval'`` if it
+   consists of a single expression, or ``'single'`` if it consists of a single
+   interactive statement (in the latter case, expression statements that
+   evaluate to something other than ``None`` will be printed).
 
-   オプションの引数 *flags* および *dont_inherit* (Python 2.2 で新た
-   に追加) は、 *string* のコンパイル時にどの future 文 (:pep:`236` 参
-   照) の影響を及ぼすかを制御します。どちらも省略した場合 (または両方
-   ともゼロの場合)、コンパイルを呼び出している側のコードで有効になって
-   いる future 文の内容を有効にして *string* をコンパイルします。　
-   *flags* が指定されていて、かつ *dont_inherit* が指定されていない
-   (またはゼロ) の場合、上の場合に加えて *flags* に指定された future
-   文を使います。 *dont_inherit* がゼロでない整数の場合、 *flags* の値
-   そのものを使い、この関数呼び出し周辺での future 文の効果は無視しま
-   す。
+   The optional arguments *flags* and *dont_inherit* control which future
+   statements (see :pep:`236`) affect the compilation of *source*.  If neither
+   is present (or both are zero) the code is compiled with those future
+   statements that are in effect in the code that is calling :func:`compile`.  If the
+   *flags* argument is given and *dont_inherit* is not (or is zero) then the
+   future statements specified by the *flags* argument are used in addition to
+   those that would be used anyway. If *dont_inherit* is a non-zero integer then
+   the *flags* argument is it -- the future statements in effect around the call
+   to compile are ignored.
 
-   future 文はビットで指定され、互いにビット単位の論理和を取って複数の
-   文を指定できます。ある機能を指定するために必要なビットフィールドは、
-   :mod:`__future__` モジュールの :class:`_Feature` インスタンスにおけ
-   る :attr:`compiler_flag` 属性で得られます。
+   Future statements are specified by bits which can be bitwise ORed together to
+   specify multiple statements.  The bitfield required to specify a given feature
+   can be found as the :attr:`~__future__._Feature.compiler_flag` attribute on
+   the :class:`~__future__._Feature` instance in the :mod:`__future__` module.
 
-   この関数は、コンパイルするソースが不正である場合、
-   :exc:`SyntaxError` を送出します。ソースがNull Byteを含む場合、
-   :exc:`TypeError` を送出します。
+   This function raises :exc:`SyntaxError` if the compiled source is invalid,
+   and :exc:`TypeError` if the source contains null bytes.
+
+   If you want to parse Python code into its AST representation, see
+   :func:`ast.parse`.
 
    .. note::
 
-      複数行に渡るコードの文字列を ``'single'`` や ``'eval'`` モードで
-      コンパイルするとき、入力は少なくともひとつの改行文字で
-      終端されなければなりません。これは :mod:`code` モジュールで、文が
-      不完全か完全かをわかりやすくするためです。
+      When compiling a string with multi-line code in ``'single'`` or
+      ``'eval'`` mode, input must be terminated by at least one newline
+      character.  This is to facilitate detection of incomplete and complete
+      statements in the :mod:`code` module.
 
-   .. versionadded:: 2.3
-      *flags* と *dont_inherit* 引数が追加されました。
+   .. versionchanged:: 2.3
+      The *flags* and *dont_inherit* arguments were added.
 
-   .. versionadded:: 2.6
-      AST オブジェクトのコンパイルをサポートしました。
+   .. versionchanged:: 2.6
+      Support for compiling AST objects.
 
    .. versionchanged:: 2.7
-      Windows や Mac の改行文字を使えるようになりました。また、 ``'exec'`` 
-      モードで改行文字は必要なくなりました。 *optimize* パラメタを追加しました。
+      Allowed use of Windows and Mac newlines.  Also input in ``'exec'`` mode
+      does not have to end in a newline anymore.
 
 
-.. function:: complex([real[, imag]])
+.. class:: complex([real[, imag]])
 
-   値 *real* + *imag*\*j の複素数型数を生成するか、文字列または数値を
-   複素数型に変換します。最初の引数が文字列の場合、文字列を複素数とし
-   て変換します。この場合関数は二つ目の引数無しで呼び出さなければなり
-   ません。二つ目の引数は文字列であってはなりません。それぞれの引数は
-   (複素数を含む) 任意の数値型をとることができます。 *imag* が省略され
-   た場合、標準の値はゼロで、関数は :func:`int` 、 :func:`long` および
-   :func:`float` のような数値型への変換関数として動作します。全ての引
-   数が省略された場合、 ``0j`` を返します。
+   Return a complex number with the value *real* + *imag*\*1j or convert a string or
+   number to a complex number.  If the first parameter is a string, it will be
+   interpreted as a complex number and the function must be called without a second
+   parameter.  The second parameter can never be a string. Each argument may be any
+   numeric type (including complex). If *imag* is omitted, it defaults to zero and
+   the function serves as a numeric conversion function like :func:`int`,
+   :func:`long` and :func:`float`.  If both arguments are omitted, returns ``0j``.
 
-   複素数型については :ref:`typesnumeric` に説明があります。
+   .. note::
+
+      When converting from a string, the string must not contain whitespace
+      around the central ``+`` or ``-`` operator.  For example,
+      ``complex('1+2j')`` is fine, but ``complex('1 + 2j')`` raises
+      :exc:`ValueError`.
+
+   The complex type is described in :ref:`typesnumeric`.
 
 
 .. function:: delattr(object, name)
 
-   :func:`setattr` の親戚となる関数です。引数はオブジェクトと文字列で
-   す。文字列はオブジェクトの属性のどれか一つの名前でなければなりませ
-   ん。この関数は与えられた名前の属性を削除しますが、オブジェクトがそ
-   れを許す場合に限ります。例えば、 ``delattr(x, 'foobar')`` は ``del
-   x.foobar`` と等価です。
+   This is a relative of :func:`setattr`.  The arguments are an object and a
+   string.  The string must be the name of one of the object's attributes.  The
+   function deletes the named attribute, provided the object allows it.  For
+   example, ``delattr(x, 'foobar')`` is equivalent to ``del x.foobar``.
 
 
-.. function:: dict([arg])
+.. _func-dict:
+.. class:: dict(**kwarg)
+           dict(mapping, **kwarg)
+           dict(iterable, **kwarg)
    :noindex:
 
-   新しい辞書型データを作成します。オプションとして引数 *arg* が与える
-   ことができます。
-   辞書型については、 :ref:`typesmapping` に説明があります。
+   Create a new dictionary.  The :class:`dict` object is the dictionary class.
+   See :class:`dict` and :ref:`typesmapping` for documentation about this class.
 
-   他のコンテナについては、組み込みクラスの :class:`list` 、
-   :class:`set` 、 :class:`tuple` 、および、モジュールの
-   :mod:`collections` を参照下さい。
+   For other containers see the built-in :class:`list`, :class:`set`, and
+   :class:`tuple` classes, as well as the :mod:`collections` module.
 
 
 .. function:: dir([object])
 
-   引数がない場合、現在のローカルスコープにある名前のリストを返します。
-   引数がある場合、そのオブジェクトの有効な属性からなるリストを返そう
-   と試みます。
+   Without arguments, return the list of names in the current local scope.  With an
+   argument, attempt to return a list of valid attributes for that object.
 
-   もし、オブジェクトが :meth:`__dir__` メソッドを持つなら、このメソッ
-   ドが呼び出され、属性のリストを必ず返します。これにより、 :func:`dir` が
-   オブジェクトの属性を返す方法をカスタマイズするために、
-   :func:`__getattr__` や :func:`__getattribute__` といったカスタム関
-   数を実装することができます。
+   If the object has a method named :meth:`__dir__`, this method will be called and
+   must return the list of attributes. This allows objects that implement a custom
+   :func:`__getattr__` or :func:`__getattribute__` function to customize the way
+   :func:`dir` reports their attributes.
 
-   オブジェクトが :meth:`__dir__` を提供していない場合、オブジェクトの
-   :attr:`__dict__` 属性が定義されていれば、そこから収集しようと試みます。
-   また、定義されていれば型オブジェクトからも集められます。
-   リストは完全なものになるとは限りません。
-   また、カスタム関数 :func:`__getattr__` を持つ場合、不正確になるでしょう。
+   If the object does not provide :meth:`__dir__`, the function tries its best to
+   gather information from the object's :attr:`__dict__` attribute, if defined, and
+   from its type object.  The resulting list is not necessarily complete, and may
+   be inaccurate when the object has a custom :func:`__getattr__`.
 
-   デフォルトの :func:`dir` メカニズムの振る舞いは、異なる型のオブジェ
-   クトでは、異なります。それは、完全というよりは、より関連のある情報
-   を生成しようとするためです。
+   The default :func:`dir` mechanism behaves differently with different types of
+   objects, as it attempts to produce the most relevant, rather than complete,
+   information:
 
-   * オブジェクトがモジュールオブジェクトの場合、リストにはモジュール
-     属性の名前が含まれます。
+   * If the object is a module object, the list contains the names of the module's
+     attributes.
 
-   * オブジェクトが型オブジェクトやクラスオブジェクトの場合、リストに
-     はそれらの属性が含まれ、かつそれらの基底クラスの属性も再帰的にた
-     どられて含まれます。
+   * If the object is a type or class object, the list contains the names of its
+     attributes, and recursively of the attributes of its bases.
 
-   * それ以外の場合には、リストにはオブジェクトの属性名、クラス属性名、
-     再帰的にたどった基底クラスの属性名が含まれます。
+   * Otherwise, the list contains the object's attributes' names, the names of its
+     class's attributes, and recursively of the attributes of its class's base
+     classes.
 
-   返されるリストはアルファベット順に並べられています。例えば ::
+   The resulting list is sorted alphabetically.  For example:
 
       >>> import struct
-      >>> dir()   # doctest: +SKIP
+      >>> dir()   # show the names in the module namespace
       ['__builtins__', '__doc__', '__name__', 'struct']
-      >>> dir(struct)   # doctest: +NORMALIZE_WHITESPACE
+      >>> dir(struct)   # show the names in the struct module
       ['Struct', '__builtins__', '__doc__', '__file__', '__name__',
        '__package__', '_clearcache', 'calcsize', 'error', 'pack', 'pack_into',
        'unpack', 'unpack_from']
-      >>> class Foo(object):
-      ...     def __dir__(self):
-      ...         return ["kan", "ga", "roo"]
-      ...
-      >>> f = Foo()
-      >>> dir(f)
-      ['ga', 'kan', 'roo']
+      >>> class Shape(object):
+              def __dir__(self):
+                  return ['area', 'perimeter', 'location']
+      >>> s = Shape()
+      >>> dir(s)
+      ['area', 'perimeter', 'location']
 
    .. note::
 
-      :func:`dir` は主に対話プロンプトのために提供されているので、厳
-      密さや一貫性をもって定義された名前のセットよりも、むしろ興味深い
-      名前のセットを与えようとします。また、この関数の細かい動作はリリー
-      ス間で変わる可能性があります。例えば、引数がクラスである場合、メ
-      タクラス属性は結果のリストに含まれません。
+      Because :func:`dir` is supplied primarily as a convenience for use at an
+      interactive prompt, it tries to supply an interesting set of names more than it
+      tries to supply a rigorously or consistently defined set of names, and its
+      detailed behavior may change across releases.  For example, metaclass attributes
+      are not in the result list when the argument is a class.
 
 
 .. function:: divmod(a, b)
 
-   2 つの (複素数でない) 数値を引数として取り、整数の除法を行ったときの商と
-   剰余からなるペアを返します。被演算子が型混合である場合、 2 進算術演
-   算子での規則が適用されます。通常の整数と長整数の場合、結果は  ``(a
-   // b, a % b)`` と同じです。浮動小数点数の場合、結果は ``(q, a %
-   b)`` であり、 *q* は通常 ``math.floor(a / b)`` ですが、そうではなく
-   1 になることもあります。
-   いずれにせよ、 ``q * b + a % b`` は *a* に非常に近い値になり、 ``a %
-   b`` がゼロでない値の場合、その符号は *b* と同じで、 ``0 <= abs(a %
-   b) < abs(b)`` になります。
+   Take two (non complex) numbers as arguments and return a pair of numbers
+   consisting of their quotient and remainder when using long division.  With mixed
+   operand types, the rules for binary arithmetic operators apply.  For plain and
+   long integers, the result is the same as ``(a // b, a % b)``. For floating point
+   numbers the result is ``(q, a % b)``, where *q* is usually ``math.floor(a / b)``
+   but may be 1 less than that.  In any case ``q * b + a % b`` is very close to
+   *a*, if ``a % b`` is non-zero it has the same sign as *b*, and ``0 <= abs(a % b)
+   < abs(b)``.
 
    .. versionchanged:: 2.3
-      複素数に対する :func:`divmod` の使用は廃用されました。
+      Using :func:`divmod` with complex numbers is deprecated.
 
 
-.. function:: enumerate(sequence[, start=0])
+.. function:: enumerate(sequence, start=0)
 
-   列挙オブジェクトを返します。 *sequence* はシーケンス型、イテレータ
-   型、反復をサポートする他のオブジェクト型のいずれかでなければなりま
-   せん。 :func:`enumerate` が返すイテレータの :meth:`!next` メソッドは、
-   (ゼロから始まる) カウント値と、値だけ *sequence* を反復操作して得ら
-   れる、対応するオブジェクトを含むタプルを返します。
-   :func:`enumerate` はインデクス付けされた値の列: ``(0, seq[0])``,
-   ``(1, seq[1])``, ``(2, seq[2])``, ... を得るのに便利です。
-   例 :
+   Return an enumerate object. *sequence* must be a sequence, an
+   :term:`iterator`, or some other object which supports iteration.  The
+   :meth:`!next` method of the iterator returned by :func:`enumerate` returns a
+   tuple containing a count (from *start* which defaults to 0) and the
+   values obtained from iterating over *sequence*::
 
-      >>> for i, season in enumerate(['Spring', 'Summer', 'Fall', 'Winter']):
-      ...     print i, season
-      0 Spring
-      1 Summer
-      2 Fall
-      3 Winter
+      >>> seasons = ['Spring', 'Summer', 'Fall', 'Winter']
+      >>> list(enumerate(seasons))
+      [(0, 'Spring'), (1, 'Summer'), (2, 'Fall'), (3, 'Winter')]
+      >>> list(enumerate(seasons, start=1))
+      [(1, 'Spring'), (2, 'Summer'), (3, 'Fall'), (4, 'Winter')]
+
+   Equivalent to::
+
+      def enumerate(sequence, start=0):
+          n = start
+          for elem in sequence:
+              yield n, elem
+              n += 1
 
    .. versionadded:: 2.3
-   .. versionadded:: 2.6
-      *start* 引数が追加されました。
+   .. versionchanged:: 2.6
+      The *start* parameter was added.
 
 
 .. function:: eval(expression[, globals[, locals]])
 
-   文字列とオプションの引数 *globals* 、 *locals* をとります。
-   *globals* を指定する場合には辞書でなくてはなりません。 *locals* は
-   任意のマップ型にできます。
+   The arguments are a Unicode or *Latin-1* encoded string and optional
+   globals and locals.  If provided, *globals* must be a dictionary.
+   If provided, *locals* can be any mapping object.
 
    .. versionchanged:: 2.4
-      以前は *locals* も辞書でなければなりませんでした.
+      formerly *locals* was required to be a dictionary.
 
-   引数 *expression* は Python の表現式 (技術的にいうと、条件のリスト
-   です) として構文解釈され、評価されます。このとき辞書 *globals* およ
-   び *locals* はそれぞれグローバルおよびローカルな名前空間として使わ
-   れます。 *global* 辞書が存在するが、 '__builtins__' が欠けている場
-   合、 *expression* を解析する前に現在のグローバル変数を *globals* に
-   コピーします。このことから、 *expression* は通常、標準の
-   :mod:`__builtin__` モジュールへの完全なアクセスを有し、制限された環
-   境が伝播するようになっています。 *locals* 辞書が省略された場合、標
-   準の値として *globals* に設定されます。辞書が両方とも省略された場合、
-   表現式は :func:`eval` が呼び出されている環境の下で実行されます。
-   構文エラーは例外として報告されます。
-
-   以下に例を示します :
+   The *expression* argument is parsed and evaluated as a Python expression
+   (technically speaking, a condition list) using the *globals* and *locals*
+   dictionaries as global and local namespace.  If the *globals* dictionary is
+   present and lacks '__builtins__', the current globals are copied into *globals*
+   before *expression* is parsed.  This means that *expression* normally has full
+   access to the standard :mod:`__builtin__` module and restricted environments are
+   propagated.  If the *locals* dictionary is omitted it defaults to the *globals*
+   dictionary.  If both dictionaries are omitted, the expression is executed in the
+   environment where :func:`eval` is called.  The return value is the result of
+   the evaluated expression. Syntax errors are reported as exceptions.  Example:
 
       >>> x = 1
       >>> print eval('x+1')
       2
 
-   この関数は (:func:`compile` で生成されるような) 任意のコードオブジェ
-   クトを実行するために利用することもできます。この場合、文字列の代わ
-   りにコードオブジェクトを渡します。このコードオブジェクトが、引数
-   *mode* を ``'exec'`` としてコンパイルされている場合、 :func:`eval`
-   が返す値は、 ``None`` になります。
+   This function can also be used to execute arbitrary code objects (such as
+   those created by :func:`compile`).  In this case pass a code object instead
+   of a string.  If the code object has been compiled with ``'exec'`` as the
+   *mode* argument, :func:`eval`\'s return value will be ``None``.
 
-   ヒント: 文の動的な実行は :keyword:`exec` 文でサポートされています。
-   ファイルからの文の実行は関数 :func:`execfile` でサポートされていま
-   す。関数 :func:`globals` および :func:`locals` は、それぞれ現在のグ
-   ローバルおよびローカルな辞書を返すので、 :func:`eval` や
-   :func:`execfile` で使うことができます。
+   Hints: dynamic execution of statements is supported by the :keyword:`exec`
+   statement.  Execution of statements from a file is supported by the
+   :func:`execfile` function.  The :func:`globals` and :func:`locals` functions
+   returns the current global and local dictionary, respectively, which may be
+   useful to pass around for use by :func:`eval` or :func:`execfile`.
 
-   リテラルだけを含む式の文字列を安全に評価できる関数、
-   :func:`ast.literal_eval` も参照してください。
+   See :func:`ast.literal_eval` for a function that can safely evaluate strings
+   with expressions containing only literals.
 
 
 .. function:: execfile(filename[, globals[, locals]])
 
-   この関数は :keyword:`exec` 文に似ていますが、文字列の代わりにファイ
-   ルに対して構文解釈を行います。 :keyword:`import` 文と違って、モジュー
-   ル管理機構を使いません --- この関数はファイルを無条件に読み込み、新
-   たなモジュールを生成しません。 [#]_
+   This function is similar to the :keyword:`exec` statement, but parses a file
+   instead of a string.  It is different from the :keyword:`import` statement in
+   that it does not use the module administration --- it reads the file
+   unconditionally and does not create a new module. [#]_
 
-   引数は文字列とオプションの 2 つの辞書からなります。 *file* は読み込
-   まれ、 (モジュールのように) Python 文の列として評価されます。このとき
-   *globals* および *locals* がそれぞれグローバル、および、ローカルな
-   名前空間として使われます。 *locals* は任意のマップ型に指定できます。
+   The arguments are a file name and two optional dictionaries.  The file is parsed
+   and evaluated as a sequence of Python statements (similarly to a module) using
+   the *globals* and *locals* dictionaries as global and local namespace. If
+   provided, *locals* can be any mapping object.  Remember that at module level,
+   globals and locals are the same dictionary. If two separate objects are
+   passed as *globals* and *locals*, the code will be executed as if it were
+   embedded in a class definition.
 
    .. versionchanged:: 2.4
-      以前は *locals* も辞書でなければなりませんでした.
+      formerly *locals* was required to be a dictionary.
 
-   *locals* 辞書が省略された場合、標準の値として *globals* に設定され
-   ます。辞書が両方とも省略された場合、表現式は :func:`execfiles` が
-   呼び出されている環境の下で実行されます。戻り値は ``None`` です。
+   If the *locals* dictionary is omitted it defaults to the *globals* dictionary.
+   If both dictionaries are omitted, the expression is executed in the environment
+   where :func:`execfile` is called.  The return value is ``None``.
 
    .. note::
 
-      標準では *locals* は後に述べる関数 :func:`locals` のように動作し
-      ます: 標準の *locals* 辞書に対する変更を試みてはいけません。
-      :func:`execfile` の呼び出しが返る時にコードが *locals* に与える
-      影響を知りたいなら、明示的に *loacals* 辞書を渡してください。
-      :func:`execfile` は関数のローカルを変更するための信頼性のある方
-      法として使うことはできません。
+      The default *locals* act as described for function :func:`locals` below:
+      modifications to the default *locals* dictionary should not be attempted.  Pass
+      an explicit *locals* dictionary if you need to see effects of the code on
+      *locals* after function :func:`execfile` returns.  :func:`execfile` cannot be
+      used reliably to modify a function's locals.
 
 
-.. function:: file(filename[, mode[, bufsize]])
+.. function:: file(name[, mode[, buffering]])
 
-   :class:`file` 型のコンストラクタです。詳しくは
-   :ref:`bltin-file-objects` 節を参照してください。コンストラクタの引数
-   は後述の :func:`open` 組み込み関数と同じです。
+   Constructor function for the :class:`file` type, described further in section
+   :ref:`bltin-file-objects`.  The constructor's arguments are the same as those
+   of the :func:`open` built-in function described below.
 
-   ファイルを開くときは、このコンストラクタを直接呼ばずに :func:`open`
-   を呼び出すのが望ましい方法です。 :class:`file` は型テストにより適し
-   ています (たとえば ``isinstance(f, file)`` と書くような)。
+   When opening a file, it's preferable to use :func:`open` instead of  invoking
+   this constructor directly.  :class:`file` is more suited to type testing (for
+   example, writing ``isinstance(f, file)``).
 
    .. versionadded:: 2.2
 
 
 .. function:: filter(function, iterable)
 
-   *iterable* のうち、 *function* が真を返すような要素からなるリストを
-   構築します。 *iterable* はシーケンスか、反復をサポートするコンテナ
-   か、イテレータです。 *iterable* が文字列型かタプル型の場合、結果も
-   同じ型になります。そうでない場合はリストとなります。 *function* が
-   ``None`` の場合、恒等関数を仮定します。すなわち、 *iterable* の偽と
-   なる要素は除去されます。
+   Construct a list from those elements of *iterable* for which *function* returns
+   true.  *iterable* may be either a sequence, a container which supports
+   iteration, or an iterator.  If *iterable* is a string or a tuple, the result
+   also has that type; otherwise it is always a list.  If *function* is ``None``,
+   the identity function is assumed, that is, all elements of *iterable* that are
+   false are removed.
 
-   function が ``None`` ではない場合、 ``filter(function, iterable)``
-   は ``[item for item in iterable if function(item)]`` と同等です。
-   function が ``None`` の場合 ``[item for item in iterable if item]``
-   と同等です。
+   Note that ``filter(function, iterable)`` is equivalent to ``[item for item in
+   iterable if function(item)]`` if function is not ``None`` and ``[item for item
+   in iterable if item]`` if function is ``None``.
 
-   この関数のイテレータ版である :func:`itertools.ifilter` と
-   :func:`itertools.ifilterfalse` についても参照して下さい、
-   変種として *function* が false を返す場合に要素を返す変種も含んでいます。
+   See :func:`itertools.ifilter` and :func:`itertools.ifilterfalse` for iterator
+   versions of this function, including a variation that filters for elements
+   where the *function* returns false.
 
 
-.. function:: float([x])
+.. class:: float([x])
 
-   文字列または数値を浮動小数点数に変換します。引数が文字列の場合、十
-   進の数または浮動小数点数を含んでいなければなりません。符号が付いて
-   いてもかまいません。また、空白文字中に埋め込まれていてもかまいませ
-   ん。引数は [+|-]nan 、 [+|-]inf であっても構いません。それ以外の場
-   合、引数は通常整数、長整数、または浮動小数点数をとることができ、同
-   じ値の浮動小数点数が (Python の浮動小数点精度で) 返されます。引数が
-   指定されなかった場合、 ``0.0`` を返します。
+   Return a floating point number constructed from a number or string *x*.
+
+   If the argument is a string, it
+   must contain a possibly signed decimal or floating point number, possibly
+   embedded in whitespace. The argument may also be [+|-]nan or [+|-]inf.
+   Otherwise, the argument may be a plain or long integer
+   or a floating point number, and a floating point number with the same value
+   (within Python's floating point precision) is returned.  If no argument is
+   given, returns ``0.0``.
 
    .. note::
 
@@ -501,13 +515,14 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
          single: NaN
          single: Infinity
 
-      文字列で値を渡す際、背後の C ライブラリによって NaN および
-      Infinity が返されるかもしれません。 float は文字列、 nan 、 inf
-      、および -inf を、それぞれ、 NaN 、正の無限大、負の無限大として
-      解釈します。大文字小文字の違い、 + 記号、および、 nan に対する -
-      記号は無視されます。
+      When passing in a string, values for NaN and Infinity may be returned, depending
+      on the underlying C library.  Float accepts the strings nan, inf and -inf for
+      NaN and positive or negative infinity. The case and a leading + are ignored as
+      well as a leading - is ignored for NaN. Float always represents NaN and infinity
+      as nan, inf or -inf.
 
-   浮動小数点数型については、 :ref:`typesnumeric` も参照下さい。
+   The float type is described in :ref:`typesnumeric`.
+
 
 .. function:: format(value[, format_spec])
 
@@ -515,353 +530,368 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
       pair: str; format
       single: __format__
 
-   *value* を *format_spec* で制御される "フォーマット化" 表現に変換します。
-   *format_spec* の評価は *value* 引数の型に依存しますが、
-   ほとんどのビルト組み込み型で使われる標準的な構文が存在します :ref:`formatspec` 。
+   Convert a *value* to a "formatted" representation, as controlled by
+   *format_spec*.  The interpretation of *format_spec* will depend on the type
+   of the *value* argument, however there is a standard formatting syntax that
+   is used by most built-in types: :ref:`formatspec`.
 
    .. note::
 
-      ``format(value, format_spec)`` は単に ``value.__format__(format_spec)`` を呼び出すだけです。
+      ``format(value, format_spec)`` merely calls
+      ``value.__format__(format_spec)``.
 
    .. versionadded:: 2.6
 
-.. function:: frozenset([iterable])
+
+.. _func-frozenset:
+.. class:: frozenset([iterable])
    :noindex:
 
-   :class:`frozenset` オブジェクトを返します。オプションで
-   *iterable* から要素を取得します。
-   frozenset 型については、 :ref:`types-set` も参照下さい。
+   Return a new :class:`frozenset` object, optionally with elements taken from
+   *iterable*.  ``frozenset`` is a built-in class.  See :class:`frozenset` and
+   :ref:`types-set` for documentation about this class.
 
-   他のコンテナ型については、組み込みクラスの :class:`dict`,
-   :class:`list`, および , :class:`tuple` と、 :mod:`collections` モ
-   ジュールを参照下さい。
+   For other containers see the built-in :class:`set`, :class:`list`,
+   :class:`tuple`, and :class:`dict` classes, as well as the :mod:`collections`
+   module.
 
    .. versionadded:: 2.4
 
 
 .. function:: getattr(object, name[, default])
 
-   指定された *object* の属性を返します。 *name* は文字列でなくてはな
-   りません。文字列がオブジェクトの属性名の一つであった場合、戻り値は
-   その属性の値になります。例えば、 ``getattr(x, 'foobar')`` は
-   ``x.foobar`` と等価です。
-   指定された属性が存在しない場合、 *default* が与えられている場合には
-   それが返されます。そうでない場合には :exc:`AttributeError`
-   が送出されます。
+   Return the value of the named attribute of *object*.  *name* must be a string.
+   If the string is the name of one of the object's attributes, the result is the
+   value of that attribute.  For example, ``getattr(x, 'foobar')`` is equivalent to
+   ``x.foobar``.  If the named attribute does not exist, *default* is returned if
+   provided, otherwise :exc:`AttributeError` is raised.
 
 
 .. function:: globals()
 
-   現在のグローバルシンボルテーブルを表す辞書を返します。常に現在のモ
-   ジュールの辞書になります (関数またはメソッドの中ではそれらを定義し
-   ているモジュールを指し、この関数を呼び出したモジュールではありませ
-   ん)。
+   Return a dictionary representing the current global symbol table. This is always
+   the dictionary of the current module (inside a function or method, this is the
+   module where it is defined, not the module from which it is called).
 
 
 .. function:: hasattr(object, name)
 
-   引数はオブジェクトと文字列です。文字列がオブジェクトの属性名の一つ
-   であった場合 ``True`` を、そうでない場合 ``False`` を返します (この
-   関数は ``getattr(object, name)`` を呼び出し、例外を送出するかどうか
-   を調べることで実装されています)。
+   The arguments are an object and a string.  The result is ``True`` if the string
+   is the name of one of the object's attributes, ``False`` if not. (This is
+   implemented by calling ``getattr(object, name)`` and seeing whether it raises an
+   exception or not.)
 
 
 .. function:: hash(object)
 
-   オブジェクトのハッシュ値を (存在すれれば) 返します。ハッシュ値は整
-   数です。これらは辞書を検索する際に辞書のキーを高速に比較するために
-   使われます。等しい値となる数値は等しいハッシュ値を持ちます (1 と
-   1.0 のように型が異なっていてもです)。
+   Return the hash value of the object (if it has one).  Hash values are integers.
+   They are used to quickly compare dictionary keys during a dictionary lookup.
+   Numeric values that compare equal have the same hash value (even if they are of
+   different types, as is the case for 1 and 1.0).
 
 
 .. function:: help([object])
 
-   組み込みヘルプシステムを起動します (この関数は対話的な使用のための
-   ものです)。引数が与えられていない場合、対話的ヘルプシステムはインタ
-   プリタコンソール上で起動します。引数が文字列の場合、文字列はモジュー
-   ル、関数、クラス、メソッド、キーワード、またはドキュメントの項目名
-   として検索され、ヘルプページがコンソール上に印字されます。引数が何
-   らかのオブジェクトの場合、そのオブジェクトに関するヘルプページが生
-   成されます。
+   Invoke the built-in help system.  (This function is intended for interactive
+   use.)  If no argument is given, the interactive help system starts on the
+   interpreter console.  If the argument is a string, then the string is looked up
+   as the name of a module, function, class, method, keyword, or documentation
+   topic, and a help page is printed on the console.  If the argument is any other
+   kind of object, a help page on the object is generated.
 
-   この関数は、 :mod:`site` モジュールから、組み込みの名前空間に移され
-   ました。
+   This function is added to the built-in namespace by the :mod:`site` module.
 
    .. versionadded:: 2.2
 
 
 .. function:: hex(x)
 
-   (任意のサイズの) 整数を16進の文字列に変換します。結果は Python の式
-   としても使える形式になります。
+   Convert an integer number (of any size) to a lowercase hexadecimal string
+   prefixed with "0x", for example:
+
+      >>> hex(255)
+      '0xff'
+      >>> hex(-42)
+      '-0x2a'
+      >>> hex(1L)
+      '0x1L'
+
+   If x is not a Python :class:`int` or :class:`long` object, it has to
+   define an __index__() method that returns an integer.
+
+   See also :func:`int` for converting a hexadecimal string to an
+   integer using a base of 16.
 
    .. note::
 
-      浮動小数点数の16進文字列表記を得たい場合には、
-      :meth:`float.hex` メソッドを使って下さい。
+      To obtain a hexadecimal string representation for a float, use the
+      :meth:`float.hex` method.
 
    .. versionchanged:: 2.4
-      以前は符号なしのリテラルしか返しませんでした.
+      Formerly only returned an unsigned literal.
+
 
 .. function:: id(object)
 
-   オブジェクトの "識別値" を返します。この値は整数 (または長整数) で、
-   このオブジェクトの有効期間は一意かつ定数であることが保証されていま
-   す。
-   オブジェクトの有効期間が重ならない 2 つのオブジェクトは同じ
-   :func:`id` 値を持つかもしれません。
-   
-   .. impl-detail: この値はオブジェクトのアドレスです。
+   Return the "identity" of an object.  This is an integer (or long integer) which
+   is guaranteed to be unique and constant for this object during its lifetime.
+   Two objects with non-overlapping lifetimes may have the same :func:`id`
+   value.
+
+   .. impl-detail:: This is the address of the object in memory.
 
 
 .. function:: input([prompt])
 
-   ``eval(raw_input(prompt))`` と同じです。
+   Equivalent to ``eval(raw_input(prompt))``.
 
-   .. warning::
+   This function does not catch user errors. If the input is not syntactically
+   valid, a :exc:`SyntaxError` will be raised. Other exceptions may be raised if
+   there is an error during evaluation.
 
-      この関数はユーザのエラーに対して安全ではありません ! この関数は、
-      入力は有効な Python の式であると期待しています; 入力が構文的
-      に正しくない場合、 :exc:`SyntaxError` が送出されます。式を評価す
-      る際にエラーが生じた場合、他の例外も送出されるかもしれません。
-      (一方、この関数はまさに、ときどき熟練者がすばやくスクリプトを
-      書く際に必要とするものです)
+   If the :mod:`readline` module was loaded, then :func:`input` will use it to
+   provide elaborate line editing and history features.
 
-   :mod:`readline` モジュールが読み込まれていれば、 :func:`input` は精
-   緻な行編集およびヒストリ機能を提供します。
-
-   一般的なユーザからの入力のための関数としては :func:`raw_input` を使
-   うことを検討してください。
+   Consider using the :func:`raw_input` function for general input from users.
 
 
-.. function:: int([x[, base]])
+.. class:: int(x=0)
+           int(x, base=10)
 
-   文字列または数値を通常の整数に変換します。引数が文字列の場合、
-   Python 整数として表現可能な十進の数でなければなりません。
-   符号が付いていてもかまいません。また、空白文字中に埋め込まれていて
-   もかまいません。 *base* 引数は変換の基数 (デフォルト値は10です) を
-   表し、範囲 [2, 36] の整数またはゼロをとることができます。 *base*
-   がゼロの場合、文字列の内容から適切な基数を推測します; 変換は整数リ
-   テラルと同じです (:ref:`numbers` を参照下さい) 。
-   *base* が指定されており、 *x* が文字列でない場合、
-   :exc:`TypeError` が送出されます。それ以外の場合、引数は通常整数、長
-   整数、または浮動小数点数をとることができます。浮動小数点数から整数
-   へ変換では (ゼロ方向に) 値を丸めます。引数が通常整数の範囲を超えて
-   いる場合、長整数が代わりに返されます。
-   引数が与えられなかった場合、 ``0`` を返します。
+   Return an integer object constructed from a number or string *x*, or return ``0`` if no
+   arguments are given.  If *x* is a number, it can be a plain integer, a long
+   integer, or a floating point number.  If *x* is floating point, the conversion
+   truncates towards zero.  If the argument is outside the integer range, the
+   function returns a long object instead.
 
-   整数型については、 :ref:`typesnumeric` も参照下さい。
+   If *x* is not a number or if *base* is given, then *x* must be a string or
+   Unicode object representing an :ref:`integer literal <integers>` in radix
+   *base*.  Optionally, the literal can be
+   preceded by ``+`` or ``-`` (with no space in between) and surrounded by
+   whitespace.  A base-n literal consists of the digits 0 to n-1, with ``a``
+   to ``z`` (or ``A`` to ``Z``) having
+   values 10 to 35.  The default *base* is 10. The allowed values are 0 and 2-36.
+   Base-2, -8, and -16 literals can be optionally prefixed with ``0b``/``0B``,
+   ``0o``/``0O``/``0``, or ``0x``/``0X``, as with integer literals in code.
+   Base 0 means to interpret the string exactly as an integer literal, so that
+   the actual base is 2, 8, 10, or 16.
+
+   The integer type is described in :ref:`typesnumeric`.
 
 
 .. function:: isinstance(object, classinfo)
 
-   引数 *object* が引数 *classinfo* のインスタンスであるか、 (直接また
-   は間接的な) サブクラスのインスタンスの場合に真を返します。
-   また、 *classinfo* が型オブジェクト (新しい形式のクラス) であり、
-   *object* がその型のオブジェクトであるか、または、 (直接的または間接
-   的な) サブクラスの場合にも真を返します。 *object* がクラスインスタ
-   ンスや与えられた型のオブジェクトでない場合、この関数は常に偽を返し
-   ます。
-   *classinfo* をクラスオブジェクトでも型オブジェクトにもせず、クラス
-   や型オブジェクトからなるタプルや、そういったタプルを再帰的に含むタ
-   プル (他のシーケンス型は受理されません) でもかまいません。
-   *classinfo* がクラス、型、クラスや型からなるタプル、そういったタプ
-   ルが再帰構造をとっているタプルのいずれでもない場合、例外
-   :exc:`TypeError` が送出されます。
+   Return true if the *object* argument is an instance of the *classinfo* argument,
+   or of a (direct, indirect or :term:`virtual <abstract base class>`) subclass
+   thereof.  Also return true if *classinfo*
+   is a type object (new-style class) and *object* is an object of that type or of
+   a (direct, indirect or :term:`virtual <abstract base class>`) subclass
+   thereof.  If *object* is not a class instance or
+   an object of the given type, the function always returns false.
+   If *classinfo* is a tuple of class or type objects (or recursively, other
+   such tuples), return true if *object* is an instance of any of the classes
+   or types.  If *classinfo* is not a class, type, or tuple of classes, types,
+   and such tuples, a :exc:`TypeError` exception is raised.
 
    .. versionchanged:: 2.2
-      型情報をタプルにした形式のサポートが追加されました。
+      Support for a tuple of type information was added.
 
 
 .. function:: issubclass(class, classinfo)
 
-   *class* が *classinfo* の (直接または間接的な) サブクラスである場合
-   に真を返します。クラスはそれ自身のサブクラスとみなされます。 *classinfo* は
-   クラスオブジェクトからなるタプルでもよく、この場合には *classinfo*
-   のすべてのエントリが調べられます。その他の場合では、例外
-   :exc:`TypeError` が送出されます。
+   Return true if *class* is a subclass (direct, indirect or :term:`virtual
+   <abstract base class>`) of *classinfo*.  A
+   class is considered a subclass of itself. *classinfo* may be a tuple of class
+   objects, in which case every entry in *classinfo* will be checked. In any other
+   case, a :exc:`TypeError` exception is raised.
 
    .. versionchanged:: 2.3
-      型情報からなるタプルへのサポートが追加されました.
+      Support for a tuple of type information was added.
 
 
 .. function:: iter(o[, sentinel])
 
-   :term:`iterator` (イテレータ)オブジェクトを返します。 2 つ目の引数
-   があるかどうかで、最初の引数の解釈は非常に異なります。 2 つ目の引数
-   がない場合、 *o* は反復プロトコル (:meth:`__iter__` メソッド) か、
-   シーケンス型プロトコル (引数が ``0`` から開始する
-   :meth:`__getitem__` メソッド) をサポートする集合オブジェクトでなけ
-   ればなりません。これらのプロトコルが両方ともサポートされていない場
-   合、 :exc:`TypeError` が送出されます。
-   2 つ目の引数 *sentinel* が与えられていれば、 *o* は呼び出し可能なオ
-   ブジェクトでなければなりません。この場合に生成されるイテレータは、
-   :meth:`~iterator.next` を呼ぶ毎に *o* を引数無しで呼び出します。返された値が
-   *sentinel* と等しければ、 :exc:`StopIteration` が送出されます。そう
-   でない場合、戻り値がそのまま返されます。
+   Return an :term:`iterator` object.  The first argument is interpreted very differently
+   depending on the presence of the second argument. Without a second argument, *o*
+   must be a collection object which supports the iteration protocol (the
+   :meth:`__iter__` method), or it must support the sequence protocol (the
+   :meth:`__getitem__` method with integer arguments starting at ``0``).  If it
+   does not support either of those protocols, :exc:`TypeError` is raised. If the
+   second argument, *sentinel*, is given, then *o* must be a callable object.  The
+   iterator created in this case will call *o* with no arguments for each call to
+   its :meth:`~iterator.next` method; if the value returned is equal to *sentinel*,
+   :exc:`StopIteration` will be raised, otherwise the value will be returned.
 
+   One useful application of the second form of :func:`iter` is to read lines of
+   a file until a certain line is reached.  The following example reads a file
+   until the :meth:`~io.TextIOBase.readline` method returns an empty string::
 
-   ファイルの行を特定の行にたどりつくまで読むのに
-   :func:`iter` の第2の形式の便利に応用できます。
-   以下の例では ``"STOP"`` にたどりつくまでファイルを読みます::
-   
-      with open("mydata.txt") as fp:
-          for line in iter(fp.readline, "STOP"):
-          process_line(line)
+      with open('mydata.txt') as fp:
+          for line in iter(fp.readline, ''):
+              process_line(line)
 
    .. versionadded:: 2.2
 
 
 .. function:: len(s)
 
-   オブジェクトの長さ (要素の数) を返します。引数はシーケンス型 (文字
-   列、タプル、またはリスト) か、マップ型 (辞書) です。
+   Return the length (the number of items) of an object.  The argument may be a
+   sequence (such as a string, bytes, tuple, list, or range) or a collection
+   (such as a dictionary, set, or frozen set).
 
 
-.. function:: list([iterable])
+.. class:: list([iterable])
 
-   *iterable* の要素と同じ要素をもち、かつ順番も同じなリストを返します。
-   *iterable* はシーケンス、反復処理をサポートするコンテナ、あるいはイ
-   テレータオブジェクトです。 *sequence* がすでにリストの場合、
-   ``iterable[:]`` と同様にコピーを作成して返します。
-   例えば、 ``list('abc')`` は ``['a', 'b', 'c']`` および ``list((1, 2,
-   3))`` は ``[1, 2, 3]`` を返します。引数が与えられなかった場合、新
-   しい空のリスト ``[]`` を返します。
+   Return a list whose items are the same and in the same order as *iterable*'s
+   items.  *iterable* may be either a sequence, a container that supports
+   iteration, or an iterator object.  If *iterable* is already a list, a copy is
+   made and returned, similar to ``iterable[:]``.  For instance, ``list('abc')``
+   returns ``['a', 'b', 'c']`` and ``list( (1, 2, 3) )`` returns ``[1, 2, 3]``.  If
+   no argument is given, returns a new empty list, ``[]``.
 
-   :class:`list` は変更可能なシーケンス型であり、 :ref:`typesseq` に記
-   述があります。他のコンテナ型については組み込み型の :class:`dict`,
-   :class:`set`, および :class:`tuple` クラスと、 :mod:`collections`
-   モジュールを参照下さい。
+   :class:`list` is a mutable sequence type, as documented in
+   :ref:`typesseq`. For other containers see the built in :class:`dict`,
+   :class:`set`, and :class:`tuple` classes, and the :mod:`collections` module.
 
 
 .. function:: locals()
 
-   現在のローカルシンボルテーブルを表す辞書を更新して返します。
-   関数ブロックで :func:`locals` を呼び出した場合
-   自由変数が返されます、クラスブロックでは返されません。
+   Update and return a dictionary representing the current local symbol table.
+   Free variables are returned by :func:`locals` when it is called in function
+   blocks, but not in class blocks.
 
    .. note::
 
-      この辞書の内容は変更してはいけません; 値を変更しても、インタプリ
-      タが使うローカル変数や自由変数の値には影響しません。
+      The contents of this dictionary should not be modified; changes may not
+      affect the values of local and free variables used by the interpreter.
 
-.. function:: long([x[, base]])
 
-   文字列または数値を長整数値に変換します。引数が文字列の場合、 Python
-   整数として表現可能な十進の数でなければなりません。
-   符号が付いていてもかまいません。また、空白文字中に埋め込まれていて
-   もかまいません。 *base* 引数は :func:`int` と同じように解釈され、
-   *x* が文字列の時だけ与えることができます。それ以外の場合、引数は通
-   常整数、長整数、または浮動小数点数をとることができ、同じ値の長整数
-   が返されます。浮動小数点数から整数へ変換では (ゼロ方向に) 値を丸め
-   ます。引数が与えられなかった場合、 ``0L`` を返します。
+.. class:: long(x=0)
+           long(x, base=10)
 
-   長整数型については、 :ref:`typesnumeric` も参照下さい。
+   Return a long integer object constructed from a string or number *x*.
+   If the argument is a string, it
+   must contain a possibly signed number of arbitrary size, possibly embedded in
+   whitespace. The *base* argument is interpreted in the same way as for
+   :func:`int`, and may only be given when *x* is a string. Otherwise, the argument
+   may be a plain or long integer or a floating point number, and a long integer
+   with the same value is returned.    Conversion of floating point numbers to
+   integers truncates (towards zero).  If no arguments are given, returns ``0L``.
 
+   The long type is described in :ref:`typesnumeric`.
 
 
 .. function:: map(function, iterable, ...)
 
-   *function* を *iterable* の全ての要素に適用し、返された値からなるリ
-   ストを返します。追加の *iterable* 引数を与えた場合、 *function* は
-   それらを引数として取らなければならず、関数はそのリストの全ての要素
-   について個別に適用されます; 他のリストより短いリストがある場合、要
-   素 ``None`` で延長されます。 *function* が ``None`` の場合、恒等関
-   数であると仮定されます; すなわち、複数のリスト引数が存在する場合、
-   :func:`map` は全てのリスト引数に対し、対応する要素からなるタプルか
-   らなるリストを返します (転置操作のようなものです)。 *list* 引数はど
-   のようなシーケンス型でもかまいません; 結果は常にリストになります。
+   Apply *function* to every item of *iterable* and return a list of the results.
+   If additional *iterable* arguments are passed, *function* must take that many
+   arguments and is applied to the items from all iterables in parallel.  If one
+   iterable is shorter than another it is assumed to be extended with ``None``
+   items.  If *function* is ``None``, the identity function is assumed; if there
+   are multiple arguments, :func:`map` returns a list consisting of tuples
+   containing the corresponding items from all iterables (a kind of transpose
+   operation).  The *iterable* arguments may be a sequence  or any iterable object;
+   the result is always a list.
 
 
-.. function:: max(iterable[, args...][key])
+.. function:: max(iterable[, key])
+              max(arg1, arg2, *args[, key])
 
-   引数が *iterable* だけの場合、空でないシーケンス (文字列、タプルま
-   たはリスト) の要素のうち最大のものを返します。 1 個よりも引数が多い
-   場合、引数間で最大のものを返します。
+   Return the largest item in an iterable or the largest of two or more
+   arguments.
 
-   オプションの *key* 引数には :meth:`list.sort` で使われるのと同じよ
-   うな 1 引数の順序付け関数を指定します。 *key* を指定する場合はキー
-   ワード形式でなければなりません (たとえば ``max(a,b,c,key=func)``)。
+   If one positional argument is provided, *iterable* must be a non-empty
+   iterable (such as a non-empty string, tuple or list).  The largest item
+   in the iterable is returned.  If two or more positional arguments are
+   provided, the largest of the positional arguments is returned.
+
+   The optional *key* argument specifies a one-argument ordering function like that
+   used for :meth:`list.sort`.  The *key* argument, if supplied, must be in keyword
+   form (for example, ``max(a,b,c,key=func)``).
 
    .. versionchanged:: 2.5
-      オプションの *key* 引数が追加されました.
+      Added support for the optional *key* argument.
 
-
+.. _func-memoryview:
 .. function:: memoryview(obj)
    :noindex:
 
-   与えられたオブジェクトから作られた "メモリビュー" オブジェクトを返します。
-   詳しくは :ref:`typememoryview` を参照してください。
+   Return a "memory view" object created from the given argument.  See
+   :ref:`typememoryview` for more information.
 
 
-.. function:: min(iterable[, args...][key])
+.. function:: min(iterable[, key])
+              min(arg1, arg2, *args[, key])
 
-   引数が *iterable* だけの場合、空でないシーケンス (文字列、タプルま
-   たはリスト) の要素のうち最小のものを返します。 1  個よりも引数が多
-   い場合、引数間で最小のものを返します。
+   Return the smallest item in an iterable or the smallest of two or more
+   arguments.
 
-   オプションの *key* 引数には :meth:`list.sort` で使われるのと同じよ
-   うな 1 引数の順序付け関数を指定します。 *key* を指定する場合はキー
-   ワード形式でなければなりません (たとえば ``min(a,b,c,key=func)``)。
+   If one positional argument is provided, *iterable* must be a non-empty
+   iterable (such as a non-empty string, tuple or list).  The smallest item
+   in the iterable is returned.  If two or more positional arguments are
+   provided, the smallest of the positional arguments is returned.
+
+   The optional *key* argument specifies a one-argument ordering function like that
+   used for :meth:`list.sort`.  The *key* argument, if supplied, must be in keyword
+   form (for example, ``min(a,b,c,key=func)``).
 
    .. versionchanged:: 2.5
-      オプションの *key* 引数が追加されました.
+      Added support for the optional *key* argument.
 
 
 .. function:: next(iterator[, default])
 
-   *iterator* から、 :meth:`~iterator.next` メソッドにより、次の要素を取得します。
-   もし、 *default* が与えられると、イテレータが空である場合に、それが
-   返されます。それ以外の場合は、 :exc:`StopIteration` が送出されます。
+   Retrieve the next item from the *iterator* by calling its
+   :meth:`~iterator.next` method.  If *default* is given, it is returned if the
+   iterator is exhausted, otherwise :exc:`StopIteration` is raised.
 
    .. versionadded:: 2.6
 
 
-.. function:: object()
+.. class:: object()
 
-   ユーザ定義の属性やメソッドを持たない、新しいオブジェクトを返します。
-   :class:`object()` は新スタイルのクラスの、基底クラスです。これは、
-   新スタイルのクラスのインスタンスに共通のメソッド群を持ちます。
+   Return a new featureless object.  :class:`object` is a base for all new style
+   classes.  It has the methods that are common to all instances of new style
+   classes.
 
    .. versionadded:: 2.2
 
    .. versionchanged:: 2.3
-      この関数はいかなる引数も受け付けません。以前は、引数を受理しまし
-      たが無視していました。
+      This function does not accept any arguments. Formerly, it accepted arguments but
+      ignored them.
 
 
 .. function:: oct(x)
 
-   (任意のサイズの) 整数を 8 進の文字列に変換します。結果は Python の
-   式としても使える形式になります。
+   Convert an integer number (of any size) to an octal string.  The result is a
+   valid Python expression.
 
    .. versionchanged:: 2.4
-      以前は符号なしのリテラルしか返しませんでした.
+      Formerly only returned an unsigned literal.
 
 
-.. function:: open(filename[, mode[, bufsize]])
+.. function:: open(name[, mode[, buffering]])
 
-   ファイルを開いて、  :ref:`bltin-file-objects` にて説明される、
-   :class:`file` オブジェクトを返します。もし、ファイルが開けないなら、
-   :exc:`IOError` が送出されます。ファイルを開くときは :class:`file`
-   のコンストラクタを直接呼ばずに :func:`open` を使うのが望ましい方法
-   です。
+   Open a file, returning an object of the :class:`file` type described in
+   section :ref:`bltin-file-objects`.  If the file cannot be opened,
+   :exc:`IOError` is raised.  When opening a file, it's preferable to use
+   :func:`open` instead of invoking the :class:`file` constructor directly.
 
-   最初の 2 つの引数は ``stdio`` の :c:func:`fopen` と同じです:
-   *filename* は開きたいファイルの名前で、 *mode* はファイルをどのよう
-   にして開くかを指定します。
+   The first two arguments are the same as for ``stdio``'s :c:func:`fopen`:
+   *name* is the file name to be opened, and *mode* is a string indicating how
+   the file is to be opened.
 
-   最もよく使われる *mode* の値は、読み出しの ``'r'`` 、書き込み (ファ
-   イルがすでに存在すれば切り詰められます) の ``'w'`` 、追記書き込みの
-   ``'a'`` です ( *いくつかの* Unix システムでは、 *全て* の書き込みが
-   現在のファイルシーク位置に関係なくファイルの末尾に追加されます)。
-   *mode* が省略された場合、標準の値は ``'r'`` になります。デフォルト
-   ではテキストモードでファイルを開きます。 ``'\n'`` 文字は、プラット
-   フォームでの改行の表現に変換されます。移植性を高めるために、バイナ
-   リファイルを開くときには、 *mode* の値に ``'b'`` を追加しなければな
-   りません。(バイナリファイルとテキストファイルを区別なく扱うようなシ
-   ステムでも、ドキュメンテーションの代わりになるので便利です。) 他に
-   *mode* に与えられる可能性のある値については後述します。
+   The most commonly-used values of *mode* are ``'r'`` for reading, ``'w'`` for
+   writing (truncating the file if it already exists), and ``'a'`` for appending
+   (which on *some* Unix systems means that *all* writes append to the end of the
+   file regardless of the current seek position).  If *mode* is omitted, it
+   defaults to ``'r'``.  The default is to use text mode, which may convert
+   ``'\n'`` characters to a platform-specific representation on writing and back
+   on reading.  Thus, when opening a binary file, you should append ``'b'`` to
+   the *mode* value to open the file in binary mode, which will improve
+   portability.  (Appending ``'b'`` is useful even on systems that don't treat
+   binary and text files differently, where it serves as documentation.)  See below
+   for more possible values of *mode*.
 
    .. index::
       single: line-buffered I/O
@@ -869,118 +899,115 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
       single: buffer size, I/O
       single: I/O control; buffering
 
-   オプションの *bufsize* 引数は、ファイルのために必要とするバッファの
-   サイズを指定します: 0 は非バッファリング、 1 は行単位バッファリング、
-   その他の正の値は指定した値 (の近似値) のサイズをもつバッファを使用
-   することを意味します。 *bufsize* の値が負の場合、システムの標準を使
-   います。通常、tty 端末は行単位のバッファリングであり、その他のファイル
-   は完全なバッファリングです。省略された場合、システムの標準の値が使
-   われます。  [#]_
+   The optional *buffering* argument specifies the file's desired buffer size: 0
+   means unbuffered, 1 means line buffered, any other positive value means use a
+   buffer of (approximately) that size (in bytes).  A negative *buffering* means
+   to use the system default, which is usually line buffered for tty devices and
+   fully buffered for other files.  If omitted, the system default is used. [#]_
 
-   ``'r+'``, ``'w+'``, および ``'a+'`` はファイルを更新モードで開き
-   ます (``'w+'`` はファイルがすでに存在すれば切り詰めるので注意してく
-   ださい)。バイナリとテキストファイルを区別するシステムでは、ファイル
-   をバイナリモードで開くためには ``'b'`` を追加してください (区別しな
-   いシステムでは ``'b'`` は無視されます)。
+   Modes ``'r+'``, ``'w+'`` and ``'a+'`` open the file for updating (reading and writing);
+   note that ``'w+'`` truncates the file.  Append ``'b'`` to the mode to open the file in
+   binary mode, on systems that differentiate between binary and text files; on
+   systems that don't have this distinction, adding the ``'b'`` has no effect.
 
-   標準の :c:func:`fopen` における *mode* の値に加えて、 ``'U'`` または
-   ``'rU'`` を使うことができます。 Python が全改行文字サポートを行って
-   いる (標準ではしています) 場合、ファイルがテキストファイルで開かれ
-   ますが、行末文字として Unix における慣行である ``'\n'`` 、Macintosh
-   における慣行である ``'\r'`` 、 Windows における慣行である
-   ``'\r\n'`` のいずれを使うこともできます。これらの改行文字の外部表現
-   はどれも、 Python プログラムからは ``'\n'`` に見えます。 Python が
-   全改行文字サポートなしで構築されている場合、 *mode* ``'U'`` は通常
-   のテキストモードと同様になります。開かれたファイルオブジェクトはま
-   た、 :attr:`newlines` と呼ばれる属性を持っており、その値は ``None``
-   (改行が見つからなかった場合)、 ``'\n'``, ``'\r'``, ``'\r\n'``,
-   または見つかった全ての改行タイプを含むタプルになります。
+   .. index::
+      single: universal newlines; open() built-in function
 
-   ``'U'`` を取り除いた後のモードは ``'r'``, ``'w'``, ``'a'`` のいず
-   れかで始まる、というのが Python における規則です。
+   In addition to the standard :c:func:`fopen` values *mode* may be ``'U'`` or
+   ``'rU'``.  Python is usually built with :term:`universal newlines` support;
+   supplying ``'U'`` opens the file as a text file, but lines may be terminated
+   by any of the following: the Unix end-of-line convention ``'\n'``,  the
+   Macintosh convention ``'\r'``, or the Windows convention ``'\r\n'``. All of
+   these external representations are seen as ``'\n'`` by the Python program.
+   If Python is built without universal newlines support a *mode* with ``'U'``
+   is the same as normal text mode.  Note that file objects so opened also have
+   an attribute called :attr:`newlines` which has a value of ``None`` (if no
+   newlines have yet been seen), ``'\n'``, ``'\r'``, ``'\r\n'``, or a tuple
+   containing all the newline types seen.
 
-   Python では、 :mod:`fileinput`, :mod:`os`, :mod:`os.path`,
-   :mod:`tempfile`, :mod:`shutil` などの多数のファイル操作モジュールが
-   提供されています。
+   Python enforces that the mode, after stripping ``'U'``, begins with ``'r'``,
+   ``'w'`` or ``'a'``.
+
+   Python provides many file handling modules including
+   :mod:`fileinput`, :mod:`os`, :mod:`os.path`, :mod:`tempfile`, and
+   :mod:`shutil`.
 
    .. versionchanged:: 2.5
-      モード文字列の先頭についての制限が導入されました.
+      Restriction on first letter of mode string introduced.
 
 
 .. function:: ord(c)
 
-   長さ 1 の与えられた文字列に対し、その文字列が unicode オブジェクト
-   ならば Unicode コードポイントを表す整数を、 8 ビット文字列ならばそ
-   のバイトの値を返します。たとえば、 ``ord('a')`` は整数 ``97`` を返
-   し、 ``ord(u'\u2020')`` は ``8224`` を返します。この値は 8 ビット文
-   字列に対する :func:`chr` の逆であり、 unicode オブジェクトに対する
-   :func:`unichr` の逆です。引数が unicode で Python が UCS2 Unicode
-   対応版ならば、その文字のコードポイントは両端を含めて [0..65535] の
-   範囲に入っていなければなりません。この範囲から外れると文字列の長さ
-   が 2 になり、 :exc:`TypeError` が送出されることになります。
+   Given a string of length one, return an integer representing the Unicode code
+   point of the character when the argument is a unicode object, or the value of
+   the byte when the argument is an 8-bit string. For example, ``ord('a')`` returns
+   the integer ``97``, ``ord(u'\u2020')`` returns ``8224``.  This is the inverse of
+   :func:`chr` for 8-bit strings and of :func:`unichr` for unicode objects.  If a
+   unicode argument is given and Python was built with UCS2 Unicode, then the
+   character's code point must be in the range [0..65535] inclusive; otherwise the
+   string length is two, and a :exc:`TypeError` will be raised.
 
 
 .. function:: pow(x, y[, z])
 
-   *x* の *y* 乗を返します; *z* があれば、 *x* の *y* 乗に対する *z*
-   のモジュロを返します (``pow(x, y)% z`` より効率よく計算されます)。
-   引数二つの ``pow(x, y)`` という形式は、冪乗演算子を使った ``x**y``
-   と等価です。
+   Return *x* to the power *y*; if *z* is present, return *x* to the power *y*,
+   modulo *z* (computed more efficiently than ``pow(x, y) % z``). The two-argument
+   form ``pow(x, y)`` is equivalent to using the power operator: ``x**y``.
 
-   引数は数値型でなくてはなりません。型混合の場合、 2 進算術演算におけ
-   る型強制規則が適用されます。通常整数、および、長整数の被演算子に対
-   しては、二つ目の引数が負の数でない限り、結果は (型強制後の) 被演算
-   子と同じ型になります;
-   負の場合、全ての引数は浮動小数点型に変換され、浮動小数点型の結果が
-   返されます。例えば、 ``10**2`` は ``100`` を返しますが、 ``10**-2``
-   は ``0.01`` を返します。 (最後に述べた機能は Python 2.2 で追加され
-   たものです。 Python 2.1 以前では、双方の引数が整数で二つ目の値が負
-   の場合、例外が送出されます。) 二つ目の引数が負の場合、三つめの引数
-   は無視されます。 *z* がある場合、 *x* および *y* は整数型でなければ
-   ならず、 *y* は非負の値でなくてはなりません (この制限は Python 2.2
-   で追加されました。 Python 2.1 以前では、 3 つの浮動小数点引数を持つ
-   ``pow()`` は浮動小数点の丸めに関する偶発誤差により、プラットフォー
-   ム依存の結果を返します)。
+   The arguments must have numeric types.  With mixed operand types, the coercion
+   rules for binary arithmetic operators apply.  For int and long int operands, the
+   result has the same type as the operands (after coercion) unless the second
+   argument is negative; in that case, all arguments are converted to float and a
+   float result is delivered.  For example, ``10**2`` returns ``100``, but
+   ``10**-2`` returns ``0.01``.  (This last feature was added in Python 2.2.  In
+   Python 2.1 and before, if both arguments were of integer types and the second
+   argument was negative, an exception was raised.) If the second argument is
+   negative, the third argument must be omitted. If *z* is present, *x* and *y*
+   must be of integer types, and *y* must be non-negative.  (This restriction was
+   added in Python 2.2.  In Python 2.1 and before, floating 3-argument ``pow()``
+   returned platform-dependent results depending on floating-point rounding
+   accidents.)
 
 
-.. function:: print([object, ...][, sep=' '][, end='\\n'][, file=sys.stdout])
+.. function:: print(*objects, sep=' ', end='\\n', file=sys.stdout)
 
-   *object* (複数でも可) を *sep* で区切りながらストリーム、 *file* に
-   表示し、最後に *end* を表示します。 *sep*, *end* そして *file* が
-   与えられる場合、キーワード引数として与えられる必要があります。
+   Print *objects* to the stream *file*, separated by *sep* and followed by
+   *end*.  *sep*, *end* and *file*, if present, must be given as keyword
+   arguments.
 
-   キーワードなしの引数は、 :func:`str` がするように、すべて、文字列に
-   変換され、 *sep* で区切られながらストリームに書き出され、最後に
-   *end* を書き出します。 *sep* と *end* の両方とも、文字列でなければ
-   なりません。; デフォルトの値を指定するために、 ``None`` であっても
-   構いません。もし、 *object* が与えられなければ、 :func:`print` は、
-   単純に *end* だけ書き出します。
+   All non-keyword arguments are converted to strings like :func:`str` does and
+   written to the stream, separated by *sep* and followed by *end*.  Both *sep*
+   and *end* must be strings; they can also be ``None``, which means to use the
+   default values.  If no *objects* are given, :func:`print` will just write
+   *end*.
 
-   *file* 引数は、 ``write(string)`` メソッドを持つオブジェクトでなけ
-   ればなりません。指定されないか、 ``None`` であった場合には、
-   :data:`sys.stdout` が使われます。
+   The *file* argument must be an object with a ``write(string)`` method; if it
+   is not present or ``None``, :data:`sys.stdout` will be used.  Output buffering
+   is determined by *file*.  Use ``file.flush()`` to ensure, for instance,
+   immediate appearance on a screen.
 
    .. note::
 
-      この関数は ``print`` という名前が :keyword:`print` ステートメン
-      トとして解釈されるため、通常は使用できません。ステートメントを無
-      効化して、 :func:`print` 関数を使うためには、以下の future ステー
-      トメントをモジュールの最初に書いて下さい。::
+      This function is not normally available as a built-in since the name
+      ``print`` is recognized as the :keyword:`print` statement.  To disable the
+      statement and use the :func:`print` function, use this future statement at
+      the top of your module::
 
          from __future__ import print_function
 
    .. versionadded:: 2.6
 
 
-.. function:: property([fget[, fset[, fdel[, doc]]]])
+.. class:: property([fget[, fset[, fdel[, doc]]]])
 
-   :term:`new-style class` (新しい形式のクラス) (:class:`object` から
-   派生したクラス) における property 属性を返します。
+   Return a property attribute for :term:`new-style class`\es (classes that
+   derive from :class:`object`).
 
-   *fget* は属性値を取得するための関数で、同様に *fset* は設定するための関数、
-   *fdel* は削除するための関数です。
+   *fget* is a function for getting an attribute value.  *fset* is a function
+   for setting an attribute value. *fdel* is a function for deleting an attribute
+   value.  And *doc* creates a docstring for the attribute.
 
-   典型的な使用法は、属性 ``x`` の処理の定義です::
+   A typical use is to define a managed attribute ``x``::
 
       class C(object):
           def __init__(self):
@@ -997,14 +1024,12 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
           x = property(getx, setx, delx, "I'm the 'x' property.")
 
-   もし *c* が *C* のインスタンスならば、 ``c.x`` は getter を呼び出し、
-   ``c.x = value`` は setter を、 ``del c.x`` は deleter を呼び出します。
+   If *c* is an instance of *C*, ``c.x`` will invoke the getter,
+   ``c.x = value`` will invoke the setter and ``del c.x`` the deleter.
 
-   *doc* がもし与えられたならばそれが property 属性のドキュメント文字
-   列になります。与えられなければ、 property は *fget* のドキュメント
-   文字列(もしあれば)をコピーします。そのため、 :func:`property` を
-   デコレータ (:term:`decorator`) として使えば、
-   読み取り専用 property を作るのは容易です::
+   If given, *doc* will be the docstring of the property attribute. Otherwise, the
+   property will copy *fget*'s docstring (if it exists).  This makes it possible to
+   create read-only properties easily using :func:`property` as a :term:`decorator`::
 
       class Parrot(object):
           def __init__(self):
@@ -1015,15 +1040,14 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
               """Get the current voltage."""
               return self._voltage
 
-   ``@property`` デコレータは :meth:`voltage` を同じ名前のまま
-   読み取り専用属性の "getter" にし、voltage のドキュメント文字列を
-   “Get the current voltage.” に設定します。
+   The ``@property`` decorator turns the :meth:`voltage` method into a "getter"
+   for a read-only attribute with the same name, and it sets the docstring for
+   *voltage* to "Get the current voltage."
 
-   property オブジェクトは :attr:`~property.getter`, :attr:`~property.setter`,
-   :attr:`~property.deleter` メソッドを持っています。
-   これらのメソッドをデコレータとして使うと、対応するアクセサ関数が
-   デコレートされた関数に設定された、 property のコピーを作成できます。
-   これを一番分かりやすく説明する例があります::
+   A property object has :attr:`~property.getter`, :attr:`~property.setter`,
+   and :attr:`~property.deleter` methods usable as decorators that create a
+   copy of the property with the corresponding accessor function set to the
+   decorated function.  This is best explained with an example::
 
       class C(object):
           def __init__(self):
@@ -1042,32 +1066,34 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
           def x(self):
               del self._x
 
-   このコードは、最初の例と等価です。追加の関数には必ず、元々の属性と同じ名
-   前 (この例では ``x``) を与えて下さい。
+   This code is exactly equivalent to the first example.  Be sure to give the
+   additional functions the same name as the original property (``x`` in this
+   case.)
 
-   返されるプロパティオブジェクトも、コンストラクタの引数に対応する、
-   ``fget``, ``fset``, そして ``fdel`` 属性を持ちます。
+   The returned property object also has the attributes ``fget``, ``fset``, and
+   ``fdel`` corresponding to the constructor arguments.
 
    .. versionadded:: 2.2
 
    .. versionchanged:: 2.5
-      *doc* が与えられない場合に *fget* のドキュメント文字列を使う。
+      Use *fget*'s docstring if no *doc* given.
 
    .. versionchanged:: 2.6
-      ``getter``, ``setter`` そして ``deleter`` 属性が追加されました。
+      The ``getter``, ``setter``, and ``deleter`` attributes were added.
 
-.. function:: range([start,] stop[, step])
 
-   等差数列を含むリストを生成するための多機能関数です。 :keyword:`for` ルー
-   プでよく使われます。引数は通常の整数でなければなりません。 *step*
-   引数が無視された場合、標準の値 ``1`` になります。 *start* 引数が省
-   略された場合、標準の値 ``0`` になります。完全な形式では、通常の整数列
-   ``[start, start + step, start + 2 * step, ...]`` を返します。
-   *step* が正の値の場合、最後の要素は *stop* よりも小さい ``start
-   + i * step`` の最大値になります; *step* が負の値の場合、最後の要素
-   は *stop* よりも大きい ``start + i * step`` の最小値になります。
-   *step* はゼロであってはなりません (さもなければ :exc:`ValueError`
-   が送出されます)。以下に例を示します。::
+.. function:: range(stop)
+              range(start, stop[, step])
+
+   This is a versatile function to create lists containing arithmetic progressions.
+   It is most often used in :keyword:`for` loops.  The arguments must be plain
+   integers.  If the *step* argument is omitted, it defaults to ``1``.  If the
+   *start* argument is omitted, it defaults to ``0``.  The full form returns a list
+   of plain integers ``[start, start + step, start + 2 * step, ...]``.  If *step*
+   is positive, the last element is the largest ``start + i * step`` less than
+   *stop*; if *step* is negative, the last element is the smallest ``start + i *
+   step`` greater than *stop*.  *step* must not be zero (or else :exc:`ValueError`
+   is raised).  Example:
 
       >>> range(10)
       [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -1087,376 +1113,375 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
 .. function:: raw_input([prompt])
 
-   引数 *prompt* が存在する場合、末尾の改行を除いて標準出力に出力され
-   ます。次に、この関数は入力から 1 行を読み込んで文字列に変換して (末
-   尾の改行を除いて) 返します。 EOF が読み込まれると :exc:`EOFError`
-   が送出されます。以下に例を示します。::
+   If the *prompt* argument is present, it is written to standard output without a
+   trailing newline.  The function then reads a line from input, converts it to a
+   string (stripping a trailing newline), and returns that. When EOF is read,
+   :exc:`EOFError` is raised. Example::
 
       >>> s = raw_input('--> ')
       --> Monty Python's Flying Circus
       >>> s
       "Monty Python's Flying Circus"
 
-   :mod:`readline` モジュールが読み込まれていれば、 :func:`input` は精
-   緻な行編集およびヒストリ機能を提供します。
+   If the :mod:`readline` module was loaded, then :func:`raw_input` will use it to
+   provide elaborate line editing and history features.
 
 
 .. function:: reduce(function, iterable[, initializer])
 
-   *iterable* の要素に対して、iterableを単一の値に短縮するような形で
-   2 つの引数をもつ *function* を左から右に累積的に適用します。
-   例えば、 ``reduce(lambda x, y: x+y, [1, 2, 3, 4, 5])`` は
-   ``((((1+2)+3)+4)+5)`` を計算します。左引数 *x* は累計の値になり、右
-   引数 *y* は ``iterable`` から取り出した更新値になります。オプション
-   の *initializer* が存在する場合、計算の際に iterable の先頭に置かれ
-   ます。また、 iterable が空の場合には標準の値になります。
-   *initializer* が与えられておらず、 *iterable* が単一の要素しか持っ
-   ていない場合、最初の要素が返されます。
+   Apply *function* of two arguments cumulatively to the items of *iterable*, from
+   left to right, so as to reduce the iterable to a single value.  For example,
+   ``reduce(lambda x, y: x+y, [1, 2, 3, 4, 5])`` calculates ``((((1+2)+3)+4)+5)``.
+   The left argument, *x*, is the accumulated value and the right argument, *y*, is
+   the update value from the *iterable*.  If the optional *initializer* is present,
+   it is placed before the items of the iterable in the calculation, and serves as
+   a default when the iterable is empty.  If *initializer* is not given and
+   *iterable* contains only one item, the first item is returned.
+   Roughly equivalent to::
 
+      def reduce(function, iterable, initializer=None):
+          it = iter(iterable)
+          if initializer is None:
+              try:
+                  initializer = next(it)
+              except StopIteration:
+                  raise TypeError('reduce() of empty sequence with no initial value')
+          accum_value = initializer
+          for x in it:
+              accum_value = function(accum_value, x)
+          return accum_value
 
 .. function:: reload(module)
 
-   すでにインポートされた *module* を再解釈し、再初期化します。引数は
-   モジュールオブジェクトでなければならないので、予めインポートに成功
-   していなければなりません。この関数はモジュールのソースコードファイ
-   ルを外部エディタで編集して、 Python インタプリタから離れることなく
-   新しいバージョンを試したい際に有効です。戻り値は (*module* 引数と同
-   じ) モジュールオブジェクトです。
+   Reload a previously imported *module*.  The argument must be a module object, so
+   it must have been successfully imported before.  This is useful if you have
+   edited the module source file using an external editor and want to try out the
+   new version without leaving the Python interpreter.  The return value is the
+   module object (the same as the *module* argument).
 
-   ``reload(module)`` を実行すると、以下の処理が行われます:
+   When ``reload(module)`` is executed:
 
-   * Python モジュールのコードは再コンパイルされ、モジュールレベルのコー
-     ドは再度実行されます。モジュールの辞書中にある、何らかの名前に結
-     び付けられたオブジェクトを新たに定義します。拡張モジュール中の
-     ``init`` 関数が二度呼び出されることはありません。
+   * Python modules' code is recompiled and the module-level code reexecuted,
+     defining a new set of objects which are bound to names in the module's
+     dictionary.  The ``init`` function of extension modules is not called a second
+     time.
 
-   * Python における他のオブジェクトと同様、以前のオブジェクトのメモリ
-     領域は、参照カウントがゼロにならないかぎり再利用されません。
+   * As with all other objects in Python the old objects are only reclaimed after
+     their reference counts drop to zero.
 
-   * モジュール名前空間内の名前は新しいオブジェクト (または更新された
-     オブジェクト) を指すよう更新されます。
+   * The names in the module namespace are updated to point to any new or changed
+     objects.
 
-   * 以前のオブジェクトが (外部の他のモジュールなどからの) 参照を受け
-     ている場合、それらを新たなオブジェクトに再束縛し直すことはない
-     ので、必要なら自分で名前空間を更新せねばなりません。
+   * Other references to the old objects (such as names external to the module) are
+     not rebound to refer to the new objects and must be updated in each namespace
+     where they occur if that is desired.
 
-   いくつか補足説明があります:
+   There are a number of other caveats:
 
-   モジュールは文法的に正しいが、その初期化には失敗した場合、そのモジュー
-   ルの最初の :keyword:`import` 文はモジュール名をローカルにはバインド
-   しませんが、(部分的に初期化された) モジュールオブジェクトを
-   ``sys.modules`` に記憶します。従って、そのモジュールをロードしなおすに
-   は、 :func:`reload` する前にまず :keyword:`import` (モジュールの名
-   前を部分的に初期化されたオブジェクトにバインドします) を再度行わな
-   ければなりません。
-
-   モジュールが再ロードされた際、その辞書 (モジュールのグローバル変数
-   を含みます) はそのまま残ります。名前の再定義を行うと、以前の定義を
-   上書きするので、一般的には問題はありません。新たなバージョンのモジュー
-   ルが古いバージョンで定義された名前を定義していない場合、古い定義が
-   そのまま残ります。
-   辞書がグローバルテーブルやオブジェクトのキャッシュを維持していれば、
-   この機能をモジュールを有効性を引き出すために使うことができます ---
-   つまり、 :keyword:`try` 文を使えば、必要に応じてテーブルがあるかど
-   うかをテストし、その初期化を飛ばすことができます。::
+   When a module is reloaded, its dictionary (containing the module's global
+   variables) is retained.  Redefinitions of names will override the old
+   definitions, so this is generally not a problem.  If the new version of a module
+   does not define a name that was defined by the old version, the old definition
+   remains.  This feature can be used to the module's advantage if it maintains a
+   global table or cache of objects --- with a :keyword:`try` statement it can test
+   for the table's presence and skip its initialization if desired::
 
       try:
           cache
       except NameError:
           cache = {}
 
-   組み込みモジュールや動的にロードされるモジュールを再ロードすること
-   は、不正なやり方ではありませんが、一般的にそれほど便利ではありませ
-   ん。例外は :mod:`sys`, :mod:`__main__` および :mod:`__builtin__` で
-   す。しかしながら、多くの場合、拡張モジュールは 1 度以上初期化される
-   ようには設計されておらず、再ロードされた場合には何らかの理由で失敗
-   するかもしれません。
+   It is generally not very useful to reload built-in or dynamically loaded
+   modules.  Reloading :mod:`sys`, :mod:`__main__`, :mod:`builtins` and other
+   key modules is not recommended.  In many cases extension modules are not
+   designed to be initialized more than once, and may fail in arbitrary ways
+   when reloaded.
 
-   一方のモジュールが :keyword:`from` ... :keyword:`import` ...
-   を使って、オブジェクトを他方のモジュールからインポートしているなら、
-   他方のモジュールを :func:`reload` で呼び出しても、そのモジュールか
-   らインポートされたオブジェクトを再定義することはできません --- この
-   問題を回避する一つの方法は、 :keyword:`from` 文を再度実行することで、
-   もう一つの方法は :keyword:`from` 文の代わりに :keyword:`import` と
-   限定的な名前 (*module*.\*name*) を使うことです。
+   If a module imports objects from another module using :keyword:`from` ...
+   :keyword:`import` ..., calling :func:`reload` for the other module does not
+   redefine the objects imported from it --- one way around this is to re-execute
+   the :keyword:`from` statement, another is to use :keyword:`import` and qualified
+   names (*module*.*name*) instead.
 
-   あるモジュールがクラスのインスタンスを生成している場合、そのクラス
-   を定義しているモジュールの再ロードはそれらインスタンスのメソッド定
-   義に影響しません --- それらは古いクラス定義を使いつづけます。これは
-   派生クラスの場合でも同じです。
+   If a module instantiates instances of a class, reloading the module that defines
+   the class does not affect the method definitions of the instances --- they
+   continue to use the old class definition.  The same is true for derived classes.
 
 
+.. _func-repr:
 .. function:: repr(object)
 
-   オブジェクトの印字可能な表現を含む文字列を返します。これは型変換で
-   得られる (逆クオートの) 値と同じです。通常の関数としてこの操作にア
-   クセスできるとたまに便利です。この関数は多くの型について、
-   :func:`eval` に渡されたときに同じ値を持つようなオブジェクトを表す文
-   字列を生成しようとします。そうでない場合は、角括弧に囲まれたオブジェ
-   クトの型の名前と追加の情報 (大抵の場合はオブジェクトの名前とアドレ
-   スを含みます) を返します。クラスは、 :meth:`__repr__` メソッドを定
-   義することで、この関数によりそのクラスのインスタンスが返すものを制
-   御することができます。
+   Return a string containing a printable representation of an object.  This is
+   the same value yielded by conversions (reverse quotes).  It is sometimes
+   useful to be able to access this operation as an ordinary function.  For many
+   types, this function makes an attempt to return a string that would yield an
+   object with the same value when passed to :func:`eval`, otherwise the
+   representation is a string enclosed in angle brackets that contains the name
+   of the type of the object together with additional information often
+   including the name and address of the object.  A class can control what this
+   function returns for its instances by defining a :meth:`__repr__` method.
 
 
 .. function:: reversed(seq)
 
-   要素を逆順に取り出すイテレータ (reverse :term:`iterator`) を返します。
-   *seq* は :meth:`__reversed__` メソッドを持つか、
-   シーケンス型プロトコル (:meth:`__len__` メソッド、および、
-   ``0`` 以上の整数を引数とする :meth:`__getitem__` メソッド) を
-   サポートするオブジェクトでなければなりません。
+   Return a reverse :term:`iterator`.  *seq* must be an object which has
+   a :meth:`__reversed__` method or supports the sequence protocol (the
+   :meth:`__len__` method and the :meth:`__getitem__` method with integer
+   arguments starting at ``0``).
 
    .. versionadded:: 2.4
 
    .. versionchanged:: 2.6
-      カスタムの :meth:`__reversed__` メソッドが使えるようになりました。
+      Added the possibility to write a custom :meth:`__reversed__` method.
 
 
 .. function:: round(number[, ndigits])
 
-   *number* を小数点以下 *ndigits* 桁で丸めた浮動小数点数の値を返します。 *ndigits* が
-   省略されると、デフォルトはゼロになります。結果は浮動小数点数です。値
-   は最も近い 10 のマイナス *ndigits* 乗の倍数に丸められます。二つの倍数との
-   距離が等しい場合、ゼロから離れる方向に丸められます (従って、例えば
-   ``round(0.5)`` は ``1.0`` になり、 ``round(-0.5)`` は ``-1.0`` に
-   なります)。
+   Return the floating point value *number* rounded to *ndigits* digits after
+   the decimal point.  If *ndigits* is omitted, it defaults to zero. The result
+   is a floating point number.  Values are rounded to the closest multiple of
+   10 to the power minus *ndigits*; if two multiples are equally close,
+   rounding is done away from 0 (so, for example, ``round(0.5)`` is ``1.0`` and
+   ``round(-0.5)`` is ``-1.0``).
+
 
    .. note::
 
-      浮動小数点数に対する :func:`round` の振る舞いは意外なものかもしれません:
-      例えば、 ``round(2.675, 2)`` は予想通りの ``2.68`` ではなく
-      ``2.67`` を与えます。これはバグではありません: これはほとんどの
-      小数が浮動小数点数で正確に表せないことの結果です。詳しくは
-      :ref:`tut-fp-issues` を参照してください。
+      The behavior of :func:`round` for floats can be surprising: for example,
+      ``round(2.675, 2)`` gives ``2.67`` instead of the expected ``2.68``.
+      This is not a bug: it's a result of the fact that most decimal fractions
+      can't be represented exactly as a float.  See :ref:`tut-fp-issues` for
+      more information.
 
 
-.. function:: set([iterable])
+.. _func-set:
+.. class:: set([iterable])
    :noindex:
 
-   新しいセット型オブジェクトを返します。オプションで *iterable* から
-   とった要素を持たせることもできます。
-   set 型については、 :ref:`types-set` に説明があります。
+   Return a new :class:`set` object, optionally with elements taken from
+   *iterable*.  ``set`` is a built-in class.  See :class:`set` and
+   :ref:`types-set` for documentation about this class.
 
-   他のコンテナについては、組み込みクラスの :class:`dict`,
-   :class:`list`, および :class:`tuple` クラス、および、
-   :mod:`collections` モジュールを参照下さい。
+   For other containers see the built-in :class:`frozenset`, :class:`list`,
+   :class:`tuple`, and :class:`dict` classes, as well as the :mod:`collections`
+   module.
 
    .. versionadded:: 2.4
 
 
 .. function:: setattr(object, name, value)
 
-   :func:`getattr` と対をなす関数です。引数はそれぞれオブジェクト、文
-   字列、そして任意の値です。文字列はすでに存在する属性の名前でも、新
-   たな属性の名前でもかまいません。この関数は指定した値を指定した属性
-   に関連付けますが、指定したオブジェクトにおいて可能な場合に限ります。
-   例えば、 ``setattr(x, 'foobar', 123)`` は ``x.foobar = 123`` と等価
-   です。
+   This is the counterpart of :func:`getattr`.  The arguments are an object, a
+   string and an arbitrary value.  The string may name an existing attribute or a
+   new attribute.  The function assigns the value to the attribute, provided the
+   object allows it.  For example, ``setattr(x, 'foobar', 123)`` is equivalent to
+   ``x.foobar = 123``.
 
 
-.. function:: slice([start,] stop[, step])
+.. class:: slice(stop)
+           slice(start, stop[, step])
 
    .. index:: single: Numerical Python
 
-   ``range(start, stop, step)`` で指定されるインデクスの集合を表す
-   スライス(:term:`slice`)オブジェクトを返します。
-   ``range(start)`` スライスオブジェクトを返します。引数 *start* およ
-   び *step* は標準では ``None`` です。
-   スライスオブジェクトは読み出し専用の属性 :attr:`start`,
-   :attr:`stop` および :attr:`step` を持ち、これらは単に引数で使われた
-   値 (または標準の値) を返します。これらの値には、その他のはっきりと
-   した機能はありません; しかしながら、これらの値は Numerical Python
-   および、その他のサードパーティによる拡張で利用されています。スライ
-   スオブジェクトは拡張されたインデクス指定構文が使われる際にも生成さ
-   れます。例えば: ``a[start:stop:step]`` や ``a[start:stop, i]`` です。
-   イテレータを返すもうひとつの関数、 :func:`itertools.islice` も参照
-   下さい。
+   Return a :term:`slice` object representing the set of indices specified by
+   ``range(start, stop, step)``.  The *start* and *step* arguments default to
+   ``None``.  Slice objects have read-only data attributes :attr:`~slice.start`,
+   :attr:`~slice.stop` and :attr:`~slice.step` which merely return the argument
+   values (or their default).  They have no other explicit functionality;
+   however they are used by Numerical Python and other third party extensions.
+   Slice objects are also generated when extended indexing syntax is used.  For
+   example: ``a[start:stop:step]`` or ``a[start:stop, i]``.  See
+   :func:`itertools.islice` for an alternate version that returns an iterator.
 
 
 .. function:: sorted(iterable[, cmp[, key[, reverse]]])
 
-   *iterable* の要素をもとに、並べ替え済みの新たなリストを生成して返し
-   ます。
-   
-   オプション引数 *cmp*, *key*, および *reverse* の意味は
-   :meth:`list.sort` メソッドと同じです。 (:ref:`typesseq-mutable` 節に
-   説明があります。)
+   Return a new sorted list from the items in *iterable*.
 
-   *cmp* は2つの引数 (iterable の要素) からなるカスタムの比較関数を指
-   定します。
-   これは始めの引数が 2 つ目の引数に比べて小さい、等しい、大きいかに応
-   じて負数、ゼロ、正数を返します。 ``cmp=lambda x,y: cmp(x.lower(),
-   y.lower())`` 。デフォルト値は ``None`` です。
+   The optional arguments *cmp*, *key*, and *reverse* have the same meaning as
+   those for the :meth:`list.sort` method (described in section
+   :ref:`typesseq-mutable`).
 
-   *key* は 1 つの引数からなる関数を指定します。これは個々のリストの要
-   素から比較のキーを取り出すのに使われます。 ``key=str.lower`` 。デフォ
-   ルト値は ``None`` です (要素を直接比較します)。
+   *cmp* specifies a custom comparison function of two arguments (iterable
+   elements) which should return a negative, zero or positive number depending on
+   whether the first argument is considered smaller than, equal to, or larger than
+   the second argument: ``cmp=lambda x,y: cmp(x.lower(), y.lower())``.  The default
+   value is ``None``.
 
-   *reverse* は真偽値です。 ``True`` がセットされた場合、リストの要素
-   は個々の比較が反転したものとして並び替えられます。
+   *key* specifies a function of one argument that is used to extract a comparison
+   key from each list element: ``key=str.lower``.  The default value is ``None``
+   (compare the elements directly).
 
-   一般的に、 *key* および *reverse* の変換プロセスは同等の *cmp* 関数
-   を指定するより早く動作します。これは *key* および *reverse* がそれ
-   ぞれの要素に一度だけ触れる間に、 *cmp* はリストのそれぞれの要素に対
-   して複数回呼ばれることによるものです。
-   旧式の *cmp* 関数を *key* 関数に変換するには :func:`functools.cmp_to_key` 
-   を使用してください。
+   *reverse* is a boolean value.  If set to ``True``, then the list elements are
+   sorted as if each comparison were reversed.
 
-   並ベ替えの例と簡潔なチュートリアルとして、 `Sorting HowTo
-   <http://wiki.python.org/moin/HowTo/Sorting/>`_ を参照して下さい。
+   In general, the *key* and *reverse* conversion processes are much faster
+   than specifying an equivalent *cmp* function.  This is because *cmp* is
+   called multiple times for each list element while *key* and *reverse* touch
+   each element only once.  Use :func:`functools.cmp_to_key` to convert an
+   old-style *cmp* function to a *key* function.
+
+   The built-in :func:`sorted` function is guaranteed to be stable. A sort is
+   stable if it guarantees not to change the relative order of elements that
+   compare equal --- this is helpful for sorting in multiple passes (for
+   example, sort by department, then by salary grade).
+
+   For sorting examples and a brief sorting tutorial, see :ref:`sortinghowto`.
 
    .. versionadded:: 2.4
 
 
 .. function:: staticmethod(function)
 
-   *function* の静的メソッドを返します。
+   Return a static method for *function*.
 
-   静的メソッドは暗黙の第一引数を受け取りません。静的メソッドの宣言は、
-   以下のように書き慣わされます::
+   A static method does not receive an implicit first argument. To declare a static
+   method, use this idiom::
 
-      class C:
+      class C(object):
           @staticmethod
-          def f(arg1, arg2, ...): ...
+          def f(arg1, arg2, ...):
+              ...
 
-   ``@staticmethod`` は関数 :term:`decorator` (デコレータ)形式です。詳
-   しくは :ref:`function` の関数定義についての説明を参照してください。
+   The ``@staticmethod`` form is a function :term:`decorator` -- see the
+   description of function definitions in :ref:`function` for details.
 
-   このメソッドはクラスで呼び出すこと (例えば C.f() ) も、インスタンス
-   として呼び出すこと (例えば C().f()) もできます。インスタンスはその
-   クラスが何であるかを除いて無視されます。
+   It can be called either on the class (such as ``C.f()``) or on an instance (such
+   as ``C().f()``).  The instance is ignored except for its class.
 
-   Python における静的メソッドは Java や C++ における静的メソッドと類
-   似しています。より進んだ概念については、 :func:`classmethod` を参照
-   してください。
+   Static methods in Python are similar to those found in Java or C++. Also see
+   :func:`classmethod` for a variant that is useful for creating alternate
+   class constructors.
 
-   もっと静的メソッドについての情報が必要ならば、 :ref:`types` の標準
-   型階層についてのドキュメントを繙いてください。
+   For more information on static methods, consult the documentation on the
+   standard type hierarchy in :ref:`types`.
 
    .. versionadded:: 2.2
 
    .. versionchanged:: 2.4
-      関数デコレータ構文を追加しました.
+      Function decorator syntax added.
 
 
-.. function:: str([object])
+.. class:: str(object='')
 
-   オブジェクトをうまく印字可能な形に表現したものを含む文字列を返しま
-   す。文字列に対してはその文字列自体を返します。 ``repr(object)`` と
-   の違いは、 ``str(object)`` は常に :func:`eval` が受理できるような文
-   字列を返そうと試みるわけではないという点です;
-   この関数の目的は印字可能な文字列を返すところにあります。引数が与え
-   られなかった場合、空の文字列 ``''`` を返します。
+   Return a string containing a nicely printable representation of an object.  For
+   strings, this returns the string itself.  The difference with ``repr(object)``
+   is that ``str(object)`` does not always attempt to return a string that is
+   acceptable to :func:`eval`; its goal is to return a printable string.  If no
+   argument is given, returns the empty string, ``''``.
 
-   文字列についての詳細は、シーケンスの機能についての説明、
-   :ref:`typesseq` を参照下さい(文字列はシーケンスです)。
-   また、文字列特有のメソッドについては、 :ref:`string-methods` を参照
-   下さい。整形した文字列を出力するためには、テンプレート文字列か、
-   :ref:`string-formatting` にて説明される ``%`` 演算子を使用して下さい。
-   さらには、 :ref:`stringservices` と :func:`unicode` も参照下さい。
+   For more information on strings see :ref:`typesseq` which describes sequence
+   functionality (strings are sequences), and also the string-specific methods
+   described in the :ref:`string-methods` section. To output formatted strings
+   use template strings or the ``%`` operator described in the
+   :ref:`string-formatting` section. In addition see the :ref:`stringservices`
+   section. See also :func:`unicode`.
 
 
 .. function:: sum(iterable[, start])
 
-   *start* と *iterable* の要素を左から右へ合計し、総和を返しま
-   す。 *start* はデフォルトで ``0`` です。 *iterable* の要素は通常は
-   数値で、start の値は文字列であってはなりません。
+   Sums *start* and the items of an *iterable* from left to right and returns the
+   total.  *start* defaults to ``0``. The *iterable*'s items are normally numbers,
+   and the start value is not allowed to be a string.
 
-   使う場面によっては、 :func:`sum` よりもいい選択肢があります。
-   文字列からなるシーケンスを結合する高速かつ望ましい方法は
-   ``''.join(sequence)`` を呼ぶことです。浮動小数点数値を
-   拡張された精度で加算するには、
-   :func:`math.fsum` を参照下さい。一連のイテラブルを
-   連結するには、 :func:`itertools.chain` の使用を考えてください。
+   For some use cases, there are good alternatives to :func:`sum`.
+   The preferred, fast way to concatenate a sequence of strings is by calling
+   ``''.join(sequence)``.  To add floating point values with extended precision,
+   see :func:`math.fsum`\.  To concatenate a series of iterables, consider using
+   :func:`itertools.chain`.
 
-.. function:: super([type[, object-or-type]])
+   .. versionadded:: 2.3
 
-   メソッドの呼び出しを *type* の親または兄弟クラスに委譲する、プロキシオ
-   ブジェクトを返します。これはクラスの中でオーバーライドされた継承メ
-   ソッドにアクセスするのに便利です。探索の順序は、 *type* 自身が飛ば
-   されるのをのぞいて :func:`getattr` と同じです。
 
-   *type* の :attr:`__mro__` 属性は、 :func:`getattr` と :func:`super` の
-   両方で使われる、メソッド解決の探索順序を列記します。
-   この属性は動的で、継承の階層構造が更新されれば、随時変化します。
+.. function:: super(type[, object-or-type])
 
-   第 2 引数が省かれたなら、返されるスーパーオブジェクトは
-   束縛されません。第 2 引数がオブジェクトであれば、
-   ``isinstance(obj, type)`` は真でなければなりません。第 2 引数が型であれば、
-   ``issubclass(type2, type)`` は真でなければなりません
-   (これはクラスメソッドに役に立つでしょう)。
+   Return a proxy object that delegates method calls to a parent or sibling
+   class of *type*.  This is useful for accessing inherited methods that have
+   been overridden in a class. The search order is same as that used by
+   :func:`getattr` except that the *type* itself is skipped.
 
-   *super* の典型的な用途は 2 つあります。単一の継承をしている
-   クラス階層構造では、 *super* は名前を明示することなく親クラスを参照するのに
-   使え、これでコードはメンテナンスしやすくなります。この用途の
-   *super* は他のプログラミング言語で見られるものと近い方向性です。
+   The :attr:`~class.__mro__` attribute of the *type* lists the method
+   resolution search order used by both :func:`getattr` and :func:`super`.  The
+   attribute is dynamic and can change whenever the inheritance hierarchy is
+   updated.
 
-   2 つ目の用途は、動的な実行環境下での複数の継承の共同をサポートする
-   ことです。この用途は Python 特有で、静的にコンパイルされる
-   言語や、単一の継承しかサポートしない言語では見られないものです。
-   これは複数の基底クラスが同じメソッドを実装する "diamond diagram"
-   を実装できるようにします。良い設計のために、このメソッドがすべての
-   場合に同じ形式で呼び出せるべきです (呼び出しの順序が実行時に
-   決定されることや、順序がクラスの階層の変更に対応することや、
-   その順序には実行時まで未知の兄弟クラスが含まれえることが理由です)。
+   If the second argument is omitted, the super object returned is unbound.  If
+   the second argument is an object, ``isinstance(obj, type)`` must be true.  If
+   the second argument is a type, ``issubclass(type2, type)`` must be true (this
+   is useful for classmethods).
 
-   両方のケースにおいて、典型的なスーパークラスの呼び出しはこのように
-   なるでしょう。 ::
+   .. note::
+      :func:`super` only works for :term:`new-style class`\es.
+
+   There are two typical use cases for *super*.  In a class hierarchy with
+   single inheritance, *super* can be used to refer to parent classes without
+   naming them explicitly, thus making the code more maintainable.  This use
+   closely parallels the use of *super* in other programming languages.
+
+   The second use case is to support cooperative multiple inheritance in a
+   dynamic execution environment.  This use case is unique to Python and is
+   not found in statically compiled languages or languages that only support
+   single inheritance.  This makes it possible to implement "diamond diagrams"
+   where multiple base classes implement the same method.  Good design dictates
+   that this method have the same calling signature in every case (because the
+   order of calls is determined at runtime, because that order adapts
+   to changes in the class hierarchy, and because that order can include
+   sibling classes that are unknown prior to runtime).
+
+   For both use cases, a typical superclass call looks like this::
 
       class C(B):
           def method(self, arg):
               super(C, self).method(arg)
 
-   :func:`super` は ``super(C, self).__getitem__(name)`` のような明示的な
-   ドット表記による属性参照の一部として使うように実装されていることに注意して
-   下さい。
-   これは、 :meth:`__getattribute__` メソッドを、協調的な多重継承をサポート
-   するための予測可能な順序でクラスを検索するように実装することで実現されて
-   います。
-   従って、 :func:`super` は ``super()[name]`` のような文や演算子を使った
-   非明示的な属性参照向けには定義されていないので注意してください。
+   Note that :func:`super` is implemented as part of the binding process for
+   explicit dotted attribute lookups such as ``super().__getitem__(name)``.
+   It does so by implementing its own :meth:`__getattribute__` method for searching
+   classes in a predictable order that supports cooperative multiple inheritance.
+   Accordingly, :func:`super` is undefined for implicit lookups using statements or
+   operators such as ``super()[name]``.
 
-   また、 :func:`super` の使用がメソッド内部に限定されないことにも注目して
-   下さい。引数を2つ渡す形式の呼び出しは、必要な要素を正確に指定するので、
-   適当な参照を作ることができます。
+   Also note that :func:`super` is not limited to use inside methods.  The two
+   argument form specifies the arguments exactly and makes the appropriate
+   references.
+
+   For practical suggestions on how to design cooperative classes using
+   :func:`super`, see `guide to using super()
+   <http://rhettinger.wordpress.com/2011/05/26/super-considered-super/>`_.
 
    .. versionadded:: 2.2
 
 
 .. function:: tuple([iterable])
 
-   *iterable* の要素と要素が同じで、かつ順番も同じになるタプルを返します。
-   *iterable* はシーケンス型、反復をサポートするコンテナ型、および
-   イテレータオブジェクトをとることができます。 *iterable* がすでにタプ
-   ルの場合、そのタプルを変更せずに返します。
-   例えば、 ``tuple('abc')`` は ``('a', 'b', 'c')`` を返し、
-   ``tuple([1, 2, 3])`` は ``(1, 2, 3)`` を返します。
+   Return a tuple whose items are the same and in the same order as *iterable*'s
+   items.  *iterable* may be a sequence, a container that supports iteration, or an
+   iterator object. If *iterable* is already a tuple, it is returned unchanged.
+   For instance, ``tuple('abc')`` returns ``('a', 'b', 'c')`` and ``tuple([1, 2,
+   3])`` returns ``(1, 2, 3)``.  If no argument is given, returns a new empty
+   tuple, ``()``.
 
-   :class:`tuple` クラスは、不変のシーケンス型で、 :ref:`typesseq` に
-   て説明されます。他のコンテナ型については、組み込みクラスの
-   :class:`dict`, :class:`list`, および :class:`set` と、
-   :mod:`collections` モジュールを参照下さい。
-
-
-.. function:: type(object)
-
-   *object* の型を返します。オブジェクトの型の検査には
-   :func:`isinstance` 組み込み関数を使うことが推奨されます。
-
-   3 引数で呼び出された場合には :func:`type` 関数は後述するようにコン
-   ストラクタとして働きます。
+   :class:`tuple` is an immutable sequence type, as documented in
+   :ref:`typesseq`. For other containers see the built in :class:`dict`,
+   :class:`list`, and :class:`set` classes, and the :mod:`collections` module.
 
 
-.. function:: type(name, bases, dict)
-   :noindex:
+.. class:: type(object)
+           type(name, bases, dict)
 
-   新しい型オブジェクトを返します。本質的には :keyword:`class` 文の動
-   的な形です。 *name* 文字列はクラス名で、 :attr:`__name__` 属性にな
-   ります。 *bases* タプルは基底クラスの羅列で、 :attr:`__bases__` 属
-   性になります。 *dict* 辞書はクラス本体の定義を含む名前空間で、
-   :attr:`__dict__` 属性になります。たとえば、以下の二つの文は同じ
-   :class:`type` オブジェクトを作ります。 :
+   .. index:: object: type
+
+   With one argument, return the type of an *object*.  The return value is a
+   type object.  The :func:`isinstance` built-in function is recommended for
+   testing the type of an object.
+
+   With three arguments, return a new type object.  This is essentially a
+   dynamic form of the :keyword:`class` statement. The *name* string is the
+   class name and becomes the :attr:`~class.__name__` attribute; the *bases* tuple
+   itemizes the base classes and becomes the :attr:`~class.__bases__` attribute;
+   and the *dict* dictionary is the namespace containing definitions for class
+   body and becomes the :attr:`~object.__dict__`  attribute.  For example, the
+   following two statements create identical :class:`type` objects:
 
       >>> class X(object):
       ...     a = 1
@@ -1468,117 +1493,111 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
 .. function:: unichr(i)
 
-   Unicode におけるコードが整数 *i* になるような文字 1 文字からなる
-   Unicode 文字列を返します。例えば、 ``unichr(97)`` は文字列 ``u'a'``
-   を返します。この関数は Unicode 文字列に対する :func:`ord` の逆です。
-   引数の正当な範囲は Python がどのように構成されているかに依存してい
-   ます --- UCS2 ならば [0..0xFFFF] であり UCS4 ならば [0..0x10FFFF]
-   であり、このどちらかです。それ以外の値に対しては :exc:`ValueError`
-   が送出されます。ASCIIの 8 ビットの文字列に対しては、 :func:`chr` を
-   参照下さい。
+   Return the Unicode string of one character whose Unicode code is the integer
+   *i*.  For example, ``unichr(97)`` returns the string ``u'a'``.  This is the
+   inverse of :func:`ord` for Unicode strings.  The valid range for the argument
+   depends how Python was configured -- it may be either UCS2 [0..0xFFFF] or UCS4
+   [0..0x10FFFF]. :exc:`ValueError` is raised otherwise. For ASCII and 8-bit
+   strings see :func:`chr`.
 
    .. versionadded:: 2.0
 
 
-.. function:: unicode([object[, encoding [, errors]]])
+.. function:: unicode(object='')
+              unicode(object[, encoding [, errors]])
 
-   以下のモードのうち一つを使って、 *object* のUnicode 文字列バージョ
-   ンを返します:
+   Return the Unicode string version of *object* using one of the following modes:
 
-   もし *encoding* かつ/または *errors* が与えられていれば、
-   ``unicode()`` は 8 ビットの文字列または文字列バッファになっているオ
-   ブジェクトを *encoding* の codec を使ってデコードします。
-   *encoding* 引数はエンコーディング名を与える文字列です; 未知のエ
-   ンコーディングの場合、 :exc:`LookupError` が送出されます。エラー処理は
-   *errors* に従って行われます; このパラメータは入力エンコーディング中
-   で無効な文字の扱い方を指定します。 *errors* が ``'strict'`` (標準の
-   設定です) の場合、エラー発生時には :exc:`ValueError` が送出されます。
-   一方、 ``'ignore'`` では、エラーは暗黙のうちに無視されるようになり、
-   ``'replace'`` では公式の置換文字、 ``U+FFFD`` を使って、デコードで
-   きなかった文字を置き換えます。 :mod:`codecs` モジュールについても参
-   照してください。
+   If *encoding* and/or *errors* are given, ``unicode()`` will decode the object
+   which can either be an 8-bit string or a character buffer using the codec for
+   *encoding*. The *encoding* parameter is a string giving the name of an encoding;
+   if the encoding is not known, :exc:`LookupError` is raised. Error handling is
+   done according to *errors*; this specifies the treatment of characters which are
+   invalid in the input encoding.  If *errors* is ``'strict'`` (the default), a
+   :exc:`ValueError` is raised on errors, while a value of ``'ignore'`` causes
+   errors to be silently ignored, and a value of ``'replace'`` causes the official
+   Unicode replacement character, ``U+FFFD``, to be used to replace input
+   characters which cannot be decoded.  See also the :mod:`codecs` module.
 
-   オプションのパラメータが与えられていない場合、 ``unicode()`` は
-   ``str()`` の動作をまねます。ただし、8 ビット文字列ではなく、
-   Unicode 文字列を返します。もっと詳しくいえば、 *object* が Unicode
-   文字列かそのサブクラスなら、デコード処理を一切介することなく
-   Unicode 文字列を返すということです。
+   If no optional parameters are given, ``unicode()`` will mimic the behaviour of
+   ``str()`` except that it returns Unicode strings instead of 8-bit strings. More
+   precisely, if *object* is a Unicode string or subclass it will return that
+   Unicode string without any additional decoding applied.
 
-   :meth:`__unicode__` メソッドを提供しているオブジェクトの場合、
-   :func:`unicode` はこのメソッドを引数なしで呼び出して Unicode 文字列
-   を生成します。それ以外のオブジェクトの場合、 8 ビットの文字列か、オ
-   ブジェクトのデータ表現 (representation) を呼び出し、その後デフォル
-   トエンコーディングで ``'strict'`` モードの codec を使って Unicode
-   文字列に変換します。
+   For objects which provide a :meth:`__unicode__` method, it will call this method
+   without arguments to create a Unicode string. For all other objects, the 8-bit
+   string version or representation is requested and then converted to a Unicode
+   string using the codec for the default encoding in ``'strict'`` mode.
 
-   Unicode 文字列についてのさらなる情報については、シーケンス型の機能
-   についての説明、 :ref:`typesseq` を参照下さい(Unicode 文字列はシー
-   ケンスです)。また、文字列特有のメソッドについては、
-   :ref:`string-methods` を参照下さい。整形した文字列を出力するために
-   は、テンプレート文字列か、 :ref:`string-formatting` にて説明される
-   ``%`` 演算子を使用して下さい。さらには、 :ref:`stringservices` と
-   :func:`str` も参照下さい。
+   For more information on Unicode strings see :ref:`typesseq` which describes
+   sequence functionality (Unicode strings are sequences), and also the
+   string-specific methods described in the :ref:`string-methods` section. To
+   output formatted strings use template strings or the ``%`` operator described
+   in the :ref:`string-formatting` section. In addition see the
+   :ref:`stringservices` section. See also :func:`str`.
 
    .. versionadded:: 2.0
 
    .. versionchanged:: 2.2
-      :meth:`__unicode__` のサポートが追加されました.
+      Support for :meth:`__unicode__` added.
 
 
 .. function:: vars([object])
 
-   引数無しでは、 :func:`locals` のように動作します。
+   Return the :attr:`~object.__dict__` attribute for a module, class, instance,
+   or any other object with a :attr:`__dict__` attribute.
 
-   モジュール、クラス、またはクラスインスタンスオブジェクト (また
-   はその他 :attr:`__dict__` 属性を持つもの) を引数として与えた場合、
-   その属性を返します。
+   Objects such as modules and instances have an updateable :attr:`__dict__`
+   attribute; however, other objects may have write restrictions on their
+   :attr:`__dict__` attributes (for example, new-style classes use a
+   dictproxy to prevent direct dictionary updates).
 
-   .. note::
+   Without an argument, :func:`vars` acts like :func:`locals`.  Note, the
+   locals dictionary is only useful for reads since updates to the locals
+   dictionary are ignored.
 
-      返される辞書は変更すべきではありません: 変更が対応するシンボルテー
-      ブルにもたらす影響は未定義です。 [#]_
 
+.. function:: xrange(stop)
+              xrange(start, stop[, step])
 
-.. function:: xrange([start,] stop[, step])
-
-   この関数は :func:`range` に非常によく似ていますが、リストの代わりに
-   "xrange オブジェクト" を返します。このオブジェクトは不透明なシーケ
-   ンス型で、対応するリストと同じ値を持ちますが、それらの値全てを同時
-   に記憶しません。 :func:`ragne` に対する :func:`xrange` の利点は微々
-   たるものです (:func:`xrange` は要求に応じて値を生成するからです) た
-   だし、メモリ量の厳しい計算機で巨大な範囲の値を使う時や、(ループがよ
-   く :keyword:`break` で中断されるといったように) 範囲中の全ての値を
-   使うとは限らない場合はその限りではありません。
+   This function is very similar to :func:`range`, but returns an :ref:`xrange
+   object <typesseq-xrange>`
+   instead of a list.  This is an opaque sequence type which yields the same values
+   as the corresponding list, without actually storing them all simultaneously.
+   The advantage of :func:`xrange` over :func:`range` is minimal (since
+   :func:`xrange` still has to create the values when asked for them) except when a
+   very large range is used on a memory-starved machine or when all of the range's
+   elements are never used (such as when the loop is usually terminated with
+   :keyword:`break`).  For more information on xrange objects, see
+   :ref:`typesseq-xrange` and :ref:`typesseq`.
 
    .. impl-detail::
 
-      :func:`xrange` はシンプルさと速度のために定義されている関数であ
-      り、その実現のために実装上の制限を課している場合があります。
-      Python の C 実装では、全ての引数をネイティブの C long 型 (Python
-      の "short" 整数型) に制限しており、要素数がネイティブの C long
-      型の範囲内に収まるよう要求しています。もし大きな範囲が必要ならば、
-      別の実装である :mod:`itertools` モジュールの、
-      ``islice(count(start, step), (stop-start+step-1+2*(step<0))//step)``
-      を使うのが巧い方法かも知れません。
+      :func:`xrange` is intended to be simple and fast.  Implementations may
+      impose restrictions to achieve this.  The C implementation of Python
+      restricts all arguments to native C longs ("short" Python integers), and
+      also requires that the number of elements fit in a native C long.  If a
+      larger range is needed, an alternate version can be crafted using the
+      :mod:`itertools` module: ``islice(count(start, step),
+      (stop-start+step-1+2*(step<0))//step)``.
 
 
 .. function:: zip([iterable, ...])
 
-   この関数はタプルのリストを返します。このリストの *i* 番目のタプルは
-   各引数のシーケンスまたはイテレート可能オブジェクト中の *i* 番目の要
-   素を含みます。
-   返されるリストは引数のシーケンスのうち長さが最小のものの長さに切り
-   詰められます。引数が全て同じ長さの際には、 :func:`zip` は初期値引数
-   が ``None`` の :func:`map` と似ています。引数が単一のシーケンスの場
-   合、1 要素のタプルからなるリストを返します。引数を指定しない場合、
-   空のリストを返します。
+   This function returns a list of tuples, where the *i*-th tuple contains the
+   *i*-th element from each of the argument sequences or iterables. The returned
+   list is truncated in length to the length of the shortest argument sequence.
+   When there are multiple arguments which are all of the same length, :func:`zip`
+   is similar to :func:`map` with an initial argument of ``None``. With a single
+   sequence argument, it returns a list of 1-tuples. With no arguments, it returns
+   an empty list.
 
-   iterable の、左から右への評価順序が保証されます。そのため
-   ``zip(*[iter(s)]*n)`` を使ってデータ系列を n 長のグループにするクラ
-   スタリングすることができます。
+   The left-to-right evaluation order of the iterables is guaranteed. This
+   makes possible an idiom for clustering a data series into n-length groups
+   using ``zip(*[iter(s)]*n)``.
 
-   ``*`` 演算子と共の論理積に対して、リストを upzip するために
-   :func:`zip` を使うこともできます。 ::
+   :func:`zip` in conjunction with the ``*`` operator can be used to unzip a
+   list::
 
       >>> x = [1, 2, 3]
       >>> y = [4, 5, 6]
@@ -1592,8 +1611,8 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
    .. versionadded:: 2.0
 
    .. versionchanged:: 2.4
-      これまでは、 :func:`zip` は少なくとも一つの引数を要求しており、
-      空のリストを返す代わりに :exc:`TypeError` を送出していました。
+      Formerly, :func:`zip` required at least one argument and ``zip()`` raised a
+      :exc:`TypeError` instead of returning an empty list.
 
 
 .. function:: __import__(name[, globals[, locals[, fromlist[, level]]]])
@@ -1604,160 +1623,142 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
    .. note::
 
-      これは日々の Python プログラミングでは必要ではない、高等な関数です。
+      This is an advanced function that is not needed in everyday Python
+      programming, unlike :func:`importlib.import_module`.
 
-   この関数は :keyword:`import` ステートメントにより呼び出されます。こ
-   れは (:mod:`__builtin__` モジュールをインポートし、
-   ``__builtin__.__import__`` を割り当てることで) :keyword:`import` ステー
-   トメントの意味を変更するための置き換えが可能ですが、今では、フック
-   をインポートするほうが、大抵の場合簡単です (:pep:`302` を参照下さい)。
-   :func:`__import__` を直接使用することは稀で、例外は、実行時に名前が
-   決定するモジュールをインポートするときです。
+   This function is invoked by the :keyword:`import` statement.  It can be
+   replaced (by importing the :mod:`__builtin__` module and assigning to
+   ``__builtin__.__import__``) in order to change semantics of the
+   :keyword:`import` statement, but nowadays it is usually simpler to use import
+   hooks (see :pep:`302`).  Direct use of :func:`__import__` is rare, except in
+   cases where you want to import a module whose name is only known at runtime.
 
-   この関数は、モジュール、 *name* をインポートし、 *globals* と
-   *locals* が与えられれば、パッケージのコンテキストで名前をどう解釈す
-   るか決定するのに使います。
-   *fromlist* はオブジェクト、もしくは、サブモジュールの名前を与え、
-   *name* で与えられるモジュールからインポートされる必要があります。
-   標準的な実装では、 *locals* 引数はまったく使われず、 *globals* だけ
-   が :keyword:`import` ステートメントのパッケージコンテキストを決定す
-   るために使われます。
+   The function imports the module *name*, potentially using the given *globals*
+   and *locals* to determine how to interpret the name in a package context.
+   The *fromlist* gives the names of objects or submodules that should be
+   imported from the module given by *name*.  The standard implementation does
+   not use its *locals* argument at all, and uses its *globals* only to
+   determine the package context of the :keyword:`import` statement.
 
-   *level* は絶対、もしくは、相対のどちらのインポートを使うかを指定し
-   ます。デフォルトは ``-1`` で絶対、相対インポートの両方を試みます。
-   ``0`` は絶対インポートのみ実行します。正の *level* の値は、
-   :func:`__import__` を呼び出したディレクトリから検索対象となる親ディ
-   レクトリの階層を示します。
+   *level* specifies whether to use absolute or relative imports.  The default
+   is ``-1`` which indicates both absolute and relative imports will be
+   attempted.  ``0`` means only perform absolute imports.  Positive values for
+   *level* indicate the number of parent directories to search relative to the
+   directory of the module calling :func:`__import__`.
 
-   *name* は通常、 ``package.module`` の形式となり、 *name* で与えられ
-   た名前 *ではなく* 最上位のパッケージ (最初のドットまでの名前) が返
-   されます。しかしながら、空でない *fromlist* 引数が与えられると、
-   *name* で与えられた名前が返されます。
+   When the *name* variable is of the form ``package.module``, normally, the
+   top-level package (the name up till the first dot) is returned, *not* the
+   module named by *name*.  However, when a non-empty *fromlist* argument is
+   given, the module named by *name* is returned.
 
-   例えば、 ``import spam`` ステートメントは、以下のようなバイトコード
-   に帰結します。 ::
+   For example, the statement ``import spam`` results in bytecode resembling the
+   following code::
 
       spam = __import__('spam', globals(), locals(), [], -1)
 
-   ``import spam.ham`` ステートメントは、以下となります。 ::
+   The statement ``import spam.ham`` results in this call::
 
       spam = __import__('spam.ham', globals(), locals(), [], -1)
 
-   ここで :func:`__import__` がどのように最上位モジュールを返している
-   かに注意して下さい。 :keyword:`import` ステートメントにより、名前が
-   飛び越されたオブジェクトになっています。
+   Note how :func:`__import__` returns the toplevel module here because this is
+   the object that is bound to a name by the :keyword:`import` statement.
 
-   一方で、 ``from spam.ham import eggs, sausage as saus`` ステートメ
-   ントは、以下となります。  ::
+   On the other hand, the statement ``from spam.ham import eggs, sausage as
+   saus`` results in ::
 
       _temp = __import__('spam.ham', globals(), locals(), ['eggs', 'sausage'], -1)
       eggs = _temp.eggs
       saus = _temp.sausage
 
-   ここで、 ``spam.ham`` モジュールが :func:`__import__` より返されま
-   す。このオブジェクトからインポートされる名前が取り出され、それぞれ
-   の名前として割り当てられます。
+   Here, the ``spam.ham`` module is returned from :func:`__import__`.  From this
+   object, the names to import are retrieved and assigned to their respective
+   names.
 
-   単純にモジュールをインポートする場合(パッケージの範囲内であるかも知
-   れません)、 :func:`__import__` を呼び出して、 :data:`sys.modules` から見付けることもできます。 ::
+   If you simply want to import a module (potentially within a package) by name,
+   use :func:`importlib.import_module`.
 
-      >>> import sys
-      >>> name = 'foo.bar.baz'
-      >>> __import__(name)
-      <module 'foo' from >
-      >>> baz = sys.modules[name]
-      >>> baz
-      <module 'foo.bar.baz' from >
 
    .. versionchanged:: 2.5
-      level パラメータが追加されました。
+      The level parameter was added.
 
    .. versionchanged:: 2.5
-      Keyword サポートパラメータが追加されました。
+      Keyword support for parameters was added.
 
 ..  ---------------------------------------------------------------------------
 
 
 .. _non-essential-built-in-funcs:
 
-非必須組み込み関数 (Non-essential Built-in Functions)
-=====================================================
+Non-essential Built-in Functions
+================================
 
-いくつかの組み込み関数は、現代的な Python プログラミングを行う場合には、
-必ずしも学習したり、知っていたり、使ったりする必要がなくなりました。
-こうした関数は古いバージョンの Python 向け書かれたプログラムとの互換性
-を維持するだけの目的で残されています。
+There are several built-in functions that are no longer essential to learn, know
+or use in modern Python programming.  They have been kept here to maintain
+backwards compatibility with programs written for older versions of Python.
 
-Python のプログラマ、教官、学生、そして本の著者は、こうした関数を飛ば
-してもかまわず、その際に何か重要なことを忘れていると思う必要もありませ
-ん。
+Python programmers, trainers, students and book writers should feel free to
+bypass these functions without concerns about missing something important.
 
 
 .. function:: apply(function, args[, keywords])
 
-   引数 *function* は呼び出しができるオブジェクト (ユーザ定義および組
-   み込みの関数またはメソッド、またはクラスオブジェクト) でなければな
-   りません。 *args* はシーケンス型でなくてはなりません。 *function*
-   は引数リスト *args* を使って呼び出されます;
-   引数の数はタプルの長さになります。オプションの引数 *keywords* を与
-   える場合、 *keywords* は文字列のキーを持つ辞書でなければなりません。
-   これは引数リストの最後に追加されるキーワード引数です。
-   :func:`apply` の呼び出しは、単なる ``function(args)`` の呼び出しと
-   は異なります。というのは、 :func:`apply` の場合、引数は常に一つだから
-   です。 :func:`apply` は ``function(*args, **keywords)`` を使うのと
-   等価です。
+   The *function* argument must be a callable object (a user-defined or built-in
+   function or method, or a class object) and the *args* argument must be a
+   sequence.  The *function* is called with *args* as the argument list; the number
+   of arguments is the length of the tuple. If the optional *keywords* argument is
+   present, it must be a dictionary whose keys are strings.  It specifies keyword
+   arguments to be added to the end of the argument list. Calling :func:`apply` is
+   different from just calling ``function(args)``, since in that case there is
+   always exactly one argument.  The use of :func:`apply` is equivalent to
+   ``function(*args, **keywords)``.
 
    .. deprecated:: 2.3
-       ``*args`` と ``**keywords`` を使った拡張呼び出し構文を使ってく
-       ださい。
+      Use ``function(*args, **keywords)`` instead of
+      ``apply(function, args, keywords)`` (see :ref:`tut-unpacking-arguments`).
 
 
 .. function:: buffer(object[, offset[, size]])
 
-   
-   引数 *object* は (文字列、アレイ、バッファといった) バッファ呼び出
-   しインタフェースをサポートするオブジェクトでなければなりません。
-   引数 *object* を参照する新たなバッファオブジェクトが生成されます。
-   返されるバッファオブジェクトは *object* の先頭 (または *offset*) から
-   のスライスになります。スライスの末端は *object* の末端まで (または
-   引数 *size* で与えられた長さになるまで) です。
+   The *object* argument must be an object that supports the buffer call interface
+   (such as strings, arrays, and buffers).  A new buffer object will be created
+   which references the *object* argument. The buffer object will be a slice from
+   the beginning of *object* (or from the specified *offset*). The slice will
+   extend to the end of *object* (or will have a length given by the *size*
+   argument).
 
 
 .. function:: coerce(x, y)
 
-   二つの数値型の引数を共通の型に変換して、変換後の値からなるタプルを
-   返します。変換に使われる規則は算術演算における規則と同じです。型変
-   換が不可能である場合、 :exc:`TypeError` を送出します。
+   Return a tuple consisting of the two numeric arguments converted to a common
+   type, using the same rules as used by arithmetic operations. If coercion is not
+   possible, raise :exc:`TypeError`.
 
 
 .. function:: intern(string)
 
-   *string* を "隔離" された文字列のテーブルに入力し、隔離された文字列
-   を返します -- この文字列は *string* 自体かコピーです。
-   隔離された文字列は辞書検索のパフォーマンスを少しだけ向上させるのに
-   有効です -- 辞書中のキーが隔離されており、検索するキーが隔離されて
-   いる場合、 (ハッシュ化後の) キーの比較は文字列の比較ではなくポイン
-   タの比較で行うことができるからです。通常、 Python プログラム内で利
-   用されている名前は自動的に隔離され、モジュール、クラス、またはイン
-   スタンス属性を保持するための辞書は隔離されたキーを持っています。
+   Enter *string* in the table of "interned" strings and return the interned string
+   -- which is *string* itself or a copy. Interning strings is useful to gain a
+   little performance on dictionary lookup -- if the keys in a dictionary are
+   interned, and the lookup key is interned, the key comparisons (after hashing)
+   can be done by a pointer compare instead of a string compare.  Normally, the
+   names used in Python programs are automatically interned, and the dictionaries
+   used to hold module, class or instance attributes have interned keys.
 
    .. versionchanged:: 2.3
-      隔離された文字列の有効期限は (Python 2.2 またはそれ以前は永続的
-      でしたが) 永続的ではなくなりました; :func:`intern` の恩恵を受け
-      るためには、 :func:`intern` の返す値に対する参照を保持しなければ
-      なりません。
+      Interned strings are not immortal (like they used to be in Python 2.2 and
+      before); you must keep a reference to the return value of :func:`intern` around
+      to benefit from it.
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] この関数は比較的利用されない関数なので、構文になるかどうかは保証できません。
+.. [#] It is used relatively rarely so does not warrant being made into a statement.
 
-.. [#] 現状では、 :c:func:`setvbuf` を持っていないシステムでは、バッファ
-   サイズを指定しても効果はありません。バッファサイズを指定するための
-   インタフェースは :c:func:`setvbuf` を使っては行われていません。何ら
-   かの I/O が実行された後で呼び出されるとコアダンプすることがあり、ど
-   のような場合にそうなるかを決定する信頼性のある方法がないからです。
+.. [#] Specifying a buffer size currently has no effect on systems that don't have
+   :c:func:`setvbuf`.  The interface to specify the buffer size is not done using a
+   method that calls :c:func:`setvbuf`, because that may dump core when called after
+   any I/O has been performed, and there's no reliable way to determine whether
+   this is the case.
 
-.. [#] 現在の実装では、ローカルな値のバインディングは通常は影響を受け
-   ませんが、 (モジュールのような) 他のスコープから取り出した値は影響
-   を受けるかもしれません。またこの実装は変更されるかもしれません。
-
+.. [#] In the current implementation, local variable bindings cannot normally be
+   affected this way, but variables retrieved from other scopes (such as modules)
+   can be.  This may change.
