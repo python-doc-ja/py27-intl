@@ -1,122 +1,118 @@
 
-:mod:`cd` --- SGI システムの CD-ROM へのアクセス
-================================================
+:mod:`cd` --- CD-ROM access on SGI systems
+==========================================
 
 .. module:: cd
    :platform: IRIX
-   :synopsis: Silicon GraphicsシステムのCD-ROMへのインターフェース
+   :synopsis: Interface to the CD-ROM on Silicon Graphics systems.
    :deprecated:
 
 
 .. deprecated:: 2.6
-    :mod:`cd` モジュールは Python 3.0 での削除に向けて非推奨になりました。
+    The :mod:`cd` module has been removed in Python 3.
 
 
-このモジュールは Silicon Graphics CD ライブラリへのインターフェースを提供します。
-Silicon Graphics システムだけで利用可能です。
+This module provides an interface to the Silicon Graphics CD library. It is
+available only on Silicon Graphics systems.
 
-ライブラリは以下のように使われます。
+The way the library works is as follows.  A program opens the CD-ROM device with
+:func:`.open` and creates a parser to parse the data from the CD with
+:func:`createparser`.  The object returned by :func:`.open` can be used to read
+data from the CD, but also to get status information for the CD-ROM device, and
+to get information about the CD, such as the table of contents.  Data from the
+CD is passed to the parser, which parses the frames, and calls any callback
+functions that have previously been added.
 
-CD-ROM デバイスを :func:`.open` で開き、 :func:`createparser` で CD から\
-データをパースするためのパーザを作ります。
-:func:`.open` で返されるオブジェクトは CD からデータを読み込むのに使われますが、
-CD-ROM デバイスのステータス情報や、CD の情報、たとえば目次などを得るのにも使われます。
-CD から得たデータはパーザに渡され、パーザはフレームをパースし、あらかじめ加えられた\
-コールバック関数を呼び出します。
+An audio CD is divided into :dfn:`tracks` or :dfn:`programs` (the terms are used
+interchangeably).  Tracks can be subdivided into :dfn:`indices`.  An audio CD
+contains a :dfn:`table of contents` which gives the starts of the tracks on the
+CD.  Index 0 is usually the pause before the start of a track.  The start of the
+track as given by the table of contents is normally the start of index 1.
 
-オーディオCDはトラック :dfn:`tracks` あるいはプログラム :dfn:`programs`
-(同じ意味で、どちらかの用語が使われます) に分けられます。
-トラックはさらにインデックス :dfn:`indices` に分けられます。
-オーディオ CD は、CD 上の各トラックのスタート位置を示す目次 :dfn:`table of contents`
-を持っています。
-インデックス0は普通、トラックの始まりの前のポーズです。
-目次から得られるトラックのスタート位置は通常、インデックス1のスタート位置です。
+Positions on a CD can be represented in two ways.  Either a frame number or a
+tuple of three values, minutes, seconds and frames.  Most functions use the
+latter representation.  Positions can be both relative to the beginning of the
+CD, and to the beginning of the track.
 
-CD 上の位置は2通りの方法で得ることができます。
-それはフレームナンバーと、分、秒、フレームの3つの値からなるタプルの2つです。
-ほとんどの関数は後者を使います。
-位置はCDの開始位置とトラックの開始位置の両方に相対的になります。
-
-モジュール :mod:`cd` は、以下の関数と定数を定義しています：
+Module :mod:`cd` defines the following functions and constants:
 
 
 .. function:: createparser()
 
-   不透明なパーザオブジェクトを作って返します。パーザオブジェクトのメソッドは下に記載されています。
+   Create and return an opaque parser object.  The methods of the parser object are
+   described below.
 
 
 .. function:: msftoframe(minutes, seconds, frames)
 
-   絶対的なタイムコードである ``(minutes, seconds, frames)`` の3つ組の表現を、
-   相当するCDのフレームナンバーに変換します。
+   Converts a ``(minutes, seconds, frames)`` triple representing time in absolute
+   time code into the corresponding CD frame number.
 
 
 .. function:: open([device[, mode]])
 
-   CD-ROM デバイスを開きます。不透明なプレーヤーオブジェクトを返します；
-   プレーヤーオブジェクトのメソッドは下に記載されています。
-   デバイス *device* は SCSI デバイスファイルの名前で、例えば ``'/dev/scsi/sc0d4l0'``
-   あるいは ``None`` です。
-   もし省略したり、 ``None`` なら、ハードウエアが検索されて CD-ROM デバイスを\
-   割り当てます。 *mode* は、省略しないなら ``'r'`` にすべきです。
+   Open the CD-ROM device.  The return value is an opaque player object; methods of
+   the player object are described below.  The device is the name of the SCSI
+   device file, e.g. ``'/dev/scsi/sc0d4l0'``, or ``None``.  If omitted or ``None``,
+   the hardware inventory is consulted to locate a CD-ROM drive.  The *mode*, if
+   not omitted, should be the string ``'r'``.
 
-このモジュールでは以下の変数を定義しています：
+The module defines the following variables:
 
 
 .. exception:: error
 
-   様々なエラーについて発生する例外です。
+   Exception raised on various errors.
 
 
 .. data:: DATASIZE
 
-   オーディオデータの1フレームのサイズです。
-   これは ``audio`` タイプのコールバックへ渡されるオーディオデータのサイズです。
+   The size of one frame's worth of audio data.  This is the size of the audio data
+   as passed to the callback of type ``audio``.
 
 
 .. data:: BLOCKSIZE
 
-   オーディオデータが読み取られていないフレーム1つのサイズです。
+   The size of one uninterpreted frame of audio data.
 
-以下の変数は :func:`getstatus` で返されるステータス情報です：
+The following variables are states as returned by :func:`getstatus`:
 
 
 .. data:: READY
 
-   オーディオ CD がロードされて、ドライブが操作可能であることを示します。
+   The drive is ready for operation loaded with an audio CD.
 
 
 .. data:: NODISC
 
-   ドライブに CD がロードされていないことを示します。
+   The drive does not have a CD loaded.
 
 
 .. data:: CDROM
 
-   ドライブに CD-ROM がロードされていることを示します。
-   続いて play あるいは read の操作をすると、I/O エラーを返します。
+   The drive is loaded with a CD-ROM.  Subsequent play or read operations will
+   return I/O errors.
 
 
 .. data:: ERROR
 
-   ディスクや目次を読み込もうとしているときに起こるエラー。
+   An error occurred while trying to read the disc or its table of contents.
 
 
 .. data:: PLAYING
 
-   ドライブがオーディオ CD を CD プレーヤーモードでオーディオ端子から再生\
-   していることを示します。
+   The drive is in CD player mode playing an audio CD through its audio jacks.
 
 
 .. data:: PAUSED
 
-   ドライブが CD プレーヤーモードで、再生を一時停止していることを示します。
+   The drive is in CD layer mode with play paused.
 
 
 .. data:: STILL
 
-   :const:`PAUSED` と同じですが、古いモデル（non 3301）である Toshiba CD-ROM
-   ドライブのものです。このドライブはもうSGIから出荷されていません。
+   The equivalent of :const:`PAUSED` on older (non 3301) model Toshiba CD-ROM
+   drives.  Such drives have never been shipped by SGI.
 
 
 .. data:: audio
@@ -128,216 +124,217 @@ CD 上の位置は2通りの方法で得ることができます。
           ident
           control
 
-   これらは整数の定数で、パーザのいろいろなタイプのコールバックを示していま\
-   す。コールバックは CD パーザオブジェクトの :meth:`addcallback` で設定でき\
-   ます（下記参照）。
+   Integer constants describing the various types of parser callbacks that can be
+   set by the :meth:`addcallback` method of CD parser objects (see below).
 
 
 .. _player-objects:
 
-プレーヤーオブジェクト
-----------------------
+Player Objects
+--------------
 
-プレーヤーオブジェクト (:func:`.open` で返されます) には以下のメソッドがあります：
+Player objects (returned by :func:`.open`) have the following methods:
 
 
 .. method:: CD player.allowremoval()
 
-   CD-ROM ドライブのイジェクトボタンのロックを解除して、ユーザが CD
-   キャディを排出するのを許可します。
+   Unlocks the eject button on the CD-ROM drive permitting the user to eject the
+   caddy if desired.
 
 
 .. method:: CD player.bestreadsize()
 
-   メソッド :meth:`readda` のパラメータ *num_frames* として最適の値を返します。
-   最適値は CD-ROM ドライブからの連続したデータフローが許可される値が定義されます。
+   Returns the best value to use for the *num_frames* parameter of the
+   :meth:`readda` method.  Best is defined as the value that permits a continuous
+   flow of data from the CD-ROM drive.
 
 
 .. method:: CD player.close()
 
-   プレーヤーオブジェクトと関連付けられたリソースを解放します。
-   :meth:`close` を呼び出したあとでは、そのオブジェクトに対するメソッドは\
-   使用できません。
+   Frees the resources associated with the player object.  After calling
+   :meth:`close`, the methods of the object should no longer be used.
 
 
 .. method:: CD player.eject()
 
-   CD-ROMドライブからキャディを排出します。
+   Ejects the caddy from the CD-ROM drive.
 
 
 .. method:: CD player.getstatus()
 
-   CD-ROMドライブの現在の状態に関する情報を返します。
-   返される情報は以下の値からなるタプルです：
-   *state* 、 *track* 、 *rtime* 、 *atime* 、 *ttime* 、
-   *first* 、 *last* 、 *scsi_audio* 、 *cur_block* 。
-   *rtime* は現在のトラックの初めからの相対的な時間；
-   *atime* はディスクの初めからの相対的な時間；
-   *ttime* はディスクの全時間です。
-   それぞれの値の詳細については、マニュアルページ :manpage:`CDgetstatus(3dm)`
-   を参照してください。
-   *state* の値は以下のうちのどれか一つです：
-   :const:`ERROR` 、 :const:`NODISC` 、 :const:`READY` 、
-   :const:`PLAYING` 、 :const:`PAUSED` 、 :const:`STILL` 、 :const:`CDROM` 。
+   Returns information pertaining to the current state of the CD-ROM drive.  The
+   returned information is a tuple with the following values: *state*, *track*,
+   *rtime*, *atime*, *ttime*, *first*, *last*, *scsi_audio*, *cur_block*. *rtime*
+   is the time relative to the start of the current track; *atime* is the time
+   relative to the beginning of the disc; *ttime* is the total time on the disc.
+   For more information on the meaning of the values, see the man page
+   :manpage:`CDgetstatus(3dm)`. The value of *state* is one of the following:
+   :const:`ERROR`, :const:`NODISC`, :const:`READY`, :const:`PLAYING`,
+   :const:`PAUSED`, :const:`STILL`, or :const:`CDROM`.
 
 
 .. method:: CD player.gettrackinfo(track)
 
-   特定のトラックについての情報を返します。
-   返される情報は、トラックの開始時刻とトラックの時間の長さの二つの要素から\
-   なるタプルです。
+   Returns information about the specified track.  The returned information is a
+   tuple consisting of two elements, the start time of the track and the duration
+   of the track.
 
 
 .. method:: CD player.msftoblock(min, sec, frame)
 
-   分、秒、フレームの3つからなる絶対的なタイムコードを、与えられた CD-ROM
-   ドライブの相当する論理ブロック番号に変換します。
-   時刻を比較するには :meth:`msftoblock` よりも :func:`msftoframe`
-   を使うべきです。論理ブロック番号は、CD-ROM ドライブによって必要とされる\
-   オフセット値が違うため、フレームナンバーと異なります。
+   Converts a minutes, seconds, frames triple representing a time in absolute time
+   code into the corresponding logical block number for the given CD-ROM drive.
+   You should use :func:`msftoframe` rather than :meth:`msftoblock` for comparing
+   times.  The logical block number differs from the frame number by an offset
+   required by certain CD-ROM drives.
 
 
 .. method:: CD player.play(start, play)
 
-   CD-ROM ドライブのオーディオ CD の特定のトラックから再生を開始します。
-   CD-ROM ドライブのヘッドフォン端子と（備えているなら）オーディオ端子から出\
-   力されます。ディスクの最後で再生は停止します。
-   *start* は再生を開始する CD のトラックナンバーです；
-   *play* が0なら、CD は最初の一時停止状態になります。
-   その状態からメソッド :meth:`togglepause` で再生を開始できます。
+   Starts playback of an audio CD in the CD-ROM drive at the specified track.  The
+   audio output appears on the CD-ROM drive's headphone and audio jacks (if
+   fitted).  Play stops at the end of the disc. *start* is the number of the track
+   at which to start playing the CD; if *play* is 0, the CD will be set to an
+   initial paused state.  The method :meth:`togglepause` can then be used to
+   commence play.
 
 
 .. method:: CD player.playabs(minutes, seconds, frames, play)
 
-   :meth:`play` と似ていますが、開始位置をトラックナンバーの代わりに分、\
-   秒、フレームで与えます。
+   Like :meth:`play`, except that the start is given in minutes, seconds, and
+   frames instead of a track number.
 
 
 .. method:: CD player.playtrack(start, play)
 
-   :meth:`play` と似ていますが、トラックの終わりで再生を停止します。
+   Like :meth:`play`, except that playing stops at the end of the track.
 
 
 .. method:: CD player.playtrackabs(track, minutes, seconds, frames, play)
 
-   :meth:`play` と似ていますが、指定した絶対的な時刻から再生を開始して、\
-   指定したトラックで終了します。
+   Like :meth:`play`, except that playing begins at the specified absolute time and
+   ends at the end of the specified track.
 
 
 .. method:: CD player.preventremoval()
 
-   CD-ROM ドライブのイジェクトボタンをロックして、ユーザが CD キャディを\
-   排出できないようにします。
+   Locks the eject button on the CD-ROM drive thus preventing the user from
+   arbitrarily ejecting the caddy.
 
 
 .. method:: CD player.readda(num_frames)
 
-   CD-ROM ドライブにマウントされたオーディオ CD から、指定したフレーム数を\
-   読み込みます。オーディオフレームのデータを示す文字列を返します。
-   この文字列はそのままパーザオブジェクトのメソッド :meth:`parseframe`
-   へ渡すことができます。
+   Reads the specified number of frames from an audio CD mounted in the CD-ROM
+   drive.  The return value is a string representing the audio frames.  This string
+   can be passed unaltered to the :meth:`parseframe` method of the parser object.
 
 
 .. method:: CD player.seek(minutes, seconds, frames)
 
-   CD-ROM から次にデジタルオーディオデータを読み込む開始位置のポインタを設定します。
-   ポインタは *minutes* 、 *seconds* 、 *frames* で指定した絶対的な\
-   タイムコードの位置に設定されます。
-   返される値はポインタが設定された論理ブロック番号です。
+   Sets the pointer that indicates the starting point of the next read of digital
+   audio data from a CD-ROM.  The pointer is set to an absolute time code location
+   specified in *minutes*, *seconds*, and *frames*.  The return value is the
+   logical block number to which the pointer has been set.
 
 
 .. method:: CD player.seekblock(block)
 
-   CD-ROM から次にデジタルオーディオデータを読み込む開始位置のポインタを設定します。
-   ポインタは指定した論理ブロック番号に設定されます。
-   返される値はポインタが設定された論理ブロック番号です。
+   Sets the pointer that indicates the starting point of the next read of digital
+   audio data from a CD-ROM.  The pointer is set to the specified logical block
+   number.  The return value is the logical block number to which the pointer has
+   been set.
 
 
 .. method:: CD player.seektrack(track)
 
-   CD-ROM から次にデジタルオーディオデータを読み込む開始位置のポインタを設定します。
-   ポインタは指定したトラックに設定されます。
-   返される値はポインタが設定された論理ブロック番号です。
+   Sets the pointer that indicates the starting point of the next read of digital
+   audio data from a CD-ROM.  The pointer is set to the specified track.  The
+   return value is the logical block number to which the pointer has been set.
 
 
 .. method:: CD player.stop()
 
-   現在実行中の再生を停止します。
+   Stops the current playing operation.
 
 
 .. method:: CD player.togglepause()
 
-   再生中なら CD を一時停止し、一時停止中なら再生します。
+   Pauses the CD if it is playing, and makes it play if it is paused.
 
 
 .. _cd-parser-objects:
 
-パーザオブジェクト
-------------------
+Parser Objects
+--------------
 
-パーザオブジェクト (:func:`createparser` で返されます) には以下のメソッドがあります：
+Parser objects (returned by :func:`createparser`) have the following methods:
 
 
 .. method:: CD parser.addcallback(type, func, arg)
 
-   パーザにコールバックを加えます。
-   デジタルオーディオストリームの8つの異なるデータタイプのためのコールバックを\
-   パーザは持っています。
-   これらのタイプのための定数は :mod:`cd` モジュールのレベルで定義されています
-   (上記参照)。コールバックは以下のように呼び出されます：
-   ``func(arg, type, data)`` 、ここで *arg* はユーザが与えた引数、
-   *type* はコールバックの特定のタイプ、
-   *data* はこの *type* のコールバックに渡されるデータです。
-   データのタイプは以下のようにコールバックのタイプによって決まります：
+   Adds a callback for the parser.  The parser has callbacks for eight different
+   types of data in the digital audio data stream.  Constants for these types are
+   defined at the :mod:`cd` module level (see above). The callback is called as
+   follows: ``func(arg, type, data)``, where *arg* is the user supplied argument,
+   *type* is the particular type of callback, and *data* is the data returned for
+   this *type* of callback.  The type of the data depends on the *type* of callback
+   as follows:
 
-   +-------------+--------------------------------------------------------------------------+
-   | Type        | Value                                                                    |
-   +=============+==========================================================================+
-   | ``audio``   | :func:`al.writesamps` へそのまま渡すことのできる文字列。                 |
-   +-------------+--------------------------------------------------------------------------+
-   | ``pnum``    | プログラム（トラック）ナンバーを示す整数。                               |
-   +-------------+--------------------------------------------------------------------------+
-   | ``index``   | インデックスナンバーを示す整数。                                         |
-   +-------------+--------------------------------------------------------------------------+
-   | ``ptime``   | プログラムの時間を示す分、秒、フレームからなるタプル。                   |
-   +-------------+--------------------------------------------------------------------------+
-   | ``atime``   | 絶対的な時刻を示す分、秒、フレームからなるタプル。                       |
-   +-------------+--------------------------------------------------------------------------+
-   | ``catalog`` | CDのカタログナンバーを示す13文字の文字列。                               |
-   +-------------+--------------------------------------------------------------------------+
-   | ``ident``   | 録音のISRC識別番号を示す12文字の文字列。                                 |
-   |             | 文字列は2文字の国別コード、3文字の所有者コード、2文字の年号、5文字のシリ |
-   |             | アルナンバーからなります。                                               |
-   +-------------+--------------------------------------------------------------------------+
-   | ``control`` | CDのサブコードデータのコントロールビットを示す整数。                     |
-   +-------------+--------------------------------------------------------------------------+
+   +-------------+---------------------------------------------+
+   | Type        | Value                                       |
+   +=============+=============================================+
+   | ``audio``   | String which can be passed unmodified to    |
+   |             | :func:`al.writesamps`.                      |
+   +-------------+---------------------------------------------+
+   | ``pnum``    | Integer giving the program (track) number.  |
+   +-------------+---------------------------------------------+
+   | ``index``   | Integer giving the index number.            |
+   +-------------+---------------------------------------------+
+   | ``ptime``   | Tuple consisting of the program time in     |
+   |             | minutes, seconds, and frames.               |
+   +-------------+---------------------------------------------+
+   | ``atime``   | Tuple consisting of the absolute time in    |
+   |             | minutes, seconds, and frames.               |
+   +-------------+---------------------------------------------+
+   | ``catalog`` | String of 13 characters, giving the catalog |
+   |             | number of the CD.                           |
+   +-------------+---------------------------------------------+
+   | ``ident``   | String of 12 characters, giving the ISRC    |
+   |             | identification number of the recording.     |
+   |             | The string consists of two characters       |
+   |             | country code, three characters owner code,  |
+   |             | two characters giving the year, and five    |
+   |             | characters giving a serial number.          |
+   +-------------+---------------------------------------------+
+   | ``control`` | Integer giving the control bits from the CD |
+   |             | subcode data                                |
+   +-------------+---------------------------------------------+
 
 
 .. method:: CD parser.deleteparser()
 
-   パーザを消去して、使用していたメモリを解放します。
-   この呼び出しのあと、オブジェクトは使用できません。
-   オブジェクトへの最後の参照が削除されると、自動的にこのメソッドが呼び出されます。
+   Deletes the parser and frees the memory it was using.  The object should not be
+   used after this call.  This call is done automatically when the last reference
+   to the object is removed.
 
 
 .. method:: CD parser.parseframe(frame)
 
-   :meth:`readda` などから返されたデジタルオーディオ CD のデータの1つ\
-   あるいはそれ以上のフレームをパースします。
-   データ内にどういうサブコードがあるかを決定します。
-   その前のフレームからサブコードが変化していたら、 :meth:`parseframe`
-   は対応するタイプのコールバックを起動して、フレーム内のサブコードデータを\
-   コールバックに渡します。
-   C の関数とは違って、1つ以上のデジタルオーディオデータのフレームを\
-   このメソッドに渡すことができます。
+   Parses one or more frames of digital audio data from a CD such as returned by
+   :meth:`readda`.  It determines which subcodes are present in the data.  If these
+   subcodes have changed since the last frame, then :meth:`parseframe` executes a
+   callback of the appropriate type passing to it the subcode data found in the
+   frame. Unlike the C function, more than one frame of digital audio data can be
+   passed to this method.
 
 
 .. method:: CD parser.removecallback(type)
 
-   指定した *type* のコールバックを削除します。
+   Removes the callback for the given *type*.
 
 
 .. method:: CD parser.resetparser()
 
-   サブコードを追跡しているパーザのフィールドをリセットして、初期状態にします。
-   ディスクを交換したあと、 :meth:`resetparser` を呼び出さなければなりません。
+   Resets the fields of the parser used for tracking subcodes to an initial state.
+   :meth:`resetparser` should be called after the disc has been changed.
+

@@ -1,244 +1,289 @@
-:mod:`rexec` --- 制限実行のフレームワーク
-=========================================
+:mod:`rexec` --- Restricted execution framework
+===============================================
 
 .. module:: rexec
-   :synopsis: 基本的な制限実行フレームワーク。
+   :synopsis: Basic restricted execution framework.
    :deprecated:
 
 .. deprecated:: 2.6
-   :mod:`rexec` モジュールは Python 3.0 で削除されました。
+   The :mod:`rexec` module has been removed in Python 3.
 
 .. versionchanged:: 2.3
    Disabled module.
 
 .. warning::
 
-   このドキュメントは、 :mod:`rexec` モジュールを使用している古いコードを読む際の参照用として残されています。
+   The documentation has been left in place to help in reading old code that uses
+   the module.
 
-このモジュールには :class:`RExec` クラスが含まれています。このクラスは、 :meth:`r_eval` 、 :meth:`r_execfile` 、
-:meth:`r_exec` および :meth:`r_import` メソッドをサポートし、これらは標準の Python 関数 :meth:`eval` 、
-:meth:`execfile` および :keyword:`exec` と :keyword:`import` 文の制限されたバージョンです。
-この制限された環境で実行されるコードは、安全であると見なされたモジュールや関数だけにアクセスします; :class:`RExec` をサブクラス化すれば、
-望むように能力を追加および削除できます。
+This module contains the :class:`RExec` class, which supports :meth:`r_eval`,
+:meth:`r_execfile`, :meth:`r_exec`, and :meth:`r_import` methods, which are
+restricted versions of the standard Python functions :meth:`eval`,
+:meth:`execfile` and the :keyword:`exec` and :keyword:`import` statements. Code
+executed in this restricted environment will only have access to modules and
+functions that are deemed safe; you can subclass :class:`RExec` to add or remove
+capabilities as desired.
 
 .. warning::
 
-   :mod:`rexec` モジュールは、下記のように動作するべく設計されてはいますが、注意深く書かれたコードなら利用できてしまうかもしれない、
-   既知の脆弱性がいくつかあります。従って、"製品レベル" のセキュリティを要する状況では、 :mod:`rexec` の動作をあてにするべきではありません。
-   製品レベルのセキュリティを求めるなら、サブプロセスを介した実行や、あるいは処理するコードとデータの両方に対する非常に注意深い  "浄化"
-   が必要でしょう。上記の代わりに、 :mod:`rexec` の既知の脆弱性に対するパッチ当ての手伝いも歓迎します。
+   While the :mod:`rexec` module is designed to perform as described below, it does
+   have a few known vulnerabilities which could be exploited by carefully written
+   code.  Thus it should not be relied upon in situations requiring "production
+   ready" security.  In such situations, execution via sub-processes or very
+   careful "cleansing" of both code and data to be processed may be necessary.
+   Alternatively, help in patching known :mod:`rexec` vulnerabilities would be
+   welcomed.
 
 .. note::
 
-   :class:`RExec` クラスは、プログラムコードによるディスクファイルの読み書きや TCP/IP ソケットの利用といった、
-   安全でない操作の実行を防ぐことができます。しかし、プログラムコードよる非常に大量のメモリや処理時間の消費に対して防御することはできません。
+   The :class:`RExec` class can prevent code from performing unsafe operations like
+   reading or writing disk files, or using TCP/IP sockets.  However, it does not
+   protect against code using extremely large amounts of memory or processor time.
 
 
 .. class:: RExec([hooks[, verbose]])
 
-   :class:`RExec` クラスのインスタンスを返します。
+   Returns an instance of the :class:`RExec` class.
 
-   *hooks* は、 :class:`RHooks` クラスあるいはそのサブクラスのインスタンスです。 *hooks* が省略されているか ``None``
-   であれば、デフォルトの :class:`RHooks` クラスがインスタンス化されます。 :mod:`rexec` モジュールが (組み込みモジュールを含む)
-   あるモジュールを探したり、あるモジュールのコードを読んだりする時は常に、 :mod:`rexec` がじかにファイルシステムに出て行くことはありません。
-   その代わり、あらかじめ :class:`RHooks` クラスに渡しておいたり、コンストラクタで生成された :class:`RHooks`
-   インスタンスのメソッドを呼び出します。
+   *hooks* is an instance of the :class:`RHooks` class or a subclass of it. If it
+   is omitted or ``None``, the default :class:`RHooks` class is instantiated.
+   Whenever the :mod:`rexec` module searches for a module (even a built-in one) or
+   reads a module's code, it doesn't actually go out to the file system itself.
+   Rather, it calls methods of an :class:`RHooks` instance that was passed to or
+   created by its constructor.  (Actually, the :class:`RExec` object doesn't make
+   these calls --- they are made by a module loader object that's part of the
+   :class:`RExec` object.  This allows another level of flexibility, which can be
+   useful when changing the mechanics of :keyword:`import` within the restricted
+   environment.)
 
-   (実際には、 :class:`RExec` オブジェクトはこれらを呼び出しません ---  呼び出しは、 :class:`RExec`
-   オブジェクトの一部であるモジュールローダオブジェクトによって行われます。これによって別のレベルの柔軟性が実現されます。この柔軟性は、制限された\
-   環境内で :keyword:`import` 機構を変更する時に役に立ちます。 )
+   By providing an alternate :class:`RHooks` object, we can control the file system
+   accesses made to import a module, without changing the actual algorithm that
+   controls the order in which those accesses are made.  For instance, we could
+   substitute an :class:`RHooks` object that passes all filesystem requests to a
+   file server elsewhere, via some RPC mechanism such as ILU.  Grail's applet
+   loader uses this to support importing applets from a URL for a directory.
 
-   代替の :class:`RHooks` オブジェクトを提供することで、モジュールをインポートする際に行われるファイルシステムへのアクセスを制御する\
-   ことができます。このとき、各々のアクセスが行われる順番を制御する実際のアルゴリズムは変更されません。例えば、 :class:`RHooks`
-   オブジェクトを置き換えて、ILU のようなある種の RPC メカニズムを介することで、全てのファイルシステムの要求を\
-   どこかにあるファイルサーバに渡すことができます。 Grail のアプレットローダは、アプレットを URL からディレクトリ上に import
-   する際にこの機構を使っています。
+   If *verbose* is true, additional debugging output may be sent to standard
+   output.
 
-   もし *verbose* が true であれば、追加のデバッグ出力が標準出力に送られます。
-
-制限された環境で実行するコードも、やはり :func:`sys.exit` 関数を呼ぶことができることを知っておくことは大事なことです。制限された\
-コードがインタプリタから抜けだすことを許さないためには、いつでも、制限されたコードが、 :exc:`SystemExit` 例外をキャッチする
-:keyword:`try` / :keyword:`except` 文とともに実行するように、呼び出しを防御します。制限された環境から
-:func:`sys.exit` 関数を除去するだけでは不十分です -- 制限されたコードは、やはり ``raise SystemExit``
-を使うことができてしまいます。 :exc:`SystemExit` を取り除くことも、合理的なオプションではありません;
-いくつかのライブラリコードはこれを使っていますし、これが利用できなくなると中断してしまうでしょう。
+It is important to be aware that code running in a restricted environment can
+still call the :func:`sys.exit` function.  To disallow restricted code from
+exiting the interpreter, always protect calls that cause restricted code to run
+with a :keyword:`try`/:keyword:`except` statement that catches the
+:exc:`SystemExit` exception.  Removing the :func:`sys.exit` function from the
+restricted environment is not sufficient --- the restricted code could still use
+``raise SystemExit``.  Removing :exc:`SystemExit` is not a reasonable option;
+some library code makes use of this and would break were it not available.
 
 
 .. seealso::
 
-   `Grail のホームページ <http://grail.sourceforge.net/>`_
-      Grail はすべて Python で書かれた Web ブラウザです。これは、 :mod:`rexec` モジュールを、Python
-      アプレットをサポートするのに使っていて、このモジュールの使用例として使うことができます。
+   `Grail Home Page <http://grail.sourceforge.net/>`_
+      Grail is a Web browser written entirely in Python.  It uses the :mod:`rexec`
+      module as a foundation for supporting Python applets, and can be used as an
+      example usage of this module.
 
 
 .. _rexec-objects:
 
-RExec オブジェクト
-------------------
+RExec Objects
+-------------
 
-:class:`RExec` インスタンスは以下のメソッドをサポートします:
+:class:`RExec` instances support the following methods:
+
 
 .. method:: RExec.r_eval(code)
 
-   *code* は、Python の式を含む文字列か、あるいはコンパイルされたコードオブジェクトのどちらかでなければなりません。そしてこれらは制限された環境の
-   :mod:`__main__` モジュールで評価されます。式あるいはコードオブジェクトの値が返されます。
+   *code* must either be a string containing a Python expression, or a compiled
+   code object, which will be evaluated in the restricted environment's
+   :mod:`__main__` module.  The value of the expression or code object will be
+   returned.
 
 
 .. method:: RExec.r_exec(code)
 
-   *code* は、1行以上の Python コードを含む文字列か、コンパイルされたコードオブジェクトのどちらかでなければなりません。そしてこれらは、
-   制限された環境の :mod:`__main__` モジュールで実行されます。
+   *code* must either be a string containing one or more lines of Python code, or a
+   compiled code object, which will be executed in the restricted environment's
+   :mod:`__main__` module.
 
 
 .. method:: RExec.r_execfile(filename)
 
-   ファイル *filename* 内の Python コードを、制限された環境の :mod:`__main__` モジュールで実行します。
+   Execute the Python code contained in the file *filename* in the restricted
+   environment's :mod:`__main__` module.
 
-名前が ``s_`` で始まるメソッドは、 ``r_`` で始まる関数と同様ですが、そのコードは、標準 I/O ストリーム ``sys.stdin`` 、
-``sys.stderr`` および  ``sys.stdout`` の制限されたバージョンへのアクセスが許されています。
+Methods whose names begin with ``s_`` are similar to the functions beginning
+with ``r_``, but the code will be granted access to restricted versions of the
+standard I/O streams ``sys.stdin``, ``sys.stderr``, and ``sys.stdout``.
 
 
 .. method:: RExec.s_eval(code)
 
-   *code* は、Python 式を含む文字列でなければなりません。そして制限された環境で評価されます。
+   *code* must be a string containing a Python expression, which will be evaluated
+   in the restricted environment.
 
 
 .. method:: RExec.s_exec(code)
 
-   *code* は、1行以上のPython コードを含む文字列でなければなりません。そして制限された環境で実行されます。
+   *code* must be a string containing one or more lines of Python code, which will
+   be executed in the restricted environment.
 
 
 .. method:: RExec.s_execfile(code)
 
-   ファイル *filename* に含まれた Python コードを制限された環境で実行します。
+   Execute the Python code contained in the file *filename* in the restricted
+   environment.
 
-:class:`RExec` オブジェクトは、制限された環境で実行されるコードによって暗黙のうちに呼ばれる、さまざまなメソッドもサポートしなければなりません。
-これらのメソッドをサブクラス内でオーバライドすることによって、制限された環境が強制するポリシを変更します。
+:class:`RExec` objects must also support various methods which will be
+implicitly called by code executing in the restricted environment. Overriding
+these methods in a subclass is used to change the policies enforced by a
+restricted environment.
 
 
 .. method:: RExec.r_import(modulename[, globals[, locals[, fromlist]]])
 
-   モジュール *modulename* をインポートし、もしそのモジュールが安全でないとみなされるなら、 :exc:`ImportError` 例外を発生します。
+   Import the module *modulename*, raising an :exc:`ImportError` exception if the
+   module is considered unsafe.
 
 
 .. method:: RExec.r_open(filename[, mode[, bufsize]])
 
-   :func:`open` が制限された環境で呼ばれるとき、呼ばれるメソッドです。引数は :func:`open` のものと同じであり、ファイルオブジェクト
-   (あるいはファイルオブジェクトと互換性のあるクラスインスタンス)が返されます。 :class:`RExec` のデフォルトの動作は、任意のファイルを\
-   読み取り用にオープンすることを許可しますが、ファイルに書き込もうとすることは許しません。より制限の少ない :meth:`r_open` の実装については、
-   以下の例を見て下さい。
+   Method called when :func:`open` is called in the restricted environment.  The
+   arguments are identical to those of :func:`open`, and a file object (or a class
+   instance compatible with file objects) should be returned.  :class:`RExec`'s
+   default behaviour is allow opening any file for reading, but forbidding any
+   attempt to write a file.  See the example below for an implementation of a less
+   restrictive :meth:`r_open`.
 
 
 .. method:: RExec.r_reload(module)
 
-   モジュールオブジェクト *module* を再ロードして、それを再解析し再初期化します。
+   Reload the module object *module*, re-parsing and re-initializing it.
 
 
 .. method:: RExec.r_unload(module)
 
-   モジュールオブジェクト *module* をアンロードします (それを制限された環境の ``sys.modules`` 辞書から取りのぞきます)。
+   Unload the module object *module* (remove it from the restricted environment's
+   ``sys.modules`` dictionary).
 
-および制限された標準 I/O ストリームへのアクセスが可能な同等のもの:
+And their equivalents with access to restricted standard I/O streams:
 
 
 .. method:: RExec.s_import(modulename[, globals[, locals[, fromlist]]])
 
-   モジュール *modulename* をインポートし、もしそのモジュールが安全でないとみなされるなら、 :exc:`ImportError` 例外を発生します。
+   Import the module *modulename*, raising an :exc:`ImportError` exception if the
+   module is considered unsafe.
 
 
 .. method:: RExec.s_reload(module)
 
-   モジュールオブジェクト *module* を再ロードして、それを再解析し再初期化します。
+   Reload the module object *module*, re-parsing and re-initializing it.
 
 
 .. method:: RExec.s_unload(module)
 
-   モジュールオブジェクト *module* をアンロードします。
+   Unload the module object *module*.
 
-   .. % XXX これのセマンティクスはどうなりますか？
+   .. XXX what are the semantics of this?
 
 
 .. _rexec-extension:
 
-制限された環境を定義する
-------------------------
+Defining restricted environments
+--------------------------------
 
-:class:`RExec` クラスには以下のクラス属性があります。それらは、 :meth:`__init__` メソッドが使います。それらを既存の\
-インスタンス上で変更しても何の効果もありません; そうする代わりに、 :class:`RExec` のサブクラスを作成して、そのクラス定義でそれらに\
-新しい値を割り当てます。そうすると、新しいクラスのインスタンスは、これらの新しい値を使用します。これらの属性のすべては、文字列のタプルです。
+The :class:`RExec` class has the following class attributes, which are used by
+the :meth:`__init__` method.  Changing them on an existing instance won't have
+any effect; instead, create a subclass of :class:`RExec` and assign them new
+values in the class definition. Instances of the new class will then use those
+new values.  All these attributes are tuples of strings.
 
 
 .. attribute:: RExec.nok_builtin_names
 
-   制限された環境で実行するプログラムでは利用でき *ない* であろう、組み込み関数の名前を格納しています。 :class:`RExec` に対する値は、
-   ``('open', 'reload', '__import__')`` です。 (これは例外です。というのは、組み込み関数のほとんど大多数は\
-   無害だからです。この変数をオーバライドしたいサブクラスは、基本クラスからの値から始めて、追加した許されない関数を連結していかなければなりません --
-   危険な関数が新しく Python に追加された時は、それらも、このモジュールに追加します。)
+   Contains the names of built-in functions which will *not* be available to
+   programs running in the restricted environment.  The value for :class:`RExec` is
+   ``('open', 'reload', '__import__')``. (This gives the exceptions, because by far
+   the majority of built-in functions are harmless.  A subclass that wants to
+   override this variable should probably start with the value from the base class
+   and concatenate additional forbidden functions --- when new dangerous built-in
+   functions are added to Python, they will also be added to this module.)
 
 
 .. attribute:: RExec.ok_builtin_modules
 
-   安全にインポートできる組み込みモジュールの名前を格納しています。 :class:`RExec` に対する値は、 ``('audioop', 'array',
-   'binascii', 'cmath', 'errno', 'imageop', 'marshal', 'math', 'md5', 'operator',
-   'parser', 'regex', 'select', 'sha', '_sre', 'strop', 'struct', 'time')``
-   です。この変数をオーバーライドする場合も、同様な注意が適用されます -- 基本クラスからの値を使って始めます。
+   Contains the names of built-in modules which can be safely imported. The value
+   for :class:`RExec` is ``('audioop', 'array', 'binascii', 'cmath', 'errno',
+   'imageop', 'marshal', 'math', 'md5', 'operator', 'parser', 'regex', 'select',
+   'sha', '_sre', 'strop', 'struct', 'time')``.  A similar remark about overriding
+   this variable applies --- use the value from the base class as a starting point.
 
 
 .. attribute:: RExec.ok_path
 
-   :keyword:`import` が制限された環境で実行される時に検索されるディレクトリーを格納しています。
-   :class:`RExec` に対する値は、(モジュールがロードされた時は) 制限されないコードの ``sys.path`` と同一です。
+   Contains the directories which will be searched when an :keyword:`import` is
+   performed in the restricted environment.   The value for :class:`RExec` is the
+   same as ``sys.path`` (at the time the module is loaded) for unrestricted code.
 
 
 .. attribute:: RExec.ok_posix_names
 
-   制限された環境で実行するプログラムで利用できる、 :mod:`os` モジュール内の関数の名前を格納しています。 :class:`RExec` に対する値は、
-   ``('error', 'fstat', 'listdir', 'lstat', 'readlink', 'stat', 'times', 'uname',
-   'getpid', 'getppid', 'getcwd', 'getuid', 'getgid', 'geteuid', 'getegid')`` です。
+   Contains the names of the functions in the :mod:`os` module which will be
+   available to programs running in the restricted environment.  The value for
+   :class:`RExec` is ``('error', 'fstat', 'listdir', 'lstat', 'readlink', 'stat',
+   'times', 'uname', 'getpid', 'getppid', 'getcwd', 'getuid', 'getgid', 'geteuid',
+   'getegid')``.
 
-   .. これは ok_os_names と呼ばれるべきでしょうか?
+   .. Should this be called ok_os_names?
 
 
 .. attribute:: RExec.ok_sys_names
 
-   制限された環境で実行するプログラムで利用できる、 :mod:`sys` モジュール内の関数名と変数名を格納しています。
-   :class:`RExec` に対する値は、 ``('ps1', 'ps2', 'copyright', 'version', 'platform',
-   'exit', 'maxint')`` です。
+   Contains the names of the functions and variables in the :mod:`sys` module which
+   will be available to programs running in the restricted environment.  The value
+   for :class:`RExec` is ``('ps1', 'ps2', 'copyright', 'version', 'platform',
+   'exit', 'maxint')``.
 
 
 .. attribute:: RExec.ok_file_types
 
-   モジュールがロードすることを許されているファイルタイプを格納しています。各ファイルタイプは、 :mod:`imp` モジュールで定義された整数定数です。
-   意味のある値は、 :const:`PY_SOURCE` 、 :const:`PY_COMPILED` および :const:`C_EXTENSION`
-   です。 :class:`RExec` に対する値は、 ``(C_EXTENSION, PY_SOURCE)`` です。サブクラスで
-   :const:`PY_COMPILED` を追加することは推奨されません; 攻撃者が、バイトコンパイルしたでっちあげのファイル(:file:`.pyc`)を、
-   例えば、あなたの公開 FTP サーバの :file:`/tmp` に書いたり、 :file:`/incoming`
-   にアップロードしたりして、とにかくあなたのファイルシステム内に置くことで、制限された実行モードから抜け出ることができるかもしれないからです。
+   Contains the file types from which modules are allowed to be loaded. Each file
+   type is an integer constant defined in the :mod:`imp` module. The meaningful
+   values are :const:`PY_SOURCE`, :const:`PY_COMPILED`, and :const:`C_EXTENSION`.
+   The value for :class:`RExec` is ``(C_EXTENSION, PY_SOURCE)``.  Adding
+   :const:`PY_COMPILED` in subclasses is not recommended; an attacker could exit
+   the restricted execution mode by putting a forged byte-compiled file
+   (:file:`.pyc`) anywhere in your file system, for example by writing it to
+   :file:`/tmp` or uploading it to the :file:`/incoming` directory of your public
+   FTP server.
 
 
-例
---
+An example
+----------
 
-標準の :class:`RExec` クラスよりも、若干、もっと緩めたポリシを望んでいるとしましょう。例えば、もし :file:`/tmp`
-内のファイルへの書き込みを喜んで許すならば、 :class:`RExec` クラスを次のようにサブクラス化できます::
+Let us say that we want a slightly more relaxed policy than the standard
+:class:`RExec` class.  For example, if we're willing to allow files in
+:file:`/tmp` to be written, we can subclass the :class:`RExec` class::
 
    class TmpWriterRExec(rexec.RExec):
        def r_open(self, file, mode='r', buf=-1):
            if mode in ('r', 'rb'):
                pass
            elif mode in ('w', 'wb', 'a', 'ab'):
-               # ファイル名をチェックします :  /tmp/ で始まらなければなりません
+               # check filename: must begin with /tmp/
                if file[:5]!='/tmp/':
-                   raise IOError(" /tmp 以外へは書き込みできません")
+                   raise IOError("can't write outside /tmp")
                elif (string.find(file, '/../') >= 0 or
                     file[:3] == '../' or file[-3:] == '/..'):
-                   raise IOError("ファイル名の '..' は禁じられています")
-           else: raise IOError("open() モードが正しくありません")
+                   raise IOError("'..' in filename forbidden")
+           else: raise IOError("Illegal open() mode")
            return open(file, mode, buf)
 
-上のコードは、完全に正しいファイル名でも、時には禁止する場合があることに
-注意して下さい; 例えば、制限された環境でのコードでは、 :file:`/tmp/foo/../bar`
-というファイルはオープンできないかもしれません。これを修正するには、 :meth:`r_open` メソッドが、そのファイル名を
-:file:`/tmp/bar` に単純化しなければなりません。そのためには、ファイル名を分割して、それにさまざまな
-操作を行う必要があります。セキュリティが重大な場合には、より複雑で微妙なセキュリティホールを抱え込むかもしれない一般性のあるコードよりも、
-制限が余りにあり過ぎるとしても単純なコードを書く方が、望ましいでしょう。
+Notice that the above code will occasionally forbid a perfectly valid filename;
+for example, code in the restricted environment won't be able to open a file
+called :file:`/tmp/foo/../bar`.  To fix this, the :meth:`r_open` method would
+have to simplify the filename to :file:`/tmp/bar`, which would require splitting
+apart the filename and performing various operations on it.  In cases where
+security is at stake, it may be preferable to write simple code which is
+sometimes overly restrictive, instead of more general code that is also more
+complex and may harbor a subtle security hole.

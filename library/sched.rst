@@ -1,32 +1,31 @@
-:mod:`sched` --- イベントスケジューラ
-=====================================
+:mod:`sched` --- Event scheduler
+================================
 
 .. module:: sched
-   :synopsis: 一般的な目的のためのイベントスケジューラ
+   :synopsis: General purpose event scheduler.
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 .. index:: single: event scheduling
 
-:mod:`sched` モジュールは一般的な目的のためのイベントスケジューラを実装するクラスを定義します:
+**Source code:** :source:`Lib/sched.py`
 
-.. seealso::
+--------------
 
-   最新バージョンの `sched モジュールの Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/sched.py?view=markup>`_
+The :mod:`sched` module defines a class which implements a general purpose event
+scheduler:
 
 .. class:: scheduler(timefunc, delayfunc)
 
-   :class:`scheduler` クラスはイベントをスケジュールするための一般的な
-   インタフェースを定義します。それは"外部世界"を実際に扱うための2つの
-   関数を必要とします --- *timefunc* は引数なしで呼ばれて1つの数値を
-   返す callable オブジェクトでなければなりません (戻り値は任意の単位で
-   「時間」を表します)。 *delayfunc* は1つの引数を持つ callable オブジェクト
-   でなければならず、その時間だけ遅延する必要があります (引数は *timefunc*
-   の出力と互換)。 *delayfunc* は、各々のイベントが実行された後に引数 ``0``
-   で呼ばれることがあります。これは、マルチスレッドアプリケーションの中で
-   他のスレッドが実行する機会を与えるためです。
+   The :class:`scheduler` class defines a generic interface to scheduling events.
+   It needs two functions to actually deal with the "outside world" --- *timefunc*
+   should be callable without arguments, and return  a number (the "time", in any
+   units whatsoever).  The *delayfunc* function should be callable with one
+   argument, compatible with the output of *timefunc*, and should delay that many
+   time units. *delayfunc* will also be called with the argument ``0`` after each
+   event is run to allow other threads an opportunity to run in multi-threaded
+   applications.
 
-例::
+Example::
 
    >>> import sched, time
    >>> s = sched.scheduler(time.time, time.sleep)
@@ -45,20 +44,13 @@
    From print_time 930343700.273
    930343700.276
 
-.. In multi-threaded environments, the :class:`scheduler` class has limitations
-.. with respect to thread-safety, inability to insert a new task before
-.. the one currently pending in a running scheduler, and holding up the main
-.. thread until the event queue is empty.  Instead, the preferred approach
-.. is to use the :class:`threading.Timer` class instead.
+In multi-threaded environments, the :class:`scheduler` class has limitations
+with respect to thread-safety, inability to insert a new task before
+the one currently pending in a running scheduler, and holding up the main
+thread until the event queue is empty.  Instead, the preferred approach
+is to use the :class:`threading.Timer` class instead.
 
-マルチスレッド環境において、 :class:`scheduler` クラスにはスレッドセーフのための制限があります。
-現在実行中のスケジューラに対して、中断中のタスクよりも前に新しいタスクを挿入することはできません。
-もし挿入しようとすると、メインスレッドはイベントキューが空になるまで動作しなくなります。
-代わりに、より推奨される方法として、 :class:`threading.Timer` クラスを利用してください。
-
-.. Example
-
-例::
+Example::
 
     >>> import time
     >>> from threading import Timer
@@ -79,65 +71,66 @@
     930343701.301
 
 
-
 .. _scheduler-objects:
 
-スケジューラオブジェクト
-------------------------
+Scheduler Objects
+-----------------
 
-:class:`scheduler` インスタンスは以下のメソッドと属性を持っています:
+:class:`scheduler` instances have the following methods and attributes:
 
 
 .. method:: scheduler.enterabs(time, priority, action, argument)
 
-   新しいイベントをスケジュールします。引数 *time* は、コンストラクタへ渡された *timefunc* の戻り値と互換な数値型でなければいけません。
-   同じ *time* によってスケジュールされたイベントは、それらの *priority* によって実行されるでしょう。
+   Schedule a new event. The *time* argument should be a numeric type compatible
+   with the return value of the *timefunc* function passed  to the constructor.
+   Events scheduled for the same *time* will be executed in the order of their
+   *priority*.
 
-   イベントを実行することは、 ``action(*argument)`` を実行することを意味します。
-   *argument* は *action* のためのパラメータを保持するシーケンスでなければいけません。
+   Executing the event means executing ``action(*argument)``.  *argument* must be a
+   sequence holding the parameters for *action*.
 
-   戻り値は、イベントのキャンセル後に使われるかもしれないイベントです (:meth:`cancel` を見よ)。
+   Return value is an event which may be used for later cancellation of the event
+   (see :meth:`cancel`).
 
 
 .. method:: scheduler.enter(delay, priority, action, argument)
 
-   時間単位以上の *delay* でイベントをスケジュールします。そのとき、その他の関連時間、その他の引数、効果、戻り値は、
-   :meth:`enterabs` に対するものと同じです。
+   Schedule an event for *delay* more time units. Other than the relative time, the
+   other arguments, the effect and the return value are the same as those for
+   :meth:`enterabs`.
 
 
 .. method:: scheduler.cancel(event)
 
-   キューからイベントを消去します。もし *event* がキューにある現在のイベントでないならば、
-   このメソッドは :exc:`ValueError` を送出します。
+   Remove the event from the queue. If *event* is not an event currently in the
+   queue, this method will raise a :exc:`ValueError`.
 
 
 .. method:: scheduler.empty()
 
-   もしイベントキューが空ならば、Trueを返します。
+   Return true if the event queue is empty.
 
 
 .. method:: scheduler.run()
 
-   すべてのスケジュールされたイベントを実行します。この関数は次のイベントを(コンストラクタへ渡された関数
-   :func:`delayfunc` を使うことで)待ち、そしてそれを実行し、イベントがスケジュールされなくなるまで同じことを繰り返します。
+   Run all scheduled events. This function will wait  (using the :func:`delayfunc`
+   function passed to the constructor) for the next event, then execute it and so
+   on until there are no more scheduled events.
 
-   *action* あるいは *delayfunc* は例外を投げることができます。いずれの場合も、スケジューラは一貫した状態を維持し、例外を伝播するでしょう。
-   例外が *action* によって投げられる場合、イベントは :meth:`run` への呼出しを未来に行なわないでしょう。
+   Either *action* or *delayfunc* can raise an exception.  In either case, the
+   scheduler will maintain a consistent state and propagate the exception.  If an
+   exception is raised by *action*, the event will not be attempted in future calls
+   to :meth:`run`.
 
-   イベントのシーケンスが、次イベントの前に、利用可能時間より実行時間が長いと、スケジューラは単に遅れることになるでしょう。イベントが落ちることはありません;
-   呼出しコードはもはや適切でないキャンセルイベントに対して責任があります。
-
-.. .. attribute:: scheduler.queue
-..
-..    Read-only attribute returning a list of upcoming events in the order they
-..    will be run.  Each event is shown as a :term:`named tuple` with the
-..    following fields:  time, priority, action, argument.
-..
-..    .. versionadded:: 2.6
+   If a sequence of events takes longer to run than the time available before the
+   next event, the scheduler will simply fall behind.  No events will be dropped;
+   the calling code is responsible for canceling  events which are no longer
+   pertinent.
 
 .. attribute:: scheduler.queue
 
-   読み込み専用の属性で、これからのイベントが実行される順序で格納されたリストを返します。
-   各イベントは、次の属性 time, priority, action, argument を持った名前付きタプル (:term:`named tuple`) の形式になります。
+   Read-only attribute returning a list of upcoming events in the order they
+   will be run.  Each event is shown as a :term:`named tuple` with the
+   following fields:  time, priority, action, argument.
 
    .. versionadded:: 2.6

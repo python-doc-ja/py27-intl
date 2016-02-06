@@ -1,144 +1,132 @@
 
-:mod:`mimetools` --- MIME メッセージを解析するためのツール
-==========================================================
+:mod:`mimetools` --- Tools for parsing MIME messages
+====================================================
 
 .. module:: mimetools
-   :synopsis: MIME-スタイルのメッセージ本体を解析するためのツール。
+   :synopsis: Tools for parsing MIME-style message bodies.
    :deprecated:
 
 
 .. deprecated:: 2.3
-   :mod:`email` パッケージを :mod:`mimetools` モジュールより\
-   優先して使うべきです。このモジュールは、下位互換性維持のためにのみ\
-   存在しています。Python 3.x では削除されています。
+   The :mod:`email` package should be used in preference to the :mod:`mimetools`
+   module.  This module is present only to maintain backward compatibility, and
+   it has been removed in 3.x.
 
 .. index:: module: rfc822
 
-このモジュールは、 :mod:`rfc822` モジュールの :class:`Message`
-クラスのサブクラスと、マルチパート MIME や符合化メッセージの操作に\
-役に立つ多くのユーティリティ関数を定義しています。
+This module defines a subclass of the :mod:`rfc822` module's :class:`Message`
+class and a number of utility functions that are useful for the manipulation for
+MIME multipart or encoded message.
 
-これには以下の項目が定義されています：
+It defines the following items:
 
 
 .. class:: Message(fp[, seekable])
 
-   :class:`Message` クラスの新しいインスタンスを返します。
-   これは、 :class:`rfc822.Message` クラスのサブクラスで、\
-   いくつかの追加のメソッドがあります(以下を参照のこと)。 *seekable* 引数は、
-   :class:`rfc822.Message` のものと同じ意味を持ちます。
+   Return a new instance of the :class:`Message` class.  This is a subclass of the
+   :class:`rfc822.Message` class, with some additional methods (see below).  The
+   *seekable* argument has the same meaning as for :class:`rfc822.Message`.
 
 
 .. function:: choose_boundary()
 
-   パートの境界として使うことができる見込みが高いユニークな文字列を返します。
-   その文字列は、 ``'hostipaddr.uid.pid.timestamp.random'`` の形をしています。
+   Return a unique string that has a high likelihood of being usable as a part
+   boundary.  The string has the form ``'hostipaddr.uid.pid.timestamp.random'``.
 
 
 .. function:: decode(input, output, encoding)
 
-   オープンしたファイルオブジェクト *input* から、許される MIME *encoding*
-   を使って符号化されたデータを読んで、オープンされたファイルオブジェクト
-   *output* に復号化されたデータを書きます。 *encoding*
-   に許される値は、 ``'base64'``, ``'quoted-printable'``, ``'uuencode'``, ``'x-uuencode'``,
-   ``'uue'``, ``'x-uue'``, ``'7bit'``, および ``'8bit'`` です。
-   ``'7bit'`` あるいは ``'8bit'``
-   で符号化されたメッセージを復号化しても何も効果がありません。
-   入力が出力に単純にコピーされるだけです。
+   Read data encoded using the allowed MIME *encoding* from open file object
+   *input* and write the decoded data to open file object *output*.  Valid values
+   for *encoding* include ``'base64'``, ``'quoted-printable'``, ``'uuencode'``,
+   ``'x-uuencode'``, ``'uue'``, ``'x-uue'``, ``'7bit'``, and  ``'8bit'``.  Decoding
+   messages encoded in ``'7bit'`` or ``'8bit'`` has no effect.  The input is simply
+   copied to the output.
 
 
 .. function:: encode(input, output, encoding)
 
-   オープンしたファイルオブジェクト  *input* からデータを読んで、
-   それを許される MIME *encoding* を使って符号化して、オープンした\
-   ファイルオブジェクト *output* に書きます。
-   *encoding* に許される値は、 :meth:`decode` のものと同じです。
+   Read data from open file object *input* and write it encoded using the allowed
+   MIME *encoding* to open file object *output*. Valid values for *encoding* are
+   the same as for :meth:`decode`.
 
 
 .. function:: copyliteral(input, output)
 
-   オープンしたファイル *input* から行を EOF まで読んで、\
-   それらをオープンしたファイル *output* に書きます。
+   Read lines from open file *input* until EOF and write them to open file
+   *output*.
 
 
 .. function:: copybinary(input, output)
 
-   オープンしたファイル *input* からブロックを EOF まで読んで、\
-   それらをオープンしたファイル *output* に書きます。
-   ブロックの大きさは現在 8192 に固定されています。
+   Read blocks until EOF from open file *input* and write them to open file
+   *output*.  The block size is currently fixed at 8192.
 
 
 .. seealso::
 
    Module :mod:`email`
-      圧縮電子メール操作パッケージ； :mod:`mimetools` モジュールに委譲。
+      Comprehensive email handling package; supersedes the :mod:`mimetools` module.
 
    Module :mod:`rfc822`
-      :class:`mimetools.Message` のベースクラスを提供する。
+      Provides the base class for :class:`mimetools.Message`.
 
    Module :mod:`multifile`
-      MIME データのような、別個のパーツを含むファイルの読み込みをサポート。
+      Support for reading files which contain distinct parts, such as MIME data.
 
    http://faqs.cs.uu.nl/na-dir/mail/mime-faq/.html
-      MIME でよく訊ねられる質問。MIMEの概要に関しては、\
-      この文書の Part 1 の質問 1.1 への答えを見ること。
+      The MIME Frequently Asked Questions document.  For an overview of MIME, see the
+      answer to question 1.1 in Part 1 of this document.
 
 
 .. _mimetools-message-objects:
 
-Message オブジェクトの追加メソッド
-----------------------------------
+Additional Methods of Message Objects
+-------------------------------------
 
-:class:`Message` クラスは、 :class:`rfc822.Message` メソッドに加えて、\
-以下のメソッドを定義しています：
+The :class:`Message` class defines the following methods in addition to the
+:class:`rfc822.Message` methods:
 
 
 .. method:: Message.getplist()
 
-   :mailheader:`Content-Type` ヘッダのパラメータリストを返します。
-   これは文字列のリストです。
-   ``key=value`` の形のパラメータに対しては、\ *key* は小文字に変換されますが、\
-   *value* は変換されません。
-   たとえば、もしメッセージに、ヘッダ
-   ``Content-type: text/html; spam=1; Spam=2; Spam`` が含まれていれば、
-   :meth:`getplist` は、Python リスト  ``['spam=1', 'spam=2', 'Spam']``
-   を返すでしょう。
+   Return the parameter list of the :mailheader:`Content-Type` header. This is a
+   list of strings.  For parameters of the form ``key=value``, *key* is converted
+   to lower case but *value* is not.  For example, if the message contains the
+   header ``Content-type: text/html; spam=1; Spam=2; Spam`` then :meth:`getplist`
+   will return the Python list ``['spam=1', 'spam=2', 'Spam']``.
 
 
 .. method:: Message.getparam(name)
 
-   与えられた *name* の( ``name=value`` の形に対して :meth:`getplist` が返す)
-   第1パラメータの *value* を返します。
-   もし *value* が、'``<``...\ ``>``' あるいは '``"``...\ ``"``'
-   のように引用符で囲まれていれば、これらは除去されます。
+   Return the *value* of the first parameter (as returned by :meth:`getplist`) of
+   the form ``name=value`` for the given *name*.  If *value* is surrounded by
+   quotes of the form '``<``...\ ``>``' or '``"``...\ ``"``', these are removed.
 
 
 .. method:: Message.getencoding()
 
-   :mailheader:`Content-Transfer-Encoding` メッセージヘッダで指定された\
-   符号化方式を返します。もしそのようなヘッダが存在しなければ、\
-   ``'7bit'`` を返します。符号化方式文字列は小文字に変換されます。
+   Return the encoding specified in the :mailheader:`Content-Transfer-Encoding`
+   message header.  If no such header exists, return ``'7bit'``.  The encoding is
+   converted to lower case.
 
 
 .. method:: Message.gettype()
 
-   :mailheader:`Content-Type` ヘッダで指定された (``type/subtype`` の形での)
-   メッセージ型を返します。
-   もしそのようなヘッダが存在しなければ、 ``'text/plain'`` を返します。
-   型文字列は小文字に変換されます。
+   Return the message type (of the form ``type/subtype``) as specified in the
+   :mailheader:`Content-Type` header.  If no such header exists, return
+   ``'text/plain'``.  The type is converted to lower case.
 
 
 .. method:: Message.getmaintype()
 
-   :mailheader:`Content-Type` ヘッダで指定された主要型を返します。
-   もしそのようなヘッダが存在しなければ、
-   ``'text'`` を返します。
-   主要型文字列は小文字に変換されます。
+   Return the main type as specified in the :mailheader:`Content-Type` header.  If
+   no such header exists, return ``'text'``.  The main type is converted to lower
+   case.
 
 
 .. method:: Message.getsubtype()
 
-   :mailheader:`Content-Type` ヘッダで指定された下位型を返します。
-   もしそのようなヘッダが存在しなければ、 ``'plain'`` を返します。
-   下位型文字列は小文字に変換されます。
+   Return the subtype as specified in the :mailheader:`Content-Type` header.  If no
+   such header exists, return ``'plain'``.  The subtype is converted to lower case.
 

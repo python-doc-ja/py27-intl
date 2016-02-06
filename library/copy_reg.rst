@@ -1,37 +1,66 @@
-
-:mod:`copy_reg` --- :mod:`pickle` サポート関数を登録する
-========================================================
+:mod:`copy_reg` --- Register :mod:`pickle` support functions
+============================================================
 
 .. module:: copy_reg
-   :synopsis: pickleサポート関数を登録する。
+   :synopsis: Register pickle support functions.
 
 .. note::
-   .. The :mod:`copy_reg` module has been renamed to :mod:`copyreg` in Python 3.0.
-      The :term:`2to3` tool will automatically adapt imports when converting your
-      sources to 3.0.
-
-   :mod:`copy_reg` モジュールはPython 3.0で :mod:`copyreg` に変更されました。
-   :term:`2to3` ツールが自動的にソースコードの import を変換します。
+   The :mod:`copy_reg` module has been renamed to :mod:`copyreg` in Python 3.
+   The :term:`2to3` tool will automatically adapt imports when converting your
+   sources to Python 3.
 
 .. index::
    module: pickle
    module: cPickle
    module: copy
 
-:mod:`copy_reg` モジュールは :mod:`pickle` と :mod:`cPickle` モジュールに対するサポートを提供します。その上、 :mod:`copy` モジュールは将来これをつかう可能性が高いです。クラスでないオブジェクトコンストラクタについての設定情報を提供します。このようなコンストラクタはファクトリ関数か、またはクラスインスタンスでしょう。
+The :mod:`copy_reg` module offers a way to define functions used while pickling
+specific objects.  The :mod:`pickle`, :mod:`cPickle`, and :mod:`copy` modules
+use those functions when pickling/copying those objects.  The module provides
+configuration information about object constructors which are not classes.
+Such constructors may be factory functions or class instances.
 
 
 .. function:: constructor(object)
 
-   *object* を有効なコンストラクタであると宣言します。 *object* が呼び出し可能でなければ(そして、それゆえコンストラクタとして有効でないならば)、 :exc:`TypeError` を発生します。
+   Declares *object* to be a valid constructor.  If *object* is not callable (and
+   hence not valid as a constructor), raises :exc:`TypeError`.
 
 
 .. function:: pickle(type, function[, constructor])
 
-   *function* が型 *type* のオブジェクトに対する"リダクション"関数として使うことを宣言します。 *type* は"標準的な"クラスオブジェクトであってはいけません。(標準的なクラスは異なった扱われ方をします。詳細は、 :mod:`pickle` モジュールのドキュメンテーションを参照してください。)
-   *function* は文字列または二ないし三つの要素を含むタプルです。
+   Declares that *function* should be used as a "reduction" function for objects of
+   type *type*; *type* must not be a "classic" class object.  (Classic classes are
+   handled differently; see the documentation for the :mod:`pickle` module for
+   details.)  *function* should return either a string or a tuple containing two or
+   three elements.
 
-   オプションの *constructor* パラメータが与えられた場合は、pickle化時に *function* が返した引数のタプルとともによびだされたときにオブジェクトを再構築するために使われ得る呼び出し可能オブジェクトです。 *object* がクラスであるか、または *constructor* が呼び出し可能でない場合に、 :exc:`TypeError` を発生します。
+   The optional *constructor* parameter, if provided, is a callable object which
+   can be used to reconstruct the object when called with the tuple of arguments
+   returned by *function* at pickling time.  :exc:`TypeError` will be raised if
+   *object* is a class or *constructor* is not callable.
 
-   *function* と *constructor* の求められるインターフェイスについての詳細は、 :mod:`pickle` モジュールを参照してください。
+   See the :mod:`pickle` module for more details on the interface expected of
+   *function* and *constructor*.
 
+Example
+-------
+
+The example below would like to show how to register a pickle function and how
+it will be used:
+
+   >>> import copy_reg, copy, pickle
+   >>> class C(object):
+   ...     def __init__(self, a):
+   ...         self.a = a
+   ...
+   >>> def pickle_c(c):
+   ...     print("pickling a C instance...")
+   ...     return C, (c.a,)
+   ...
+   >>> copy_reg.pickle(C, pickle_c)
+   >>> c = C(1)
+   >>> d = copy.copy(c)
+   pickling a C instance...
+   >>> p = pickle.dumps(c)
+   pickling a C instance...

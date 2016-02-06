@@ -3,14 +3,13 @@
 
 .. _initialization:
 
-**********************************************************
-初期化 (initialization)、終了処理 (finalization)、スレッド
-**********************************************************
+*****************************************
+Initialization, Finalization, and Threads
+*****************************************
 
-.. Initializing and finalizing the interpreter
 
-インタプリタの初期化と終了処理
-==================================
+Initializing and finalizing the interpreter
+===========================================
 
 
 .. c:function:: void Py_Initialize()
@@ -30,77 +29,67 @@
       single: PySys_SetArgvEx()
       single: Py_Finalize()
 
-   Python インタプリタを初期化します。
-   Python の埋め込みを行うアプリケーションでは、他のあらゆる Python/C API
-   を使用するよりも前にこの関数を呼び出さねばなりません。
-   ただし、 :c:func:`Py_SetProgramName`,
-   :c:func:`PyEval_InitThreads`, :c:func:`PyEval_ReleaseLock`, および
-   :c:func:`PyEval_AcquireLock` は例外です。
-   この関数はロード済みモジュールのテーブル (``sys.modules``) を初期化し、
-   基盤となるモジュール群、 :mod:`__builtin__`, :mod:`__main__`, :mod:`sys`
-   を生成します。
-   また、モジュール検索パス   (``sys.path``) も初期化します。 ``sys.argv``
-   の設定は行いません。設定するには、 :c:func:`PySys_SetArgvEx` を使ってください。
-   この関数を (:c:func:`Py_Finalize` を呼ばずに) 再度呼び出しても何も行いません。
-   戻り値はありません。
-   初期化が失敗すれば、それは致命的なエラーです。
+   Initialize the Python interpreter.  In an application embedding  Python, this
+   should be called before using any other Python/C API functions; with the
+   exception of :c:func:`Py_SetProgramName`, :c:func:`Py_SetPythonHome`, :c:func:`PyEval_InitThreads`,
+   :c:func:`PyEval_ReleaseLock`, and :c:func:`PyEval_AcquireLock`. This initializes
+   the table of loaded modules (``sys.modules``), and creates the fundamental
+   modules :mod:`__builtin__`, :mod:`__main__` and :mod:`sys`.  It also initializes
+   the module search path (``sys.path``). It does not set ``sys.argv``; use
+   :c:func:`PySys_SetArgvEx` for that.  This is a no-op when called for a second time
+   (without calling :c:func:`Py_Finalize` first).  There is no return value; it is a
+   fatal error if the initialization fails.
 
 
 .. c:function:: void Py_InitializeEx(int initsigs)
 
-   *initsigs* に1を指定すれば :c:func:`Py_Initialize` と同じ処理を実行しますが、
-   Python埋め込みアプリケーションでは *initsigs* を0として初期化時に
-   シグナルハンドラの登録をスキップすることができます。
+   This function works like :c:func:`Py_Initialize` if *initsigs* is 1. If
+   *initsigs* is 0, it skips initialization registration of signal handlers, which
+   might be useful when Python is embedded.
 
    .. versionadded:: 2.4
 
 
 .. c:function:: int Py_IsInitialized()
 
-   Python インタプリタがすでに初期化済みの場合に真 (非ゼロ) を返し、
-   そうでない場合には偽 (ゼロ) を返します。
-   :c:func:`Py_Finalize` を呼び出すと、次に :c:func:`Py_Initialize` を呼び出す
-   までこの関数は偽を返します。
+   Return true (nonzero) when the Python interpreter has been initialized, false
+   (zero) if not.  After :c:func:`Py_Finalize` is called, this returns false until
+   :c:func:`Py_Initialize` is called again.
 
 
 .. c:function:: void Py_Finalize()
 
-   :c:func:`Py_Initialize` とそれ以後の Python/C API 関数で行った全ての
-   初期化処理を取り消し、最後の :c:func:`Py_Initialize`  呼び出し以後に Python
-   インタプリタが生成した全てのサブインタプリタ  (sub-interpreter,
-   下記の :c:func:`Py_NewInterpreter` を参照) を消去します。
-   理想的な状況では、この関数によって Python インタプリタが確保したメモリは
-   全て解放されます。
-   この関数を (:c:func:`Py_Initialize` を呼ばずに) 再度呼び出しても何も行いません。
-   戻り値はありません。 終了処理中のエラーは無視されます。
+   Undo all initializations made by :c:func:`Py_Initialize` and subsequent use of
+   Python/C API functions, and destroy all sub-interpreters (see
+   :c:func:`Py_NewInterpreter` below) that were created and not yet destroyed since
+   the last call to :c:func:`Py_Initialize`.  Ideally, this frees all memory
+   allocated by the Python interpreter.  This is a no-op when called for a second
+   time (without calling :c:func:`Py_Initialize` again first).  There is no return
+   value; errors during finalization are ignored.
 
-   この関数が提供されている理由はいくつかあります。
-   Python の埋め込みを行っているアプリケーションでは、アプリケーションを
-   再起動することなく Python を再起動したいことがあります。
-   また、動的ロード可能イブラリ (あるいは DLL) から Python インタプリタを
-   ロードするアプリケーションでは、DLL をアンロードする前に Python が
-   確保したメモリを全て解放したいと考えるかもしれません。
-   アプリケーション内で起きているメモリリークを追跡する際に、開発者は Python
-   が確保したメモリをアプリケーションの終了前に解放させたいと思う場合もあります。
+   This function is provided for a number of reasons.  An embedding application
+   might want to restart Python without having to restart the application itself.
+   An application that has loaded the Python interpreter from a dynamically
+   loadable library (or DLL) might want to free all memory allocated by Python
+   before unloading the DLL. During a hunt for memory leaks in an application a
+   developer might want to free all memory allocated by Python before exiting from
+   the application.
 
-   **バグおよび注意事項:** モジュールやモジュール内のオブジェクトはランダムな
-   順番で削除されます。
-   このため、他のオブジェクト(関数オブジェクトも含みます) やモジュールに依存する
-   デストラクタ  (:meth:`__del__` メソッド) が失敗してしまうことがあります。
-   動的にロードされるようになっている拡張モジュールが Python によって
-   ロードされていた場合、アンロードされません。
-   Python が確保したメモリがわずかながら解放されないかもしれません
-   (メモリリークを発見したら、どうか報告してください)。オブジェクト間の循環参照に
-   捕捉されているメモリは解放されないことがあります。
-   拡張モジュールが確保したメモリは解放されないことがあります。
-   拡張モジュールによっては、初期化ルーチンを 2 度以上呼び出すと正しく動作しない
-   ことがあります。 こうした状況は、 :c:func:`Py_Initialize`  や :c:func:`Py_Finalize`
-   を 2 度以上呼び出すと起こり得ます。
+   **Bugs and caveats:** The destruction of modules and objects in modules is done
+   in random order; this may cause destructors (:meth:`__del__` methods) to fail
+   when they depend on other objects (even functions) or modules.  Dynamically
+   loaded extension modules loaded by Python are not unloaded.  Small amounts of
+   memory allocated by the Python interpreter may not be freed (if you find a leak,
+   please report it).  Memory tied up in circular references between objects is not
+   freed.  Some memory allocated by extension modules may not be freed.  Some
+   extensions may not work properly if their initialization routine is called more
+   than once; this can happen if an application calls :c:func:`Py_Initialize` and
+   :c:func:`Py_Finalize` more than once.
 
-.. Process-wide parameters
 
-プロセスワイドのパラメータ
-===========================
+Process-wide parameters
+=======================
+
 
 .. c:function:: void Py_SetProgramName(char *name)
 
@@ -109,82 +98,72 @@
       single: main()
       single: Py_GetPath()
 
-   この関数を呼び出すなら、最初に :c:func:`Py_Initialize` を呼び出すよりも前に
-   呼び出さねばなりません。この関数はインタプリタにプログラムの :c:func:`main`
-   関数に指定した ``argv[0]`` 引数の値を教えます。
-   この引数値は、 :c:func:`Py_GetPath` や、以下に示すその他の関数が、
-   インタプリタの実行可能形式から Python ランタイムライブラリへの相対パスを
-   取得するために使われます。
-   デフォルトの値は ``'python'`` です。引数はゼロ終端されたキャラクタ文字列で、
-   静的な記憶領域に入っていなければならず、その内容はプログラムの実行中に
-   変更してはなりません。
-   Python インタプリタ内のコードで、この記憶領域の内容を変更するものは一切ありません。
+   This function should be called before :c:func:`Py_Initialize` is called for
+   the first time, if it is called at all.  It tells the interpreter the value
+   of the ``argv[0]`` argument to the :c:func:`main` function of the program.
+   This is used by :c:func:`Py_GetPath` and some other functions below to find
+   the Python run-time libraries relative to the interpreter executable.  The
+   default value is ``'python'``.  The argument should point to a
+   zero-terminated character string in static storage whose contents will not
+   change for the duration of the program's execution.  No code in the Python
+   interpreter will change the contents of this storage.
 
 
 .. c:function:: char* Py_GetProgramName()
 
    .. index:: single: Py_SetProgramName()
 
-   :c:func:`Py_SetProgramName` で設定されたプログラム名か、デフォルトのプログラム名を返します。
-   関数が返す文字列ポインタは静的な記憶領域を返します。
-   関数の呼び出し側はこの値を変更できません。
+   Return the program name set with :c:func:`Py_SetProgramName`, or the default.
+   The returned string points into static storage; the caller should not modify its
+   value.
 
 
 .. c:function:: char* Py_GetPrefix()
 
-   プラットフォーム非依存のファイル群がインストールされている場所である
-   *prefix* を返します。
-   この値は :c:func:`Py_SetProgramName` でセットされたプログラム名や
-   いくつかの環境変数をもとに、数々の複雑な規則から導出されます。
-   例えば、プログラム名が ``'/usr/local/bin/python'`` の場合、prefix は
-   ``'/usr/local'`` になります。
-   関数が返す文字列ポインタは静的な記憶領域を返します;
-   関数の呼び出し側はこの値を変更できません。
-   この値はトップレベルの :file:`Makefile` に指定されている変数
-   :makevar:`prefix` や、ビルド値に :program:`configure` スクリプトに指定した
-   :option:`--prefix` 引数に対応しています。
-   この値は Python コードからは ``sys.prefix`` として利用できます。
-   これはUnixでのみ有用です。次に説明する関数も参照してください。
+   Return the *prefix* for installed platform-independent files. This is derived
+   through a number of complicated rules from the program name set with
+   :c:func:`Py_SetProgramName` and some environment variables; for example, if the
+   program name is ``'/usr/local/bin/python'``, the prefix is ``'/usr/local'``. The
+   returned string points into static storage; the caller should not modify its
+   value.  This corresponds to the :makevar:`prefix` variable in the top-level
+   :file:`Makefile` and the ``--prefix`` argument to the :program:`configure`
+   script at build time.  The value is available to Python code as ``sys.prefix``.
+   It is only useful on Unix.  See also the next function.
 
 
 .. c:function:: char* Py_GetExecPrefix()
 
-   プラットフォーム *依存* のファイルがインストールされている場所である
-   *exec-prefix* を返します。
-   この値は :c:func:`Py_SetProgramName` でセットされたプログラム名やいくつかの
-   環境変数をもとに、数々の複雑な規則から導出されます。
-   例えば、プログラム名が ``'/usr/local/bin/python'`` の場合、exec-prefix は
-   ``'/usr/local'`` になります。
-   関数が返す文字列ポインタは静的な記憶領域を返します; 関数の呼び出し側はこの値を変更できません。
-   この値はトップレベルの :file:`Makefile` に指定されている変数 :makevar:`exec_prefix` や、
-   ビルド値に :program:`configure` スクリプトに指定した :option:`--exec-prefix` 引数に
-   対応しています。この値は Python コードからは ``sys.exec_prefix`` として利用できます。
-   Unixのみで有用です。
+   Return the *exec-prefix* for installed platform-*dependent* files.  This is
+   derived through a number of complicated rules from the program name set with
+   :c:func:`Py_SetProgramName` and some environment variables; for example, if the
+   program name is ``'/usr/local/bin/python'``, the exec-prefix is
+   ``'/usr/local'``.  The returned string points into static storage; the caller
+   should not modify its value.  This corresponds to the :makevar:`exec_prefix`
+   variable in the top-level :file:`Makefile` and the ``--exec-prefix``
+   argument to the :program:`configure` script at build  time.  The value is
+   available to Python code as ``sys.exec_prefix``.  It is only useful on Unix.
 
-   背景: プラットフォーム依存のファイル (実行形式や共有ライブラリ) が別の
-   ディレクトリツリー内にインストールされている場合、 exec-prefix は
-   prefix と異なります。
-   典型的なインストール形態では、プラットフォーム非依存のファイルが
-   :file:`/usr/local` に収められる一方、
-   プラットフォーム依存のファイルは :file:`/usr/local/plat` サブツリーに収められます。
+   Background: The exec-prefix differs from the prefix when platform dependent
+   files (such as executables and shared libraries) are installed in a different
+   directory tree.  In a typical installation, platform dependent files may be
+   installed in the :file:`/usr/local/plat` subtree while platform independent may
+   be installed in :file:`/usr/local`.
 
-   一般的に、プラットフォームとは、ハードウェアとソフトウェアファミリの
-   組み合わせを指します。例えば、 Solaris 2.x を動作させている Sparc
-   マシンは全て同じプラットフォームであるとみなしますが、Solaris 2.x
-   を動作させている Intel マシンは違うプラットフォームになりますし、同じ
-   Intel マシンでも Linux を動作させているならまた別のプラットフォームです。
-   一般的には、同じオペレーティングシステムでも、メジャーリビジョンの違う
-   ものは異なるプラットフォームです。
-   非 Unix のオペレーティングシステムの場合は話はまた別です; 非 Unix
-   のシステムでは、インストール方法はとても異なっていて、 prefix や exec-prefix
-   には意味がなく、空文字列が設定されています。
-   コンパイル済みの Python バイトコードはプラットフォームに依存しないので注意してください
-   (ただし、どのバージョンの Python でコンパイルされたかには依存します!)。
+   Generally speaking, a platform is a combination of hardware and software
+   families, e.g.  Sparc machines running the Solaris 2.x operating system are
+   considered the same platform, but Intel machines running Solaris 2.x are another
+   platform, and Intel machines running Linux are yet another platform.  Different
+   major revisions of the same operating system generally also form different
+   platforms.  Non-Unix operating systems are a different story; the installation
+   strategies on those systems are so different that the prefix and exec-prefix are
+   meaningless, and set to the empty string. Note that compiled Python bytecode
+   files are platform independent (but not independent from the Python version by
+   which they were compiled!).
 
-   システム管理者は、 :program:`mount` や :program:`automount` プログラムを
-   使って、各プラットフォーム用の :file:`/usr/local/plat` を異なった
-   ファイルシステムに置き、プラットフォーム間で :file:`/usr/local` を共有する
-   ための設定方法を知っているでしょう。
+   System administrators will know how to configure the :program:`mount` or
+   :program:`automount` programs to share :file:`/usr/local` between platforms
+   while having :file:`/usr/local/plat` be a different filesystem for each
+   platform.
 
 
 .. c:function:: char* Py_GetProgramFullPath()
@@ -193,13 +172,11 @@
       single: Py_SetProgramName()
       single: executable (in module sys)
 
-   Python 実行可能形式の完全なプログラム名を返します;
-   この値はデフォルトのモジュール検索パスを
-   (前述の :c:func:`Py_SetProgramName`  で設定された)
-   プログラム名から導出する際に副作用的に計算されます。
-   関数が返す文字列ポインタは静的な記憶領域を返します;
-   関数の呼び出し側はこの値を変更できません。この値は Python コードからは
-   ``sys.executable`` として利用できます。
+   Return the full program name of the Python executable; this is  computed as a
+   side-effect of deriving the default module search path  from the program name
+   (set by :c:func:`Py_SetProgramName` above). The returned string points into
+   static storage; the caller should not modify its value.  The value is available
+   to Python code as ``sys.executable``.
 
 
 .. c:function:: char* Py_GetPath()
@@ -208,90 +185,85 @@
       triple: module; search; path
       single: path (in module sys)
 
-   デフォルトのモジュール検索パスを返します; パスは (上の
-   :c:func:`Py_SetProgramName` で設定された) プログラム名と、
-   いくつかの環境変数から計算されます。
-   戻り値となる文字列は、プラットフォーム依存のパス区切り文字で分割された
-   一連のディレクトリ名からなります。区切り文字は Unix と Mac OS X では
-   ``':'``, Windows では ``';'`` です。関数が返す文字列ポインタは静的な
-   記憶領域を返します; 関数の呼び出し側はこの値を変更できません。
-   :data:`sys.path` はインタプリタによってこの値で初期化され、その後に
-   モジュールをロードする際の検索パスを変更するために修正することが可能で、
-   たいていそうされます。
+   Return the default module search path; this is computed from the program name
+   (set by :c:func:`Py_SetProgramName` above) and some environment variables.
+   The returned string consists of a series of directory names separated by a
+   platform dependent delimiter character.  The delimiter character is ``':'``
+   on Unix and Mac OS X, ``';'`` on Windows.  The returned string points into
+   static storage; the caller should not modify its value.  The list
+   :data:`sys.path` is initialized with this value on interpreter startup; it
+   can be (and usually is) modified later to change the search path for loading
+   modules.
 
    .. XXX should give the exact rules
 
 
 .. c:function:: const char* Py_GetVersion()
 
-   Python インタプリタのバージョンを返します。
-   バージョンは、次のような形式の文字列です。 ::
+   Return the version of this Python interpreter.  This is a string that looks
+   something like ::
 
       "1.5 (#67, Dec 31 1997, 22:34:28) [GCC 2.7.2.2]"
 
    .. index:: single: version (in module sys)
 
-   第一ワード (最初のスペース文字まで) は、現在の Python のバージョンです;
-   最初の三文字は、ピリオドで区切られたメジャーバージョンとマイナーバージョンです。
-   関数が返す文字列ポインタは静的な記憶領域を返します;
-   関数の呼び出し側はこの値を変更できません。
-   この値は Python コードからは ``sys.version`` として利用できます。
+   The first word (up to the first space character) is the current Python version;
+   the first three characters are the major and minor version separated by a
+   period.  The returned string points into static storage; the caller should not
+   modify its value.  The value is available to Python code as ``sys.version``.
 
 
 .. c:function:: const char* Py_GetPlatform()
 
    .. index:: single: platform (in module sys)
 
-   現在のプラットフォームのプラットフォーム識別文字列を返します。
-   Unixでは、オペレーティングシステムの "公式の" 名前を小文字に変換し、
-   後ろにメジャーリビジョン番号を付けた構成になっています。
-   例えば Solaris 2.x は、SunOS 5.x, としても知られていますが、
-   ``'sunos5'`` になります。Mac OS X では ``'darwin'`` です。
-   Windows では ``'win'`` です。
-   関数が返す文字列ポインタは静的な記憶領域を返します;
-   関数の呼び出し側はこの値を変更できません。
-   この値は Python コードからは ``sys.platform`` として利用できます。
+   Return the platform identifier for the current platform.  On Unix, this is
+   formed from the "official" name of the operating system, converted to lower
+   case, followed by the major revision number; e.g., for Solaris 2.x, which is
+   also known as SunOS 5.x, the value is ``'sunos5'``.  On Mac OS X, it is
+   ``'darwin'``.  On Windows, it is ``'win'``.  The returned string points into
+   static storage; the caller should not modify its value.  The value is available
+   to Python code as ``sys.platform``.
 
 
 .. c:function:: const char* Py_GetCopyright()
 
-   現在の Python バージョンに対する公式の著作権表示文字列、例えば
-   ``'Copyright 1991-1995 Stichting Mathematisch Centrum, Amsterdam'`` を返します。
+   Return the official copyright string for the current Python version, for example
+
+   ``'Copyright 1991-1995 Stichting Mathematisch Centrum, Amsterdam'``
 
    .. index:: single: copyright (in module sys)
 
-   関数が返す文字列ポインタは静的な記憶領域を返します;
-   関数の呼び出し側はこの値を変更できません。
-   この値は Python コードからは ``sys.copyright`` として利用できます。
+   The returned string points into static storage; the caller should not modify its
+   value.  The value is available to Python code as ``sys.copyright``.
 
 
 .. c:function:: const char* Py_GetCompiler()
 
-   現在使っているバージョンの Python をビルドする際に用いたコンパイラを示す文字列を、
-   角括弧で囲った文字列を返します。例えば::
+   Return an indication of the compiler used to build the current Python version,
+   in square brackets, for example::
 
       "[GCC 2.7.2.2]"
 
-   になります。
-
    .. index:: single: version (in module sys)
 
-   関数が返す文字列ポインタは静的な記憶領域を返します; 関数の呼び出し側はこの値を変更できません。
-   この値は Python コードからは ``sys.version`` の一部として取り出せます。
+   The returned string points into static storage; the caller should not modify its
+   value.  The value is available to Python code as part of the variable
+   ``sys.version``.
 
 
 .. c:function:: const char* Py_GetBuildInfo()
 
-   現在使っている Python インタプリタインスタンスの、シーケンス番号とビルド日時に関する情報を返します。例えば ::
+   Return information about the sequence number and build date and time  of the
+   current Python interpreter instance, for example ::
 
       "#67, Aug  1 1997, 22:34:28"
 
-   になります。
-
    .. index:: single: version (in module sys)
 
-   関数が返す文字列ポインタは静的な記憶領域を返します; 関数の呼び出し側はこの値を変更できません。
-   この値は Python コードからは ``sys.version`` の一部として取り出せます。
+   The returned string points into static storage; the caller should not modify its
+   value.  The value is available to Python code as part of the variable
+   ``sys.version``.
 
 
 .. c:function:: void PySys_SetArgvEx(int argc, char **argv, int updatepath)
@@ -301,36 +273,35 @@
       single: Py_FatalError()
       single: argv (in module sys)
 
-   *argc* および *argv* に基づいて :data:`sys.argv` を設定します。
-   これらの引数はプログラムの :c:func:`main` に渡した引数に似ていますが、
-   最初の要素が Python インタプリタの宿主となっている実行形式の名前ではなく、
-   実行されるスクリプト名を参照しなければならない点が違います。
-   実行するスクリプトがない場合、 *argv* の最初の要素は空文字列にしても
-   かまいません。
-   この関数が :data:`sys.argv` の初期化に失敗した場合、致命的エラーを
-   :c:func:`Py_FatalError` で知らせます。
+   Set :data:`sys.argv` based on *argc* and *argv*.  These parameters are
+   similar to those passed to the program's :c:func:`main` function with the
+   difference that the first entry should refer to the script file to be
+   executed rather than the executable hosting the Python interpreter.  If there
+   isn't a script that will be run, the first entry in *argv* can be an empty
+   string.  If this function fails to initialize :data:`sys.argv`, a fatal
+   condition is signalled using :c:func:`Py_FatalError`.
 
-   *updatepath* が 0 の場合、ここまでの動作がこの関数がすることの全てです。
-   *updatepath* が 0 でない場合、この関数は :data:`sys.path` を以下の
-   アルゴリズムに基づいて修正します:
+   If *updatepath* is zero, this is all the function does.  If *updatepath*
+   is non-zero, the function also modifies :data:`sys.path` according to the
+   following algorithm:
 
-   - 存在するスクリプトの名前が ``argv[0]`` に渡された場合、そのスクリプトが
-     ある場所の絶対パスを :data:`sys.path` の先頭に追加します。
-   - それ以外の場合(*argc* が 0 だったり、 ``argv[0]`` が存在するファイル名を
-     さしていない場合)、 :data:`sys.path` の先頭に空の文字列を追加します。
-     これは現在の作業ディレクトリ (``"."``) を先頭に追加するのと同じです。
+   - If the name of an existing script is passed in ``argv[0]``, the absolute
+     path of the directory where the script is located is prepended to
+     :data:`sys.path`.
+   - Otherwise (that is, if *argc* is 0 or ``argv[0]`` doesn't point
+     to an existing file name), an empty string is prepended to
+     :data:`sys.path`, which is the same as prepending the current working
+     directory (``"."``).
 
    .. note::
+      It is recommended that applications embedding the Python interpreter
+      for purposes other than executing a single script pass 0 as *updatepath*,
+      and update :data:`sys.path` themselves if desired.
+      See `CVE-2008-5983 <http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-5983>`_.
 
-      Python インタプリタを、単一のスクリプトを実行する以外の目的で埋め込む
-      アプリケーションは、 *updatepath* に 0 を渡して必要なら自分で
-      :data:`sys.path` を更新することをおすすめします。
-      `CVE-2008-5983 <http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-5983>`_
-      を参照してください。
-
-      2.6.6 より前のバージョンでは、 :c:func:`PySys_SetArgv` を呼出たあとに
-      同じ事を手動で :data:`sys.path` の先頭の要素を取り除くことで実現できます。
-      例えば、次のようにします。 ::
+      On versions before 2.6.6, you can achieve the same effect by manually
+      popping the first :data:`sys.path` element after having called
+      :c:func:`PySys_SetArgv`, for example using::
 
          PyRun_SimpleString("import sys; sys.path.pop(0)\n");
 
@@ -342,143 +313,144 @@
 
 .. c:function:: void PySys_SetArgv(int argc, char **argv)
 
-   :c:func:`PySys_SetArgvEx` の *updatepath* に 1 を設定したのと同じように動作します。
+   This function works like :c:func:`PySys_SetArgvEx` with *updatepath* set to 1.
 
 
 .. c:function:: void Py_SetPythonHome(char *home)
 
-   Python の標準ライブラリがある、デフォルトの "home" ディレクトリを設定します。
-   引数の文字列の意味については :envvar:`PYTHONHOME` を参照してください。
+   Set the default "home" directory, that is, the location of the standard
+   Python libraries.  See :envvar:`PYTHONHOME` for the meaning of the
+   argument string.
 
-   引数は静的なストレージに置かれてプログラム実行中に書き換えられないような
-   ゼロ終端の文字列であるべきです。
-   Python インタプリタはこのストレージの内容を変更しません。
+   The argument should point to a zero-terminated character string in static
+   storage whose contents will not change for the duration of the program's
+   execution.  No code in the Python interpreter will change the contents of
+   this storage.
+
 
 .. c:function:: char* Py_GetPythonHome()
 
-   前回の :c:func:`Py_SetPythonHome` 呼び出しで設定されたデフォルトの "home" か、
-   :envvar:`PYTHONHOME` 環境変数が設定されていればその値を返します。
+   Return the default "home", that is, the value set by a previous call to
+   :c:func:`Py_SetPythonHome`, or the value of the :envvar:`PYTHONHOME`
+   environment variable if it is set.
 
 
 .. _threads:
 
-スレッド状態 (thread state) とグローバルインタプリタロック (global interpreter lock)
-====================================================================================
+Thread State and the Global Interpreter Lock
+============================================
 
 .. index::
+   single: GIL
    single: global interpreter lock
    single: interpreter lock
    single: lock, interpreter
 
-Python インタプリタは完全にはスレッドセーフではありません。
-マルチスレッドの Python プログラムをサポートするために、
-グローバルインタプリタロック(:term:`global interpreter lock`, :term:`GIL`)
-と呼ばれるグローバルなロックが存在していて、現在のスレッドが Python オブジェクトに
-安全にアクセスする前に必ずロックを獲得しなければならなくなっています。
-ロック機構がなければ、単純な操作でさえ、マルチスレッドプログラムの実行に
-問題を引き起こす可能性があります。
-たとえば、二つのスレッドが同じオブジェクトの参照カウントを同時にインクリメントすると、
-結果的に参照カウントは二回でなく一回だけしかインクリメントされないかもしれません。
+The Python interpreter is not fully thread-safe.  In order to support
+multi-threaded Python programs, there's a global lock, called the :term:`global
+interpreter lock` or :term:`GIL`, that must be held by the current thread before
+it can safely access Python objects. Without the lock, even the simplest
+operations could cause problems in a multi-threaded program: for example, when
+two threads simultaneously increment the reference count of the same object, the
+reference count could end up being incremented only once instead of twice.
 
 .. index:: single: setcheckinterval() (in module sys)
 
-このため、 :term:`GIL` を獲得したスレッドだけが Python オブジェクトを操作したり、
-Python/C API 関数を呼び出したりできるというルールがあります。
-並行処理をエミュレートするために、インタプリタは定期的にロックを解放したり獲得したりします。
-(:func:`sys.setcheckinterval` を参照)
-このロックはブロックが起こりうる I/O 操作の付近でも解放・獲得され、
-I/O を要求するスレッドが I/O 操作の完了を待つ間、他のスレッドが動作できるようにしています。
+Therefore, the rule exists that only the thread that has acquired the
+:term:`GIL` may operate on Python objects or call Python/C API functions.
+In order to emulate concurrency of execution, the interpreter regularly
+tries to switch threads (see :func:`sys.setcheckinterval`).  The lock is also
+released around potentially blocking I/O operations like reading or writing
+a file, so that other Python threads can run in the meantime.
 
 .. index::
    single: PyThreadState
    single: PyThreadState
 
-Python インタプリタはスレッドごとに必要な情報を :c:type:`PyThreadState` と呼ばれる
-データ構造の中に保存します。
-そしてグローバル変数として現在の :c:type:`PyThreadState` を指すポインタを1つ持ちます。
-このグローバル変数は :c:func:`PyThreadState_Get` を使って取得できます。
+The Python interpreter keeps some thread-specific bookkeeping information
+inside a data structure called :c:type:`PyThreadState`.  There's also one
+global variable pointing to the current :c:type:`PyThreadState`: it can
+be retrieved using :c:func:`PyThreadState_Get`.
 
-.. Releasing the GIL from extension code
-
-拡張コード内で GIL を解放する
+Releasing the GIL from extension code
 -------------------------------------
 
-GIL を操作するほとんどのコードは、次のような単純な構造になります。 ::
+Most extension code manipulating the :term:`GIL` has the following simple
+structure::
 
-   スレッド状態をローカル変数に保存する。
-   GILを解放する。
-   ...ブロックが起きるような何らかの I/O 操作...
-   GILを獲得する。
-   ローカル変数からスレッド状態を回復する。
+   Save the thread state in a local variable.
+   Release the global interpreter lock.
+   ... Do some blocking I/O operation ...
+   Reacquire the global interpreter lock.
+   Restore the thread state from the local variable.
 
-この構造は非常に一般的なので、作業を単純にするために2つのマクロが用意されています::
+This is so common that a pair of macros exists to simplify it::
 
    Py_BEGIN_ALLOW_THREADS
-   ...ブロックが起きるような何らかの I/O 操作...
+   ... Do some blocking I/O operation ...
    Py_END_ALLOW_THREADS
 
 .. index::
    single: Py_BEGIN_ALLOW_THREADS
    single: Py_END_ALLOW_THREADS
 
-:c:macro:`Py_BEGIN_ALLOW_THREADS` マクロは新たなブロックを開始し、
-隠しローカル変数を宣言します; :c:macro:`Py_END_ALLOW_THREADS`
-はブロックを閉じます。
-Python をスレッドサポートなしでコンパイルしたときでもこの2つのマクロは利用可能です。
-(単に、空行に展開されます)
+The :c:macro:`Py_BEGIN_ALLOW_THREADS` macro opens a new block and declares a
+hidden local variable; the :c:macro:`Py_END_ALLOW_THREADS` macro closes the
+block.  These two macros are still available when Python is compiled without
+thread support (they simply have an empty expansion).
 
-スレッドサポートが有効になっている場合、上記のブロックは以下のような
-コードに展開されます::
+When thread support is enabled, the block above expands to the following code::
 
    PyThreadState *_save;
 
    _save = PyEval_SaveThread();
-   ...ブロックが起きるような何らかの I/O 操作...
+   ...Do some blocking I/O operation...
    PyEval_RestoreThread(_save);
 
 .. index::
    single: PyEval_RestoreThread()
    single: PyEval_SaveThread()
 
-これらの関数の動作を説明します。
-GIL は現在のスレッド状態を指すポインタを保護するために使われます。
-ロックを解放してスレッド状態を退避する際、
-ロックを解放する前に現在のスレッド状態ポインタを取得しておかなければなりません (他のスレッドがすぐさまロックを獲得して、自らの
-スレッド状態をグローバル変数に保存してしまうかもしれないからです)。逆に、ロックを獲得してスレッド状態を復帰する際には、
-グローバル変数にスレッド状態ポインタを保存する前にロックを獲得しておかなければなりません。
+Here is how these functions work: the global interpreter lock is used to protect the pointer to the
+current thread state.  When releasing the lock and saving the thread state,
+the current thread state pointer must be retrieved before the lock is released
+(since another thread could immediately acquire the lock and store its own thread
+state in the global variable). Conversely, when acquiring the lock and restoring
+the thread state, the lock must be acquired before storing the thread state
+pointer.
 
 .. note::
+   Calling system I/O functions is the most common use case for releasing
+   the GIL, but it can also be useful before calling long-running computations
+   which don't need access to Python objects, such as compression or
+   cryptographic functions operating over memory buffers.  For example, the
+   standard :mod:`zlib` and :mod:`hashlib` modules release the GIL when
+   compressing or hashing data.
 
-   GIL を解放するのはほとんどがシステムのI/O関数を呼び出す時ですが、
-   メモリバッファに対する圧縮や暗号化のように、 Python のオブジェクトにアクセスしない
-   長時間かかる計算処理を呼び出すときも GIL を解放することは有益です。
-   例えば、 :mod:`zlib` や :mod:`hashlib` モジュールは圧縮やハッシュ計算の前に
-   GIL を解放します。
 
+.. _gilstate:
 
-.. Non-Python created threads
+Non-Python created threads
+--------------------------
 
-Python 以外で作られたスレッド
-------------------------------
+When threads are created using the dedicated Python APIs (such as the
+:mod:`threading` module), a thread state is automatically associated to them
+and the code showed above is therefore correct.  However, when threads are
+created from C (for example by a third-party library with its own thread
+management), they don't hold the GIL, nor is there a thread state structure
+for them.
 
-Python API を通して作られたスレッド (:mod:`threading` モジュールなど) では
-自動的にスレッド状態が割り当てられて、上記のコードは正しく動きます。
-しかし、(自前でスレッド管理を行う外部のライブラリなどにより)C言語で
-スレッドを生成した場合、そのスレッドには GIL がなく、スレッド状態データ構造体
-もないことに注意する必要があります。
+If you need to call Python code from these threads (often this will be part
+of a callback API provided by the aforementioned third-party library),
+you must first register these threads with the interpreter by
+creating a thread state data structure, then acquiring the GIL, and finally
+storing their thread state pointer, before you can start using the Python/C
+API.  When you are done, you should reset the thread state pointer, release
+the GIL, and finally free the thread state data structure.
 
-このようなスレッドから Python コードを呼び出す必要がある場合
-(外部のライブラリからコールバックするAPIなどがよくある例です)、
-Python/C API を呼び出す前に、スレッド状態データ構造体を生成し、
-GIL を獲得し、スレッド状態ポインタを保存することで、スレッドを
-インタプリタに登録しなければなりません。
-スレッドが作業を終えたら、スレッド状態ポインタをリセットして、
-ロックを解放し、最後にスレッド状態データ構造体のメモリを
-解放しなければなりません。
-
-:c:func:`PyGILState_Ensure` と :c:func:`PyGILState_Release` はこの処理を
-自動的に行います。
-Cのスレッドから Python を呼び出す典型的な方法は以下のとおりです。 ::
+The :c:func:`PyGILState_Ensure` and :c:func:`PyGILState_Release` functions do
+all of the above automatically.  The typical idiom for calling into Python
+from a C thread is::
 
    PyGILState_STATE gstate;
    gstate = PyGILState_Ensure();
@@ -490,56 +462,54 @@ Cのスレッドから Python を呼び出す典型的な方法は以下のと�
    /* Release the thread. No Python API allowed beyond this point. */
    PyGILState_Release(gstate);
 
-:c:func:`PyGILState_\*` 関数は、(:c:func:`Py_Initialize` によって自動的に作られる)
-グローバルインタプリタ1つだけが存在すると仮定する事に気をつけて下さい。
-Python は (:c:func:`Py_NewInterpreter` を使って)
-追加のインタプリタを作成できることに変わりはありませんが、複数インタプリタと
-:c:func:`PyGILState_\*` API を混ぜて使うことはサポートされていません。
+Note that the :c:func:`PyGILState_\*` functions assume there is only one global
+interpreter (created automatically by :c:func:`Py_Initialize`).  Python
+supports the creation of additional interpreters (using
+:c:func:`Py_NewInterpreter`), but mixing multiple interpreters and the
+:c:func:`PyGILState_\*` API is unsupported.
 
-注意しないといけないもう一つの重要な点は、 C の :c:func:`fork` を呼び出した時の
-動作です。
-ほとんどの :c:func:`fork` を持っているシステムでは、fork されたプロセスには fork を
-実行したスレッドしか存在しません。
-これは、別のスレッドに取得されたロックがずっと解放されないことを意味します。
-Python は fork する前にロックを取得し、その後に fork を解放することで
-この問題を解決しています。
-加えて、子プロセスではすべての :ref:`lock-objects` をリセットします。
-Python を拡張したり埋め込んだりしている場合、 Python に fork 前に取得したり
-fork 後に解放しなければならない追加の (Python 以外の) ロックを Python に教える
-手段がありません。
-Python と同じことを実現するには、 :c:func:`posix_atfork` のようなOSの機能を
-使う必要があります。
-加えて、Python を拡張したり埋め込んだりしているときに、 :func:`os.fork`
-を通してではなく直接 :c:func:`fork` を呼び出すと、fork後に失われるスレッドに
-取得されていた Python の内部ロックのためにデッドロックが発生するかもしれません。
-:c:func:`PyOS_AfterFork` は必要なロックのリセットを試みますが、いつでも
-それが可能とは限りません。
+Another important thing to note about threads is their behaviour in the face
+of the C :c:func:`fork` call. On most systems with :c:func:`fork`, after a
+process forks only the thread that issued the fork will exist. That also
+means any locks held by other threads will never be released. Python solves
+this for :func:`os.fork` by acquiring the locks it uses internally before
+the fork, and releasing them afterwards. In addition, it resets any
+:ref:`lock-objects` in the child. When extending or embedding Python, there
+is no way to inform Python of additional (non-Python) locks that need to be
+acquired before or reset after a fork. OS facilities such as
+:c:func:`pthread_atfork` would need to be used to accomplish the same thing.
+Additionally, when extending or embedding Python, calling :c:func:`fork`
+directly rather than through :func:`os.fork` (and returning to or calling
+into Python) may result in a deadlock by one of Python's internal locks
+being held by a thread that is defunct after the fork.
+:c:func:`PyOS_AfterFork` tries to reset the necessary locks, but is not
+always able to.
 
-.. High-level API
 
-高レベルAPI
+High-level API
 --------------
 
-C拡張を書いたりPythonインタプリタを埋め込むときに最も一般的に使われる
-型や関数は次のとおりです。
+These are the most commonly used types and functions when writing C extension
+code, or when embedding the Python interpreter:
 
 .. c:type:: PyInterpreterState
 
-   このデータ構造体は、協調動作する多数のスレッド間で共有されている状態を表現します。
-   同じインタプリタに属するスレッドはモジュール管理情報やその他いくつかの内部的な
-   情報を共有しています。この構造体には公開 (public) のメンバはありません。
+   This data structure represents the state shared by a number of cooperating
+   threads.  Threads belonging to the same interpreter share their module
+   administration and a few other internal items. There are no public members in
+   this structure.
 
-   異なるインタプリタに属するスレッド間では、利用可能なメモリ、開かれている
-   ファイルデスクリプタなどといったプロセス状態を除いて、初期状態では何も共有されていません。
-   GILもまた、スレッドがどのインタプリタに属しているかに関わらず
-   すべてのスレッドで共有されています。
+   Threads belonging to different interpreters initially share nothing, except
+   process state like available memory, open file descriptors and such.  The global
+   interpreter lock is also shared by all threads, regardless of to which
+   interpreter they belong.
 
 
 .. c:type:: PyThreadState
 
-   単一のスレッドの状態を表現する表現するデータ構造体です。
-   スレッドのインタプリタ状態を指すポインタ :c:type:`PyInterpreterState \*` :attr:`interp`
-   だけが公開されているデータメンバです。
+   This data structure represents the state of a single thread.  The only public
+   data member is :c:type:`PyInterpreterState \*`:attr:`interp`, which points to
+   this thread's interpreter state.
 
 
 .. c:function:: void PyEval_InitThreads()
@@ -550,332 +520,346 @@ C拡張を書いたりPythonインタプリタを埋め込むときに最も一�
       single: PyEval_SaveThread()
       single: PyEval_RestoreThread()
 
-   GIL を初期化し、獲得します。この関数は、主スレッドが第二のスレッドを生成する以前や、
-   :c:func:`PyEval_ReleaseLock` や ``PyEval_ReleaseThread(tstate)``
-   といった他のスレッド操作に入るよりも前に呼び出されるようにしておかなければなりません。
-   :c:func:`PyEval_SaveThread`, :c:func:`PyEval_RestoreThread` の前に呼び出す必要は
-   ありません。
+   Initialize and acquire the global interpreter lock.  It should be called in the
+   main thread before creating a second thread or engaging in any other thread
+   operations such as :c:func:`PyEval_ReleaseLock` or
+   ``PyEval_ReleaseThread(tstate)``. It is not needed before calling
+   :c:func:`PyEval_SaveThread` or :c:func:`PyEval_RestoreThread`.
 
    .. index:: single: Py_Initialize()
 
-   二度目に呼び出すと何も行いません。
-   この関数を :c:func:`Py_Initialize` の前に呼び出しても安全です。
+   This is a no-op when called for a second time.  It is safe to call this function
+   before calling :c:func:`Py_Initialize`.
 
    .. index:: module: thread
 
    .. note::
 
-      主スレッドしか存在しないのであれば、GIL操作は必要ありません。
-      これはよくある状況ですし (ほとんどの Python プログラムはスレッドを
-      使いません)、ロック操作はインタプリタをごくわずかに低速化します。
-      従って、初期状態ではロックは生成されません。ロックを使わない状況は、
-      すでにロックを獲得している状況と同じです: 単一のスレッドしかなければ、
-      オブジェクトへのアクセスは全て安全です。
-      従って、この関数がGILを初期化すると、同時にロックを獲得するようになって
-      います。Python の :mod:`_thread` モジュールは、新たなスレッドを作成する前に、
-      ロックが存在するか、あるいはまだ作成されていないかを調べ、
-      :c:func:`PyEval_InitThreads` を呼び出します。この関数から処理が戻った場合、
-      ロックが作成され、呼び出し元スレッドがそのロックを獲得している事が
-      保証されています。
+      When only the main thread exists, no GIL operations are needed. This is a
+      common situation (most Python programs do not use threads), and the lock
+      operations slow the interpreter down a bit. Therefore, the lock is not
+      created initially.  This situation is equivalent to having acquired the lock:
+      when there is only a single thread, all object accesses are safe.  Therefore,
+      when this function initializes the global interpreter lock, it also acquires
+      it.  Before the Python :mod:`_thread` module creates a new thread, knowing
+      that either it has the lock or the lock hasn't been created yet, it calls
+      :c:func:`PyEval_InitThreads`.  When this call returns, it is guaranteed that
+      the lock has been created and that the calling thread has acquired it.
 
-      どのスレッドが現在 GIL を (存在する場合) 持っているか分からない時に
-      この関数を使うのは安全では **ありません** 。
+      It is **not** safe to call this function when it is unknown which thread (if
+      any) currently has the global interpreter lock.
 
-      この関数はコンパイル時にスレッドサポートを無効化すると利用できません。
+      This function is not available when thread support is disabled at compile time.
 
 
 .. c:function:: int PyEval_ThreadsInitialized()
 
-   :c:func:`PyEval_InitThreads` をすでに呼び出している場合は真 (非ゼロ)
-   を返します。この関数は、GILを獲得せずに呼び出すことができますので、
-   シングルスレッドで実行している場合にはロック関連のAPI呼び出しを避けるために
-   使うことができます。
-   この関数はコンパイル時にスレッドサポートを無効化すると利用できません。
+   Returns a non-zero value if :c:func:`PyEval_InitThreads` has been called.  This
+   function can be called without holding the GIL, and therefore can be used to
+   avoid calls to the locking API when running single-threaded.  This function is
+   not available when thread support is disabled at compile time.
 
    .. versionadded:: 2.4
 
 
 .. c:function:: PyThreadState* PyEval_SaveThread()
 
-   (GIL が生成されていて、スレッドサポートが有効の場合) GILを解放して、
-   スレッド状態を *NULL* にし、以前のスレッド状態 (*NULL* にはなりません)
-   を返します。ロックがすでに生成されている場合、現在のスレッドがロックを獲得していなければなりません。
-   (この関数はコンパイル時にスレッドサポートが無効にされていても利用できます。)
+   Release the global interpreter lock (if it has been created and thread
+   support is enabled) and reset the thread state to *NULL*, returning the
+   previous thread state (which is not *NULL*).  If the lock has been created,
+   the current thread must have acquired it.  (This function is available even
+   when thread support is disabled at compile time.)
 
 
 .. c:function:: void PyEval_RestoreThread(PyThreadState *tstate)
 
-   (GIL が生成されていて、スレッドサポートが有効の場合) GIL を獲得して、
-   現在のスレッド状態を *tstate* に設定します。
-   *tstate* は *NULL* であってはなりません。
-   GIL が生成されていて、この関数を呼び出したスレッドがすでにロックを獲得している場合、
-   デッドロックに陥ります。
-   (この関数はコンパイル時にスレッドサポートが無効にされていても利用できます。)
+   Acquire the global interpreter lock (if it has been created and thread
+   support is enabled) and set the thread state to *tstate*, which must not be
+   *NULL*.  If the lock has been created, the current thread must not have
+   acquired it, otherwise deadlock ensues.  (This function is available even
+   when thread support is disabled at compile time.)
 
 
 .. c:function:: PyThreadState* PyThreadState_Get()
 
-   現在のスレッド状態を返します。GIL を保持していなければなりません。
-   現在のスレッド状態が *NULL* なら、(呼び出し側が *NULL* チェックをしなくてすむように)
-   この関数は致命的エラーを起こすようになっています。
+   Return the current thread state.  The global interpreter lock must be held.
+   When the current thread state is *NULL*, this issues a fatal error (so that
+   the caller needn't check for *NULL*).
 
 
 .. c:function:: PyThreadState* PyThreadState_Swap(PyThreadState *tstate)
 
-   現在のスレッド状態を *tstate* に指定したスレッド状態と入れ変えます。
-   *tstate* は *NULL* の場合があります。
-   GIL を保持していなければならず、解放しません。
+   Swap the current thread state with the thread state given by the argument
+   *tstate*, which may be *NULL*.  The global interpreter lock must be held
+   and is not released.
 
 
 .. c:function:: void PyEval_ReInitThreads()
 
-   この関数は :c:func:`PyOS_AfterFork` から呼び出され、新しい子プロセスが、
-   子プロセス内で実行していないスレッドが持っているロックを持たないようにします。
+   This function is called from :c:func:`PyOS_AfterFork` to ensure that newly
+   created child processes don't hold locks referring to threads which
+   are not running in the child process.
 
 
-以下の関数はスレッドローカルストレージを利用していて、サブインタプリタとの
-互換性がありません。
+The following functions use thread-local storage, and are not compatible
+with sub-interpreters:
 
 .. c:function:: PyGILState_STATE PyGILState_Ensure()
 
-   Pythonの状態やGILに関わらず、実行中スレッドでPython C APIの呼び出しが
-   可能となるようにします。
-   この関数はスレッド内で何度でも呼び出すことができますが、必ず全ての呼び出しに対応して
-   :c:func:`PyGILState_Release` を呼び出す必要があります。
+   Ensure that the current thread is ready to call the Python C API regardless
+   of the current state of Python, or of the global interpreter lock. This may
+   be called as many times as desired by a thread as long as each call is
+   matched with a call to :c:func:`PyGILState_Release`. In general, other
+   thread-related APIs may be used between :c:func:`PyGILState_Ensure` and
+   :c:func:`PyGILState_Release` calls as long as the thread state is restored to
+   its previous state before the Release().  For example, normal usage of the
+   :c:macro:`Py_BEGIN_ALLOW_THREADS` and :c:macro:`Py_END_ALLOW_THREADS` macros is
+   acceptable.
 
-   通常、 :c:func:`PyGILState_Ensure` 呼び出しと
-   :c:func:`PyGILState_Release` 呼び出しの間でこれ以外のスレッド関連API
-   を使用することができますが、Release()の前にスレッド状態は復元されていな
-   ければなりません。例えば、通常の :c:macro:`Py_BEGIN_ALLOW_THREADS` マクロと
-   :c:macro:`Py_END_ALLOW_THREADS` は使用することができます。
+   The return value is an opaque "handle" to the thread state when
+   :c:func:`PyGILState_Ensure` was called, and must be passed to
+   :c:func:`PyGILState_Release` to ensure Python is left in the same state. Even
+   though recursive calls are allowed, these handles *cannot* be shared - each
+   unique call to :c:func:`PyGILState_Ensure` must save the handle for its call
+   to :c:func:`PyGILState_Release`.
 
-   戻り値は :c:func:`PyGILState_Ensure` 呼び出し時のスレッド状態を隠蔽し
-   た"ハンドル"で、 :c:func:`PyGILState_Release` に渡してPythonを同じ状態
-   に保たなければなりません。再起呼び出しも可能ですが、ハンドルを共有することは *できません* -
-   それぞれの :c:func:`PyGILState_Ensure` 呼び出し
-   でハンドルを保存し、対応する :c:func:`PyGILState_Release` 呼び出しで渡してください。
-
-   関数から復帰したとき、実行中のスレッドはGILを所有していて、任意の Python コードを実行できます。
-   処理の失敗は致命的なエラーです。
+   When the function returns, the current thread will hold the GIL and be able
+   to call arbitrary Python code.  Failure is a fatal error.
 
    .. versionadded:: 2.3
 
 
 .. c:function:: void PyGILState_Release(PyGILState_STATE)
 
-   獲得したすべてのリソースを解放します。この関数を呼び出すと、Pythonの状態は
-   対応する :c:func:`PyGILState_Ensure` を呼び出す前と同じとなります。(通常、
-   この状態は呼び出し元でははわかりませんので、GILState APIを利用するようにしてください。）
+   Release any resources previously acquired.  After this call, Python's state will
+   be the same as it was prior to the corresponding :c:func:`PyGILState_Ensure` call
+   (but generally this state will be unknown to the caller, hence the use of the
+   GILState API).
 
-   :c:func:`PyGILState_Ensure` を呼び出す場合は、必ず同一スレッド内で対応する
-   :c:func:`PyGILState_Release` を呼び出してください。
+   Every call to :c:func:`PyGILState_Ensure` must be matched by a call to
+   :c:func:`PyGILState_Release` on the same thread.
 
    .. versionadded:: 2.3
 
 
-以下のマクロは、通常末尾にセミコロンを付けずに使います;
-Python ソース配布物内の使用例を見てください。
+.. c:function:: PyThreadState* PyGILState_GetThisThreadState()
+
+   Get the current thread state for this thread.  May return ``NULL`` if no
+   GILState API has been used on the current thread.  Note that the main thread
+   always has such a thread-state, even if no auto-thread-state call has been
+   made on the main thread.  This is mainly a helper/diagnostic function.
+
+   .. versionadded:: 2.3
+
+
+The following macros are normally used without a trailing semicolon; look for
+example usage in the Python source distribution.
 
 
 .. c:macro:: Py_BEGIN_ALLOW_THREADS
 
-   このマクロを展開すると ``{ PyThreadState *_save; _save = PyEval_SaveThread();`` になります。
-   マクロに開き波括弧が入っていることに注意してください; この波括弧は後で :c:macro:`Py_END_ALLOW_THREADS`
-   マクロと対応させなければなりません。マクロについての詳しい議論は上記を参照してください。
-   コンパイル時にスレッドサポートが無効化されていると何も行いません。
+   This macro expands to ``{ PyThreadState *_save; _save = PyEval_SaveThread();``.
+   Note that it contains an opening brace; it must be matched with a following
+   :c:macro:`Py_END_ALLOW_THREADS` macro.  See above for further discussion of this
+   macro.  It is a no-op when thread support is disabled at compile time.
 
 
 .. c:macro:: Py_END_ALLOW_THREADS
 
-   このマクロを展開すると ``PyEval_RestoreThread(_save); }`` になります。
-   マクロに開き波括弧が入っていることに注意してください; この波括弧は事前の :c:macro:`Py_BEGIN_ALLOW_THREADS`
-   マクロと対応していなければなりません。マクロについての詳しい議論は上記を参照してください。
-   コンパイル時にスレッドサポートが無効化されていると何も行いません。
+   This macro expands to ``PyEval_RestoreThread(_save); }``. Note that it contains
+   a closing brace; it must be matched with an earlier
+   :c:macro:`Py_BEGIN_ALLOW_THREADS` macro.  See above for further discussion of
+   this macro.  It is a no-op when thread support is disabled at compile time.
 
 
 .. c:macro:: Py_BLOCK_THREADS
 
-   このマクロを展開すると ``PyEval_RestoreThread(_save);`` になります:
-   閉じ波括弧のない :c:macro:`Py_END_ALLOW_THREADS` と同じです。
-   コンパイル時にスレッドサポートが無効化されていると何も行いません。
+   This macro expands to ``PyEval_RestoreThread(_save);``: it is equivalent to
+   :c:macro:`Py_END_ALLOW_THREADS` without the closing brace.  It is a no-op when
+   thread support is disabled at compile time.
 
 
 .. c:macro:: Py_UNBLOCK_THREADS
 
-   このマクロを展開すると ``_save = PyEval_SaveThread();`` になります:
-   開き波括弧のない :c:macro:`Py_BEGIN_ALLOW_THREADS` と同じです。
-   コンパイル時にスレッドサポートが無効化されていると何も行いません。
+   This macro expands to ``_save = PyEval_SaveThread();``: it is equivalent to
+   :c:macro:`Py_BEGIN_ALLOW_THREADS` without the opening brace and variable
+   declaration.  It is a no-op when thread support is disabled at compile time.
 
-.. Low-level API
 
-低レベルAPI
+Low-level API
 -------------
 
-以下の全ての関数はコンパイル時にスレッドサポートが有効になっている時だけ
-利用でき、呼び出すのはGILがすでに作成されている
-場合だけにしなくてはなりません。
+All of the following functions are only available when thread support is enabled
+at compile time, and must be called only when the global interpreter lock has
+been created.
 
 
 .. c:function:: PyInterpreterState* PyInterpreterState_New()
 
-   新しいインタプリタ状態オブジェクトを生成します。
-   GIL を保持しておく必要はありませんが、この関数を次々に
-   呼び出す必要がある場合には保持しておいたほうがよいでしょう。
+   Create a new interpreter state object.  The global interpreter lock need not
+   be held, but may be held if it is necessary to serialize calls to this
+   function.
 
 
 .. c:function:: void PyInterpreterState_Clear(PyInterpreterState *interp)
 
-   インタプリタ状態オブジェクト内の全ての情報をリセットします。
-   GIL を保持していなければなりません。
+   Reset all information in an interpreter state object.  The global interpreter
+   lock must be held.
 
 
 .. c:function:: void PyInterpreterState_Delete(PyInterpreterState *interp)
 
-   インタプリタ状態オブジェクトを破壊します。GIL を保持しておく必要はありません。
-   インタプリタ状態は :c:func:`PyInterpreterState_Clear` であらかじめリセットしておかなければなりません。
+   Destroy an interpreter state object.  The global interpreter lock need not be
+   held.  The interpreter state must have been reset with a previous call to
+   :c:func:`PyInterpreterState_Clear`.
 
 
 .. c:function:: PyThreadState* PyThreadState_New(PyInterpreterState *interp)
 
-   指定したインタプリタオブジェクトに属する新たなスレッド状態オブジェクトを生成します。
-   GIL を保持しておく必要はありませんが、この関数を次々に呼び出す
-   必要がある場合には保持しておいたほうがよいでしょう。
+   Create a new thread state object belonging to the given interpreter object.
+   The global interpreter lock need not be held, but may be held if it is
+   necessary to serialize calls to this function.
 
 
 .. c:function:: void PyThreadState_Clear(PyThreadState *tstate)
 
-   スレッド状態オブジェクト内の全ての情報をリセットします。
-   GIL を保持していなければなりません。
+   Reset all information in a thread state object.  The global interpreter lock
+   must be held.
 
 
 .. c:function:: void PyThreadState_Delete(PyThreadState *tstate)
 
-   スレッド状態オブジェクトを破壊します。GIL を保持する必要はありません。
-   スレッド状態は :c:func:`PyThreadState_Clear` であらかじめリセットしておかなければなりません。
+   Destroy a thread state object.  The global interpreter lock need not be held.
+   The thread state must have been reset with a previous call to
+   :c:func:`PyThreadState_Clear`.
 
 
 .. c:function:: PyObject* PyThreadState_GetDict()
 
-   拡張モジュールがスレッド固有の状態情報を保存できるような辞書を返します。
-   各々の拡張モジュールが辞書に状態情報を保存するためには唯一のキーを
-   使わねばなりません。現在のスレッド状態がない時にこの関数を呼び出してもかまいません。この関数が
-   *NULL* を返す場合、例外はまったく送出されず、呼び出し側は現在のスレッド状態が利用できないと考えねばなりません。
+   Return a dictionary in which extensions can store thread-specific state
+   information.  Each extension should use a unique key to use to store state in
+   the dictionary.  It is okay to call this function when no current thread state
+   is available. If this function returns *NULL*, no exception has been raised and
+   the caller should assume no current thread state is available.
 
    .. versionchanged:: 2.3
-      以前は、現在のスレッドがアクティブなときのみ呼び出せるようになっており、
-      *NULL* は例外が送出されたことを意味していました.
+      Previously this could only be called when a current thread is active, and *NULL*
+      meant that an exception was raised.
 
 
 .. c:function:: int PyThreadState_SetAsyncExc(long id, PyObject *exc)
 
-   スレッド内で非同期的に例外を送出します。 *id* 引数はターゲットとなるスレッドのスレッド id です; *exc* は送出する例外オブジェクトです。
-   この関数は *exc* に対する参照を一切盗み取りません。素朴な間違いを防ぐため、この関数を呼び出すには独自に C 拡張モジュールを書かねばなりません。
-   GIL を保持した状態で呼び出さなければなりません。
-
-   変更を受けたスレッド状態の数を返します; これは普通は1ですが、スレッドidが見つからなかった場合は0になります。もし *exc* が
-   :const:`NULL` であれば、そのスレッドで保留されている例外があればクリアします。この場合は例外は発生しません。
+   Asynchronously raise an exception in a thread. The *id* argument is the thread
+   id of the target thread; *exc* is the exception object to be raised. This
+   function does not steal any references to *exc*. To prevent naive misuse, you
+   must write your own C extension to call this.  Must be called with the GIL held.
+   Returns the number of thread states modified; this is normally one, but will be
+   zero if the thread id isn't found.  If *exc* is :const:`NULL`, the pending
+   exception (if any) for the thread is cleared. This raises no exceptions.
 
    .. versionadded:: 2.3
 
 
 .. c:function:: void PyEval_AcquireThread(PyThreadState *tstate)
 
-   GIL を獲得し、現在のスレッド状態を *tstate* に設定します。
-   *tstate* は *NULL* であってはなりません。ロックはあらかじめ作成されていなければなりません。
-   この関数を呼び出したスレッドがすでにロックを獲得している場合、デッドロックに陥ります。
+   Acquire the global interpreter lock and set the current thread state to
+   *tstate*, which should not be *NULL*.  The lock must have been created earlier.
+   If this thread already has the lock, deadlock ensues.
 
-   :c:func:`PyEval_RestoreThread` はより高レベルな関数で常に(スレッドサポートが無効な場合や
-   スレッドが初期化されていない場合でも)利用できます。
+   :c:func:`PyEval_RestoreThread` is a higher-level function which is always
+   available (even when thread support isn't enabled or when threads have
+   not been initialized).
 
 
 .. c:function:: void PyEval_ReleaseThread(PyThreadState *tstate)
 
-   現在のスレッド状態をリセットして *NULL* にし、GIL を解放します。
-   ロックはあらかじめ作成されていなければならず、かつ現在のスレッドが保持していなければなりません。
-   *tstate* は *NULL* であってはなりませんが、その値が現在のスレッド状態を表現しているかどうかを
-   調べるためにだけ使われます --- もしそうでなければ、致命的エラーが報告されます。
+   Reset the current thread state to *NULL* and release the global interpreter
+   lock.  The lock must have been created earlier and must be held by the current
+   thread.  The *tstate* argument, which must not be *NULL*, is only used to check
+   that it represents the current thread state --- if it isn't, a fatal error is
+   reported.
 
-   :c:func:`PyEval_SaveThread` はより高レベルな関数で常に(スレッドサポートが無効な場合や
-   スレッドが初期化されていない場合でも)利用できます。
+   :c:func:`PyEval_SaveThread` is a higher-level function which is always
+   available (even when thread support isn't enabled or when threads have
+   not been initialized).
 
 
 .. c:function:: void PyEval_AcquireLock()
 
-   GILを獲得します。ロックは前もって作成されていなければなりません。
-   この関数を呼び出したスレッドがすでにロックを獲得している場合、デッドロックに陥ります。
+   Acquire the global interpreter lock.  The lock must have been created earlier.
+   If this thread already has the lock, a deadlock ensues.
 
    .. warning::
+      This function does not change the current thread state.  Please use
+      :c:func:`PyEval_RestoreThread` or :c:func:`PyEval_AcquireThread`
+      instead.
 
-      この関数は現在のスレッド状態を変更しません。代わりに
-      :c:func:`PyEval_RestoreThread` か :c:func:`PyEval_AcquireThread` を利用してください。
 
 .. c:function:: void PyEval_ReleaseLock()
 
-   GILを解放します。ロックは前もって作成されていなければなりません。
+   Release the global interpreter lock.  The lock must have been created earlier.
 
    .. warning::
+      This function does not change the current thread state.  Please use
+      :c:func:`PyEval_SaveThread` or :c:func:`PyEval_ReleaseThread`
+      instead.
 
-      この関数は現在のスレッド状態を変更しません。代わりに
-      :c:func:`PyEval_SaveThread` か :c:func:`PyEval_ReleaseThread` を利用してください。
 
+Sub-interpreter support
+=======================
 
-.. Sub-interpreter support
+While in most uses, you will only embed a single Python interpreter, there
+are cases where you need to create several independent interpreters in the
+same process and perhaps even in the same thread.  Sub-interpreters allow
+you to do that.  You can switch between sub-interpreters using the
+:c:func:`PyThreadState_Swap` function.  You can create and destroy them
+using the following functions:
 
-サブインタプリタサポート
-==========================
-
-ほとんどの場合は埋め込む Python インタプリタは1つだけですが、いくつかの場合に
-同一プロセス内、あるいは同一スレッド内で、複数の独立したインタプリタを作成する
-必要があります。
-サブインタプリタはこれを可能にします。
-:c:func:`PyThreadState_Swap` 関数を使ってサブインタプリタを切り替えることができます。
-以下の関数を使ってサブインタプリタの作成と削除を行えます。
 
 .. c:function:: PyThreadState* Py_NewInterpreter()
 
    .. index::
-      module: __builtin__
+      module: builtins
       module: __main__
       module: sys
       single: stdout (in module sys)
       single: stderr (in module sys)
       single: stdin (in module sys)
 
-   新しいサブインタプリタ (sub-interpreter) を生成します。
-   サブインタプリタとは、(ほぼ完全に) 個別に分割された Python コードの実行環境です。
-   特に、新しいサブインタプリタは、 import されるモジュール全てについて個別のバージョンを持ち、
-   これには基盤となるモジュール :mod:`__builtin__`, :mod:`__main__` および :mod:`sys`
-   も含まれます。ロード済みのモジュールからなるテーブル
-   (``sys.modules``)  およびモジュール検索パス (``sys.path``) もサブインタプリタ
-   毎に別個のものになります。
-   新たなサブインタプリタ環境には ``sys.argv`` 変数がありません。
-   また、サブインタプリタは新たな標準 I/O ストリーム ``sys.stdin``, ``sys.stdout``, ``sys.stderr``
-   を持ちます (とはいえ、これらのストリームは根底にある C ライブラリの同じ :c:type:`FILE`
-   構造体を参照しています)。
+   Create a new sub-interpreter.  This is an (almost) totally separate environment
+   for the execution of Python code.  In particular, the new interpreter has
+   separate, independent versions of all imported modules, including the
+   fundamental modules :mod:`builtins`, :mod:`__main__` and :mod:`sys`.  The
+   table of loaded modules (``sys.modules``) and the module search path
+   (``sys.path``) are also separate.  The new environment has no ``sys.argv``
+   variable.  It has new standard I/O stream file objects ``sys.stdin``,
+   ``sys.stdout`` and ``sys.stderr`` (however these refer to the same underlying
+   file descriptors).
 
-   戻り値は、新たなサブインタプリタが生成したスレッド状態 (thread state) オブジェクトのうち、
-   最初のものを指しています。
-   このスレッド状態が現在のスレッド状態 (current thread state) になります。
-   実際のスレッドが生成されるわけではないので注意してください;
-   下記のスレッド状態に関する議論を参照してください。
-   新たなインタプリタの生成に失敗すると、 *NULL* を返します;
-   例外状態はセットされませんが、これは例外状態が現在のスレッド状態に保存されることになっていて、
-   現在のスレッド状態なるものが存在しないことがあるからです。
-   (他の Python/C API 関数のように、この関数を呼び出す前にはGILが保持されていなければならず、
-   関数が処理を戻した際にも保持されたままになります; しかし、他の Python/C API
-   関数とは違い、関数から戻ったときの現在のスレッド状態が関数に入るときと同じとは限らないので注意してください)。
+   The return value points to the first thread state created in the new
+   sub-interpreter.  This thread state is made in the current thread state.
+   Note that no actual thread is created; see the discussion of thread states
+   below.  If creation of the new interpreter is unsuccessful, *NULL* is
+   returned; no exception is set since the exception state is stored in the
+   current thread state and there may not be a current thread state.  (Like all
+   other Python/C API functions, the global interpreter lock must be held before
+   calling this function and is still held when it returns; however, unlike most
+   other Python/C API functions, there needn't be a current thread state on
+   entry.)
 
    .. index::
       single: Py_Finalize()
       single: Py_Initialize()
 
-   拡張モジュールは以下のような形で (サブ) インタプリタ間で共有されます:
-   ある特定の拡張モジュールを最初に import すると、モジュールを通常通りに初期化し、そのモジュールの辞書の
-   (浅い) コピーをしまい込んでおきます。他の (サブ) インタプリタが同じ拡張モジュールを import すると、
-   新たなモジュールを初期化し、先ほどのコピーの内容で辞書の値を埋めます; 拡張モジュールの ``init``
-   関数は呼び出されません。この挙動は、 :c:func:`Py_Finalize` および :c:func:`Py_Initialize` を呼び出して
-   インタプリタを完全に再初期化した後に拡張モジュールを import した際の挙動とは異なるので注意してください;
-   再初期化後に import を行うと、拡張モジュールの ``initmodule`` は再度 *呼び出されます* 。
+   Extension modules are shared between (sub-)interpreters as follows: the first
+   time a particular extension is imported, it is initialized normally, and a
+   (shallow) copy of its module's dictionary is squirreled away.  When the same
+   extension is imported by another (sub-)interpreter, a new module is initialized
+   and filled with the contents of this copy; the extension's ``init`` function is
+   not called.  Note that this is different from what happens when an extension is
+   imported after the interpreter has been completely re-initialized by calling
+   :c:func:`Py_Finalize` and :c:func:`Py_Initialize`; in that case, the extension's
+   ``initmodule`` function *is* called again.
 
    .. index:: single: close() (in module os)
 
@@ -884,219 +868,284 @@ Python ソース配布物内の使用例を見てください。
 
    .. index:: single: Py_Finalize()
 
-   指定されたスレッド状態 *tstate* で表現される (サブ) インタプリタを抹消します。
-   *tstate* は現在のスレッド状態でなければなりません。
-   下記のスレッド状態に関する議論を参照してください。関数呼び出しが戻ったとき、
-   現在のスレッド状態は *NULL* になっています。
-   このインタプリタに関連付けられた全てのスレッド状態は抹消されます。
-   (この関数を呼び出す前にはGILを保持しておかねばならず、ロックは関数が戻ったときも
-   保持されています。) :c:func:`Py_Finalize` は、その時点で
-   明示的に抹消されていない全てのサブインタプリタを抹消します。
+   Destroy the (sub-)interpreter represented by the given thread state. The given
+   thread state must be the current thread state.  See the discussion of thread
+   states below.  When the call returns, the current thread state is *NULL*.  All
+   thread states associated with this interpreter are destroyed.  (The global
+   interpreter lock must be held before calling this function and is still held
+   when it returns.)  :c:func:`Py_Finalize` will destroy all sub-interpreters that
+   haven't been explicitly destroyed at that point.
 
 
-.. Bugs and caveats
-
-バグと注意事項
+Bugs and caveats
 ----------------
 
-サブインタプリタ (とメインインタプリタ) は同じプロセスの一部分なので、インタプリタ間の隔離は
-完璧ではありません --- 例えば、 :func:`os.close` のような低レベルのファイル操作を使うと、
-(偶然なり故意なりに) 互いのインタプリタ下にある開かれたファイルに影響を及ぼせてしまいます。
-拡張モジュールを (サブ) インタプリタ間で共有する方法のせいで、拡張モジュールによっては正しく動作しないかもしれません;
-拡張モジュールが (静的な) グローバル変数を利用している場合や、拡張モジュールが初期化後に自身のモジュール辞書を操作する場合には特にそうです。
-一つのサブインタプリタで生成されたオブジェクトは他のサブインタプリタの名前空間への挿入が可能です; ユーザ定義関数、メソッド、インスタンス
-およびクラスをサブインタプリタをサブインタプリタ間で共有しないように十分注意してください。というのは、これらの共有オブジェクトが実行した import
-文は間違った (サブ) インタプリタのロード済みモジュール辞書に影響を及ぼす場合があるからです。
+Because sub-interpreters (and the main interpreter) are part of the same
+process, the insulation between them isn't perfect --- for example, using
+low-level file operations like  :func:`os.close` they can
+(accidentally or maliciously) affect each other's open files.  Because of the
+way extensions are shared between (sub-)interpreters, some extensions may not
+work properly; this is especially likely when the extension makes use of
+(static) global variables, or when the extension manipulates its module's
+dictionary after its initialization.  It is possible to insert objects created
+in one sub-interpreter into a namespace of another sub-interpreter; this should
+be done with great care to avoid sharing user-defined functions, methods,
+instances or classes between sub-interpreters, since import operations executed
+by such objects may affect the wrong (sub-)interpreter's dictionary of loaded
+modules.
 
-サブインタプリタを :c:func:`PyGILState_\*` API と組み合わせるのが難しいことにも注意してください。
-これらのAPIはPythonのスレッド状態とOSレベルスレッドが1対1で対応していることを前提にしていて、
-サブインタプリタが存在するとその前提が崩れるからです。
-対応する :c:func:`PyGILState_Ensure` と :c:func:`PyGILState_Release` の呼び出しのペアの間では、
-サブインタプリタの切り替えを行わないことを強く推奨します。
-さらに、(:mod:`ctypes` のような)これらのAPIを使ってPythonの外で作られたスレッドから
-Pythonコードを実行している拡張モジュールはサブインタプリタを使うと壊れる可能性があります。
+Also note that combining this functionality with :c:func:`PyGILState_\*` APIs
+is delicate, because these APIs assume a bijection between Python thread states
+and OS-level threads, an assumption broken by the presence of sub-interpreters.
+It is highly recommended that you don't switch sub-interpreters between a pair
+of matching :c:func:`PyGILState_Ensure` and :c:func:`PyGILState_Release` calls.
+Furthermore, extensions (such as :mod:`ctypes`) using these APIs to allow calling
+of Python code from non-Python created threads will probably be broken when using
+sub-interpreters.
 
 
-.. Asynchronous Notifications
-
-非同期通知
+Asynchronous Notifications
 ==========================
 
-メインのインタプリタスレッドへの非同期通知機構が提供されています。
-この通知は関数ポインタと void 引数の形をしています。
+A mechanism is provided to make asynchronous notifications to the main
+interpreter thread.  These notifications take the form of a function
+pointer and a void pointer argument.
 
-.. index:: single: setcheckinterval() (in module sys)
-
-各チェックインターバルにおいて、GILがリリースされて再取得されるときに、
-Python はそのような提供された関数を呼び出します。
-この関数は例えば非同期IOハンドラなどが利用できます。
-通知はワーカースレッドなどからスケジュールされ、実際の呼び出しはメインスレッドで
-最初の、GILを所有していて任意の Python API 呼び出しが可能なタイミングで実行されます。
 
 .. c:function:: int Py_AddPendingCall(int (*func)(void *), void *arg)
 
    .. index:: single: Py_AddPendingCall()
 
-   Python のメインスレッドへの通知を登録します。
-   成功した場合、 *func* は引数 *arg* と共に、最初の適切なタイミングで呼び出されます。
-   *func* は GIL を取得した状態で呼び出されるので、任意の Python API を利用することができ、
-   オブジェクトの属性にIOの完了を知らせるなど、任意の動作をすることができます。
-   通知関数は成功したときには 0 を、例外を通知するときには -1 を返さなければなりません。
-   通知関数は他の通知関数を再帰的に実行するために割り込まれることはありませんが、
-   たとえばPythonコードをコールバックしたときにGILを解放して他のスレッドに切り替え
-   られる可能性はあります。
+   Schedule a function to be called from the main interpreter thread.  On
+   success, 0 is returned and *func* is queued for being called in the
+   main thread.  On failure, -1 is returned without setting any exception.
 
-   この関数は成功して通知関数がスケジュールされたときは 0 を返します。
-   それ以外の場合、たとえば通知バッファがいっぱいのときは、例外を設定せずに
-   -1 を返します。
+   When successfully queued, *func* will be *eventually* called from the
+   main interpreter thread with the argument *arg*.  It will be called
+   asynchronously with respect to normally running Python code, but with
+   both these conditions met:
 
-   この関数はどのスレッドからでも、 Python スレッドでもそれ以外のシステムスレッドからでも
-   呼び出すことができます。
-   Python スレッドから呼び出される場合は、GILを確保していてもいなくてもかまいません。
+   * on a :term:`bytecode` boundary;
+   * with the main thread holding the :term:`global interpreter lock`
+     (*func* can therefore use the full C API).
+
+   *func* must return 0 on success, or -1 on failure with an exception
+   set.  *func* won't be interrupted to perform another asynchronous
+   notification recursively, but it can still be interrupted to switch
+   threads if the global interpreter lock is released.
+
+   This function doesn't need a current thread state to run, and it doesn't
+   need the global interpreter lock.
+
+   .. warning::
+      This is a low-level function, only useful for very special cases.
+      There is no guarantee that *func* will be called as quick as
+      possible.  If the main thread is busy executing a system call,
+      *func* won't be called before the system call returns.  This
+      function is generally **not** suitable for calling Python code from
+      arbitrary C threads.  Instead, use the :ref:`PyGILState API<gilstate>`.
 
    .. versionadded:: 2.7
 
 
-
 .. _profiling:
 
-プロファイルとトレース (profiling and tracing)
-==============================================
+Profiling and Tracing
+=====================
 
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
-Python インタプリタは、プロファイル: 分析 (profile) や実行のトレース: 追跡 (trace) といった機能を組み込むために低水準の
-サポートを提供しています。このサポートは、プロファイルやデバッグ、適用範囲分析 (coverage analysis) ツールなどに使われます。
+The Python interpreter provides some low-level support for attaching profiling
+and execution tracing facilities.  These are used for profiling, debugging, and
+coverage analysis tools.
 
-Python 2.2 になってから、この機能の実装は実質的に作り直され、 C から呼び出すためのインタフェースが追加されました。この C
-インタフェースは、プロファイルやトレース作業時に、 Python レベルの呼び出し可能オブジェクトが呼び出されることによるオーバヘッドを避け、直接 C
-関数呼び出しが行えるようにしています。プロファイルやトレース機能の本質的な特性は変わっていません;
-インタフェースではとレース関数をスレッドごとにインストールでき、トレース関数に報告される基本イベント (basic event) は以前のバージョンにおいて
-Python レベルのトレース関数で報告されていたものと同じです。
+Starting with Python 2.2, the implementation of this facility was substantially
+revised, and an interface from C was added.  This C interface allows the
+profiling or tracing code to avoid the overhead of calling through Python-level
+callable objects, making a direct C function call instead.  The essential
+attributes of the facility have not changed; the interface allows trace
+functions to be installed per-thread, and the basic events reported to the trace
+function are the same as had been reported to the Python-level trace functions
+in previous versions.
 
 
 .. c:type:: int (*Py_tracefunc)(PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
 
-   :c:func:`PyEval_SetProfile` および :c:func:`PyEval_SetTrace`
-   を使って登録できるトレース関数の形式です。最初のパラメタはオブジェクトで、登録関数に *obj* として渡されます。 *frame*
-   はイベントが属している実行フレームオブジェクトで、 *what* は定数 :const:`PyTrace_CALL`,
+   The type of the trace function registered using :c:func:`PyEval_SetProfile` and
+   :c:func:`PyEval_SetTrace`. The first parameter is the object passed to the
+   registration function as *obj*, *frame* is the frame object to which the event
+   pertains, *what* is one of the constants :const:`PyTrace_CALL`,
    :const:`PyTrace_EXCEPTION`, :const:`PyTrace_LINE`, :const:`PyTrace_RETURN`,
-   :const:`PyTrace_C_CALL`, :const:`PyTrace_C_EXCEPTION`,
-   あるいは :const:`PyTrace_C_RETURN` のいずれかで、 *arg* は *what* の値によって以下のように異なります:
+   :const:`PyTrace_C_CALL`, :const:`PyTrace_C_EXCEPTION`, or
+   :const:`PyTrace_C_RETURN`, and *arg* depends on the value of *what*:
 
-   +------------------------------+-------------------------------------------+
-   | *what* の値                  | *arg* の意味                              |
-   +==============================+===========================================+
-   | :const:`PyTrace_CALL`        | 常に *NULL* です。                        |
-   +------------------------------+-------------------------------------------+
-   | :const:`PyTrace_EXCEPTION`   | :func:`sys.exc_info` の返す例外情報です。 |
-   +------------------------------+-------------------------------------------+
-   | :const:`PyTrace_LINE`        | 常に *NULL* です。                        |
-   +------------------------------+-------------------------------------------+
-   | :const:`PyTrace_RETURN`      | 呼び出し側に返される予定の値か、例外に    |
-   |                              | よって関数を抜ける場合は *NULL* です。    |
-   +------------------------------+-------------------------------------------+
-   | :const:`PyTrace_C_CALL`      | 呼び出される関数オブジェクト              |
-   +------------------------------+-------------------------------------------+
-   | :const:`PyTrace_C_EXCEPTION` | 呼び出された関数オブジェクト              |
-   +------------------------------+-------------------------------------------+
-   | :const:`PyTrace_C_RETURN`    | 呼び出された関数オブジェクト              |
-   +------------------------------+-------------------------------------------+
+   +------------------------------+--------------------------------------+
+   | Value of *what*              | Meaning of *arg*                     |
+   +==============================+======================================+
+   | :const:`PyTrace_CALL`        | Always *NULL*.                       |
+   +------------------------------+--------------------------------------+
+   | :const:`PyTrace_EXCEPTION`   | Exception information as returned by |
+   |                              | :func:`sys.exc_info`.                |
+   +------------------------------+--------------------------------------+
+   | :const:`PyTrace_LINE`        | Always *NULL*.                       |
+   +------------------------------+--------------------------------------+
+   | :const:`PyTrace_RETURN`      | Value being returned to the caller,  |
+   |                              | or *NULL* if caused by an exception. |
+   +------------------------------+--------------------------------------+
+   | :const:`PyTrace_C_CALL`      | Function object being called.        |
+   +------------------------------+--------------------------------------+
+   | :const:`PyTrace_C_EXCEPTION` | Function object being called.        |
+   +------------------------------+--------------------------------------+
+   | :const:`PyTrace_C_RETURN`    | Function object being called.        |
+   +------------------------------+--------------------------------------+
 
 
 .. c:var:: int PyTrace_CALL
 
-   関数やメソッドが新たに呼び出されたり、ジェネレータが新たなエントリの処理に入ったことを報告する際の、 :c:type:`Py_tracefunc` の *what*
-   の値です。イテレータやジェネレータ関数の生成は、対応するフレーム内の Python バイトコードに制御の委譲 (control transfer)
-   が起こらないため報告されないので注意してください。
+   The value of the *what* parameter to a :c:type:`Py_tracefunc` function when a new
+   call to a function or method is being reported, or a new entry into a generator.
+   Note that the creation of the iterator for a generator function is not reported
+   as there is no control transfer to the Python bytecode in the corresponding
+   frame.
 
 
 .. c:var:: int PyTrace_EXCEPTION
 
-   例外が送出された際の :c:type:`Py_tracefunc` の *what* の値です。現在実行されているフレームで例外がセットされ、何らかのバイトコードが
-   処理された後に、 *what* にこの値がセットされた状態でコールバック関数が呼び出されます。
-
-   この結果、例外の伝播によって Python が呼び出しスタックを逆戻りする際に、各フレームから処理が戻るごとにコールバック関数が呼び出されます。
-   トレース関数だけがこれらのイベントを受け取ります; プロファイラはこの種のイベントを必要としません。
+   The value of the *what* parameter to a :c:type:`Py_tracefunc` function when an
+   exception has been raised.  The callback function is called with this value for
+   *what* when after any bytecode is processed after which the exception becomes
+   set within the frame being executed.  The effect of this is that as exception
+   propagation causes the Python stack to unwind, the callback is called upon
+   return to each frame as the exception propagates.  Only trace functions receives
+   these events; they are not needed by the profiler.
 
 
 .. c:var:: int PyTrace_LINE
 
-   行番号イベントを報告するときに (プロファイル関数ではなく) トレース関数の *what* パラメタとして渡す値です。
+   The value passed as the *what* parameter to a trace function (but not a
+   profiling function) when a line-number event is being reported.
 
 
 .. c:var:: int PyTrace_RETURN
 
-   関数呼び出しが例外の伝播なしに返るときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
+   The value for the *what* parameter to :c:type:`Py_tracefunc` functions when a
+   call is returning without propagating an exception.
 
 
 .. c:var:: int PyTrace_C_CALL
 
-   C関数を呼び出す直前に :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
+   The value for the *what* parameter to :c:type:`Py_tracefunc` functions when a C
+   function is about to be called.
 
 
 .. c:var:: int PyTrace_C_EXCEPTION
 
-   C関数が例外を送出したときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
+   The value for the *what* parameter to :c:type:`Py_tracefunc` functions when a C
+   function has raised an exception.
 
 
 .. c:var:: int PyTrace_C_RETURN
 
-   C関数から戻るときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
+   The value for the *what* parameter to :c:type:`Py_tracefunc` functions when a C
+   function has returned.
 
 
 .. c:function:: void PyEval_SetProfile(Py_tracefunc func, PyObject *obj)
 
-   プロファイル関数を *func* に設定します。 *obj* パラメタは関数の第一パラメタとして渡され、何らかの Python オブジェクトかまたは
-   *NULL* になります。プロファイル関数がスレッド状態を維持する必要があるなら、各々のスレッドに異なる *obj* を使うことで、状態を
-   記憶しておく便利でスレッドセーフな場所を提供できます。プロファイル関数は、モニタされているイベントのうち、行番号イベントを除く全ての
-   イベントに対して呼び出されます。
+   Set the profiler function to *func*.  The *obj* parameter is passed to the
+   function as its first parameter, and may be any Python object, or *NULL*.  If
+   the profile function needs to maintain state, using a different value for *obj*
+   for each thread provides a convenient and thread-safe place to store it.  The
+   profile function is called for all monitored events except the line-number
+   events.
 
 
 .. c:function:: void PyEval_SetTrace(Py_tracefunc func, PyObject *obj)
 
-   トレース関数を *func* にセットします。 :c:func:`PyEval_SetProfile` に似ていますが、トレース関数は
-   行番号イベントを受け取る点が違います。
+   Set the tracing function to *func*.  This is similar to
+   :c:func:`PyEval_SetProfile`, except the tracing function does receive line-number
+   events.
 
+.. c:function:: PyObject* PyEval_GetCallStats(PyObject *self)
+
+   Return a tuple of function call counts.  There are constants defined for the
+   positions within the tuple:
+
+   +-------------------------------+-------+
+   | Name                          | Value |
+   +===============================+=======+
+   | :const:`PCALL_ALL`            | 0     |
+   +-------------------------------+-------+
+   | :const:`PCALL_FUNCTION`       | 1     |
+   +-------------------------------+-------+
+   | :const:`PCALL_FAST_FUNCTION`  | 2     |
+   +-------------------------------+-------+
+   | :const:`PCALL_FASTER_FUNCTION`| 3     |
+   +-------------------------------+-------+
+   | :const:`PCALL_METHOD`         | 4     |
+   +-------------------------------+-------+
+   | :const:`PCALL_BOUND_METHOD`   | 5     |
+   +-------------------------------+-------+
+   | :const:`PCALL_CFUNCTION`      | 6     |
+   +-------------------------------+-------+
+   | :const:`PCALL_TYPE`           | 7     |
+   +-------------------------------+-------+
+   | :const:`PCALL_GENERATOR`      | 8     |
+   +-------------------------------+-------+
+   | :const:`PCALL_OTHER`          | 9     |
+   +-------------------------------+-------+
+   | :const:`PCALL_POP`            | 10    |
+   +-------------------------------+-------+
+
+   :const:`PCALL_FAST_FUNCTION` means no argument tuple needs to be created.
+   :const:`PCALL_FASTER_FUNCTION` means that the fast-path frame setup code is used.
+
+   If there is a method call where the call can be optimized by changing
+   the argument tuple and calling the function directly, it gets recorded
+   twice.
+
+   This function is only present if Python is compiled with :const:`CALL_PROFILE`
+   defined.
 
 .. _advanced-debugging:
 
-高度なデバッガサポート (advanced debugger support)
-==================================================
+Advanced Debugger Support
+=========================
 
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
-以下の関数は高度なデバッグツールでの使用のためだけのものです。
+These functions are only intended to be used by advanced debugging tools.
 
 
 .. c:function:: PyInterpreterState* PyInterpreterState_Head()
 
-   インタプリタ状態オブジェクトからなるリストのうち、先頭にあるものを返します。
+   Return the interpreter state object at the head of the list of all such objects.
 
    .. versionadded:: 2.2
 
 
 .. c:function:: PyInterpreterState* PyInterpreterState_Next(PyInterpreterState *interp)
 
-   インタプリタ状態オブジェクトからなるリストのうち、 *interp* の次にあるものを返します。
+   Return the next interpreter state object after *interp* from the list of all
+   such objects.
 
    .. versionadded:: 2.2
 
 
 .. c:function:: PyThreadState * PyInterpreterState_ThreadHead(PyInterpreterState *interp)
 
-   インタプリタ *interp* に関連付けられているスレッドからなるリストのうち、先頭にある :c:type:`PyThreadState`
-   オブジェクトを返します。
+   Return the pointer to the first :c:type:`PyThreadState` object in the list of
+   threads associated with the interpreter *interp*.
 
    .. versionadded:: 2.2
 
 
 .. c:function:: PyThreadState* PyThreadState_Next(PyThreadState *tstate)
 
-   *tstate* と同じ :c:type:`PyInterpreterState` オブジェクトに属しているスレッド状態オブジェクトのうち、 *tstate*
-   の次にあるものを返します。
+   Return the next thread state object after *tstate* from the list of all such
+   objects belonging to the same :c:type:`PyInterpreterState` object.
 
    .. versionadded:: 2.2
 

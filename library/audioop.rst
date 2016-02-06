@@ -1,219 +1,237 @@
 
-:mod:`audioop` --- 生の音声データを操作する
-===========================================
+:mod:`audioop` --- Manipulate raw audio data
+============================================
 
 .. module:: audioop
-   :synopsis: 生の音声データを操作する
+   :synopsis: Manipulate raw audio data.
 
 
-:mod:`audioop` モジュールは音声データを操作する関数を収録しています。このモジュールは、Python 文字列型中に入っている 8,  16,
-32 ビットの符号付き整数でできた音声データ、すなわち :mod:`al` および :mod:`sunaudiodev`
-で使われているのと同じ形式の音声データを操作します。特に指定の無いかぎり、スカラ量を表す要素はすべて整数型になっています。
+The :mod:`audioop` module contains some useful operations on sound fragments.
+It operates on sound fragments consisting of signed integer samples 8, 16 or 32
+bits wide, stored in Python strings.  This is the same format as used by the
+:mod:`al` and :mod:`sunaudiodev` modules.  All scalar items are integers, unless
+specified otherwise.
 
 .. index::
    single: Intel/DVI ADPCM
    single: ADPCM, Intel/DVI
+   single: a-LAW
    single: u-LAW
 
-このモジュールはa-LAW、u-LAWそしてIntel/DVI ADPCMエンコードをサポートしています。
+This module provides support for a-LAW, u-LAW and Intel/DVI ADPCM encodings.
 
 .. This para is mostly here to provide an excuse for the index entries...
 
-複雑な操作のうちいくつかはサンプル幅が 16 ビットのデータに対してのみ働きますが、それ以外は常にサンプル幅を操作のパラメタとして (バイト単位で)
-渡します。
+A few of the more complicated operations only take 16-bit samples, otherwise the
+sample size (in bytes) is always a parameter of the operation.
 
-このモジュールでは以下の変数と関数を定義しています：
+The module defines the following variables and functions:
 
 
 .. exception:: error
 
-   この例外は、未知のサンプル当たりのバイト数を指定した時など、全般的なエラーに対して送出されます。
+   This exception is raised on all errors, such as unknown number of bytes per
+   sample, etc.
 
 
 .. function:: add(fragment1, fragment2, width)
 
-   パラメタに渡した 2 つのデータを加算した結果を返します。 *width* はサンプル幅をバイトで表したもので、
-   ``1`` 、 ``2`` 、 ``4`` のうちいずれかです。 2 つのデータは同じサンプル幅でなければなりません。
+   Return a fragment which is the addition of the two samples passed as parameters.
+   *width* is the sample width in bytes, either ``1``, ``2`` or ``4``.  Both
+   fragments should have the same length.  Samples are truncated in case of overflow.
 
 
 .. function:: adpcm2lin(adpcmfragment, width, state)
 
-   Intel/DVI ADPCM 形式のデータをリニア (linear) 形式にデコードします。 ADPCM
-   符号化方式の詳細については :func:`lin2adpcm` の説明を参照して下さい。 ``(sample, newstate)`` からなる
-   タプルを返し、サンプルは *width* に指定した幅になります。
+   Decode an Intel/DVI ADPCM coded fragment to a linear fragment.  See the
+   description of :func:`lin2adpcm` for details on ADPCM coding. Return a tuple
+   ``(sample, newstate)`` where the sample has the width specified in *width*.
 
 
 .. function:: alaw2lin(fragment, width)
 
-   a-LAW形式のデータをリニア (linear) 形式に変換します。 a-LAW形式は常に 8 ビットのサンプルを使用するので、ここでは *width*
-   は単に出力データのサンプル幅となります。
+   Convert sound fragments in a-LAW encoding to linearly encoded sound fragments.
+   a-LAW encoding always uses 8 bits samples, so *width* refers only to the sample
+   width of the output fragment here.
 
    .. versionadded:: 2.5
 
 
 .. function:: avg(fragment, width)
 
-   データ中の全サンプルの平均値を返します。
+   Return the average over all samples in the fragment.
 
 
 .. function:: avgpp(fragment, width)
 
-   データ中の全サンプルの平均 peak-peak 振幅を返します。フィルタリングを行っていない場合、このルーチンの有用性は疑問です。
+   Return the average peak-peak value over all samples in the fragment. No
+   filtering is done, so the usefulness of this routine is questionable.
 
 
 .. function:: bias(fragment, width, bias)
 
-   元データの各サンプルにバイアスを加えたデータを返します。
+   Return a fragment that is the original fragment with a bias added to each
+   sample.  Samples wrap around in case of overflow.
 
 
 .. function:: cross(fragment, width)
 
-   引数に渡したデータ中のゼロ交差回数を返します。
+   Return the number of zero crossings in the fragment passed as an argument.
 
 
 .. function:: findfactor(fragment, reference)
 
-   ``rms(add(fragment, mul(reference, -F)))`` を最小にするような係数 *F* 、すなわち、 *reference*
-   に乗算したときにもっとも *fragment* に近くなるような値を返します。 *fragment* と *reference* のサンプル幅はいずれも 2バイト
-   でなければなりません。
+   Return a factor *F* such that ``rms(add(fragment, mul(reference, -F)))`` is
+   minimal, i.e., return the factor with which you should multiply *reference* to
+   make it match as well as possible to *fragment*.  The fragments should both
+   contain 2-byte samples.
 
-   このルーチンの実行に要する時間は ``len(fragment)`` に比例します。
+   The time taken by this routine is proportional to ``len(fragment)``.
 
 
 .. function:: findfit(fragment, reference)
 
-   *reference* を可能な限り *fragment* に一致させようとします (*fragment* は *reference*
-   より長くなければなりません)。この処理は (概念的には) *fragment* からスライスをいくつか取り出し、
-   それぞれについて :func:`findfactor` を使って最良な一致を計算し、誤差が最小の結果を選ぶことで実現します。
-   *fragment* と *reference* のサンプル幅は両方とも2バイトでなければなりません。 ``(offset, factor)``
-   からなるタプルを返します。 *offset* は最適な一致箇所が始まる *fragment* のオフセット値（整
-   数）で、 *factor* は :func:`findfactor` の返す係数 (浮動小数点数) です。
+   Try to match *reference* as well as possible to a portion of *fragment* (which
+   should be the longer fragment).  This is (conceptually) done by taking slices
+   out of *fragment*, using :func:`findfactor` to compute the best match, and
+   minimizing the result.  The fragments should both contain 2-byte samples.
+   Return a tuple ``(offset, factor)`` where *offset* is the (integer) offset into
+   *fragment* where the optimal match started and *factor* is the (floating-point)
+   factor as per :func:`findfactor`.
 
 
 .. function:: findmax(fragment, length)
 
-   *fragment* から、長さが *length* サンプル (バイトではありません!) で最大のエネルギーを持つスライス、
-   すなわち、 ``rms(fragment[i *2:(i+length)* 2])`` を最大にするようなスライスを探し、 *i* を返します。
-   データのはサンプル幅は 2バイトでなければなりません。
+   Search *fragment* for a slice of length *length* samples (not bytes!) with
+   maximum energy, i.e., return *i* for which ``rms(fragment[i*2:(i+length)*2])``
+   is maximal.  The fragments should both contain 2-byte samples.
 
-   このルーチンの実行に要する時間は ``len(fragment)`` に比例します。
+   The routine takes time proportional to ``len(fragment)``.
 
 
 .. function:: getsample(fragment, width, index)
 
-   データ中の *index* サンプル目の値を返します。
+   Return the value of sample *index* from the fragment.
 
 
 .. function:: lin2adpcm(fragment, width, state)
 
-   データを 4 ビットの Intel/DVI ADPCM 符号化方式に変換します。 ADPCM 符号化方式とは適応符号化方式の一つで、あるサンプルと (可変の)
-   ステップだけ離れたその次のサンプルとの差を 4 ビットの整数で表現する方式です。 Intel/DVI ADPCMアルゴリズムは IMA  (国際MIDI協会)
-   に採用されているので、おそらく標準になるはずです。
+   Convert samples to 4 bit Intel/DVI ADPCM encoding.  ADPCM coding is an adaptive
+   coding scheme, whereby each 4 bit number is the difference between one sample
+   and the next, divided by a (varying) step.  The Intel/DVI ADPCM algorithm has
+   been selected for use by the IMA, so it may well become a standard.
 
-   *state* はエンコーダの内部状態が入ったタプルです。エンコーダは ``(adpcmfrag, newstate)`` のタプルを返し、次に
-   :func:`lin2adpcm` を呼び出す時に *newstate* を渡さねばなりません。最初に呼び出す時には *state* に ``None`` を渡しても
-   かまいません。 *adpcmfrag* は ADPCMで符号化されたデータで、バイト当たり 2 つの4ビット値がパックされています。
+   *state* is a tuple containing the state of the coder.  The coder returns a tuple
+   ``(adpcmfrag, newstate)``, and the *newstate* should be passed to the next call
+   of :func:`lin2adpcm`.  In the initial call, ``None`` can be passed as the state.
+   *adpcmfrag* is the ADPCM coded fragment packed 2 4-bit values per byte.
 
 
 .. function:: lin2alaw(fragment, width)
 
-   音声データの各サンプルを a-LAW 符号でエンコードし、Python文字列として返します。a-LAW とは音声符号化方式の一つで、約 13 ビットに相当する
-   ダイナミックレンジをわずか 8 ビットで実現できます。 Sun やその他の音声ハードウェアで使われています。
+   Convert samples in the audio fragment to a-LAW encoding and return this as a
+   Python string.  a-LAW is an audio encoding format whereby you get a dynamic
+   range of about 13 bits using only 8 bit samples.  It is used by the Sun audio
+   hardware, among others.
 
    .. versionadded:: 2.5
 
 
 .. function:: lin2lin(fragment, width, newwidth)
 
-   サンプル幅を 1、2、4 バイト形式の間で変換します。
+   Convert samples between 1-, 2- and 4-byte formats.
 
    .. note::
 
-      .. In some audio formats, such as .WAV files, 16 and 32 bit samples are
-         signed, but 8 bit samples are unsigned.  So when converting to 8 bit wide
-         samples for these formats, you need to also add 128 to the result::
-
-      .WAV のような幾つかのオーディオフォーマットでは、16bitと32bitのサンプルは符号付きですが、
-      8bitのサンプルは符号なしです。
-      そのため、そのようなフォーマットで8bitに変換する場合は、変換結果に128を足さなければなりません。
+      In some audio formats, such as .WAV files, 16 and 32 bit samples are
+      signed, but 8 bit samples are unsigned.  So when converting to 8 bit wide
+      samples for these formats, you need to also add 128 to the result::
 
          new_frames = audioop.lin2lin(frames, old_width, 1)
          new_frames = audioop.bias(new_frames, 1, 128)
 
-      .. The same, in reverse, has to be applied when converting from 8 to 16 or 32
-         bit width samples.
-
-      逆に、8bitから16bitや32bitに変換する場合も、同じことが言えます。
-
+      The same, in reverse, has to be applied when converting from 8 to 16 or 32
+      bit width samples.
 
 
 .. function:: lin2ulaw(fragment, width)
 
-   音声データの各サンプルを u-LAW 符号でエンコードし、Python文字列として返します。 u-LAW とは音声符号化方式の一つで、約 14
-   ビットに相当するダイナミックレンジをわずか 8 ビットで実現できます。 Sun やその他の音声ハードウェアで使われています。
-
-
-.. function:: minmax(fragment, width)
-
-   音声データ全サンプル中における最小値と最大値からなるタプルを返します。
+   Convert samples in the audio fragment to u-LAW encoding and return this as a
+   Python string.  u-LAW is an audio encoding format whereby you get a dynamic
+   range of about 14 bits using only 8 bit samples.  It is used by the Sun audio
+   hardware, among others.
 
 
 .. function:: max(fragment, width)
 
-   音声データ全サンプルの *絶対値* の最大値を返します。
+   Return the maximum of the *absolute value* of all samples in a fragment.
 
 
 .. function:: maxpp(fragment, width)
 
-   音声データの最大 peak-peak 振幅を返します。
+   Return the maximum peak-peak value in the sound fragment.
+
+
+.. function:: minmax(fragment, width)
+
+   Return a tuple consisting of the minimum and maximum values of all samples in
+   the sound fragment.
 
 
 .. function:: mul(fragment, width, factor)
 
-   元のデータの全サンプルに浮動小数点数 *factor* を掛けたデータを返します。オーバフローが起きても例外を送出せず無視します。
+   Return a fragment that has all samples in the original fragment multiplied by
+   the floating-point value *factor*.  Samples are truncated in case of overflow.
 
 
 .. function:: ratecv(fragment, width, nchannels, inrate, outrate, state[, weightA[, weightB]])
 
-   入力したデータのフレームレートを変換します。
+   Convert the frame rate of the input fragment.
 
-   *state* は変換ルーチンの内部状態を入れたタプルです。変換ルーチンは ``(newfragment, newstate)``
-   を返し、次に :func:`ratecv` を呼び出す時には *newstate* を渡さなねばなりません。最初の呼び出しでは ``None`` を渡します。
+   *state* is a tuple containing the state of the converter.  The converter returns
+   a tuple ``(newfragment, newstate)``, and *newstate* should be passed to the next
+   call of :func:`ratecv`.  The initial call should pass ``None`` as the state.
 
-   引数 *weightA* と *weightB* は単純なデジタルフィルタのパラメタで、デフォルト値はそれぞれ ``1`` と ``0`` です。
+   The *weightA* and *weightB* arguments are parameters for a simple digital filter
+   and default to ``1`` and ``0`` respectively.
 
 
 .. function:: reverse(fragment, width)
 
-   データ内のサンプルの順序を逆転し、変更されたデータを返します。
+   Reverse the samples in a fragment and returns the modified fragment.
 
 
 .. function:: rms(fragment, width)
 
-   データの自乗平均根(root-mean-square)、すなわち ``sqrt(sum(S_i^2)/n``
-   を返します。これはオーディオ信号の強度 (power) を測る一つの目安です。
+   Return the root-mean-square of the fragment, i.e. ``sqrt(sum(S_i^2)/n)``.
+
+   This is a measure of the power in an audio signal.
 
 
 .. function:: tomono(fragment, width, lfactor, rfactor)
 
-   ステレオ音声データをモノラル音声データに変換します。左チャネルのデータに *lfactor* 、右チャネルのデータに *rfactor*
-   を掛けた後、二つのチャネルの値を加算して単一チャネルの信号を生成します。
+   Convert a stereo fragment to a mono fragment.  The left channel is multiplied by
+   *lfactor* and the right channel by *rfactor* before adding the two channels to
+   give a mono signal.
 
 
 .. function:: tostereo(fragment, width, lfactor, rfactor)
 
-   モノラル音声データをステレオ音声データに変換します。ステレオ音声データの各サンプル対は、モノラル音声データの各サンプルをそれぞれ左チャネルは
-   *lfactor* 倍、右チャネルは *rfactor* 倍して生成します。
+   Generate a stereo fragment from a mono fragment.  Each pair of samples in the
+   stereo fragment are computed from the mono sample, whereby left channel samples
+   are multiplied by *lfactor* and right channel samples by *rfactor*.
 
 
 .. function:: ulaw2lin(fragment, width)
 
-   u-LAW で符号化されている音声データを線形に符号化された音声データに変換します。 u-LAW 符号化は常にサンプル当たり 8 ビットを使うため、
-   *width* は出力音声データのサンプル幅にしか使われません。
+   Convert sound fragments in u-LAW encoding to linearly encoded sound fragments.
+   u-LAW encoding always uses 8 bits samples, so *width* refers only to the sample
+   width of the output fragment here.
 
-:func:`.mul` や :func:`.max` といった操作はモノラルとステレオを区別しない、すなわち全てのデータを平等に扱うという
-ことに注意してください。この仕様が問題になるようなら、あらかじめステレオ音声データを二つのモノラル音声データに分割しておき、
-操作後に再度統合してください。そのような例を以下に示します::
+Note that operations such as :func:`.mul` or :func:`.max` make no distinction
+between mono and stereo fragments, i.e. all samples are treated equal.  If this
+is a problem the stereo fragment should be split into two mono fragments first
+and recombined later.  Here is an example of how to do that::
 
    def mul_stereo(sample, width, lfactor, rfactor):
        lsample = audioop.tomono(sample, width, 1, 0)
@@ -224,28 +242,32 @@
        rsample = audioop.tostereo(rsample, width, 0, 1)
        return audioop.add(lsample, rsample, width)
 
-ADPCM エンコーダを使って音声データの入ったネットワークパケットを構築する際、自分のプロトコルを (パケットロスに耐えられるように) ステートレス
-(stateless) にしたいなら、データだけでなく状態変数 (state) も伝送せねばなりません。このとき、伝送するのはエンコード後状態
-(エンコーダの返す値) ではなく、エンコーダの初期状態  (:func:`lin2adpcm` に渡した値) *initial* なので注意してください。
-:func:`struct.struct` を使って状態変数をバイナリ形式で保存したいなら、最初の要素  (予測値) は 16 ビットで、次の値 (デルタ係数:
-delta index) は 8 ビットで符号化できます。
+If you use the ADPCM coder to build network packets and you want your protocol
+to be stateless (i.e. to be able to tolerate packet loss) you should not only
+transmit the data but also the state.  Note that you should send the *initial*
+state (the one you passed to :func:`lin2adpcm`) along to the decoder, not the
+final state (as returned by the coder).  If you want to use
+:class:`struct.Struct` to store the state in binary you can code the first
+element (the predicted value) in 16 bits and the second (the delta index) in 8.
 
-このモジュールの ADPCM 符号のテストは自分自身に対してのみ行っており、他の ADPCM 符号との間では行っていません。作者が仕様を誤解している
-部分もあるかもしれず、それぞれの標準との間で相互運用できない場合もあり得ます。
+The ADPCM coders have never been tried against other ADPCM coders, only against
+themselves.  It could well be that I misinterpreted the standards in which case
+they will not be interoperable with the respective standards.
 
-:func:`find\*` ルーチンは一見滑稽に見えるかもしれません。これらの関数の主な目的はエコー除去 (echo cancellation)
-にあります。エコー除去を十分高速に行うには、出力サンプル中から最も大きなエネルギーを持った部分を取り出し、この部分が入力サンプル中の
-どこにあるかを調べ、入力サンプルから出力サンプル自体を減算します::
+The :func:`find\*` routines might look a bit funny at first sight. They are
+primarily meant to do echo cancellation.  A reasonably fast way to do this is to
+pick the most energetic piece of the output sample, locate that in the input
+sample and subtract the whole output sample from the input sample::
 
    def echocancel(outputdata, inputdata):
-       pos = audioop.findmax(outputdata, 800)    # 1/10秒
+       pos = audioop.findmax(outputdata, 800)    # one tenth second
        out_test = outputdata[pos*2:]
        in_test = inputdata[pos*2:]
        ipos, factor = audioop.findfit(in_test, out_test)
        # Optional (for better cancellation):
        # factor = audioop.findfactor(in_test[ipos*2:ipos*2+len(out_test)],
        #              out_test)
-       prefill = '\0'*(pos+ipos)* 2
+       prefill = '\0'*(pos+ipos)*2
        postfill = '\0'*(len(inputdata)-len(prefill)-len(outputdata))
        outputdata = prefill + audioop.mul(outputdata,2,-factor) + postfill
        return audioop.add(inputdata, outputdata, 2)

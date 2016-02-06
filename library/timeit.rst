@@ -1,8 +1,8 @@
-:mod:`timeit` --- 小さなコード断片の実行時間計測
-================================================
+:mod:`timeit` --- Measure execution time of small code snippets
+===============================================================
 
 .. module:: timeit
-   :synopsis: 小さなコード断片の実行時間計測。
+   :synopsis: Measure the execution time of small code snippets.
 
 
 .. versionadded:: 2.3
@@ -11,19 +11,22 @@
    single: Benchmarking
    single: Performance
 
+**Source code:** :source:`Lib/timeit.py`
+
 --------------
 
-このモジュールは Python の小さなコード断片の時間を簡単に計測する手段を提供します。
-インターフェースはコマンドラインとメソッドとして呼び出し可能なものの両方を備えています。
-また、このモジュールは実行時間の計測にあたり陥りがちな落し穴に対する様々な対策が取られています。詳しくは、 O'Reilly の
-Python Cookbook、"Algorithms" の章にある Tim Peters が書いた解説を参照してください。
+This module provides a simple way to time small bits of Python code. It has both
+a :ref:`command-line-interface` as well as a :ref:`callable <python-interface>`
+one.  It avoids a number of common traps for measuring execution times.
+See also Tim Peters' introduction to the "Algorithms" chapter in the *Python
+Cookbook*, published by O'Reilly.
 
 
-基本的な例
+Basic Examples
 --------------
 
-次の例は、3つの異なる式を比較するために :ref:`command-line-interface` を
-使う方法を示します:
+The following example shows how the :ref:`command-line-interface`
+can be used to compare three different expressions:
 
 .. code-block:: sh
 
@@ -34,7 +37,7 @@ Python Cookbook、"Algorithms" の章にある Tim Peters が書いた解説を�
    $ python -m timeit '"-".join(map(str, range(100)))'
    10000 loops, best of 3: 25.2 usec per loop
 
-これは、次のように :ref:`python-interface` を使って達成することができます::
+This can be achieved from the :ref:`python-interface` with::
 
    >>> import timeit
    >>> timeit.timeit('"-".join(str(n) for n in range(100))', number=10000)
@@ -44,200 +47,201 @@ Python Cookbook、"Algorithms" の章にある Tim Peters が書いた解説を�
    >>> timeit.timeit('"-".join(map(str, range(100)))', number=10000)
    0.5858950614929199
 
-ただし、 :mod:`timeit` が自動的に反復の回数を決定するのはコマンドライン
-インターフェースを使った時だけということに注意してください。
-:ref:`timeit-examples` の節にはより高度な例があります。
+Note however that :mod:`timeit` will automatically determine the number of
+repetitions only when the command-line interface is used.  In the
+:ref:`timeit-examples` section you can find more advanced examples.
 
 
 .. _python-interface:
 
-Python インターフェース
------------------------
+Python Interface
+----------------
 
-このモジュールには3つの便利関数と1つの公開クラスが定義されています。
+The module defines three convenience functions and a public class:
 
 
 .. function:: timeit(stmt='pass', setup='pass', timer=<default timer>, number=1000000)
 
-   .. Create a :class:`Timer` instance with the given statement, setup code and timer
-      function and run its :meth:`timeit` method with *number* executions.
-
-   指定された *stmt*, *setup*, *timer* を使って :class:`Timer` インスタンスを作成し、
-   指定された *number* を使ってその :meth:`timeit` メソッドを実行します。
+   Create a :class:`Timer` instance with the given statement, *setup* code and
+   *timer* function and run its :meth:`.timeit` method with *number* executions.
 
    .. versionadded:: 2.6
 
 
 .. function:: repeat(stmt='pass', setup='pass', timer=<default timer>, repeat=3, number=1000000)
 
-   .. Create a :class:`Timer` instance with the given statement, setup code and timer
-      function and run its :meth:`repeat` method with the given repeat count and
-      *number* executions.
-
-   指定された *stmt*, *setup*, *timer* を使って :class:`Timer` インスタンスを作成し、
-   指定された *repeat*, *number* を使ってその :meth:`repeat` メソッドを実行します。
+   Create a :class:`Timer` instance with the given statement, *setup* code and
+   *timer* function and run its :meth:`.repeat` method with the given *repeat*
+   count and *number* executions.
 
    .. versionadded:: 2.6
 
 
 .. function:: default_timer()
 
-   プラットフォーム依存の方法でデフォルトのタイマを定義します。
-   Windows の場合、 :func:`time.clock` はマイクロ秒の精度がありますが、
-   :func:`time.time` は 1/60 秒の精度しかありません。
-   一方 Unixの場合、 :func:`time.clock` でも 1/100 秒の精度があり、
-   :func:`time.time` はもっと正確です。いずれのプラットフォームにおいても、
-   デフォルトのタイマ関数は CPU 時間ではなく通常の時間 (wall clock time) を返します。
-   つまり、同じコンピュータ上で別のプロセスが動いている場合、
-   測定に干渉する可能性があるということです。
+   Define a default timer, in a platform-specific manner.  On Windows,
+   :func:`time.clock` has microsecond granularity, but :func:`time.time`'s
+   granularity is 1/60th of a second.  On Unix, :func:`time.clock` has 1/100th of
+   a second granularity, and :func:`time.time` is much more precise.  On either
+   platform, :func:`default_timer` measures wall clock time, not the CPU
+   time.  This means that other processes running on the same computer may
+   interfere with the timing.
 
 
 .. class:: Timer(stmt='pass', setup='pass', timer=<timer function>)
 
-   小さなコード断片の実行時間計測をおこなうためのクラスです。
+   Class for timing execution speed of small code snippets.
 
-   コンストラクタは引数として、時間計測の対象となる文、セットアップに使用する追加の文、タイマ関数を受け取ります。文のデフォルト値は両方とも
-   ``'pass'`` で、タイマ関数はプラットフォーム依存(モジュールの doc string を参照)です。
-   *stmt* と *setup* は複数行の文字列リテラルを含まない限り、改行や ``;`` で区切られた複数の文を入れることができます。
+   The constructor takes a statement to be timed, an additional statement used
+   for setup, and a timer function.  Both statements default to ``'pass'``;
+   the timer function is platform-dependent (see the module doc string).
+   *stmt* and *setup* may also contain multiple statements separated by ``;``
+   or newlines, as long as they don't contain multi-line string literals.
 
-   最初の文の実行時間を計測には :meth:`timeit` メソッドを使用します。また :meth:`timeit` を複数回呼び出し、その結果のリストを返す
-   :meth:`repeat` メソッドも用意されています。
-
-   .. .. versionchanged:: 2.6
-      The *stmt* and *setup* parameters can now also take objects that are callable
-      without arguments. This will embed calls to them in a timer function that will
-      then be executed by :meth:`timeit`.  Note that the timing overhead is a little
-      larger in this case because of the extra function calls.
+   To measure the execution time of the first statement, use the :meth:`.timeit`
+   method.  The :meth:`.repeat` method is a convenience to call :meth:`.timeit`
+   multiple times and return a list of results.
 
    .. versionchanged:: 2.6
-      *stmt* と *setup* 引数は、引数なしの呼び出し可能オブジェクトも
-      受け取れるようになりました。
-      オブジェクトを与えると、そのオブジェクトへの呼び出しがタイマー関数に
-      埋め込まれ、そしてその関数が :meth:`timeit` によって実行されます。
-      この場合、関数呼び出しが増えるために、オーバーヘッドが少し増えることに注意してください。
+      The *stmt* and *setup* parameters can now also take objects that are
+      callable without arguments.  This will embed calls to them in a timer
+      function that will then be executed by :meth:`.timeit`.  Note that the
+      timing overhead is a little larger in this case because of the extra
+      function calls.
 
 
    .. method:: Timer.timeit(number=1000000)
 
-      メイン文を *number* 回実行した時間を計測します。このメソッドはセットアップ文を1回だけ実行し、メイン文を指定回数実行するのにかかった秒数を浮動小数で返します。
-      引数はループを何回実行するかの指定で、デフォルト値は 100万回です。メイン文、セットアップ文、タイマ関数はコンストラクタで指定されたものを使用します。
+      Time *number* executions of the main statement.  This executes the setup
+      statement once, and then returns the time it takes to execute the main
+      statement a number of times, measured in seconds as a float.
+      The argument is the number of times through the loop, defaulting to one
+      million.  The main statement, the setup statement and the timer function
+      to be used are passed to the constructor.
 
       .. note::
 
-         デフォルトでは、 :meth:`timeit` は時間計測中、一時的にガーベッジコレクション(:term:`garbage collection`)を切ります。
-         このアプローチの利点は、個別の測定結果を比較しやすくなることです。不利な点は、GC が測定している関数のパフォーマンスの重要な一部かもしれないということです。
-         そうした場合、 *setup* 文字列の最初の文で GC を再度有効にすることができます。例えば ::
+         By default, :meth:`.timeit` temporarily turns off :term:`garbage
+         collection` during the timing.  The advantage of this approach is that
+         it makes independent timings more comparable.  This disadvantage is
+         that GC may be an important component of the performance of the
+         function being measured.  If so, GC can be re-enabled as the first
+         statement in the *setup* string.  For example::
 
             timeit.Timer('for i in xrange(10): oct(i)', 'gc.enable()').timeit()
 
 
    .. method:: Timer.repeat(repeat=3, number=1000000)
 
-      :meth:`timeit` を複数回呼び出します。
+      Call :meth:`.timeit` a few times.
 
-      このメソッドは :meth:`timeit` を複数回呼び出し、その結果をリストで返すユーティリティ関数です。最初の引数には :meth:`timeit`
-      を呼び出す回数を指定します。2番目の引数は :meth:`timeit` へ引数として渡す *number* です。
+      This is a convenience function that calls the :meth:`.timeit` repeatedly,
+      returning a list of results.  The first argument specifies how many times
+      to call :meth:`.timeit`.  The second argument specifies the *number*
+      argument for :meth:`.timeit`.
 
       .. note::
 
-         結果のベクトルから平均値や標準偏差を計算して出力させたいと思うかもしれませんが、それはあまり意味がありません。
-         多くの場合、最も低い値がそのマシンが与えられたコード断片を実行する場合の下限値です。
-         結果のうち高めの値は、Python のスピードが一定しないために生じたものではなく、時刻取得の際他のプロセスと衝突がおこったため、
-         正確さが損なわれた結果生じたものです。したがって、結果のうち :func:`min` だけが見るべき値となるでしょう。
-         この点を押さえた上で、統計的な分析よりも常識的な判断で結果を見るようにしてください。
+         It's tempting to calculate mean and standard deviation from the result
+         vector and report these.  However, this is not very useful.
+         In a typical case, the lowest value gives a lower bound for how fast
+         your machine can run the given code snippet; higher values in the
+         result vector are typically not caused by variability in Python's
+         speed, but by other processes interfering with your timing accuracy.
+         So the :func:`min` of the result is probably the only number you
+         should be interested in.  After that, you should look at the entire
+         vector and apply common sense rather than statistics.
 
 
    .. method:: Timer.print_exc(file=None)
 
-      計測対象コードのトレースバックを出力するためのヘルパー。
+      Helper to print a traceback from the timed code.
 
-      利用例::
+      Typical use::
 
-         t = Timer(...)       # try/except の外側で
+         t = Timer(...)       # outside the try/except
          try:
-             t.timeit(...)    # または t.repeat(...)
+             t.timeit(...)    # or t.repeat(...)
          except:
              t.print_exc()
 
-      標準のトレースバックより優れた点は、コンパイルしたテンプレートのソース行が表示されることです。オプションの引数 *file* にはトレースバック
-      の出力先を指定します。デフォルトは ``sys.stderr`` になっています。
+      The advantage over the standard traceback is that source lines in the
+      compiled template will be displayed. The optional *file* argument directs
+      where the traceback is sent; it defaults to :data:`sys.stderr`.
 
 
 .. _command-line-interface:
 
-コマンドライン・インターフェース
---------------------------------
+Command-Line Interface
+----------------------
 
-コマンドラインからプログラムとして呼び出す場合は、次の書式を使います。 ::
+When called as a program from the command line, the following form is used::
 
    python -m timeit [-n N] [-r N] [-s S] [-t] [-c] [-h] [statement ...]
 
-以下のオプションが使用できます。
+Where the following options are understood:
 
 .. program:: timeit
 
 .. cmdoption:: -n N, --number=N
 
-   'statement' を何回実行するか
+   how many times to execute 'statement'
 
 .. cmdoption:: -r N, --repeat=N
 
-   タイマを何回リピートするか(デフォルトは 3)
+   how many times to repeat the timer (default 3)
 
 .. cmdoption:: -s S, --setup=S
 
-   最初に1回だけ実行する文 (デフォルトは ``pass``)
+   statement to be executed once initially (default ``pass``)
 
 .. cmdoption:: -t, --time
 
-   :func:`time.time` を使用する (Windows を除くすべてのプラットフォームのデフォルト)
+   use :func:`time.time` (default on all platforms but Windows)
 
 .. cmdoption:: -c, --clock
 
-   :func:`time.clock` を使用する(Windows のデフォルト)
+   use :func:`time.clock` (default on Windows)
 
 .. cmdoption:: -v, --verbose
 
-   時間計測の結果をそのまま詳細な数値でくり返し表示する
+   print raw timing results; repeat for more digits precision
 
 .. cmdoption:: -h, --help
 
-   簡単な使い方を表示して終了する
+   print a short usage message and exit
 
-文は複数行指定することもできます。
-その場合、各行は独立した文として引数に指定されたものとして処理します。
-クォートと行頭のスペースを使って、インデントした文を使うことも可能です。
-この複数行のオプションは  :option:`-s` においても同じ形式で指定可能です。
+A multi-line statement may be given by specifying each line as a separate
+statement argument; indented lines are possible by enclosing an argument in
+quotes and using leading spaces.  Multiple :option:`-s` options are treated
+similarly.
 
-オプション :option:`-n` でループの回数が指定されていない場合、10回から始めて、
-所要時間が 0.2 秒になるまで回数を増やすことで適切なループ回数が
-自動計算されるようになっています。
+If :option:`-n` is not given, a suitable number of loops is calculated by trying
+successive powers of 10 until the total time is at least 0.2 seconds.
 
-:func:`default_timer` の結果は同じコンピュータ上で動作している別の
-プロセスに影響を受けることがあります。そのため、正確な時間を計測する必要が
-ある場合に最善の方法は、時間の取得を数回くり返してその中の最短の時間を
-採用することです。 :option:`-r` オプションはこれをおこなうもので、
-デフォルトのくり返し回数は3回になっています。多くの場合はデフォルトのままで
-充分でしょう。 Unix の場合 :func:`time.clock` を使って CPU 時間で測定
-することもできます。
+:func:`default_timer` measurations can be affected by other programs running on
+the same machine, so
+the best thing to do when accurate timing is necessary is to repeat
+the timing a few times and use the best time.  The :option:`-r` option is good
+for this; the default of 3 repetitions is probably enough in most cases.  On
+Unix, you can use :func:`time.clock` to measure CPU time.
 
 .. note::
 
-   pass 文の実行による基本的なオーバーヘッドが存在することに注意してください。
-   ここにあるコードはこの事実を隠そうとはしていませんが、注意する必要があります。
-   基本的なオーバーヘッドは引数なしでプログラムを起動することにより計測でき、
-   それは Python のバージョンによって異なるでしょう。
-   Python 2.3 とそれ以前の Python の公平な比較をおこなう場合、
-   古い Python では :option:`-O` オプションを付けて起動して
-   ``SET_LINENO`` 命令の実行時間が含まれないようにする必要があります。
+   There is a certain baseline overhead associated with executing a pass statement.
+   The code here doesn't try to hide it, but you should be aware of it.  The
+   baseline overhead can be measured by invoking the program without arguments, and
+   it might differ between Python versions.  Also, to fairly compare older Python
+   versions to Python 2.3, you may want to use Python's :option:`-O` option for
+   the older versions to avoid timing ``SET_LINENO`` instructions.
 
 
 .. _timeit-examples:
 
-使用例
-------
+Examples
+--------
 
-最初に一回だけ実行されるセットアップ文を提供することが可能です:
+It is possible to provide a setup statement that is executed only once at the beginning:
 
 .. code-block:: sh
 
@@ -254,7 +258,7 @@ Python インターフェース
    >>> timeit.timeit('text.find(char)', setup='text = "sample string"; char = "g"')
    1.7246671520006203
 
-同じことは :class:`Timer` クラスとそのメソッドを使用して行うこともできます::
+The same can be done using the :class:`Timer` class and its methods::
 
    >>> import timeit
    >>> t = timeit.Timer('char in text', setup='text = "sample string"; char = "g"')
@@ -264,10 +268,9 @@ Python インターフェース
    [0.40193588800002544, 0.3960157959998014, 0.39594301399984033]
 
 
-以下の例は、複数行を含んだ式を計測する方法を示しています。
-ここでは、オブジェクトの存在する属性と存在しない属性に対してテストするために
-:func:`hasattr` と :keyword:`try`/:keyword:`except` を使用した場合のコストを
-比較しています:
+The following examples show how to time expressions that contain multiple lines.
+Here we compare the cost of using :func:`hasattr` vs. :keyword:`try`/:keyword:`except`
+to test for missing and present object attributes:
 
 .. code-block:: sh
 
@@ -310,8 +313,8 @@ Python インターフェース
    >>> timeit.timeit(stmt=s, number=100000)
    0.08588060699912603
 
-定義した関数に :mod:`timeit` モジュールがアクセスできるようにするために、
-import 文の入った ``setup`` 引数を渡すことができます::
+To give the :mod:`timeit` module access to functions you define, you can pass a
+*setup* parameter which contains an import statement::
 
    def test():
        """Stupid test function"""

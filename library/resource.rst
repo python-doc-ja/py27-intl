@@ -1,222 +1,248 @@
 
-:mod:`resource` --- リソース使用状態の情報
-==========================================
+:mod:`resource` --- Resource usage information
+==============================================
 
 .. module:: resource
    :platform: Unix
-   :synopsis: 現プロセスのリソース使用状態を提供するためのインタフェース。
+   :synopsis: An interface to provide resource usage information on the current process.
 .. moduleauthor:: Jeremy Hylton <jeremy@alum.mit.edu>
 .. sectionauthor:: Jeremy Hylton <jeremy@alum.mit.edu>
 
 
-このモジュールでは、プログラムによって使用されているシステムリソースを計測したり制御するための基本的なメカニズムを提供します。
+This module provides basic mechanisms for measuring and controlling system
+resources utilized by a program.
 
-特定のシステムリソースを指定したり、現在のプロセスやその子プロセスのリソース使用情報を要求するためにはシンボル定数が使われます。
+Symbolic constants are used to specify particular system resources and to
+request usage information about either the current process or its children.
 
-エラーを表すための例外が一つ定義されています:
+A single exception is defined for errors:
 
 
 .. exception:: error
 
-   下に述べる関数は、背後にあるシステムコールが予期せず失敗した場合、このエラーを送出するかもしれません。
+   The functions described below may raise this error if the underlying system call
+   failures unexpectedly.
 
 
-リソースの制限
---------------
+Resource Limits
+---------------
 
-リソースの使用は下に述べる :func:`setrlimit` 関数を使って制限することができます。
-各リソースは二つ組の制限値: ソフトリミット (soft limit) 、
-およびハードリミット (hard limit) 、で制御されます。
-ソフトリミットは現在の制限値で、時間とともにプロセスによって下げたり上げたりできます。
-ソフトリミットはハードリミットを超えることはできません。
-ハードリミットはソフトリミットよりも高い任意の値まで下げることができますが、上げることはできません。
-(スーパユーザの有効な UID を持つプロセスのみがハードリミットを上げることができます。)
+Resources usage can be limited using the :func:`setrlimit` function described
+below. Each resource is controlled by a pair of limits: a soft limit and a hard
+limit. The soft limit is the current limit, and may be lowered or raised by a
+process over time. The soft limit can never exceed the hard limit. The hard
+limit can be lowered to any value greater than the soft limit, but not raised.
+(Only processes with the effective UID of the super-user can raise a hard
+limit.)
 
-制限をかけるべく指定できるリソースはシステムに依存します。
-指定できるリソースは :manpage:`getrlimit(2)`
-マニュアルページで解説されています。
-以下に列挙するリソースは背後のオペレーティングシステムがサポートする場合にサポートされています;
-オペレーティングシステム側で値を調べたり制御したりできないリソースは、そのプラットフォーム向けのこのモジュール内では定義されていません。
+The specific resources that can be limited are system dependent. They are
+described in the :manpage:`getrlimit(2)` man page.  The resources listed below
+are supported when the underlying operating system supports them; resources
+which cannot be checked or controlled by the operating system are not defined in
+this module for those platforms.
+
+
+.. data:: RLIM_INFINITY
+
+   Constant used to represent the the limit for an unlimited resource.
 
 
 .. function:: getrlimit(resource)
 
-   *resource* の現在のソフトおよびハードリミットを表すタプル  ``(soft, hard)`` を返します。無効なリソースが指定された場合には
-   :exc:`ValueError` が、背後のシステムコールが予期せず失敗した場合には :exc:`error` が送出されます。
+   Returns a tuple ``(soft, hard)`` with the current soft and hard limits of
+   *resource*. Raises :exc:`ValueError` if an invalid resource is specified, or
+   :exc:`error` if the underlying system call fails unexpectedly.
 
 
 .. function:: setrlimit(resource, limits)
 
-   *resouce* の新たな消費制限を設定します。
-   *limits* 引数には、タプル ``(soft, hard)`` による二つの整数で、
-   新たな制限を記述しなければなりません。
-   現在指定可能な最大の制限を指定するために ``-1`` を使うことができます。
+   Sets new limits of consumption of *resource*. The *limits* argument must be a
+   tuple ``(soft, hard)`` of two integers describing the new limits. A value of
+   :data:`~resource.RLIM_INFINITY` can be used to request a limit that is
+   unlimited.
 
-   無効なリソースが指定された場合、ソフトリミットの値がハードリミットの値を超えている場合、
-   プロセスが (スーパユーザの有効な UID を持っていない状態で)
-   ハードリミットを引き上げようとした場合には :exc:`ValueError` が送出されます。
-   背後のシステムコールが予期せず失敗した場合には :exc:`error` が送出される可能性もあります。
+   Raises :exc:`ValueError` if an invalid resource is specified, if the new soft
+   limit exceeds the hard limit, or if a process tries to raise its hard limit.
+   Specifying a limit of :data:`~resource.RLIM_INFINITY` when the hard or
+   system limit for that resource is not unlimited will result in a
+   :exc:`ValueError`.  A process with the effective UID of super-user can
+   request any valid limit value, including unlimited, but :exc:`ValueError`
+   will still be raised if the requested limit exceeds the system imposed
+   limit.
 
-以下のシンボルは、後に述べる関数 :func:`setrlimit` および :func:`getrlimit` を使って消費量を制御することができるリソース
-を定義しています。これらのシンボルの値は、C プログラムで使われているシンボルと全く同じです。
+   ``setrlimit`` may also raise :exc:`error` if the underlying system call
+   fails.
 
-:manpage:`getrlimit(2)` の Unix マニュアルページには、指定可能な
-リソースが列挙されています。全てのシステムで同じシンボルが使われているわけではなく、また同じリソースを表すために同じ値が使われて
-いるとも限らないので注意してください。このモジュールはプラットフォーム間の相違を隠蔽しようとはしていません --- あるプラットフォームで
-定義されていないシンボルは、そのプラットフォーム向けの本モジュールでは利用することができません。
+These symbols define resources whose consumption can be controlled using the
+:func:`setrlimit` and :func:`getrlimit` functions described below. The values of
+these symbols are exactly the constants used by C programs.
+
+The Unix man page for :manpage:`getrlimit(2)` lists the available resources.
+Note that not all systems use the same symbol or same value to denote the same
+resource.  This module does not attempt to mask platform differences --- symbols
+not defined for a platform will not be available from this module on that
+platform.
 
 
 .. data:: RLIMIT_CORE
 
-   現在のプロセスが生成できるコアファイルの最大 (バイト) サイズです。
-   プロセスの全体イメージを入れるためにこの値より大きなサイズのコア
-   ファイルが要求された結果、部分的なコアファイルが生成される可能性があります。
+   The maximum size (in bytes) of a core file that the current process can create.
+   This may result in the creation of a partial core file if a larger core would be
+   required to contain the entire process image.
 
 
 .. data:: RLIMIT_CPU
 
-   プロセッサが利用することができる最大プロセッサ時間 (秒) です。
-   この制限を超えた場合、 :const:`SIGXCPU` シグナルがプロセスに送られます。
-   (どのようにしてシグナルを捕捉したり、例えば開かれているファイルをディスクにフラッシュするといった有用な処理を行うかについての情報は、
-   :mod:`signal` モジュールのドキュメントを参照してください)
+   The maximum amount of processor time (in seconds) that a process can use. If
+   this limit is exceeded, a :const:`SIGXCPU` signal is sent to the process. (See
+   the :mod:`signal` module documentation for information about how to catch this
+   signal and do something useful, e.g. flush open files to disk.)
 
 
 .. data:: RLIMIT_FSIZE
 
-   プロセスが生成できるファイルの最大サイズです。マルチスレッドプロセスの場合、この値は主スレッドのスタックにのみ影響します。
+   The maximum size of a file which the process may create.  This only affects the
+   stack of the main thread in a multi-threaded process.
 
 
 .. data:: RLIMIT_DATA
 
-   プロセスのヒープの最大 (バイト) サイズです。
+   The maximum size (in bytes) of the process's heap.
 
 
 .. data:: RLIMIT_STACK
 
-   現在のプロセスのコールスタックの最大 (バイト) サイズです。
+   The maximum size (in bytes) of the call stack for the current process.
 
 
 .. data:: RLIMIT_RSS
 
-   プロセスが取りうる最大 RAM 常駐ページサイズ (resident set size) です。
+   The maximum resident set size that should be made available to the process.
 
 
 .. data:: RLIMIT_NPROC
 
-   現在のプロセスが生成できるプロセスの上限です。
+   The maximum number of processes the current process may create.
 
 
 .. data:: RLIMIT_NOFILE
 
-   現在のプロセスが開けるファイル記述子の上限です。
+   The maximum number of open file descriptors for the current process.
 
 
 .. data:: RLIMIT_OFILE
 
-   :const:`RLIMIT_NOFILE` の BSD での名称です。
+   The BSD name for :const:`RLIMIT_NOFILE`.
 
 
 .. data:: RLIMIT_MEMLOCK
 
-   メモリ中でロックできる最大アドレス空間です。
+   The maximum address space which may be locked in memory.
 
 
 .. data:: RLIMIT_VMEM
 
-   プロセスが占有できるマップメモリの最大領域です。
+   The largest area of mapped memory which the process may occupy.
 
 
 .. data:: RLIMIT_AS
 
-   アドレス空間でプロセスが占有できる最大領域 (バイト) です。
+   The maximum area (in bytes) of address space which may be taken by the process.
 
 
-リソースの使用状態
-------------------
+Resource Usage
+--------------
 
-以下の関数はリソース使用情報を取得するために使われます:
+These functions are used to retrieve resource usage information:
 
 
 .. function:: getrusage(who)
 
-   この関数は、 *who* 引数で指定される、現プロセスおよびその子プロセスによって消費されているリソースを記述するオブジェクトを返します。 *who*
-   引数は以下に記述される :const:`RUSAGE_*` 定数のいずれかを使って指定します。
+   This function returns an object that describes the resources consumed by either
+   the current process or its children, as specified by the *who* parameter.  The
+   *who* parameter should be specified using one of the :const:`RUSAGE_\*`
+   constants described below.
 
-   返される値の各フィールドはそれぞれ、個々のシステムリソースがどれくらい使用されているか、例えばユーザモードでの実行に費やされた時間やプロセス
-   が主記憶からスワップアウトされた回数、を示しています。幾つかの値、例えばプロセスが使用しているメモリ量は、内部時計の最小単位に依存します。
+   The fields of the return value each describe how a particular system resource
+   has been used, e.g. amount of time spent running is user mode or number of times
+   the process was swapped out of main memory. Some values are dependent on the
+   clock tick internal, e.g. the amount of memory the process is using.
 
-   以前のバージョンとの互換性のため、返される値は 16 要素からなるタプルとしてアクセスすることもできます。
+   For backward compatibility, the return value is also accessible as a tuple of 16
+   elements.
 
-   戻り値のフィールド :attr:`ru_utime` および :attr:`ru_stime` は
-   浮動小数点数で、それぞれユーザモードでの実行に費やされた時間、およびシステムモードでの実行に費やされた時間を表します。それ以外の値は
-   整数です。これらの値に関する詳しい情報は :manpage:`getrusage(2)` を調べてください。以下に簡単な概要を示します:
+   The fields :attr:`ru_utime` and :attr:`ru_stime` of the return value are
+   floating point values representing the amount of time spent executing in user
+   mode and the amount of time spent executing in system mode, respectively. The
+   remaining values are integers. Consult the :manpage:`getrusage(2)` man page for
+   detailed information about these values. A brief summary is presented here:
 
-   +------------+---------------------+--------------------------------------+
-   | インデクス | フィールド名        | リソース                             |
-   +============+=====================+======================================+
-   | ``0``      | :attr:`ru_utime`    | ユーザモード実行時間 (float)         |
-   +------------+---------------------+--------------------------------------+
-   | ``1``      | :attr:`ru_stime`    | システムモード実行時間 (float)       |
-   +------------+---------------------+--------------------------------------+
-   | ``2``      | :attr:`ru_maxrss`   | 最大常駐ページサイズ                 |
-   +------------+---------------------+--------------------------------------+
-   | ``3``      | :attr:`ru_ixrss`    | 共有メモリサイズ                     |
-   +------------+---------------------+--------------------------------------+
-   | ``4``      | :attr:`ru_idrss`    | 非共有メモリサイズ                   |
-   +------------+---------------------+--------------------------------------+
-   | ``5``      | :attr:`ru_isrss`    | 非共有スタックサイズ                 |
-   +------------+---------------------+--------------------------------------+
-   | ``6``      | :attr:`ru_minflt`   | I/O を必要としないページフォールト数 |
-   +------------+---------------------+--------------------------------------+
-   | ``7``      | :attr:`ru_majflt`   | I/O を必要とするページフォールト数   |
-   +------------+---------------------+--------------------------------------+
-   | ``8``      | :attr:`ru_nswap`    | スワップアウト回数                   |
-   +------------+---------------------+--------------------------------------+
-   | ``9``      | :attr:`ru_inblock`  | ブロック入力操作数                   |
-   +------------+---------------------+--------------------------------------+
-   | ``10``     | :attr:`ru_oublock`  | ブロック出力操作数                   |
-   +------------+---------------------+--------------------------------------+
-   | ``11``     | :attr:`ru_msgsnd`   | 送信メッセージ数                     |
-   +------------+---------------------+--------------------------------------+
-   | ``12``     | :attr:`ru_msgrcv`   | 受信メッセージ数                     |
-   +------------+---------------------+--------------------------------------+
-   | ``13``     | :attr:`ru_nsignals` | 受信シグナル数                       |
-   +------------+---------------------+--------------------------------------+
-   | ``14``     | :attr:`ru_nvcsw`    | 自発的な実行コンテキスト切り替え数   |
-   +------------+---------------------+--------------------------------------+
-   | ``15``     | :attr:`ru_nivcsw`   | 非自発的な実行コンテキスト切り替え数 |
-   +------------+---------------------+--------------------------------------+
+   +--------+---------------------+-------------------------------+
+   | Index  | Field               | Resource                      |
+   +========+=====================+===============================+
+   | ``0``  | :attr:`ru_utime`    | time in user mode (float)     |
+   +--------+---------------------+-------------------------------+
+   | ``1``  | :attr:`ru_stime`    | time in system mode (float)   |
+   +--------+---------------------+-------------------------------+
+   | ``2``  | :attr:`ru_maxrss`   | maximum resident set size     |
+   +--------+---------------------+-------------------------------+
+   | ``3``  | :attr:`ru_ixrss`    | shared memory size            |
+   +--------+---------------------+-------------------------------+
+   | ``4``  | :attr:`ru_idrss`    | unshared memory size          |
+   +--------+---------------------+-------------------------------+
+   | ``5``  | :attr:`ru_isrss`    | unshared stack size           |
+   +--------+---------------------+-------------------------------+
+   | ``6``  | :attr:`ru_minflt`   | page faults not requiring I/O |
+   +--------+---------------------+-------------------------------+
+   | ``7``  | :attr:`ru_majflt`   | page faults requiring I/O     |
+   +--------+---------------------+-------------------------------+
+   | ``8``  | :attr:`ru_nswap`    | number of swap outs           |
+   +--------+---------------------+-------------------------------+
+   | ``9``  | :attr:`ru_inblock`  | block input operations        |
+   +--------+---------------------+-------------------------------+
+   | ``10`` | :attr:`ru_oublock`  | block output operations       |
+   +--------+---------------------+-------------------------------+
+   | ``11`` | :attr:`ru_msgsnd`   | messages sent                 |
+   +--------+---------------------+-------------------------------+
+   | ``12`` | :attr:`ru_msgrcv`   | messages received             |
+   +--------+---------------------+-------------------------------+
+   | ``13`` | :attr:`ru_nsignals` | signals received              |
+   +--------+---------------------+-------------------------------+
+   | ``14`` | :attr:`ru_nvcsw`    | voluntary context switches    |
+   +--------+---------------------+-------------------------------+
+   | ``15`` | :attr:`ru_nivcsw`   | involuntary context switches  |
+   +--------+---------------------+-------------------------------+
 
-   この関数は無効な *who* 引数を指定した場合には  :exc:`ValueError` を送出します。また、異常が発生した場合には
-   :exc:`error` 例外が送出される可能性があります。
+   This function will raise a :exc:`ValueError` if an invalid *who* parameter is
+   specified. It may also raise :exc:`error` exception in unusual circumstances.
 
    .. versionchanged:: 2.3
-      各値を返されたオブジェクトの属性としてアクセスできるようにしました.
+      Added access to values as attributes of the returned object.
 
 
 .. function:: getpagesize()
 
-   システムページ内のバイト数を返します。(ハードウェアページサイズと同じとは限りません。)
-   この関数はプロセスが使用しているメモリのバイト数を決定する上で有効です。
-   :func:`getrusage` が返すタプルの 3 つ目の要素はページ数で数えたメモリ使用量です;
-   ページサイズを掛けるとバイト数になります。
+   Returns the number of bytes in a system page. (This need not be the same as the
+   hardware page size.)
 
-以下の :const:`RUSAGE_*` シンボルはどのプロセスの情報を提供させるかを指定するために関数 :func:`getrusage`
-に渡されます。
+The following :const:`RUSAGE_\*` symbols are passed to the :func:`getrusage`
+function to specify which processes information should be provided for.
 
 
 .. data:: RUSAGE_SELF
 
-   :const:`RUSAGE_SELF` はプロセス自体に属する情報を要求するために使われます。
+   :const:`RUSAGE_SELF` should be used to request information pertaining only to
+   the process itself.
 
 
 .. data:: RUSAGE_CHILDREN
 
-   :func:`getrusage` に渡すと呼び出し側プロセスの子プロセスのリソース情報を要求します。
+   Pass to :func:`getrusage` to request resource information for child processes of
+   the calling process.
 
 
 .. data:: RUSAGE_BOTH
 
-   :func:`getrusage` に渡すと現在のプロセスおよび子プロセスの両方が消費しているリソースを要求します。全てのシステムで利用可能なわけでは
-   ありません。
+   Pass to :func:`getrusage` to request resources consumed by both the current
+   process and child processes.  May not be available on all systems.
 

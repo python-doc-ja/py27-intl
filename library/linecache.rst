@@ -1,53 +1,53 @@
 
-:mod:`linecache` --- テキストラインにランダムアクセスする
-=========================================================
+:mod:`linecache` --- Random access to text lines
+================================================
 
 .. module:: linecache
-   :synopsis: このモジュールによりテキストファイルの各行にランダムアクセスできます。
+   :synopsis: This module provides random access to individual lines from text files.
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
+**Source code:** :source:`Lib/linecache.py`
 
-:mod:`linecache` モジュールは、キャッシュ (一つのファイルから何行も読んでおくのが一般的です)
-を使って、内部で最適化を図りつつ、任意のファイルの任意の行を取得するのを可能にします。
-:mod:`traceback` モジュールは、整形されたトレースバックにソースコードを含めるためにこの
-モジュールを利用しています。
+--------------
 
-.. seealso::
+The :mod:`linecache` module allows one to get any line from any file, while
+attempting to optimize internally, using a cache, the common case where many
+lines are read from a single file.  This is used by the :mod:`traceback` module
+to retrieve source lines for inclusion in  the formatted traceback.
 
-   最新バージョンの `linecache module Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/linecache.py?view=markup>`_
-
-:mod:`linecache` モジュールでは次の関数が定義されています:
+The :mod:`linecache` module defines the following functions:
 
 
 .. function:: getline(filename, lineno[, module_globals])
 
-   *filename* という名前のファイルから *lineno* 行目を取得します。
-   この関数は決して例外を発生させません --- エラーの際には ``''``
-   を返します。 (行末の改行文字は、見つかった行に含まれます。)
+   Get line *lineno* from file named *filename*. This function will never raise an
+   exception --- it will return ``''`` on errors (the terminating newline character
+   will be included for lines that are found).
 
    .. index:: triple: module; search; path
 
-   *filename* という名前のファイルが見つからなかった場合、モジュールの、つまり、
-   ``sys.path`` でそのファイルを探します。
-   zipfileやその他のファイルシステムでないimport元に対応するためまず *modules_globals*
-   の :pep:`302` ``__loader__`` をチェックし、そのあと ``sys.path`` を探索します。
+   If a file named *filename* is not found, the function will look for it in the
+   module search path, ``sys.path``, after first checking for a :pep:`302`
+   ``__loader__`` in *module_globals*, in case the module was imported from a
+   zipfile or other non-filesystem import source.
 
    .. versionadded:: 2.5
-      パラメータ *module_globals* の追加.
+      The *module_globals* parameter was added.
 
 
 .. function:: clearcache()
 
-   キャッシュをクリアします。それまでに :func:`getline` を使って読み込んだファイルの行が必要でなくなったら、この関数を使ってください。
+   Clear the cache.  Use this function if you no longer need lines from files
+   previously read using :func:`getline`.
 
 
 .. function:: checkcache([filename])
 
-   キャッシュが有効かチェックします。キャッシュしたファイルにディスク上で変更があったかもしれなくて、更新
-   が必要なときにこの関数を使ってください。もし *filename* がなければ、全てのキャッシュエントリをチェックします。
+   Check the cache for validity.  Use this function if files in the cache  may have
+   changed on disk, and you require the updated version.  If *filename* is omitted,
+   it will check all the entries in the cache.
 
-サンプル::
+Example::
 
    >>> import linecache
    >>> linecache.getline('/etc/passwd', 4)

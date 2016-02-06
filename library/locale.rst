@@ -1,399 +1,484 @@
 
-:mod:`locale` --- 国際化サービス
-================================
+:mod:`locale` --- Internationalization services
+===============================================
 
 .. module:: locale
-   :synopsis: 国際化サービス。
+   :synopsis: Internationalization services.
 .. moduleauthor:: Martin von Löwis <martin@v.loewis.de>
 .. sectionauthor:: Martin von Löwis <martin@v.loewis.de>
 
 
-:mod:`locale` モジュールは POSIX ロケールデータベースおよびロケール関連機能へのアクセスを提供します。 POSIX
-ロケール機構を使うことで、プログラマはソフトウェアが実行される各国における詳細を知らなくても、アプリケーション上で特定の地域文化に関係する部分を扱うことが
-できます。
+The :mod:`locale` module opens access to the POSIX locale database and
+functionality. The POSIX locale mechanism allows programmers to deal with
+certain cultural issues in an application, without requiring the programmer to
+know all the specifics of each country where the software is executed.
 
 .. index:: module: _locale
 
-:mod:`locale` モジュールは、 :mod:`_locale`  を被うように実装されており、ANSI C ロケール実装を使っている
-:mod:`_locale` が利用可能なら、こちらを先に使うようになっています。
+The :mod:`locale` module is implemented on top of the :mod:`_locale` module,
+which in turn uses an ANSI C locale implementation if available.
 
-:mod:`locale` モジュールでは以下の例外と関数を定義しています:
+The :mod:`locale` module defines the following exception and functions:
 
 
 .. exception:: Error
 
-   :func:`setlocale` が失敗したときに送出される例外です。
+   Exception raised when the locale passed to :func:`setlocale` is not
+   recognized.
 
 
 .. function:: setlocale(category[, locale])
 
-   *locale* を指定する場合、文字列、 ``(language code, encoding)`` 、からなるタプル、または ``None``
-   をとることができます。 *locale* がタプルのの場合、ロケール別名解決エンジンによって文字列に変換されます。 *locale* が与えられていて、かつ
-   ``None`` でない場合、 :func:`setlocale` は *category* の設定を変更します。
-   変更することのできるカテゴリは以下に列記されており、値はロケール設定の名前です。空の文字列を指定すると、ユーザの環境における標準設定になります。
-   ロケールの変更に失敗した場合、 :exc:`Error` が送出されます。成功した場合、新たなロケール設定が返されます。
+   If *locale* is given and not ``None``, :func:`setlocale` modifies the locale
+   setting for the *category*. The available categories are listed in the data
+   description below. *locale* may be a string, or an iterable of two strings
+   (language code and encoding). If it's an iterable, it's converted to a locale
+   name using the locale aliasing engine. An empty string specifies the user's
+   default settings. If the modification of the locale fails, the exception
+   :exc:`Error` is raised. If successful, the new locale setting is returned.
 
-   *locale* が省略されたり ``None`` の場合、 *category*  の現在の設定が返されます。
+   If *locale* is omitted or ``None``, the current setting for *category* is
+   returned.
 
-   :func:`setlocale` はほとんどのシステムでスレッド安全ではありません。アプリケーションを書くとき、大抵は以下のコード ::
+   :func:`setlocale` is not thread-safe on most systems. Applications typically
+   start with a call of ::
 
       import locale
       locale.setlocale(locale.LC_ALL, '')
 
-   から書き始めます。これは全てのカテゴリをユーザの環境における標準設定 (大抵は環境変数 :envvar:`LANG` で指定されています)
-   に設定します。その後複数スレッドを使ってロケールを変更したりしない限り、問題は起こらないはずです。
+   This sets the locale for all categories to the user's default setting (typically
+   specified in the :envvar:`LANG` environment variable).  If the locale is not
+   changed thereafter, using multithreading should not cause problems.
 
    .. versionchanged:: 2.0
-      引数 *locale* の値としてタプルをサポートしました。
+      Added support for iterable values of the *locale* parameter.
 
 
 .. function:: localeconv()
 
-   地域的な慣行のデータベースを辞書として返します。辞書は以下の文字列をキーとして持っています:
+   Returns the database of the local conventions as a dictionary. This dictionary
+   has the following strings as keys:
 
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   | カテゴリ             | キー名                              | 意味                                                               |
-   +======================+=====================================+====================================================================+
-   | :const:`LC_NUMERIC`  | ``'decimal_point'``                 | 小数点を表す文字です。                                             |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'grouping'``                      | ``'thousands_sep'``                                                |
-   |                      |                                     | が来るかもしれない場所を相対的に                                   |
-   |                      |                                     | 表した数からなる配列です。配列が                                   |
-   |                      |                                     | :const:`CHAR_MAX` で終端されている                                 |
-   |                      |                                     | 場合、それ以上の桁では桁数字のグループ化を行いません。配列が       |
-   |                      |                                     | ``0``                                                              |
-   |                      |                                     | で終端されている場合、最後に指定したグループが反復的に使われます。 |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'thousands_sep'``                 | 桁グループ間を区切るために使われる文字です。                       |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   | :const:`LC_MONETARY` | ``'int_curr_symbol'``               | 国際通貨を表現する記号です。                                       |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'currency_symbol'``               | 地域的な通貨を表現する記号です。                                   |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'p_cs_precedes/n_cs_precedes'``   | 通貨記号が値の前につくかどうかです (それぞれ正の値、               |
-   |                      |                                     | 負の値を表します)。                                                |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'p_sep_by_space/n_sep_by_space'`` | 通貨記号と値との間にスペースを入れるかどうかです                   |
-   |                      |                                     | (それぞれ正の値、負の値を表します)。                               |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'mon_decimal_point'``             | 金額表示の際に使われる小数点です。                                 |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'frac_digits'``                   | 金額を地域的な方法で表現する際の小数点以下の桁数です。             |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'int_frac_digits'``               | 金額を国際的な方法で表現する際の小数点以下の桁数です。             |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'mon_thousands_sep'``             | 金額表示の際に桁区切り記号です。                                   |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'mon_grouping'``                  | ``'grouping'``                                                     |
-   |                      |                                     | と同じで、金額表示の際に使われます。                               |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'positive_sign'``                 | 正の値の金額表示に使われる記号です。                               |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'negative_sign'``                 | 負の値の金額表示に使われる記号です。                               |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
-   |                      | ``'p_sign_posn/n_sign_posn'``       | 符号の位置です                                                     |
-   |                      |                                     | (それぞれ正の値と負の値を表します)。以下を参照ください。           |
-   +----------------------+-------------------------------------+--------------------------------------------------------------------+
+   .. tabularcolumns:: |l|l|L|
 
-   数値形式の値に :const:`CHAR_MAX` を設定すると、そのロケールでは値が指定されていないことを表します。
+   +----------------------+-------------------------------------+--------------------------------+
+   | Category             | Key                                 | Meaning                        |
+   +======================+=====================================+================================+
+   | :const:`LC_NUMERIC`  | ``'decimal_point'``                 | Decimal point character.       |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'grouping'``                      | Sequence of numbers specifying |
+   |                      |                                     | which relative positions the   |
+   |                      |                                     | ``'thousands_sep'`` is         |
+   |                      |                                     | expected.  If the sequence is  |
+   |                      |                                     | terminated with                |
+   |                      |                                     | :const:`CHAR_MAX`, no further  |
+   |                      |                                     | grouping is performed. If the  |
+   |                      |                                     | sequence terminates with a     |
+   |                      |                                     | ``0``,  the last group size is |
+   |                      |                                     | repeatedly used.               |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'thousands_sep'``                 | Character used between groups. |
+   +----------------------+-------------------------------------+--------------------------------+
+   | :const:`LC_MONETARY` | ``'int_curr_symbol'``               | International currency symbol. |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'currency_symbol'``               | Local currency symbol.         |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'p_cs_precedes/n_cs_precedes'``   | Whether the currency symbol    |
+   |                      |                                     | precedes the value (for        |
+   |                      |                                     | positive resp. negative        |
+   |                      |                                     | values).                       |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'p_sep_by_space/n_sep_by_space'`` | Whether the currency symbol is |
+   |                      |                                     | separated from the value  by a |
+   |                      |                                     | space (for positive resp.      |
+   |                      |                                     | negative values).              |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'mon_decimal_point'``             | Decimal point used for         |
+   |                      |                                     | monetary values.               |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'frac_digits'``                   | Number of fractional digits    |
+   |                      |                                     | used in local formatting of    |
+   |                      |                                     | monetary values.               |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'int_frac_digits'``               | Number of fractional digits    |
+   |                      |                                     | used in international          |
+   |                      |                                     | formatting of monetary values. |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'mon_thousands_sep'``             | Group separator used for       |
+   |                      |                                     | monetary values.               |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'mon_grouping'``                  | Equivalent to ``'grouping'``,  |
+   |                      |                                     | used for monetary values.      |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'positive_sign'``                 | Symbol used to annotate a      |
+   |                      |                                     | positive monetary value.       |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'negative_sign'``                 | Symbol used to annotate a      |
+   |                      |                                     | negative monetary value.       |
+   +----------------------+-------------------------------------+--------------------------------+
+   |                      | ``'p_sign_posn/n_sign_posn'``       | The position of the sign (for  |
+   |                      |                                     | positive resp. negative        |
+   |                      |                                     | values), see below.            |
+   +----------------------+-------------------------------------+--------------------------------+
 
-   ``'p_sign_posn'`` および ``'n_sing_posn'`` の取り得る値は以下の通りです。
+   All numeric values can be set to :const:`CHAR_MAX` to indicate that there is no
+   value specified in this locale.
 
-   +--------------+----------------------------------------+
-   | 値           | 説明                                   |
-   +==============+========================================+
-   | ``0``        | 通貨記号および値は丸括弧で囲われます。 |
-   +--------------+----------------------------------------+
-   | ``1``        | 符号は値と通貨記号より前に来ます。     |
-   +--------------+----------------------------------------+
-   | ``2``        | 符号は値と通貨記号の後に続きます。     |
-   +--------------+----------------------------------------+
-   | ``3``        | 符号は値の直前に来ます。               |
-   +--------------+----------------------------------------+
-   | ``4``        | 符号は値の直後に来ます。               |
-   +--------------+----------------------------------------+
-   | ``CHAR_MAX`` | このロケールでは特に指定しません。     |
-   +--------------+----------------------------------------+
+   The possible values for ``'p_sign_posn'`` and ``'n_sign_posn'`` are given below.
+
+   +--------------+-----------------------------------------+
+   | Value        | Explanation                             |
+   +==============+=========================================+
+   | ``0``        | Currency and value are surrounded by    |
+   |              | parentheses.                            |
+   +--------------+-----------------------------------------+
+   | ``1``        | The sign should precede the value and   |
+   |              | currency symbol.                        |
+   +--------------+-----------------------------------------+
+   | ``2``        | The sign should follow the value and    |
+   |              | currency symbol.                        |
+   +--------------+-----------------------------------------+
+   | ``3``        | The sign should immediately precede the |
+   |              | value.                                  |
+   +--------------+-----------------------------------------+
+   | ``4``        | The sign should immediately follow the  |
+   |              | value.                                  |
+   +--------------+-----------------------------------------+
+   | ``CHAR_MAX`` | Nothing is specified in this locale.    |
+   +--------------+-----------------------------------------+
 
 
 .. function:: nl_langinfo(option)
 
-   ロケール特有の情報を文字列として返します。この関数は全てのシステムで利用可能なわけではなく、指定できる *option* もプラットフォーム
-   間で大きく異なります。引数として使えるのは、locale モジュールで利用可能なシンボル定数を表す数字です。
+   Return some locale-specific information as a string.  This function is not
+   available on all systems, and the set of possible options might also vary
+   across platforms.  The possible argument values are numbers, for which
+   symbolic constants are available in the locale module.
 
-   関数 :func:`nl_langinfo` は以下のキーのうち一つを受理します。ほとんどの記述は GNU C
-   ライブラリ中の対応する説明から引用されています。
+   The :func:`nl_langinfo` function accepts one of the following keys.  Most
+   descriptions are taken from the corresponding description in the GNU C
+   library.
 
    .. data:: CODESET
 
-      選択されたロケールで用いられている文字エンコーディングの名前を文字列で取得します。
+      Get a string with the name of the character encoding used in the
+      selected locale.
 
    .. data:: D_T_FMT
 
-      日付と時刻をロケール特有の方法で表現するために、 :func:`strftime`
-      の書式化文字列として用いることのできる文字列を取得します。
+      Get a string that can be used as a format string for :func:`time.strftime` to
+      represent date and time in a locale-specific way.
 
    .. data:: D_FMT
 
-      日付をロケール特有の方法で表現するために、 :func:`strftime` の書式化文字列として用いることのできる文字列を取得します。
+      Get a string that can be used as a format string for :func:`time.strftime` to
+      represent a date in a locale-specific way.
 
    .. data:: T_FMT
 
-      時刻をロケール特有の方法で表現するために、 :func:`strftime` の書式化文字列として用いることのできる文字列を取得します。
+      Get a string that can be used as a format string for :func:`time.strftime` to
+      represent a time in a locale-specific way.
 
    .. data:: T_FMT_AMPM
 
-      時刻を午前／午後の書式で表現するために、 :func:`strftime` の書式化文字列として用いることのできる文字列を取得します。
+      Get a format string for :func:`time.strftime` to represent time in the am/pm
+      format.
 
    .. data:: DAY_1 ... DAY_7
 
-      1 週間中の n 番目の曜日名を取得します。
+      Get the name of the n-th day of the week.
 
       .. note::
 
-	 ロケール US における、 :const:`DAY_1` を日曜日とする慣行に従っています。国際的な (ISO 8601)
-	 月曜日を週の初めとする慣行ではありません。
+         This follows the US convention of :const:`DAY_1` being Sunday, not the
+         international convention (ISO 8601) that Monday is the first day of the
+         week.
 
    .. data:: ABDAY_1 ... ABDAY_7
 
-      1 週間中の n 番目の曜日名を略式表記で取得します。
+      Get the abbreviated name of the n-th day of the week.
 
    .. data:: MON_1 ... MON_12
 
-      n 番目の月の名前を取得します。
+      Get the name of the n-th month.
 
    .. data:: ABMON_1 ... ABMON_12
 
-      n 番目の月の名前を略式表記で取得します。
+      Get the abbreviated name of the n-th month.
 
    .. data:: RADIXCHAR
 
-      基数点 (小数点ドット、あるいは小数点コンマ、等) を取得します。
+      Get the radix character (decimal dot, decimal comma, etc.).
 
    .. data:: THOUSEP
 
-      1000 単位桁区切り (3 桁ごとのグループ化) の区切り文字を取得します。
+      Get the separator character for thousands (groups of three digits).
 
    .. data:: YESEXPR
 
-      肯定／否定で答える質問に対する肯定回答を正規表現関数で認識するために利用できる正規表現を取得します。
+      Get a regular expression that can be used with the regex function to
+      recognize a positive response to a yes/no question.
 
       .. note::
 
-	 表現は C ライブラリの :c:func:`regex` 関数に合ったものでなければならず、これは :mod:`re` で
-	 使われている構文とは異なるかもしれません。
+         The expression is in the syntax suitable for the :c:func:`regex` function
+         from the C library, which might differ from the syntax used in :mod:`re`.
 
    .. data:: NOEXPR
 
-      肯定／否定で答える質問に対する否定回答を正規表現関数で認識するために利用できる正規表現を取得します。
+      Get a regular expression that can be used with the regex(3) function to
+      recognize a negative response to a yes/no question.
 
    .. data:: CRNCYSTR
 
-      通貨シンボルを取得します。シンボルを値の前に表示させる場合には "-" 、値の後ろに表示させる場合には "+" 、シンボルを基数点と置き換える場合には "."
-      を前につけます。
+      Get the currency symbol, preceded by "-" if the symbol should appear before
+      the value, "+" if the symbol should appear after the value, or "." if the
+      symbol should replace the radix character.
 
    .. data:: ERA
 
-      現在のロケールで使われている年代を表現する値を取得します。
+      Get a string that represents the era used in the current locale.
 
-      ほとんどのロケールではこの値を定義していません。この値を設定しているロケールの例は日本です。日本では、日付の伝統的な表示法に、時の天皇
-      に対応する元号名を含めます。
+      Most locales do not define this value.  An example of a locale which does
+      define this value is the Japanese one.  In Japan, the traditional
+      representation of dates includes the name of the era corresponding to the
+      then-emperor's reign.
 
-      通常この値を直接指定する必要はありません。 ``E`` を書式化文字列に指定することで、関数 :func:`strftime` がこの情報を使うようになります。
-      返される文字列の様式は決められていないので、異なるシステム間で様式に関する同じ知識が使えると期待してはいけません。
+      Normally it should not be necessary to use this value directly. Specifying
+      the ``E`` modifier in their format strings causes the :func:`time.strftime`
+      function to use this information.  The format of the returned string is not
+      specified, and therefore you should not assume knowledge of it on different
+      systems.
 
    .. data:: ERA_D_T_FMT
 
-      日付および時間をロケール固有の年代に基づいた方法で表現するために、 :func:`strftime` の書式化文字列として用いることのできる文字列を取得します。
+      Get a format string for :func:`time.strftime` to represent date and time in a
+      locale-specific era-based way.
 
    .. data:: ERA_D_FMT
 
-      日付をロケール固有の年代に基づいた方法で表現するために、 :func:`strftime`
-      の書式化文字列として用いることのできる文字列を取得します。
+      Get a format string for :func:`time.strftime` to represent a date in a
+      locale-specific era-based way.
 
    .. data:: ERA_T_FMT
 
-      時刻をロケール固有の年代に基づいた方法で表現するために、 :func:`strftime`
-      の書式化文字列として用いることのできる文字列を取得します。
+      Get a format string for :func:`time.strftime` to represent a time in a
+      locale-specific era-based way.
 
    .. data:: ALT_DIGITS
 
-      返される値は 0 から 99 までの 100 個の値の表現です。
+      Get a representation of up to 100 values used to represent the values
+      0 to 99.
 
 
 .. function:: getdefaultlocale([envvars])
 
-   標準のロケール設定を取得しようと試み、結果をタプル ``(language code, encoding)`` の形式で返します。
-   POSIXによると、 ``setlocale(LC_ALL, '')`` を呼ばなかったプログラムは、移植可能な ``'C'`` ロケール設定を使います。
-   ``setlocale(LC_ALL, '')`` を呼ぶことで、 :envvar:`LANG` 変数で定義された標準のロケール設定を使うようになります。
-   Python では現在のロケール設定に干渉したくないので、上で述べたような方法でその挙動をエミュレーションしています。
+   Tries to determine the default locale settings and returns them as a tuple of
+   the form ``(language code, encoding)``.
 
-   他のプラットフォームとの互換性を維持するために、環境変数 :envvar:`LANG` だけでなく、引数 *envvars* で指定された環境変数のリスト
-   も調べられます。 *envvars* は標準では GNU gettext で使われているサーチパスになります; パスには必ず変数名 ``LANG`` が含まれて
-   いるからです。GNU gettext サーチパスは ``'LANGUAGE'`` 、 ``'LC_ALL'`` 、 ``'LC_CTYPE'`` 、および
-   ``'LANG'`` が列挙した順番に含まれています。
+   According to POSIX, a program which has not called ``setlocale(LC_ALL, '')``
+   runs using the portable ``'C'`` locale.  Calling ``setlocale(LC_ALL, '')`` lets
+   it use the default locale as defined by the :envvar:`LANG` variable.  Since we
+   do not want to interfere with the current locale setting we thus emulate the
+   behavior in the way described above.
 
-   ``'C'`` の場合を除き、言語コードは :rfc:`1766` に対応します。 *language code* および *encoding*
-   が決定できなかった場合、 ``None`` になるかもしれません。
+   To maintain compatibility with other platforms, not only the :envvar:`LANG`
+   variable is tested, but a list of variables given as envvars parameter.  The
+   first found to be defined will be used.  *envvars* defaults to the search path
+   used in GNU gettext; it must always contain the variable name ``LANG``.  The GNU
+   gettext search path contains ``'LANGUAGE'``, ``'LC_ALL'``, ``'LC_CTYPE'``, and
+   ``'LANG'``, in that order.
+
+   Except for the code ``'C'``, the language code corresponds to :rfc:`1766`.
+   *language code* and *encoding* may be ``None`` if their values cannot be
+   determined.
 
    .. versionadded:: 2.0
 
 
 .. function:: getlocale([category])
 
-   与えられたロケールカテゴリに対する現在の設定を、 *language code* 、 *encoding* を含むシーケンスで返します。 *category*
-   として :const:`LC_ALL` 以外の :const:`LC_\*` の値の一つを指定できます。標準の設定は :const:`LC_CTYPE`
-   です。
+   Returns the current setting for the given locale category as sequence containing
+   *language code*, *encoding*. *category* may be one of the :const:`LC_\*` values
+   except :const:`LC_ALL`.  It defaults to :const:`LC_CTYPE`.
 
-   ``'C'`` の場合を除き、言語コードは :rfc:`1766` に対応します。 *language code* および *encoding*
-   が決定できなかった場合、 ``None`` になるかもしれません。
+   Except for the code ``'C'``, the language code corresponds to :rfc:`1766`.
+   *language code* and *encoding* may be ``None`` if their values cannot be
+   determined.
 
    .. versionadded:: 2.0
 
 
 .. function:: getpreferredencoding([do_setlocale])
 
-   テキストデータをエンコードする方法を、ユーザの設定に基づいて返します。ユーザの設定は異なるシステム間では異なった方法で
-   表現され、システムによってはプログラミング的に得ることができないこともあるので、この関数が返すのはただの推測です。
+   Return the encoding used for text data, according to user preferences.  User
+   preferences are expressed differently on different systems, and might not be
+   available programmatically on some systems, so this function only returns a
+   guess.
 
-   システムによっては、ユーザの設定を取得するために  :func:`setlocale` を呼び出す必要があるため、この関数はスレッド安全
-   ではありません。 :func:`setlocale` を呼び出す必要がない、または呼び出したくない場合、 *do_setlocale* を ``False`` に
-   設定する必要があります。
+   On some systems, it is necessary to invoke :func:`setlocale` to obtain the user
+   preferences, so this function is not thread-safe. If invoking setlocale is not
+   necessary or desired, *do_setlocale* should be set to ``False``.
 
    .. versionadded:: 2.3
 
 
 .. function:: normalize(localename)
 
-   与えたロケール名を規格化したロケールコードを返します。返されるロケールコードは :func:`setlocale` で使うために書式化されて
-   います。規格化が失敗した場合、もとの名前がそのまま返されます。
+   Returns a normalized locale code for the given locale name.  The returned locale
+   code is formatted for use with :func:`setlocale`.  If normalization fails, the
+   original name is returned unchanged.
 
-   与えたエンコードがシステムにとって未知の場合、標準の設定では、この関数は :func:`setlocale` と同様に、エンコーディングを
-   ロケールコードにおける標準のエンコーディングに設定します。
+   If the given encoding is not known, the function defaults to the default
+   encoding for the locale code just like :func:`setlocale`.
 
    .. versionadded:: 2.0
 
 
 .. function:: resetlocale([category])
 
-   *category* のロケールを標準設定にします。
+   Sets the locale for *category* to the default setting.
 
-   標準設定は :func:`getdefaultlocale` を呼ぶことで決定されます。 *category* は標準で :const:`LC_ALL`
-   になっています。
+   The default setting is determined by calling :func:`getdefaultlocale`.
+   *category* defaults to :const:`LC_ALL`.
 
    .. versionadded:: 2.0
 
 
 .. function:: strcoll(string1, string2)
 
-   現在の :const:`LC_COLLATE` 設定に従って二つの文字列を比較します。他の比較を行う関数と同じように、 *string1* が
-   *string2*  に対して前に来るか、後に来るか、あるいは二つが等しいかによって、それぞれ負の値、正の値、あるいは ``0`` を返します。
+   Compares two strings according to the current :const:`LC_COLLATE` setting. As
+   any other compare function, returns a negative, or a positive value, or ``0``,
+   depending on whether *string1* collates before or after *string2* or is equal to
+   it.
 
 
 .. function:: strxfrm(string)
 
    .. index:: builtin: cmp
 
-   文字列を組み込み関数 :func:`cmp` で使える形式に変換し、かつロケールに則した結果を返します。
-   この関数は同じ文字列が何度も比較される場合、例えば文字列からなるシーケンスを順序付けて並べる際に使うことができます。
+   Transforms a string to one that can be used for the built-in function
+   :func:`cmp`, and still returns locale-aware results.  This function can be used
+   when the same string is compared repeatedly, e.g. when collating a sequence of
+   strings.
 
 
 .. function:: format(format, val[, grouping[, monetary]])
 
-   数値 *val* を現在の :const:`LC_NUMERIC` の設定に基づいて書式化します。書式は ``%`` 演算子の慣行に従います。浮動小数点
-   数については、必要に応じて浮動小数点が変更されます。 *grouping* が真なら、ロケールに配慮した桁数の区切りが行われます。
+   Formats a number *val* according to the current :const:`LC_NUMERIC` setting.
+   The format follows the conventions of the ``%`` operator.  For floating point
+   values, the decimal point is modified if appropriate.  If *grouping* is true,
+   also takes the grouping into account.
 
-   *monetary* が真なら、桁区切り記号やグループ化文字列を用いて変換を行います。
+   If *monetary* is true, the conversion uses monetary thousands separator and
+   grouping strings.
 
-   この関数や、1文字の指定子でしか動作しないことに注意しましょう。フォーマット文字列を使う場合は :func:`format_string` を使用します。
+   Please note that this function will only work for exactly one %char specifier.
+   For whole format strings, use :func:`format_string`.
 
    .. versionchanged:: 2.5
-      *monetary* パラメータが追加されました.
+      Added the *monetary* parameter.
 
 
 .. function:: format_string(format, val[, grouping])
 
-   ``format % val`` 形式のフォーマット指定子を、現在のロケール設定を考慮したうえで処理します。
+   Processes formatting specifiers as in ``format % val``, but takes the current
+   locale settings into account.
 
    .. versionadded:: 2.5
 
 
 .. function:: currency(val[, symbol[, grouping[, international]]])
 
-   数値 *val* を、現在の :const:`LC_MONETARY` の設定にあわせてフォーマットします。
+   Formats a number *val* according to the current :const:`LC_MONETARY` settings.
 
-   *symbol* が真の場合は、返される文字列に通貨記号が含まれるようになります。これはデフォルトの設定です。 *grouping* が真の場合(これはデフォ
-   ルトではありません)は、値をグループ化します。 *international* が真の場合(これはデフォルトではありません)は、国際的な通貨記号を使用します。
+   The returned string includes the currency symbol if *symbol* is true, which is
+   the default. If *grouping* is true (which is not the default), grouping is done
+   with the value. If *international* is true (which is not the default), the
+   international currency symbol is used.
 
-   この関数は'C'ロケールでは動作しないことに注意しましょう。まず最初に :func:`setlocale` でロケールを設定する必要があります。
+   Note that this function will not work with the 'C' locale, so you have to set a
+   locale via :func:`setlocale` first.
 
    .. versionadded:: 2.5
 
 
 .. function:: str(float)
 
-   浮動小数点数を ``str(float)`` と同じように書式化しますが、ロケールに配慮した小数点が使われます。
+   Formats a floating point number using the same format as the built-in function
+   ``str(float)``, but takes the decimal point into account.
 
 
 .. function:: atof(string)
 
-   文字列を :const:`LC_NUMERIC` で設定された慣行に従って浮動小数点に変換します。
+   Converts a string to a floating point number, following the :const:`LC_NUMERIC`
+   settings.
 
 
 .. function:: atoi(string)
 
-   文字列を :const:`LC_NUMERIC` で設定された慣行に従って整数に変換します。
+   Converts a string to an integer, following the :const:`LC_NUMERIC` conventions.
 
 
 .. data:: LC_CTYPE
 
    .. index:: module: string
 
-   文字タイプ関連の関数のためのロケールカテゴリです。このカテゴリの設定に従って、モジュール :mod:`string` における関数の振る舞いが変わります。
+   Locale category for the character type functions.  Depending on the settings of
+   this category, the functions of module :mod:`string` dealing with case change
+   their behaviour.
 
 
 .. data:: LC_COLLATE
 
-   文字列を並べ替えるためのロケールカテゴリです。 :mod:`locale` モジュールの関数 :func:`strcoll` および
-   :func:`strxfrm` が影響を受けます。
+   Locale category for sorting strings.  The functions :func:`strcoll` and
+   :func:`strxfrm` of the :mod:`locale` module are affected.
 
 
 .. data:: LC_TIME
 
-   時刻を書式化するためのロケールカテゴリです。 :func:`time.strftime`  はこのカテゴリに設定されている慣行に従います。
+   Locale category for the formatting of time.  The function :func:`time.strftime`
+   follows these conventions.
 
 
 .. data:: LC_MONETARY
 
-   金額に関係する値を書式化するためのロケールカテゴリです。設定可能なオプションは関数 :func:`localeconv` で得ることができます。
+   Locale category for formatting of monetary values.  The available options are
+   available from the :func:`localeconv` function.
 
 
 .. data:: LC_MESSAGES
 
-   メッセージ表示のためのロケールカテゴリです。現在 Python はアプリケーション毎にロケールに対応したメッセージを出力する
-   機能はサポートしていません。 :func:`os.strerror` が返すような、オペレーティングシステムによって表示される
-   メッセージはこのカテゴリによって影響を受けます。
+   Locale category for message display. Python currently does not support
+   application specific locale-aware messages.  Messages displayed by the operating
+   system, like those returned by :func:`os.strerror` might be affected by this
+   category.
 
 
 .. data:: LC_NUMERIC
 
-   数字を書式化するためのロケールカテゴリです。関数 :func:`format` 、 :func:`atoi` 、 :func:`atof` および
-   :mod:`locale` モジュールの :func:`str` が影響を受けます。他の数値書式化操作は影響を受けません。
+   Locale category for formatting numbers.  The functions :func:`.format`,
+   :func:`atoi`, :func:`atof` and :func:`.str` of the :mod:`locale` module are
+   affected by that category.  All other numeric formatting operations are not
+   affected.
 
 
 .. data:: LC_ALL
 
-   全てのロケール設定を総合したものです。ロケールを変更する際にこのフラグが使われた場合、そのロケールにおける全てのカテゴリを設定
-   しようと試みます。一つでも失敗したカテゴリがあった場合、全てのカテゴリにおいて設定変更を行いません。このフラグを使ってロケールを
-   取得した場合、全てのカテゴリにおける設定を示す文字列が返されます。この文字列は、後に設定を元に戻すために使うことができます。
+   Combination of all locale settings.  If this flag is used when the locale is
+   changed, setting the locale for all categories is attempted. If that fails for
+   any category, no category is changed at all.  When the locale is retrieved using
+   this flag, a string indicating the setting for all categories is returned. This
+   string can be later used to restore the settings.
 
 
 .. data:: CHAR_MAX
 
-   :func:`localeconv` の返す特別な値のためのシンボル定数です。
+   This is a symbolic constant used for different values returned by
+   :func:`localeconv`.
 
 
-例::
+Example::
 
    >>> import locale
    >>> loc = locale.getlocale() # get current locale
@@ -405,65 +490,79 @@
    >>> locale.setlocale(locale.LC_ALL, loc) # restore saved locale
 
 
-ロケールの背景、詳細、ヒント、助言および補足説明
-------------------------------------------------
+Background, details, hints, tips and caveats
+--------------------------------------------
 
-C 標準では、ロケールはプログラム全体にわたる特性であり、その変更は高価な処理であるとしています。加えて、頻繁にロケールを変更する
-ようなひどい実装はコアダンプを引き起こすこともあります。このことがロケールを正しく利用する上で苦痛となっています。
+The C standard defines the locale as a program-wide property that may be
+relatively expensive to change.  On top of that, some implementation are broken
+in such a way that frequent locale changes may cause core dumps.  This makes the
+locale somewhat painful to use correctly.
 
-そもそも、プログラムが起動した際、ロケールはユーザの希望するロケールにかかわらず ``C`` です。プログラムは ``setlocale(LC_ALL,
-'')`` を呼び出して、明示的にユーザの希望するロケール設定を行わなければなりません。
+Initially, when a program is started, the locale is the ``C`` locale, no matter
+what the user's preferred locale is.  The program must explicitly say that it
+wants the user's preferred locale settings by calling ``setlocale(LC_ALL, '')``.
 
-:func:`setlocale` をライブラリルーチン内で呼ぶことは、それがプログラム全体に及ぼす副作用の面から、一般的によくない考えです。
-ロケールを保存したり復帰したりするのもよくありません: 高価な処理であり、ロケールの設定が復帰する以前に起動してしまった他のスレッド
-に悪影響を及ぼすからです。
+It is generally a bad idea to call :func:`setlocale` in some library routine,
+since as a side effect it affects the entire program.  Saving and restoring it
+is almost as bad: it is expensive and affects other threads that happen to run
+before the settings have been restored.
 
-もし、汎用を目的としたモジュールを作っていて、ロケールによって影響をうけるような操作 (例えば :func:`string.lower` や
-:func:`time.strftime` の書式の一部) のロケール独立のバージョンが必要ということになれば、標準ライブラリルーチンを
-使わずに何とかしなければなりません。よりましな方法は、ロケール設定が正しく利用できているか確かめることです。最後の手段は、あなたのモジュールが ``C``
-ロケール以外の設定には互換性がないとドキュメントに書くことです。
+If, when coding a module for general use, you need a locale independent version
+of an operation that is affected by the locale (such as :func:`string.lower`, or
+certain formats used with :func:`time.strftime`), you will have to find a way to
+do it without using the standard library routine.  Even better is convincing
+yourself that using locale settings is okay.  Only as a last resort should you
+document that your module is not compatible with non-\ ``C`` locale settings.
 
 .. index:: module: string
 
-:mod:`string` モジュールの大小文字の変換を行う関数はロケール設定によって影響を受けます。 :func:`setlocale`  関数を呼んで
-:const:`LC_CTYPE` 設定を変更した場合、変数 ``string.lowercase`` 、 ``string.uppercase`` および
-``string.letters`` は計算しなおされます。例えば ``from string import letters`` のように、
-':keyword:`from` ... :keyword:`import` ...' を使ってこれらの変数を使っている場合には、それ以降の
-:func:`setlocale` の影響を受けないので注意してください。
+The case conversion functions in the :mod:`string` module are affected by the
+locale settings.  When a call to the :func:`setlocale` function changes the
+:const:`LC_CTYPE` settings, the variables ``string.lowercase``,
+``string.uppercase`` and ``string.letters`` are recalculated.  Note that code
+that uses these variable through ':keyword:`from` ... :keyword:`import` ...',
+e.g. ``from string import letters``, is not affected by subsequent
+:func:`setlocale` calls.
 
-ロケールに従って数値操作を行うための唯一の方法はこのモジュールで特別に定義されている関数:  :func:`atof` 、 :func:`atoi` 、
-:func:`.format` 、 :func:`.str` を使うことです。
+The only way to perform numeric operations according to the locale is to use the
+special functions defined by this module: :func:`atof`, :func:`atoi`,
+:func:`.format`, :func:`.str`.
 
 
 .. _embedding-locale:
 
-Python 拡張の作者と、Python を埋め込むようなプログラムに関して
---------------------------------------------------------------
+For extension writers and programs that embed Python
+----------------------------------------------------
 
-拡張モジュールは、現在のロケールを調べる以外は、決して :func:`setlocale` を呼び出してはなりません。
-しかし、返される値もロケールの復帰のために使えるだけなので、さほど便利とはいえません (例外はおそらくロケールが ``C`` かどうか調べることでしょう)。
+Extension modules should never call :func:`setlocale`, except to find out what
+the current locale is.  But since the return value can only be used portably to
+restore it, that is not very useful (except perhaps to find out whether or not
+the locale is ``C``).
 
-ロケールを変更するために Python コードで :mod:`locale` モジュールを使った場合、Python を埋め込んでいるアプリケーションにも影響を
-及ぼします。Python を埋め込んでいるアプリケーションに影響が及ぶことを望まない場合、 :file:`config.c` ファイル内の組み込みモジュールの
-テーブルから :mod:`_locale` 拡張モジュール  (ここで全てを行っています)  を削除し、共有ライブラリから :mod:`_locate`
-モジュールにアクセスできないようにしてください。
+When Python code uses the :mod:`locale` module to change the locale, this also
+affects the embedding application.  If the embedding application doesn't want
+this to happen, it should remove the :mod:`_locale` extension module (which does
+all the work) from the table of built-in modules in the :file:`config.c` file,
+and make sure that the :mod:`_locale` module is not accessible as a shared
+library.
 
 
 .. _locale-gettext:
 
-メッセージカタログへのアクセス
-------------------------------
+Access to message catalogs
+--------------------------
 
-C ライブラリの gettext インタフェースが提供されているシステムでは、 locake モジュールでそのインタフェースを公開しています。
-このインタフェースは関数 :func:`gettext` 、 :func:`dgettext` 、
-:func:`dcgettext` 、 :func:`textdomain` 、 :func:`bindtextdomain` 、および
-:func:`bind_textdomain_codeset` からなります。これらは :mod:`gettext` モジュールの同名の関数に似ていますが、
-メッセージカタログとして C ライブラリのバイナリフォーマットを使い、メッセージカタログを探すために C ライブラリのサーチアルゴリズムを使います。
+The locale module exposes the C library's gettext interface on systems that
+provide this interface.  It consists of the functions :func:`gettext`,
+:func:`dgettext`, :func:`dcgettext`, :func:`textdomain`, :func:`bindtextdomain`,
+and :func:`bind_textdomain_codeset`.  These are similar to the same functions in
+the :mod:`gettext` module, but use the C library's binary format for message
+catalogs, and the C library's search algorithms for locating message catalogs.
 
-Python アプリケーションでは、通常これらの関数を呼び出す必要はないはずで、
-代わりに :mod:`gettext` を呼ぶべきです。
-例外として知られているのは、内部で :c:func:`gettext` または :func:`dcgettext`
-を呼び出すような C ライブラリにリンクするアプリケーションです。
-こうしたアプリケーションでは、ライブラリが正しいメッセージカタログを探せるように
-テキストドメイン名を指定する必要があります。
+Python applications should normally find no need to invoke these functions, and
+should use :mod:`gettext` instead.  A known exception to this rule are
+applications that link with additional C libraries which internally invoke
+:c:func:`gettext` or :func:`dcgettext`.  For these applications, it may be
+necessary to bind the text domain, so that the libraries can properly locate
+their message catalogs.
 

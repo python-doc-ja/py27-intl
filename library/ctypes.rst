@@ -1,5 +1,5 @@
-:mod:`ctypes` --- Pythonのための外部関数ライブラリ
-==================================================
+:mod:`ctypes` --- A foreign function library for Python
+=======================================================
 
 .. module:: ctypes
    :synopsis: A foreign function library for Python.
@@ -8,50 +8,45 @@
 
 .. versionadded:: 2.5
 
-:mod:`ctypes` は Python のための外部関数ライブラリです。このライブラリは
-C と互換性のあるデータ型を提供し、動的リンク/共有ライブラリ内の関数呼び
-出しを可能にします。動的リンク/共有ライブラリを純粋な Python でラップ
-するために使うことができます。
+:mod:`ctypes` is a foreign function library for Python.  It provides C compatible
+data types, and allows calling functions in DLLs or shared libraries.  It can be
+used to wrap these libraries in pure Python.
 
 
 .. _ctypes-ctypes-tutorial:
 
-ctypesチュートリアル
---------------------
+ctypes tutorial
+---------------
 
-注意: このチュートリアルのコードサンプルは動作確認のために :mod:`doctest`
-を使います。コードサンプルの中には Linux、 Windows、あるいは Mac OS X
-上で異なる動作をするものがあるため、サンプルのコメントに doctest 命令
-を入れてあります。
+Note: The code samples in this tutorial use :mod:`doctest` to make sure that
+they actually work.  Since some code samples behave differently under Linux,
+Windows, or Mac OS X, they contain doctest directives in comments.
 
-注意: いくつかのコードサンプルで ctypes の :class:`c_int` 型を参照して
-います。 32 ビットシステムにおいてこの型は :class:`c_long` 型のエイリ
-アスです。そのため、 :class:`c_int` 型を想定しているときに
-:class:`c_long` が表示されたとしても、混乱しないようにしてください ---
-実際には同じ型なのです。
+Note: Some code samples reference the ctypes :class:`c_int` type. This type is
+an alias for the :class:`c_long` type on 32-bit systems.  So, you should not be
+confused if :class:`c_long` is printed if you would expect :class:`c_int` ---
+they are actually the same type.
 
 
 .. _ctypes-loading-dynamic-link-libraries:
 
-動的リンクライブラリをロードする
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Loading dynamic link libraries
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-動的リンクライブラリをロードするために、 :mod:`ctypes` は *cdll* を
-エクスポートします。
-Windows では *windll* と *oledll* オブジェクトをエクスポートします。
+:mod:`ctypes` exports the *cdll*, and on Windows *windll* and *oledll*
+objects, for loading dynamic link libraries.
 
-これらのオブジェクトの属性としてライブラリにアクセスすることでライブラ
-リをロードします。 *cdll* は標準 ``cdecl`` 呼び出し規約を用いて関数を
-エクスポートしているライブラリをロードします。それに対して、 *windll*
-ライブラリは ``stdcall`` 呼び出し規約を用いる関数を呼び出します。
-*oledll* も ``stdcall`` 呼び出し規約を使いますが、関数が Windows
-:c:type:`HRESULT` エラーコードを返すことを想定しています。
-このエラーコードは関数呼び出しが失敗したとき、
-:class:`WindowsError` 例外を自動的に送出させるために使われます。
+You load libraries by accessing them as attributes of these objects. *cdll*
+loads libraries which export functions using the standard ``cdecl`` calling
+convention, while *windll* libraries call functions using the ``stdcall``
+calling convention. *oledll* also uses the ``stdcall`` calling convention, and
+assumes the functions return a Windows :c:type:`HRESULT` error code. The error
+code is used to automatically raise a :class:`WindowsError` exception when the
+function call fails.
 
-Windows用の例ですが、 ``msvcrt`` はほとんどの標準 C 関数が含まれている
-MS 標準 C ライブラリであり、 cdecl 呼び出し規約を使うことに注意してく
-ださい::
+Here are some examples for Windows. Note that ``msvcrt`` is the MS standard C
+library containing most standard C functions, and uses the cdecl calling
+convention::
 
    >>> from ctypes import *
    >>> print windll.kernel32 # doctest: +WINDOWS
@@ -61,14 +56,12 @@ MS 標準 C ライブラリであり、 cdecl 呼び出し規約を使うこと�
    >>> libc = cdll.msvcrt # doctest: +WINDOWS
    >>>
 
-Windows では通常の ``.dll`` ファイル拡張子を自動的に追加します。
+Windows appends the usual ``.dll`` file suffix automatically.
 
-Linux ではライブラリをロードするために拡張子を *含む* ファイル名を指定
-する必要があるので、ロードしたライブラリに対する属性アクセスはできませ
-ん。
-dll ローダーの :meth:`LoadLibrary` メソッドを使うか、コンストラクタを
-呼び出して CDLL のインスタンスを作ることでライブラリをロードするかのど
-ちらかを行わなければなりません::
+On Linux, it is required to specify the filename *including* the extension to
+load a library, so attribute access can not be used to load libraries. Either the
+:meth:`LoadLibrary` method of the dll loaders should be used, or you should load
+the library by creating an instance of CDLL by calling the constructor::
 
    >>> cdll.LoadLibrary("libc.so.6") # doctest: +LINUX
    <CDLL 'libc.so.6', handle ... at ...>
@@ -82,10 +75,10 @@ dll ローダーの :meth:`LoadLibrary` メソッドを使うか、コンスト�
 
 .. _ctypes-accessing-functions-from-loaded-dlls:
 
-ロードしたdllから関数にアクセスする
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Accessing functions from loaded dlls
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-dll オブジェクトの属性として関数にアクセスします::
+Functions are accessed as attributes of dll objects::
 
    >>> from ctypes import *
    >>> libc.printf
@@ -100,37 +93,34 @@ dll オブジェクトの属性として関数にアクセスします::
    AttributeError: function 'MyOwnFunction' not found
    >>>
 
-``kernel32`` や ``user32`` のような win32 システム dll は、多くの場合
-関数の UNICODE バージョンに加えて ANSI バージョンもエクスポートするこ
-とに注意してください。 UNICODE バージョンは後ろに ``W`` が付いた名前で
-エクスポートされ、 ANSI バージョンは ``A`` が付いた名前でエクスポート
-されます。
-与えられたモジュールの *モジュールハンドル* を返す win32
-``GetModuleHandle`` 関数は次のような C プロトタイプを持ちます。
-UNICODE バージョンが定義されているかどうかにより ``GetModuleHandle``
-としてどちらか一つを公開するためにマクロが使われます::
+Note that win32 system dlls like ``kernel32`` and ``user32`` often export ANSI
+as well as UNICODE versions of a function. The UNICODE version is exported with
+an ``W`` appended to the name, while the ANSI version is exported with an ``A``
+appended to the name. The win32 ``GetModuleHandle`` function, which returns a
+*module handle* for a given module name, has the following C prototype, and a
+macro is used to expose one of them as ``GetModuleHandle`` depending on whether
+UNICODE is defined or not::
 
    /* ANSI version */
    HMODULE GetModuleHandleA(LPCSTR lpModuleName);
    /* UNICODE version */
    HMODULE GetModuleHandleW(LPCWSTR lpModuleName);
 
-*windll* は魔法を使ってどちらか一つを選ぶようなことはしません。
-``GetModuleHandleA`` もしくは ``GetModuleHandleW`` を明示的に指定して
-必要とするバージョンにアクセスし、文字列かユニコード文字列を使ってそれ
-ぞれ呼び出さなければなりません。
+*windll* does not try to select one of them by magic, you must access the
+version you need by specifying ``GetModuleHandleA`` or ``GetModuleHandleW``
+explicitly, and then call it with strings or unicode strings
+respectively.
 
-時には、 dll が関数を ``"??2@YAPAXI@Z"`` のような Python 識別子として
-有効でない名前でエクスポートすることがあります。このような場合に関数を
-取り出すには、 :func:`getattr` を使わなければなりません。::
+Sometimes, dlls export functions with names which aren't valid Python
+identifiers, like ``"??2@YAPAXI@Z"``. In this case you have to use
+:func:`getattr` to retrieve the function::
 
    >>> getattr(cdll.msvcrt, "??2@YAPAXI@Z") # doctest: +WINDOWS
    <_FuncPtr object at 0x...>
    >>>
 
-Windows では、名前ではなく序数によって関数をエクスポートする dll もあ
-ります。こうした関数には序数を使って dll オブジェクトにインデックス指
-定することでアクセスします::
+On Windows, some dlls export functions not by name but by ordinal. These
+functions can be accessed by indexing the dll object with the ordinal number::
 
    >>> cdll.kernel32[1] # doctest: +WINDOWS
    <_FuncPtr object at 0x...>
@@ -145,17 +135,16 @@ Windows では、名前ではなく序数によって関数をエクスポート
 
 .. _ctypes-calling-functions:
 
-関数を呼び出す
-^^^^^^^^^^^^^^
+Calling functions
+^^^^^^^^^^^^^^^^^
 
-これらの関数は他の Python 呼び出し可能オブジェクトと同じように呼び出す
-ことができます。
-この例では ``time()`` 関数 (Unixエポックからのシステム時間を秒単位で返
-す) と、 ``GetModuleHandleA()`` 関数 (win32モジュールハンドルを返す)
-を使います。
+You can call these functions like any other Python callable. This example uses
+the ``time()`` function, which returns system time in seconds since the Unix
+epoch, and the ``GetModuleHandleA()`` function, which returns a win32 module
+handle.
 
-この例は両方の関数を NULL ポインタとともに呼び出します (``None`` を
-NULL ポインタとして使う必要があります)::
+This example calls both functions with a NULL pointer (``None`` should be used
+as the NULL pointer)::
 
    >>> print libc.time(None) # doctest: +SKIP
    1150640792
@@ -163,10 +152,10 @@ NULL ポインタとして使う必要があります)::
    0x1d000000
    >>>
 
-:mod:`ctypes` は引数の数を間違えたり、あるいは呼び出し規約を間違えた関数
-呼び出しからあなたを守ろうとします。残念ながら、これは Windows でしか
-機能しません。関数が返った後にスタックを調べることでこれを行います。し
-たがって、エラーは発生しますが、その関数は呼び出された *後です*::
+:mod:`ctypes` tries to protect you from calling functions with the wrong number
+of arguments or the wrong calling convention.  Unfortunately this only works on
+Windows.  It does this by examining the stack after the function returns, so
+although an error is raised the function *has* been called::
 
    >>> windll.kernel32.GetModuleHandleA() # doctest: +WINDOWS
    Traceback (most recent call last):
@@ -178,8 +167,8 @@ NULL ポインタとして使う必要があります)::
    ValueError: Procedure probably called with too many arguments (4 bytes in excess)
    >>>
 
-同じ例外が ``cdecl`` 呼び出し規約を使って ``stdcall`` 関数を呼び出した
-ときに送出されますし、逆の場合も同様です。::
+The same exception is raised when you call an ``stdcall`` function with the
+``cdecl`` calling convention, or vice versa::
 
    >>> cdll.kernel32.GetModuleHandleA(None) # doctest: +WINDOWS
    Traceback (most recent call last):
@@ -193,11 +182,12 @@ NULL ポインタとして使う必要があります)::
    ValueError: Procedure probably called with too many arguments (4 bytes in excess)
    >>>
 
-正しい呼び出し規約を知るためには、呼び出したい関数についての C ヘッダ
-ファイルもしくはドキュメントを見なければなりません。
+To find out the correct calling convention you have to look into the C header
+file or the documentation for the function you want to call.
 
-Windows では、関数が無効な引数とともに呼び出された場合の一般保護例外による
-クラッシュを防ぐために、 :mod:`ctypes` は win32 構造化例外処理を使います::
+On Windows, :mod:`ctypes` uses win32 structured exception handling to prevent
+crashes from general protection faults when functions are called with invalid
+argument values::
 
    >>> windll.kernel32.GetModuleHandleA(32) # doctest: +WINDOWS
    Traceback (most recent call last):
@@ -205,80 +195,76 @@ Windows では、関数が無効な引数とともに呼び出された場合の
    WindowsError: exception: access violation reading 0x00000020
    >>>
 
-しかし、 :mod:`ctypes` を使って Python をクラッシュさせる方法は十分なほど
-あるので、よく注意すべきです。
+There are, however, enough ways to crash Python with :mod:`ctypes`, so you
+should be careful anyway.
 
-``None`` 、整数、長整数、バイト文字列およびユニコード文字列だけが、
-こうした関数呼び出しにおいてパラメータとして直接使えるネイティブの
-Python オブジェクトです。 ``None`` は C の ``NULL`` ポインタとして渡さ
-れ、バイト文字列とユニコード文字列はそのデータを含むメモリブロックへの
-ポインタ (:c:type:`char *` または :c:type:`wchar_t *`) として渡されます。
-Python 整数と Python 長整数はプラットホームのデフォルトの C :c:type:`int` 型として
-渡され、その値は C :c:type:`int` 型に合うようにマスクされます。
+``None``, integers, longs, byte strings and unicode strings are the only native
+Python objects that can directly be used as parameters in these function calls.
+``None`` is passed as a C ``NULL`` pointer, byte strings and unicode strings are
+passed as pointer to the memory block that contains their data (:c:type:`char *`
+or :c:type:`wchar_t *`).  Python integers and Python longs are passed as the
+platforms default C :c:type:`int` type, their value is masked to fit into the C
+type.
 
-他のパラメータ型をもつ関数呼び出しに移る前に、 :mod:`ctypes` データ型につ
-いてさらに学ぶ必要があります。
+Before we move on calling functions with other parameter types, we have to learn
+more about :mod:`ctypes` data types.
 
 
 .. _ctypes-fundamental-data-types:
 
-基本のデータ型
-^^^^^^^^^^^^^^
+Fundamental data types
+^^^^^^^^^^^^^^^^^^^^^^
 
-:mod:`ctypes` はたくさんの C と互換性のあるデータ型を定義しています :
+:mod:`ctypes` defines a number of primitive C compatible data types:
 
-+-----------------------+-----------------------------------+----------------------------+
-| ctypes の型           | C の型                            | Python の型                |
-+=======================+===================================+============================+
-| :class:`c_bool`       | :c:type:`_Bool`                   | bool (1)                   |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_char`       | :c:type:`char`                    | 1文字の文字列              |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_wchar`      | :c:type:`wchar_t`                 | 1文字のユニコード文字列    |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_byte`       | :c:type:`char`                    | 整数/長整数                |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_ubyte`      | :c:type:`unsigned char`           | 整数/長整数                |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_short`      | :c:type:`short`                   | 整数/長整数                |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_ushort`     | :c:type:`unsigned short`          | 整数/長整数                |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_int`        | :c:type:`int`                     | 整数/長整数                |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_uint`       | :c:type:`unsigned int`            | 整数/長整数                |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_long`       | :c:type:`long`                    | 整数/長整数                |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_ulong`      | :c:type:`unsigned long`           | 整数/長整数                |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_longlong`   | :c:type:`__int64` または          | 整数/長整数                |
-|                       | :c:type:`long long`               |                            |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_ulonglong`  | :c:type:`unsigned __int64` または | 整数/長整数                |
-|                       | :c:type:`unsigned long long`      |                            |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_float`      | :c:type:`float`                   | 浮動小数点数               |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_double`     | :c:type:`double`                  | 浮動小数点数               |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_longdouble` | :c:type:`longdouble`              | 浮動小数点数               |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_char_p`     | :c:type:`char *` (NUL 終端)       | 文字列または ``None``      |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_wchar_p`    | :c:type:`wchar_t *` (NUL 終端)    | ユニコードまたは ``None``  |
-+-----------------------+-----------------------------------+----------------------------+
-| :class:`c_void_p`     | :c:type:`void *`                  | 整数/長整数または ``None`` |
-+-----------------------+-----------------------------------+----------------------------+
-
-.. x*
++----------------------+------------------------------------------+----------------------------+
+| ctypes type          | C type                                   | Python type                |
++======================+==========================================+============================+
+| :class:`c_bool`      | :c:type:`_Bool`                          | bool (1)                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_char`      | :c:type:`char`                           | 1-character string         |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_wchar`     | :c:type:`wchar_t`                        | 1-character unicode string |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_byte`      | :c:type:`char`                           | int/long                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_ubyte`     | :c:type:`unsigned char`                  | int/long                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_short`     | :c:type:`short`                          | int/long                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_ushort`    | :c:type:`unsigned short`                 | int/long                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_int`       | :c:type:`int`                            | int/long                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_uint`      | :c:type:`unsigned int`                   | int/long                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_long`      | :c:type:`long`                           | int/long                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_ulong`     | :c:type:`unsigned long`                  | int/long                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_longlong`  | :c:type:`__int64` or :c:type:`long long` | int/long                   |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_ulonglong` | :c:type:`unsigned __int64` or            | int/long                   |
+|                      | :c:type:`unsigned long long`             |                            |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_float`     | :c:type:`float`                          | float                      |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_double`    | :c:type:`double`                         | float                      |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_longdouble`| :c:type:`long double`                    | float                      |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_char_p`    | :c:type:`char *` (NUL terminated)        | string or ``None``         |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_wchar_p`   | :c:type:`wchar_t *` (NUL terminated)     | unicode or ``None``        |
++----------------------+------------------------------------------+----------------------------+
+| :class:`c_void_p`    | :c:type:`void *`                         | int/long or ``None``       |
++----------------------+------------------------------------------+----------------------------+
 
 (1)
-   コンストラクタは任意のオブジェクトをその真偽値として受け取ります。
+   The constructor accepts any object with a truth value.
 
-
-これら全ての型はその型を呼び出すことによって作成でき、オプションとして
-型と値が合っている初期化子を指定することができます::
+All these types can be created by calling them with an optional initializer of
+the correct type and value::
 
    >>> c_int()
    c_long(0)
@@ -288,7 +274,7 @@ Python 整数と Python 長整数はプラットホームのデフォルトの C
    c_ushort(65533)
    >>>
 
-これらの型は変更可能であり、値を後で変更することもできます::
+Since these types are mutable, their value can also be changed afterwards::
 
    >>> i = c_int(42)
    >>> print i
@@ -300,10 +286,10 @@ Python 整数と Python 長整数はプラットホームのデフォルトの C
    -99
    >>>
 
-新しい値をポインタ型 :class:`c_char_p`, :class:`c_wchar_p` および
-:class:`c_void_p` のインスタンスへ代入すると、変わるのは指している
-*メモリ位置* であって、メモリブロックの *内容ではありません* 
-(これは当然で、なぜなら、 Python 文字列は変更不可能だからです)::
+Assigning a new value to instances of the pointer types :class:`c_char_p`,
+:class:`c_wchar_p`, and :class:`c_void_p` changes the *memory location* they
+point to, *not the contents* of the memory block (of course not, because Python
+strings are immutable)::
 
    >>> s = "Hello, World"
    >>> c_s = c_char_p(s)
@@ -312,28 +298,27 @@ Python 整数と Python 長整数はプラットホームのデフォルトの C
    >>> c_s.value = "Hi, there"
    >>> print c_s
    c_char_p('Hi, there')
-   >>> print s                 # 最初の文字列は変更されていない
+   >>> print s                 # first string is unchanged
    Hello, World
    >>>
 
-しかし、変更可能なメモリを指すポインタであることを想定している関数へ
-それらを渡さないように注意すべきです。もし変更可能なメモリブロックが必要
-なら、 ctypes には :func:`create_string_buffer` 関数があり、
-いろいろな方法で作成することできます。
-現在のメモリブロックの内容は ``raw`` プロパティを使ってアクセス (ある
-いは変更) することができます。もし現在のメモリブロックに NUL 終端文字
-列としてアクセスしたいなら、 ``value`` プロパティを使ってください::
+You should be careful, however, not to pass them to functions expecting pointers
+to mutable memory. If you need mutable memory blocks, ctypes has a
+:func:`create_string_buffer` function which creates these in various ways.  The
+current memory block contents can be accessed (or changed) with the ``raw``
+property; if you want to access it as NUL terminated string, use the ``value``
+property::
 
    >>> from ctypes import *
-   >>> p = create_string_buffer(3)      # 3バイトのバッファを作成、NULで初期化される
+   >>> p = create_string_buffer(3)      # create a 3 byte buffer, initialized to NUL bytes
    >>> print sizeof(p), repr(p.raw)
    3 '\x00\x00\x00'
-   >>> p = create_string_buffer("Hello")      # NUL終端文字列を含むバッファを作成
+   >>> p = create_string_buffer("Hello")      # create a buffer containing a NUL terminated string
    >>> print sizeof(p), repr(p.raw)
    6 'Hello\x00'
    >>> print repr(p.value)
    'Hello'
-   >>> p = create_string_buffer("Hello", 10)  # 10バイトのバッファを作成
+   >>> p = create_string_buffer("Hello", 10)  # create a 10 byte buffer
    >>> print sizeof(p), repr(p.raw)
    10 'Hello\x00\x00\x00\x00\x00'
    >>> p.value = "Hi"
@@ -341,21 +326,21 @@ Python 整数と Python 長整数はプラットホームのデフォルトの C
    10 'Hi\x00lo\x00\x00\x00\x00\x00'
    >>>
 
-:func:`create_string_buffer` 関数は初期の ctypes リリースにあった
-:func:`c_string` 関数だけでなく、 (エイリアスとしてはまだ利用できる)
-:func:`c_buffer` 関数をも置き換えるものです。
-C の型 :c:type:`wchar_t` のユニコード文字を含む変更可能なメモリブロックを
-作成するには、 :func:`create_unicode_buffer` 関数を使ってください。
+The :func:`create_string_buffer` function replaces the :func:`c_buffer` function
+(which is still available as an alias), as well as the :func:`c_string` function
+from earlier ctypes releases.  To create a mutable memory block containing
+unicode characters of the C type :c:type:`wchar_t` use the
+:func:`create_unicode_buffer` function.
 
 
 .. _ctypes-calling-functions-continued:
 
-続・関数を呼び出す
-^^^^^^^^^^^^^^^^^^
+Calling functions, continued
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-printf は :data:`sys.stdout` では *なく* 、本物の標準出力チャンネルへ
-プリントすることに注意してください。したがって、これらの例はコンソールプロ
-ンプトでのみ動作し、 *IDLE* や *PythonWin* では動作しません。::
+Note that printf prints to the real standard output channel, *not* to
+:data:`sys.stdout`, so these examples will only work at the console prompt, not
+from within *IDLE* or *PythonWin*::
 
    >>> printf = libc.printf
    >>> printf("Hello, %s\n", "World!")
@@ -373,9 +358,9 @@ printf は :data:`sys.stdout` では *なく* 、本物の標準出力チャン�
    ArgumentError: argument 2: exceptions.TypeError: Don't know how to convert parameter 2
    >>>
 
-前に述べたように、必要な C のデータ型へ変換できるようにするためには、
-整数、文字列およびユニコード文字列を除くすべての Python 型を対応する
-:mod:`ctypes` 型でラップしなければなりません。::
+As has been mentioned before, all Python types except integers, strings, and
+unicode strings have to be wrapped in their corresponding :mod:`ctypes` type, so
+that they can be converted to the required C data type::
 
    >>> printf("An int %d, a double %f\n", 1234, c_double(3.14))
    An int 1234, a double 3.140000
@@ -385,13 +370,13 @@ printf は :data:`sys.stdout` では *なく* 、本物の標準出力チャン�
 
 .. _ctypes-calling-functions-with-own-custom-data-types:
 
-自作のデータ型とともに関数を呼び出す
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Calling functions with your own custom data types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-自作のクラスのインスタンスを関数引数として使えるように、 :mod:`ctypes`
-引数変換をカスタマイズすることもできます。
-:mod:`ctypes` は :attr:`_as_parameter_` 属性を探し出し、関数引数として使います。
-もちろん、整数、文字列もしくはユニコードの中の一つでなければなりません。::
+You can also customize :mod:`ctypes` argument conversion to allow instances of
+your own classes be used as function arguments.  :mod:`ctypes` looks for an
+:attr:`_as_parameter_` attribute and uses this as the function argument.  Of
+course, it must be one of integer, string, or unicode::
 
    >>> class Bottles(object):
    ...     def __init__(self, number):
@@ -403,23 +388,23 @@ printf は :data:`sys.stdout` では *なく* 、本物の標準出力チャン�
    19
    >>>
 
-インスタンスのデータを :attr:`_as_parameter_` インスタンス変数の中に入
-れたくない場合には、そのデータを利用できるようにする :func:`property`
-を定義することができます。
+If you don't want to store the instance's data in the :attr:`_as_parameter_`
+instance variable, you could define a :func:`property` which makes the data
+available.
 
 
 .. _ctypes-specifying-required-argument-types:
 
-要求される引数の型を指定する (関数プロトタイプ)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Specifying the required argument types (function prototypes)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:attr:`argtypes` 属性を設定することによって、 DLL からエクスポートされ
-ている関数に要求される引数の型を指定することができます。
+It is possible to specify the required argument types of functions exported from
+DLLs by setting the :attr:`argtypes` attribute.
 
-:attr:`argtypes` は C データ型のシーケンスでなければなりません (この場
-合 ``printf`` 関数はおそらく良い例ではありません。なぜなら、引数の数が
-可変であり、フォーマット文字列に依存した異なる型のパラメータを取るから
-です。一方では、この機能の実験にはとても便利です)。::
+:attr:`argtypes` must be a sequence of C data types (the ``printf`` function is
+probably not a good example here, because it takes a variable number and
+different types of parameters depending on the format string, on the other hand
+this is quite handy to experiment with this feature)::
 
    >>> printf.argtypes = [c_char_p, c_char_p, c_int, c_double]
    >>> printf("String '%s', Int %d, Double %f\n", "Hi", 10, 2.2)
@@ -427,8 +412,8 @@ printf は :data:`sys.stdout` では *なく* 、本物の標準出力チャン�
    37
    >>>
 
-(C の関数のプロトタイプのように) 書式を指定すると互換性のない引数型に
-なるのを防ぎ、引数を有効な型へ変換しようとします。::
+Specifying a format protects against incompatible argument types (just as a
+prototype for a C function), and tries to convert the arguments to valid types::
 
    >>> printf("%d %d %d", 1, 2, 3)
    Traceback (most recent call last):
@@ -439,43 +424,42 @@ printf は :data:`sys.stdout` では *なく* 、本物の標準出力チャン�
    13
    >>>
 
-関数呼び出しへ渡す自作のクラスを定義した場合には、 :attr:`argtypes` シー
-ケンスの中で使えるようにするために、そのクラスに :meth:`from_param` ク
-ラスメソッドを実装しなければなりません。
-:meth:`from_param` クラスメソッドは関数呼び出しへ渡された Python オブ
-ジェクトを受け取り、型チェックもしくはこのオブジェクトが受け入れ可能で
-あると確かめるために必要なことはすべて行ってから、オブジェクト自身、
-:attr:`_as_parameter_` 属性、あるいは、この場合に C 関数引数として渡し
-たい何かの値を返さなければなりません。
-繰り返しになりますが、その返される結果は整数、文字列、ユニコード、
-:mod:`ctypes` インスタンス、あるいは :attr:`_as_parameter_` 属性をもつ
-オブジェクトであるべきです。
+If you have defined your own classes which you pass to function calls, you have
+to implement a :meth:`from_param` class method for them to be able to use them
+in the :attr:`argtypes` sequence. The :meth:`from_param` class method receives
+the Python object passed to the function call, it should do a typecheck or
+whatever is needed to make sure this object is acceptable, and then return the
+object itself, its :attr:`_as_parameter_` attribute, or whatever you want to
+pass as the C function argument in this case. Again, the result should be an
+integer, string, unicode, a :mod:`ctypes` instance, or an object with an
+:attr:`_as_parameter_` attribute.
 
 
 .. _ctypes-return-types:
 
-戻り値の型
-^^^^^^^^^^
+Return types
+^^^^^^^^^^^^
 
-デフォルトでは、関数は C :c:type:`int` を返すと仮定されます。他の戻り値の型
-を指定するには、関数オブジェクトの :attr:`restype` 属性に設定します。
+By default functions are assumed to return the C :c:type:`int` type.  Other
+return types can be specified by setting the :attr:`restype` attribute of the
+function object.
 
-さらに高度な例として、 ``strchr`` 関数を使います。この関数は文字列ポイ
-ンタと char を受け取り、文字列へのポインタを返します。::
+Here is a more advanced example, it uses the ``strchr`` function, which expects
+a string pointer and a char, and returns a pointer to a string::
 
    >>> strchr = libc.strchr
    >>> strchr("abcdef", ord("d")) # doctest: +SKIP
    8059983
-   >>> strchr.restype = c_char_p # c_char_pは文字列へのポインタ
+   >>> strchr.restype = c_char_p # c_char_p is a pointer to a string
    >>> strchr("abcdef", ord("d"))
    'def'
    >>> print strchr("abcdef", ord("x"))
    None
    >>>
 
-上の ``ord("x")`` 呼び出しを避けたいなら、 :attr:`argtypes` 属性を設定
-することができます。
-二番目の引数が一文字の Python 文字列から C の char へ変換されます。::
+If you want to avoid the ``ord("x")`` calls above, you can set the
+:attr:`argtypes` attribute, and the second argument will be converted from a
+single character Python string into a C char::
 
    >>> strchr.restype = c_char_p
    >>> strchr.argtypes = [c_char_p, c_char]
@@ -491,12 +475,11 @@ printf は :data:`sys.stdout` では *なく* 、本物の標準出力チャン�
    'def'
    >>>
 
-外部関数が整数を返す場合は、 :attr:`restype` 属性として呼び出し可能な
-Python オブジェクト (例えば、関数またはクラス) を使うこともできます。
-呼び出し可能オブジェクトは C 関数が返す *整数* とともに呼び出され、
-この呼び出しの結果は関数呼び出しの結果として使われるでしょう。
-これはエラーの戻り値をチェックして自動的に例外を送出させるために役に立
-ちます。::
+You can also use a callable Python object (a function or a class for example) as
+the :attr:`restype` attribute, if the foreign function returns an integer.  The
+callable will be called with the *integer* the C function returns, and the
+result of this call will be used as the result of your function call. This is
+useful to check for error return values and automatically raise an exception::
 
    >>> GetModuleHandle = windll.kernel32.GetModuleHandleA # doctest: +WINDOWS
    >>> def ValidHandle(value):
@@ -515,33 +498,29 @@ Python オブジェクト (例えば、関数またはクラス) を使うこと
    WindowsError: [Errno 126] The specified module could not be found.
    >>>
 
-``WinError`` はエラーコードの文字列表現を得るために Windows の
-``FormatMessage()`` api を呼び出し、例外を *返す* 関数です。
-``WinError`` はオプションでエラーコードパラメータを取ります。このパラ
-メータが使われない場合は、エラーコードを取り出すために
-:func:`GetLastError` を呼び出します。
+``WinError`` is a function which will call Windows ``FormatMessage()`` api to
+get the string representation of an error code, and *returns* an exception.
+``WinError`` takes an optional error code parameter, if no one is used, it calls
+:func:`GetLastError` to retrieve it.
 
-:attr:`errcheck` 属性によってもっと強力なエラーチェック機構を利用でき
-ることに注意してください。詳細はリファレンスマニュアルを参照してくださ
-い。
+Please note that a much more powerful error checking mechanism is available
+through the :attr:`errcheck` attribute; see the reference manual for details.
 
 
 .. _ctypes-passing-pointers:
 
-ポインタを渡す(または、パラメータの参照渡し)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Passing pointers (or: passing parameters by reference)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-時には、 C api 関数がパラメータのデータ型として *ポインタ* を想定して
-いることがあります。おそらくパラメータと同一の場所に書き込むためか、も
-しくはそのデータが大きすぎて値渡しできない場合です。これは *パラメータ
-の参照渡し* としても知られています。
+Sometimes a C api function expects a *pointer* to a data type as parameter,
+probably to write into the corresponding location, or if the data is too large
+to be passed by value. This is also known as *passing parameters by reference*.
 
-:mod:`ctypes` は :func:`byref` 関数をエクスポートしており、パラメータを
-参照渡しするために使用します。 :func:`pointer` 関数を使っても同じ効果が得ら
-れます。
-しかし、 :func:`pointer` は本当のポインタオブジェクトを構築するためより
-多くの処理を行うことから、 Python 側でポインタオブジェクト自体を必要とし
-ないならば :func:`byref` を使う方がより高速です。::
+:mod:`ctypes` exports the :func:`byref` function which is used to pass
+parameters by reference.  The same effect can be achieved with the
+:func:`pointer` function, although :func:`pointer` does a lot more work since it
+constructs a real pointer object, so it is faster to use :func:`byref` if you
+don't need the pointer object in Python itself::
 
    >>> i = c_int()
    >>> f = c_float()
@@ -558,20 +537,19 @@ Python オブジェクト (例えば、関数またはクラス) を使うこと
 
 .. _ctypes-structures-unions:
 
-構造体と共用体
-^^^^^^^^^^^^^^
+Structures and unions
+^^^^^^^^^^^^^^^^^^^^^
 
-構造体と共用体は :mod:`ctypes` モジュールに定義されている
-:class:`Structure` および :class:`Union` ベースクラスからの派生クラスでなけ
-ればなりません。それぞれのサブクラスは :attr:`_fields_` 属性を定義する
-必要があります。 :attr:`_fields_` は *フィールド名* と *フィールド型*
-を持つ *2要素タプル* のリストでなければなりません。
+Structures and unions must derive from the :class:`Structure` and :class:`Union`
+base classes which are defined in the :mod:`ctypes` module. Each subclass must
+define a :attr:`_fields_` attribute.  :attr:`_fields_` must be a list of
+*2-tuples*, containing a *field name* and a *field type*.
 
-フィールド型は :class:`c_int` か他の :mod:`ctypes` 型 (構造体、共用体、
-配列、ポインタ) から派生した :mod:`ctypes` 型である必要があります。
+The field type must be a :mod:`ctypes` type like :class:`c_int`, or any other
+derived :mod:`ctypes` type: structure, union, array, pointer.
 
-*x* と *y* という名前の二つの整数からなる簡単な POINT 構造体の例で
-す。コンストラクタで構造体の初期化する方法の説明にもなっています。::
+Here is a simple example of a POINT structure, which contains two integers named
+*x* and *y*, and also shows how to initialize a structure in the constructor::
 
    >>> from ctypes import *
    >>> class POINT(Structure):
@@ -590,12 +568,11 @@ Python オブジェクト (例えば、関数またはクラス) を使うこと
    ValueError: too many initializers
    >>>
 
-また、さらに複雑な構造体を構成することができます。 Structure はそれ自
-体がフィールド型に構造体を使うことで他の構造体を内部に持つことができま
-す。
+You can, however, build much more complicated structures.  A structure can
+itself contain other structures by using a structure as a field type.
 
-*upperleft* と *lowerright* という名前の二つの POINT を持つ RECT
-構造体です。::
+Here is a RECT structure which contains two POINTs named *upperleft* and
+*lowerright*::
 
    >>> class RECT(Structure):
    ...     _fields_ = [("upperleft", POINT),
@@ -608,14 +585,13 @@ Python オブジェクト (例えば、関数またはクラス) を使うこと
    0 0
    >>>
 
-入れ子になった構造体はいくつかの方法を用いてコンストラクタで初期化す
-ることができます。::
+Nested structures can also be initialized in the constructor in several ways::
 
    >>> r = RECT(POINT(1, 2), POINT(3, 4))
    >>> r = RECT((1, 2), (3, 4))
 
-フィールド :term:`descriptor` (記述子)は *クラス* から取り出せます。デ
-バッグするときに役に立つ情報を得ることができます::
+Field :term:`descriptor`\s can be retrieved from the *class*, they are useful
+for debugging because they can provide useful information::
 
    >>> print POINT.x
    <Field type=c_long, ofs=0, size=4>
@@ -626,33 +602,37 @@ Python オブジェクト (例えば、関数またはクラス) を使うこと
 
 .. _ctypes-structureunion-alignment-byte-order:
 
-構造体/共用体アライメントとバイトオーダー
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. warning::
 
-デフォルトでは、 Structure と Union のフィールドは C コンパイラが行う
-のと同じ方法でアライメントされています。サブクラスを定義するときに
-:attr:`_pack_` クラス属性を指定することでこの動作を変えることは可能です。
-このクラス属性には正の整数を設定する必要があり、フィールドの最大アライ
-メントを指定します。これは MSVC で ``#pragma pack(n)`` が行っていること
-同じです。
+   :mod:`ctypes` does not support passing unions or structures with bit-fields
+   to functions by value.  While this may work on 32-bit x86, it's not
+   guaranteed by the library to work in the general case.  Unions and
+   structures with bit-fields should always be passed to functions by pointer.
 
-:mod:`ctypes` は Structure と Union に対してネイティブのバイトオーダーを
-使います。
-ネイティブではないバイトオーダーの構造体を作成するには、
-:class:`BigEndianStructure`, :class:`LittleEndianStructure`, 
-:class:`BigEndianUnion` および :class:`LittleEndianUnion`
-ベースクラスの中の一つを使います。これらのクラスに
-ポインタフィールドを持たせることはできません。
+Structure/union alignment and byte order
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, Structure and Union fields are aligned in the same way the C
+compiler does it. It is possible to override this behavior be specifying a
+:attr:`_pack_` class attribute in the subclass definition. This must be set to a
+positive integer and specifies the maximum alignment for the fields. This is
+what ``#pragma pack(n)`` also does in MSVC.
+
+:mod:`ctypes` uses the native byte order for Structures and Unions.  To build
+structures with non-native byte order, you can use one of the
+:class:`BigEndianStructure`, :class:`LittleEndianStructure`,
+:class:`BigEndianUnion`, and :class:`LittleEndianUnion` base classes.  These
+classes cannot contain pointer fields.
 
 
 .. _ctypes-bit-fields-in-structures-unions:
 
-構造体と共用体におけるビットフィールド
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Bit fields in structures and unions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-ビットフィールドを含む構造体と共用体を作ることができます。ビットフィー
-ルドは整数フィールドに対してのみ作ることができ、ビット幅は
-:attr:`_fields_` タプルの第三要素で指定します。::
+It is possible to create structures and unions containing bit fields. Bit fields
+are only possible for integer fields, the bit width is specified as the third
+item in the :attr:`_fields_` tuples::
 
    >>> class Int(Structure):
    ...     _fields_ = [("first_16", c_int, 16),
@@ -667,17 +647,18 @@ Python オブジェクト (例えば、関数またはクラス) を使うこと
 
 .. _ctypes-arrays:
 
-配列
-^^^^
+Arrays
+^^^^^^
 
-Array はシーケンスであり、決まった数の同じ型のインスタンスを持ちます。
+Arrays are sequences, containing a fixed number of instances of the same type.
 
-推奨されている配列の作成方法はデータ型に正の整数を掛けることです。::
+The recommended way to create array types is by multiplying a data type with a
+positive integer::
 
    TenPointsArrayType = POINT * 10
 
-ややわざとらしいデータ型の例になりますが、他のものに混ざって 4 個の
-POINT がある構造体です。::
+Here is an example of an somewhat artificial data type, a structure containing 4
+POINTs among other stuff::
 
    >>> from ctypes import *
    >>> class POINT(Structure):
@@ -692,16 +673,16 @@ POINT がある構造体です。::
    4
    >>>
 
-インスタンスはクラスを呼び出す通常の方法で作成します。::
+Instances are created in the usual way, by calling the class::
 
    arr = TenPointsArrayType()
    for pt in arr:
        print pt.x, pt.y
 
-上記のコードは ``0 0`` という行が並んだものを表示します。配列の要素が
-ゼロで初期化されているためです。
+The above code print a series of ``0 0`` lines, because the array contents is
+initialized to zeros.
 
-正しい型の初期化子を指定することもできます。::
+Initializers of the correct type can also be specified::
 
    >>> from ctypes import *
    >>> TenIntegers = c_int * 10
@@ -716,27 +697,26 @@ POINT がある構造体です。::
 
 .. _ctypes-pointers:
 
-ポインタ
+Pointers
 ^^^^^^^^
 
-ポインタのインスタンスは :mod:`ctypes` 型に対して :func:`pointer` 関数を呼び
-出して作成します。::
+Pointer instances are created by calling the :func:`pointer` function on a
+:mod:`ctypes` type::
 
    >>> from ctypes import *
    >>> i = c_int(42)
    >>> pi = pointer(i)
    >>>
 
-ポインタインスタンスはポインタが指すオブジェクト (上の例では ``i`` )
-を返す :attr:`contents` 属性を持ちます。::
+Pointer instances have a :attr:`contents` attribute which returns the object to
+which the pointer points, the ``i`` object above::
 
    >>> pi.contents
    c_long(42)
    >>>
 
-:mod:`ctypes` は OOR (original object return 、元のオブジェクトを返すこと)
-ではないことに注意してください。属性を取り出す度に、新しい同等のオブジェ
-クトを作成しているのです。::
+Note that :mod:`ctypes` does not have OOR (original object return), it constructs a
+new, equivalent object each time you retrieve an attribute::
 
    >>> pi.contents is i
    False
@@ -744,8 +724,8 @@ POINT がある構造体です。::
    False
    >>>
 
-別の :class:`c_int` インスタンスがポインタの contents 属性に代入される
-と、これが記憶されているメモリ位置を指すポインタに変化します。::
+Assigning another :class:`c_int` instance to the pointer's contents attribute
+would cause the pointer to point to the memory location where this is stored::
 
    >>> i = c_int(99)
    >>> pi.contents = i
@@ -756,13 +736,13 @@ POINT がある構造体です。::
 .. XXX Document dereferencing pointers, and that it is preferred over the
    .contents attribute.
 
-ポインタインスタンスは整数でインデックス指定することもできます。::
+Pointer instances can also be indexed with integers::
 
    >>> pi[0]
    99
    >>>
 
-整数インデックスへ代入するとポインタが指す値が変更されます。::
+Assigning to an integer index changes the pointed to value::
 
    >>> print i
    c_long(99)
@@ -771,17 +751,16 @@ POINT がある構造体です。::
    c_long(22)
    >>>
 
-0 ではないインデックスを使うこともできますが、 C の場合と同じように自
-分が何をしているかを理解している必要があります。
-任意のメモリ位置にアクセスもしくは変更できるのです。一般的にこの機能を
-使うのは、 C 関数からポインタを受け取り、そのポインタが単一の要素では
-なく実際に配列を指していると *分かっている* 場合だけです。
+It is also possible to use indexes different from 0, but you must know what
+you're doing, just as in C: You can access or change arbitrary memory locations.
+Generally you only use this feature if you receive a pointer from a C function,
+and you *know* that the pointer actually points to an array instead of a single
+item.
 
-舞台裏では、 :func:`pointer` 関数は単にポインタインスタンスを作成するとい
-う以上のことを行っています。はじめにポインタ *型* を作成する必要があり
-ます。
-これは任意の :mod:`ctypes` 型を受け取る :func:`POINTER` 関数を使って行われ、
-新しい型を返します。::
+Behind the scenes, the :func:`pointer` function does more than simply create
+pointer instances, it has to create pointer *types* first.  This is done with
+the :func:`POINTER` function, which accepts any :mod:`ctypes` type, and returns
+a new type::
 
    >>> PI = POINTER(c_int)
    >>> PI
@@ -794,17 +773,16 @@ POINT がある構造体です。::
    <ctypes.LP_c_long object at 0x...>
    >>>
 
-ポインタ型を引数なしで呼び出すと ``NULL`` ポインタを作成します。
-``NULL`` ポインタは ``False`` ブール値を持っています。::
+Calling the pointer type without an argument creates a ``NULL`` pointer.
+``NULL`` pointers have a ``False`` boolean value::
 
    >>> null_ptr = POINTER(c_int)()
    >>> print bool(null_ptr)
    False
    >>>
 
-:mod:`ctypes` はポインタの指す値を取り出すときに ``NULL`` かどうかを調べ
-ます(しかし、 ``NULL`` でない不正なポインタの指す値の取り出す行為は
-Python をクラッシュさせるでしょう)。::
+:mod:`ctypes` checks for ``NULL`` when dereferencing pointers (but dereferencing
+invalid non-\ ``NULL`` pointers would crash Python)::
 
    >>> null_ptr[0]
    Traceback (most recent call last):
@@ -821,17 +799,15 @@ Python をクラッシュさせるでしょう)。::
 
 .. _ctypes-type-conversions:
 
-型変換
-^^^^^^
+Type conversions
+^^^^^^^^^^^^^^^^
 
-たいていの場合、 ctypes は厳密な型チェックを行います。これが意味するの
-は、関数の :attr:`argtypes` リスト内に、もしくは、構造体定義におけるメ
-ンバーフィールドの型として ``POINTER(c_int)`` がある場合、厳密に同じ型
-のインスタンスだけを受け取るということです。このルールには ctypes が他
-のオブジェクトを受け取る場合に例外がいくつかあります。例えば、ポインタ
-型の代わりに互換性のある配列インスタンスを渡すことができます。このよう
-に、 ``POINTER(c_int)`` に対して、 ctypes は c_int の配列を受け取りま
-す。::
+Usually, ctypes does strict type checking.  This means, if you have
+``POINTER(c_int)`` in the :attr:`argtypes` list of a function or as the type of
+a member field in a structure definition, only instances of exactly the same
+type are accepted.  There are some exceptions to this rule, where ctypes accepts
+other objects.  For example, you can pass compatible array instances instead of
+pointer types.  So, for ``POINTER(c_int)``, ctypes accepts an array of c_int::
 
    >>> class Bar(Structure):
    ...     _fields_ = [("count", c_int), ("values", POINTER(c_int))]
@@ -847,19 +823,23 @@ Python をクラッシュさせるでしょう)。::
    3
    >>>
 
-POINTER型フィールドを ``NULL`` に設定するために、 ``None`` を代入して
-もかまいません。::
+In addition, if a function argument is explicitly declared to be a pointer type
+(such as ``POINTER(c_int)``) in :attr:`argtypes`, an object of the pointed
+type (``c_int`` in this case) can be passed to the function.  ctypes will apply
+the required :func:`byref` conversion in this case automatically.
+
+To set a POINTER type field to ``NULL``, you can assign ``None``::
 
    >>> bar.values = None
    >>>
 
 .. XXX list other conversions...
 
-時には、非互換な型のインスタンスであることもあります。 C では、ある型
-を他の型へキャストすることができます。 :mod:`ctypes` は同じやり方で使える
-:func:`cast` 関数を提供しています。上で定義した ``Bar`` 構造体は
-``POINTER(c_int)`` ポインタまたは :class:`c_int` 配列を ``values`` フィー
-ルドに対して受け取り、他の型のインスタンスは受け取りません::
+Sometimes you have instances of incompatible types.  In C, you can cast one type
+into another type.  :mod:`ctypes` provides a :func:`cast` function which can be
+used in the same way.  The ``Bar`` structure defined above accepts
+``POINTER(c_int)`` pointers or :class:`c_int` arrays for its ``values`` field,
+but not instances of other types::
 
    >>> bar.values = (c_byte * 4)()
    Traceback (most recent call last):
@@ -867,21 +847,21 @@ POINTER型フィールドを ``NULL`` に設定するために、 ``None`` を�
    TypeError: incompatible types, c_byte_Array_4 instance instead of LP_c_long instance
    >>>
 
-このような場合には、 :func:`cast` 関数が便利です。
+For these cases, the :func:`cast` function is handy.
 
-:func:`cast` 関数は ctypes インスタンスを異なる ctypes データ型を指すポイ
-ンタへキャストするために使えます。 :func:`cast` は二つのパラメータ、ある種
-のポインタかそのポインタへ変換できる ctypes オブジェクトと、 ctypes ポ
-インタ型を取ります。そして、第二引数のインスタンスを返します。
-このインスタンスは第一引数と同じメモリブロックを参照しています::
+The :func:`cast` function can be used to cast a ctypes instance into a pointer
+to a different ctypes data type.  :func:`cast` takes two parameters, a ctypes
+object that is or can be converted to a pointer of some kind, and a ctypes
+pointer type.  It returns an instance of the second argument, which references
+the same memory block as the first argument::
 
    >>> a = (c_byte * 4)()
    >>> cast(a, POINTER(c_int))
    <ctypes.LP_c_long object at ...>
    >>>
 
-したがって、 :func:`cast` を ``Bar`` 構造体の ``values`` フィールドへ代入
-するために使うことができます::
+So, :func:`cast` can be used to assign to the ``values`` field of ``Bar`` the
+structure::
 
    >>> bar = Bar()
    >>> bar.values = cast((c_byte * 4)(), POINTER(c_int))
@@ -892,21 +872,22 @@ POINTER型フィールドを ``NULL`` に設定するために、 ``None`` を�
 
 .. _ctypes-incomplete-types:
 
-不完全型
-^^^^^^^^
+Incomplete Types
+^^^^^^^^^^^^^^^^
 
-*不完全型* はメンバーがまだ指定されていない構造体、共用体もしくは配列
-です。 C では、前方宣言により指定され、後で定義されます。::
+*Incomplete Types* are structures, unions or arrays whose members are not yet
+specified. In C, they are specified by forward declarations, which are defined
+later::
 
-   struct cell; /* 前方宣言 */
+   struct cell; /* forward declaration */
 
-   struct {
+   struct cell {
        char *name;
        struct cell *next;
-   } cell;
+   };
 
-ctypes コードへの直接的な変換ではこうなるでしょう。しかし、動作しませ
-ん::
+The straightforward translation into ctypes code would be this, but it does not
+work::
 
    >>> class cell(Structure):
    ...     _fields_ = [("name", c_char_p),
@@ -918,9 +899,9 @@ ctypes コードへの直接的な変換ではこうなるでしょう。しか�
    NameError: name 'cell' is not defined
    >>>
 
-なぜなら、新しい ``class cell`` はクラス文自体の中では利用できないから
-です。 :mod:`ctypes` では、 ``cell`` クラスを定義して、 :attr:`_fields_`
-属性をクラス文の後で設定することができます。::
+because the new ``class cell`` is not available in the class statement itself.
+In :mod:`ctypes`, we can define the ``cell`` class and set the :attr:`_fields_`
+attribute later, after the class statement::
 
    >>> from ctypes import *
    >>> class cell(Structure):
@@ -930,8 +911,8 @@ ctypes コードへの直接的な変換ではこうなるでしょう。しか�
    ...                  ("next", POINTER(cell))]
    >>>
 
-試してみましょう。 ``cell`` のインスタンスを二つ作り、互いに参照し合う
-ようにします。最後に、つながったポインタを何度かたどります。::
+Lets try it. We create two instances of ``cell``, and let them point to each
+other, and finally follow the pointer chain a few times::
 
    >>> c1 = cell()
    >>> c1.name = "foo"
@@ -950,28 +931,28 @@ ctypes コードへの直接的な変換ではこうなるでしょう。しか�
 
 .. _ctypes-callback-functions:
 
-コールバック関数
-^^^^^^^^^^^^^^^^
+Callback functions
+^^^^^^^^^^^^^^^^^^
 
-:mod:`ctypes` は C の呼び出し可能な関数ポインタを Python 呼び出し可能オブ
-ジェクトから作成できるようにします。これらは *コールバック関数* と呼ば
-れることがあります。
+:mod:`ctypes` allows to create C callable function pointers from Python callables.
+These are sometimes called *callback functions*.
 
-最初に、コールバック関数のためのクラスを作る必要があります。そのクラス
-には呼び出し規約、戻り値の型およびこの関数が受け取る引数の数と型につい
-ての情報があります。
+First, you must create a class for the callback function, the class knows the
+calling convention, the return type, and the number and types of arguments this
+function will receive.
 
-CFUNCTYPE ファクトリ関数は通常の cdecl 呼び出し規約を用いてコールバッ
-ク関数のための型を作成します。
-Windows では、 WINFUNCTYPE ファクトリ関数が stdcall 呼び出し規約を用い
-てコールバック関数の型を作成します。
+The CFUNCTYPE factory function creates types for callback functions using the
+normal cdecl calling convention, and, on Windows, the WINFUNCTYPE factory
+function creates types for callback functions using the stdcall calling
+convention.
 
-これらのファクトリ関数はともに最初の引数に戻り値の型、残りの引数として
-コールバック関数が想定する引数の型を渡して呼び出されます。
+Both of these factory functions are called with the result type as first
+argument, and the callback functions expected argument types as the remaining
+arguments.
 
-標準 C ライブラリの :func:`qsort` 関数を使う例を示します。これはコール
-バック関数の助けをかりて要素をソートするために使われます。
-:func:`qsort` は整数の配列をソートするために使われます。::
+I will present an example here which uses the standard C library's :func:`qsort`
+function, this is used to sort items with the help of a callback function.
+:func:`qsort` will be used to sort an array of integers::
 
    >>> IntArray5 = c_int * 5
    >>> ia = IntArray5(5, 1, 7, 33, 99)
@@ -979,20 +960,20 @@ Windows では、 WINFUNCTYPE ファクトリ関数が stdcall 呼び出し規�
    >>> qsort.restype = None
    >>>
 
-:func:`qsort` はソートするデータを指すポインタ、データ配列の要素の数、
-要素の一つの大きさ、およびコールバック関数である比較関数へのポインタを
-引数に渡して呼び出さなければなりません。そして、コールバック関数は要素
-を指す二つのポインタを渡されて呼び出され、一番目が二番目より小さいなら
-負の数を、等しいならゼロを、それ以外なら正の数を返さなければなりません。
+:func:`qsort` must be called with a pointer to the data to sort, the number of
+items in the data array, the size of one item, and a pointer to the comparison
+function, the callback. The callback will then be called with two pointers to
+items, and it must return a negative integer if the first item is smaller than
+the second, a zero if they are equal, and a positive integer else.
 
-コールバック関数は整数へのポインタを受け取り、整数を返す必要があります。
-まず、コールバック関数のための ``type`` を作成します。::
+So our callback function receives pointers to integers, and must return an
+integer. First we create the ``type`` for the callback function::
 
    >>> CMPFUNC = CFUNCTYPE(c_int, POINTER(c_int), POINTER(c_int))
    >>>
 
-コールバック関数のはじめての実装なので、受け取った引数を単純に表示して、
-0 を返します (漸進型開発 (incremental development)です ;-)::
+For the first implementation of the callback function, we simply print the
+arguments we get, and return 0 (incremental development ;-)::
 
    >>> def py_cmp_func(a, b):
    ...     print "py_cmp_func", a, b
@@ -1000,12 +981,12 @@ Windows では、 WINFUNCTYPE ファクトリ関数が stdcall 呼び出し規�
    ...
    >>>
 
-C の呼び出し可能なコールバック関数を作成します。::
+Create the C callable callback::
 
    >>> cmp_func = CMPFUNC(py_cmp_func)
    >>>
 
-そうすると、準備完了です。::
+And we're ready to go::
 
    >>> qsort(ia, len(ia), sizeof(c_int), cmp_func) # doctest: +WINDOWS
    py_cmp_func <ctypes.LP_c_long object at 0x00...> <ctypes.LP_c_long object at 0x00...>
@@ -1020,8 +1001,7 @@ C の呼び出し可能なコールバック関数を作成します。::
    py_cmp_func <ctypes.LP_c_long object at 0x00...> <ctypes.LP_c_long object at 0x00...>
    >>>
 
-ポインタの中身にアクセスする方法がわかっているので、コールバック関数を
-再定義しましょう。::
+We know how to access the contents of a pointer, so lets redefine our callback::
 
    >>> def py_cmp_func(a, b):
    ...     print "py_cmp_func", a[0], b[0]
@@ -1030,7 +1010,7 @@ C の呼び出し可能なコールバック関数を作成します。::
    >>> cmp_func = CMPFUNC(py_cmp_func)
    >>>
 
-Windowsでの実行結果です。::
+Here is what we get on Windows::
 
    >>> qsort(ia, len(ia), sizeof(c_int), cmp_func) # doctest: +WINDOWS
    py_cmp_func 7 1
@@ -1045,8 +1025,8 @@ Windowsでの実行結果です。::
    py_cmp_func 7 33
    >>>
 
-linuxではソート関数がはるかに効率的に動作しており、実施する比較の数が
-少ないように見えるのが不思議です。::
+It is funny to see that on linux the sort function seems to work much more
+efficiently, it is doing less comparisons::
 
    >>> qsort(ia, len(ia), sizeof(c_int), cmp_func) # doctest: +LINUX
    py_cmp_func 5 1
@@ -1056,8 +1036,8 @@ linuxではソート関数がはるかに効率的に動作しており、実施
    py_cmp_func 1 7
    >>>
 
-ええ、ほぼ完成です! 最終段階は、実際に二つの要素を比較して実用的な結果
-を返すことです。::
+Ah, we're nearly done! The last step is to actually compare the two items and
+return a useful result::
 
    >>> def py_cmp_func(a, b):
    ...     print "py_cmp_func", a[0], b[0]
@@ -1065,7 +1045,7 @@ linuxではソート関数がはるかに効率的に動作しており、実施
    ...
    >>>
 
-Windowsでの最終的な実行結果です。::
+Final run on Windows::
 
    >>> qsort(ia, len(ia), sizeof(c_int), CMPFUNC(py_cmp_func)) # doctest: +WINDOWS
    py_cmp_func 33 7
@@ -1080,7 +1060,7 @@ Windowsでの最終的な実行結果です。::
    py_cmp_func 5 1
    >>>
 
-Linuxでは::
+and on Linux::
 
    >>> qsort(ia, len(ia), sizeof(c_int), CMPFUNC(py_cmp_func)) # doctest: +LINUX
    py_cmp_func 5 1
@@ -1090,63 +1070,63 @@ Linuxでは::
    py_cmp_func 5 7
    >>>
 
-Windows の :func:`qsort` 関数は linux バージョンより多く比較する必要が
-あることがわかり、非常におもしろいですね!
+It is quite interesting to see that the Windows :func:`qsort` function needs
+more comparisons than the linux version!
 
-簡単に確認できるように、今では配列はソートされています。::
+As we can easily check, our array is sorted now::
 
    >>> for i in ia: print i,
    ...
    1 5 7 33 99
    >>>
 
-**コールバック関数についての重要な注意事項:**
+.. note::
 
-C コードから使われる限り、 CFUNCTYPE オブジェクトへの参照を確実に保持
-してください。
-:mod:`ctypes` は保持しません。もしあなたがやらなければ、オブジェクトはゴ
-ミ集めされてしまい、コールバックしたときにあなたのプログラムをクラッシュ
-させるかもしれません。
+   Make sure you keep references to :func:`CFUNCTYPE` objects as long as they
+   are used from C code. :mod:`ctypes` doesn't, and if you don't, they may be
+   garbage collected, crashing your program when a callback is made.
 
+   Also, note that if the callback function is called in a thread created
+   outside of Python's control (e.g. by the foreign code that calls the
+   callback), ctypes creates a new dummy Python thread on every invocation. This
+   behavior is correct for most purposes, but it means that values stored with
+   :class:`threading.local` will *not* survive across different callbacks, even when
+   those calls are made from the same C thread.
 
 .. _ctypes-accessing-values-exported-from-dlls:
 
-dllからエクスポートされている値へアクセスする
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Accessing values exported from dlls
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-共有ライブラリの一部は関数だけでなく変数もエクスポートしています。
-Python ライブラリにある例としては ``Py_OptimizeFlag`` 、起動時の
-:option:`-O` または :option:`-OO` フラグに依存して、 0 , 1 または 2 が
-設定される整数があります。
+Some shared libraries not only export functions, they also export variables. An
+example in the Python library itself is the ``Py_OptimizeFlag``, an integer set
+to 0, 1, or 2, depending on the :option:`-O` or :option:`-OO` flag given on
+startup.
 
-:mod:`ctypes` は型の :meth:`in_dll` クラスメソッドを使ってこのように値に
-アクセスできます。 *pythonapi* はPython C api へアクセスできるようにす
-るための予め定義されたシンボルです。::
+:mod:`ctypes` can access values like this with the :meth:`in_dll` class methods of
+the type.  *pythonapi* is a predefined symbol giving access to the Python C
+api::
 
    >>> opt_flag = c_int.in_dll(pythonapi, "Py_OptimizeFlag")
    >>> print opt_flag
    c_long(0)
    >>>
 
-インタープリタが :option:`-O` を指定されて動き始めた場合、サンプルは
-``c_long(1)`` を表示するでしょうし、 :option:`-OO` が指定されたならば
-``c_long(2)`` を表示するでしょう。
+If the interpreter would have been started with :option:`-O`, the sample would
+have printed ``c_long(1)``, or ``c_long(2)`` if :option:`-OO` would have been
+specified.
 
-ポインタの使い方を説明する拡張例では、 Python がエクスポートする
-``PyImport_FrozenModules`` ポインタにアクセスします。
+An extended example which also demonstrates the use of pointers accesses the
+``PyImport_FrozenModules`` pointer exported by Python.
 
-Python ドキュメントから引用すると: *このポインタは
-"struct _frozen" のレコードからなり、
-終端の要素のメンバが NULL かゼロになっているような配列を指すよう初期化されます。
-フリーズされたモジュールを import するとき、このテーブルを検索します。
-サードパーティ製のコードからこのポインタに仕掛けを講じて、
-動的に生成されたフリーズ化モジュールの集合を提供するようにできます。*
+Quoting the Python docs: *This pointer is initialized to point to an array of
+"struct _frozen" records, terminated by one whose members are all NULL or zero.
+When a frozen module is imported, it is searched in this table. Third-party code
+could play tricks with this to provide a dynamically created collection of
+frozen modules.*
 
-.. 注: c-api/import より引用
-
-これで、このポインタを操作することが役に立つことを証明できるでしょう。
-例の大きさを制限するために、このテーブルを :mod:`ctypes` を使って読む方法
-だけを示します。::
+So manipulating this pointer could even prove useful. To restrict the example
+size, we show only how this table can be read with :mod:`ctypes`::
 
    >>> from ctypes import *
    >>>
@@ -1157,18 +1137,18 @@ Python ドキュメントから引用すると: *このポインタは
    ...
    >>>
 
-私たちは ``struct _frozen`` データ型を定義済みなので、このテーブルを指
-すポインタを得ることができます。::
+We have defined the ``struct _frozen`` data type, so we can get the pointer to
+the table::
 
    >>> FrozenTable = POINTER(struct_frozen)
    >>> table = FrozenTable.in_dll(pythonapi, "PyImport_FrozenModules")
    >>>
 
-``table`` が ``struct_frozen`` レコードの配列への ``pointer`` なので、
-その配列に対して反復処理を行えます。しかし、ループが確実に終了するよう
-にする必要があります。なぜなら、ポインタに大きさの情報がないからです。
-遅かれ早かれ、アクセス違反か何かでクラッシュすることになるでしょう。
-NULL エントリに達したときはループを抜ける方が良いです。::
+Since ``table`` is a ``pointer`` to the array of ``struct_frozen`` records, we
+can iterate over it, but we just have to make sure that our loop terminates,
+because pointers have no size. Sooner or later it would probably crash with an
+access violation or whatever, so it's better to break out of the loop when we
+hit the NULL entry::
 
    >>> for item in table:
    ...    print item.name, item.size
@@ -1181,21 +1161,20 @@ NULL エントリに達したときはループを抜ける方が良いです。
    None 0
    >>>
 
-標準 Python はフローズンモジュールとフローズンパッケージ (負のサイズの
-メンバーで表されています) を持っているという事実はあまり知られておらず、
-テストにだけ使われています。例えば、 ``import __hello__`` を試してみて
-ください。
+The fact that standard Python has a frozen module and a frozen package
+(indicated by the negative size member) is not well known, it is only used for
+testing. Try it out with ``import __hello__`` for example.
 
 
 .. _ctypes-surprises:
 
-予期しないこと
-^^^^^^^^^^^^^^
+Surprises
+^^^^^^^^^
 
-:mod:`ctypes` には別のことを期待しているのに実際に起きることは違う
-という場合があります。
+There are some edge cases in :mod:`ctypes` where you might expect something
+other than what actually happens.
 
-次に示す例について考えてみてください。::
+Consider the following example::
 
    >>> from ctypes import *
    >>> class POINT(Structure):
@@ -1215,27 +1194,25 @@ NULL エントリに達したときはループを抜ける方が良いです。
    3 4 3 4
    >>>
 
-うーん、最後の文に ``3 4 1 2`` と表示されることを期待していたはずです。
-何が起きたのでしょうか? 上の行の ``rc.a, rc.b = rc.b, rc.a`` の各段階
-はこのようになります。::
+Hm. We certainly expected the last statement to print ``3 4 1 2``. What
+happened? Here are the steps of the ``rc.a, rc.b = rc.b, rc.a`` line above::
 
    >>> temp0, temp1 = rc.b, rc.a
    >>> rc.a = temp0
    >>> rc.b = temp1
    >>>
 
-``temp0`` と ``temp1`` は前記の ``rc`` オブジェクトの内部バッファでま
-だ使われているオブジェクトです。したがって、 ``rc.a = temp0`` を実行す
-ると ``temp0`` のバッファ内容が ``rc`` のバッファへコピーされます。さ
-らに、これは ``temp1`` の内容を変更します。そのため、最後の代入 ``rc.b
-= temp1`` は、期待する結果にはならないのです。
+Note that ``temp0`` and ``temp1`` are objects still using the internal buffer of
+the ``rc`` object above. So executing ``rc.a = temp0`` copies the buffer
+contents of ``temp0`` into ``rc`` 's buffer.  This, in turn, changes the
+contents of ``temp1``. So, the last assignment ``rc.b = temp1``, doesn't have
+the expected effect.
 
-Structure 、 Union および Array のサブオブジェクトを取り出しても、その
-サブオブジェクトが *コピー* されるわけではなく、ルートオブジェクトの内
-部バッファにアクセスするラッパーオブジェクトを取り出すことを覚えておい
-てください。
+Keep in mind that retrieving sub-objects from Structure, Unions, and Arrays
+doesn't *copy* the sub-object, instead it retrieves a wrapper object accessing
+the root-object's underlying buffer.
 
-期待とは違う振る舞いをする別の例はこれです。::
+Another example that may behave different from what one would expect is this::
 
    >>> s = c_char_p()
    >>> s.value = "abc def ghi"
@@ -1245,27 +1222,25 @@ Structure 、 Union および Array のサブオブジェクトを取り出し�
    False
    >>>
 
-なぜ ``False`` と表示されるのでしょうか? ctypes インスタンスはメモリと、
-メモリの内容にアクセスするいくつかの :term:`descriptor` (記述子)を含む
-オブジェクトです。
-メモリブロックに Python オブジェクトを保存してもオブジェクト自身が保存
-される訳ではなく、オブジェクトの ``contents`` が保存されます。
-その contents に再アクセスすると新しい Python オブジェクトがその度に作
-られます。
+Why is it printing ``False``?  ctypes instances are objects containing a memory
+block plus some :term:`descriptor`\s accessing the contents of the memory.
+Storing a Python object in the memory block does not store the object itself,
+instead the ``contents`` of the object is stored.  Accessing the contents again
+constructs a new Python object each time!
 
 
 .. _ctypes-variable-sized-data-types:
 
-可変サイズのデータ型
-^^^^^^^^^^^^^^^^^^^^
+Variable-sized data types
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:mod:`ctypes` は可変サイズの配列と構造体をサポートしています。
+:mod:`ctypes` provides some support for variable-sized arrays and structures.
 
-:func:`resize` 関数は既存の ctypes オブジェクトのメモリバッファのサイズを
-変更したい場合に使えます。この関数は第一引数にオブジェクト、第二引数に
-要求されたサイズをバイト単位で指定します。メモリブロックはオブジェクト
-型で指定される通常のメモリブロックより小さくすることはできません。
-これをやろうとすると、 :exc:`ValueError` が送出されます。::
+The :func:`resize` function can be used to resize the memory buffer of an
+existing ctypes object.  The function takes the object as first argument, and
+the requested size in bytes as the second argument.  The memory block cannot be
+made smaller than the natural memory block specified by the objects type, a
+:exc:`ValueError` is raised if this is tried::
 
    >>> short_array = (c_short * 4)()
    >>> print sizeof(short_array)
@@ -1281,9 +1256,9 @@ Structure 、 Union および Array のサブオブジェクトを取り出し�
    8
    >>>
 
-これはこれで上手くいっていますが、この配列の追加した要素へどうやってア
-クセスするのでしょうか? この型は要素の数が 4 個であるとまだ認識してい
-るので、他の要素にアクセスするとエラーになります。::
+This is nice and fine, but how would one access the additional elements
+contained in this array?  Since the type still only knows about 4 elements, we
+get errors accessing other elements::
 
    >>> short_array[:]
    [0, 0, 0, 0]
@@ -1293,51 +1268,48 @@ Structure 、 Union および Array のサブオブジェクトを取り出し�
    IndexError: invalid index
    >>>
 
-:mod:`ctypes` で可変サイズのデータ型を使うもう一つの方法は、必要なサイズ
-が分かった後に Python の動的性質を使って一つ一つデータ型を(再)定義する
-ことです。
+Another way to use variable-sized data types with :mod:`ctypes` is to use the
+dynamic nature of Python, and (re-)define the data type after the required size
+is already known, on a case by case basis.
 
 
 .. _ctypes-ctypes-reference:
 
-ctypesリファレンス
-------------------
+ctypes reference
+----------------
 
 
 .. _ctypes-finding-shared-libraries:
 
-共有ライブラリを見つける
+Finding shared libraries
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-コンパイルされる言語でプログラミングしている場合、共有ライブラリはプロ
-グラムをコンパイル/リンクしているときと、そのプログラムが動作している
-ときにアクセスされます。
+When programming in a compiled language, shared libraries are accessed when
+compiling/linking a program, and when the program is run.
 
-ctypes ライブラリローダーはプログラムが動作しているときのように振る舞
-い、ランタイムローダーを直接呼び出すのに対し、 :func:`find_library` 関数の
-目的はコンパイラが行うのと似た方法でライブラリを探し出すことです。
-(複数のバージョンの共有ライブラリがあるプラットホームでは、一番最近に
-見つかったものがロードされます)。
+The purpose of the :func:`find_library` function is to locate a library in a way
+similar to what the compiler does (on platforms with several versions of a
+shared library the most recent should be loaded), while the ctypes library
+loaders act like when a program is run, and call the runtime loader directly.
 
-:mod:`ctypes.util` モジュールはロードするライブラリを決めるのに役立つ関数
-を提供します。
+The :mod:`ctypes.util` module provides a function which can help to determine the
+library to load.
 
 
 .. data:: find_library(name)
    :module: ctypes.util
    :noindex:
 
-   ライブラリを見つけてパス名を返そうと試みます。 *name* は ``lib`` のよ
-   うな接頭辞、 ``.so``, ``.dylib`` のような接尾辞、あるいは、バージョン
-   番号が何も付いていないライブラリの名前です (これは posix リンカの
-   オプション :option:`-l` に使われている形式です)。
-   もしライブラリが見つからなければ、 ``None`` を返します。
+   Try to find a library and return a pathname.  *name* is the library name without
+   any prefix like *lib*, suffix like ``.so``, ``.dylib`` or version number (this
+   is the form used for the posix linker option :option:`-l`).  If no library can
+   be found, returns ``None``.
 
-厳密な機能はシステムに依存します。
+The exact functionality is system dependent.
 
-Linux では、 :func:`find_library` はライブラリファイルを見つけるために外部
-プログラム (``/sbin/ldconfig``, ``gcc`` および ``objdump``) を
-実行しようとします。ライブラリファイルのファイル名を返します。いくつか例があります。::
+On Linux, :func:`find_library` tries to run external programs
+(``/sbin/ldconfig``, ``gcc``, and ``objdump``) to find the library file.  It
+returns the filename of the library file.  Here are some examples::
 
    >>> from ctypes.util import find_library
    >>> find_library("m")
@@ -1348,8 +1320,8 @@ Linux では、 :func:`find_library` はライブラリファイルを見つけ�
    'libbz2.so.1.0'
    >>>
 
-OS X では、 :func:`find_library` はライブラリの位置を探すために、予め定義さ
-れた複数の命名方法とパスを試し、成功すればフルパスを返します。::
+On OS X, :func:`find_library` tries several predefined naming schemes and paths
+to locate the library, and returns a full pathname if successful::
 
    >>> from ctypes.util import find_library
    >>> find_library("c")
@@ -1362,411 +1334,403 @@ OS X では、 :func:`find_library` はライブラリの位置を探すため�
    '/System/Library/Frameworks/AGL.framework/AGL'
    >>>
 
-Windows では、 :func:`find_library` はシステムの探索パスに沿って探し、
-フルパスを返します。しかし、予め定義された命名方法がないため、
-``find_library("c")`` のような呼び出しは失敗し、 ``None`` を返します。
+On Windows, :func:`find_library` searches along the system search path, and
+returns the full pathname, but since there is no predefined naming scheme a call
+like ``find_library("c")`` will fail and return ``None``.
 
-もし :mod:`ctypes` を使って共有ライブラリをラップするなら、実行時にライブ
-ラリを探すために :func:`find_library` を使う代わりに、開発時に共有ライブラ
-リ名を決めて、ラッパーモジュールにハードコードした方が良い *かもしれません* 。
+If wrapping a shared library with :mod:`ctypes`, it *may* be better to determine
+the shared library name at development time, and hardcode that into the wrapper
+module instead of using :func:`find_library` to locate the library at runtime.
 
 
 .. _ctypes-loading-shared-libraries:
 
-共有ライブラリをロードする
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Loading shared libraries
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-共有ライブラリを Python プロセスへロードする方法はいくつかあります。一
-つの方法は下記のクラスの一つをインスタンス化することです。:
+There are several ways to loaded shared libraries into the Python process.  One
+way is to instantiate one of the following classes:
 
 
 .. class:: CDLL(name, mode=DEFAULT_MODE, handle=None, use_errno=False, use_last_error=False)
 
-   このクラスのインスタンスはロードされた共有ライブラリをあらわします。
-   これらのライブラリの関数は標準 C 呼び出し規約を使用し、 :c:type:`int` を
-   返すと仮定されます。
+   Instances of this class represent loaded shared libraries. Functions in these
+   libraries use the standard C calling convention, and are assumed to return
+   :c:type:`int`.
 
 
 .. class:: OleDLL(name, mode=DEFAULT_MODE, handle=None, use_errno=False, use_last_error=False)
 
-   Windows用: このクラスのインスタンスはロードされた共有ライブラリをあ
-   らわします。これらのライブラリの関数は ``stdcall`` 呼び出し規約を使
-   用し、 windows 固有の :class:`HRESULT` コードを返すと仮定されます。
-   :class:`HRESULT` 値には関数呼び出しが失敗したのか成功したのかを特定
-   する情報とともに、補足のエラーコードが含まれます。戻り値が失敗を知
-   らせたならば、 :class:`WindowsError` が自動的に送出されます。
+   Windows only: Instances of this class represent loaded shared libraries,
+   functions in these libraries use the ``stdcall`` calling convention, and are
+   assumed to return the windows specific :class:`HRESULT` code.  :class:`HRESULT`
+   values contain information specifying whether the function call failed or
+   succeeded, together with additional error code.  If the return value signals a
+   failure, an :class:`WindowsError` is automatically raised.
 
 
 .. class:: WinDLL(name, mode=DEFAULT_MODE, handle=None, use_errno=False, use_last_error=False)
 
-   Windows用: このクラスのインスタンスはロードされた共有ライブラリをあ
-   らわします。これらのライブラリの関数は ``stdcall`` 呼び出し規約を使
-   用し、デフォルトでは :c:type:`int` を返すと仮定されます。
+   Windows only: Instances of this class represent loaded shared libraries,
+   functions in these libraries use the ``stdcall`` calling convention, and are
+   assumed to return :c:type:`int` by default.
 
-   Windows CE では標準呼び出し規約だけが使われます。便宜上、このプラッ
-   トホームでは、 :class:`WinDLL` と :class:`OleDLL` が標準呼び出し規
-   約を使用します。
+   On Windows CE only the standard calling convention is used, for convenience the
+   :class:`WinDLL` and :class:`OleDLL` use the standard calling convention on this
+   platform.
 
-これらのライブラリがエクスポートするどの関数でも呼び出す前に Python
-GIL (:term:`global interpreter lock`) は解放され、後でまた獲得されます。
+The Python :term:`global interpreter lock` is released before calling any
+function exported by these libraries, and reacquired afterwards.
 
 
 .. class:: PyDLL(name, mode=DEFAULT_MODE, handle=None)
 
-   Python GIL が関数呼び出しの間解放 *されず* 、関数実行の後に Python
-   エラーフラグがチェックされるということを除けば、このクラスのインス
-   タンスは :class:`CDLL` インスタンスのように振る舞います。エラーフラ
-   グがセットされた場合、 Python 例外が送出されます。
+   Instances of this class behave like :class:`CDLL` instances, except that the
+   Python GIL is *not* released during the function call, and after the function
+   execution the Python error flag is checked. If the error flag is set, a Python
+   exception is raised.
 
-   要するに、これは Python C api 関数を直接呼び出すのに便利だというだ
-   けです。
+   Thus, this is only useful to call Python C api functions directly.
 
-これらすべてのクラスは少なくとも一つの引数、すなわちロードする共有ライ
-ブラリのパスを渡して呼び出すことでインスタンス化されます。すでにロード
-済みの共有ライブラリへのハンドルがあるなら、 ``handle`` 名前付き引数と
-して渡すことができます。土台となっているプラットホームの ``dlopen`` ま
-たは ``LoadLibrary`` 関数がプロセスへライブラリをロードするために
-使われ、そのライブラリに対するハンドルを得ます。
+All these classes can be instantiated by calling them with at least one
+argument, the pathname of the shared library.  If you have an existing handle to
+an already loaded shared library, it can be passed as the ``handle`` named
+parameter, otherwise the underlying platforms ``dlopen`` or ``LoadLibrary``
+function is used to load the library into the process, and to get a handle to
+it.
 
-*mode* パラメータはライブラリがどうやってロードされたかを特定するため
-に使うことができます。詳細は、 :manpage:`dlopen(3)` マニュアルページを参考に
-してください。 Windows では *mode* は無視されます。
+The *mode* parameter can be used to specify how the library is loaded.  For
+details, consult the :manpage:`dlopen(3)` manpage, on Windows, *mode* is
+ignored.
 
-*use_errno* 変数が True に設定されたとき、システムの :data:`errno` エラーナ
-ンバーに安全にアクセスする ctypes の仕組みが有効化されます。
-:mod:`ctypes` はシステムの :data:`errno` 変数のスレッド限定のコピーを管理します。
-もし、 ``use_errno=True`` の状態で作られた外部関数を呼び出したなら、
-関数呼び出し前の :data:`errno` 変数は ctypes のプライベートコピーと置き換え
-られ、同じことが関数呼び出しの直後にも発生します。
+The *use_errno* parameter, when set to True, enables a ctypes mechanism that
+allows to access the system :data:`errno` error number in a safe way.
+:mod:`ctypes` maintains a thread-local copy of the systems :data:`errno`
+variable; if you call foreign functions created with ``use_errno=True`` then the
+:data:`errno` value before the function call is swapped with the ctypes private
+copy, the same happens immediately after the function call.
 
-:func:`ctypes.get_errno` 関数は ctypes のプライベートコピーの値を返します。
-そして、 :func:`ctypes.set_errno` 関数は ctypes のプライベートコピー
-を置き換え、以前の値を返します。
+The function :func:`ctypes.get_errno` returns the value of the ctypes private
+copy, and the function :func:`ctypes.set_errno` changes the ctypes private copy
+to a new value and returns the former value.
 
-*use_last_error* パラメータは、 True に設定されたとき、
-:func:`GetLastError` と :func:`SetLastError`  Windows API によって管理
-される Windows エラーコードに対するのと同じ仕組みが有効化されます。
-:func:`ctypes.get_last_error` と :func:`ctypes.set_last_error` は Windows
-エラーコードの ctypes プライベートコピーを変更したり要求したりするのに
-使われます。
+The *use_last_error* parameter, when set to True, enables the same mechanism for
+the Windows error code which is managed by the :func:`GetLastError` and
+:func:`SetLastError` Windows API functions; :func:`ctypes.get_last_error` and
+:func:`ctypes.set_last_error` are used to request and change the ctypes private
+copy of the windows error code.
 
 .. versionadded:: 2.6
-   *use_last_error* と *use_errno* オプション変数が追加されました。
+   The *use_last_error* and *use_errno* optional parameters were added.
 
 .. data:: RTLD_GLOBAL
    :noindex:
 
-   *mode* パラメータとして使うフラグ。このフラグが利用できないプラット
-   ホームでは、整数のゼロと定義されています。
+   Flag to use as *mode* parameter.  On platforms where this flag is not available,
+   it is defined as the integer zero.
 
 
 .. data:: RTLD_LOCAL
    :noindex:
 
-   *mode* パラメータとして使うフラグ。これが利用できないプラットホーム
-    では、 *RTLD_GLOBAL* と同様です。
+   Flag to use as *mode* parameter.  On platforms where this is not available, it
+   is the same as *RTLD_GLOBAL*.
 
 
 .. data:: DEFAULT_MODE
    :noindex:
 
-   共有ライブラリをロードするために使われるデフォルトモード。 OSX 10.3
-   では *RTLD_GLOBAL* であり、そうでなければ *RTLD_LOCAL* と同じです。
+   The default mode which is used to load shared libraries.  On OSX 10.3, this is
+   *RTLD_GLOBAL*, otherwise it is the same as *RTLD_LOCAL*.
 
-これらのクラスのインスタンスには公開メソッドがありません。けれども、
-:meth:`__getattr__` と :meth:`__getitem__` は特別なはたらきをします。
-その共有ライブラリがエクスポートする関数に添字を使って属性としてアクセ
-スできるのです。 :meth:`__getattr__` と :meth:`__getitem__` のどちらも
-が結果をキャッシュし、そのため常に同じオブジェクトを返すことに注意して
-ください。
+Instances of these classes have no public methods.  Functions exported by the
+shared library can be accessed as attributes or by index.  Please note that
+accessing the function through an attribute caches the result and therefore
+accessing it repeatedly returns the same object each time.  On the other hand,
+accessing it through an index returns a new object each time:
 
-次に述べる公開属性が利用できます。それらの名前はエクスポートされた関数
-名に衝突しないように下線で始まります。:
+   >>> libc.time == libc.time
+   True
+   >>> libc['time'] == libc['time']
+   False
+
+The following public attributes are available, their name starts with an
+underscore to not clash with exported function names:
 
 
 .. attribute:: PyDLL._handle
 
-   ライブラリへのアクセスに用いられるシステムハンドル。
+   The system handle used to access the library.
 
 
 .. attribute:: PyDLL._name
 
-   コンストラクタに渡されたライブラリの名前。
+   The name of the library passed in the constructor.
 
-共有ライブラリは ( :class:`LibraryLoader` クラスのインスタンスである )
-前もって作られたオブジェクトの一つを使うことによってロードすることもで
-きます。
-それらの :meth:`LoadLibrary` メソッドを呼び出すか、ローダーインスタン
-スの属性としてライブラリを取り出すかのどちらかによりロードします。
+Shared libraries can also be loaded by using one of the prefabricated objects,
+which are instances of the :class:`LibraryLoader` class, either by calling the
+:meth:`LoadLibrary` method, or by retrieving the library as attribute of the
+loader instance.
 
 
 .. class:: LibraryLoader(dlltype)
 
-   共有ライブラリをロードするクラス。 *dlltype* は :class:`CDLL` 、
-   :class:`PyDLL` 、 :class:`WinDLL` もしくは :class:`OleDLL` 型の一つ
-   であるべきです。
+   Class which loads shared libraries.  *dlltype* should be one of the
+   :class:`CDLL`, :class:`PyDLL`, :class:`WinDLL`, or :class:`OleDLL` types.
 
-   :meth:`__getattr__` は特別なはたらきをします: ライブラリローダーイ
-   ンスタンスの属性として共有ライブラリにアクセスするとそれがロードさ
-   れるということを可能にします。結果はキャッシュされます。そのため、
-   繰り返し属性アクセスを行うといつも同じライブラリが返されます。
+   :meth:`__getattr__` has special behavior: It allows to load a shared library by
+   accessing it as attribute of a library loader instance.  The result is cached,
+   so repeated attribute accesses return the same library each time.
 
 
    .. method:: LoadLibrary(name)
 
-      共有ライブラリをプロセスへロードし、それを返します。このメソッド
-      はライブラリの新しいインスタンスを常に返します。
+      Load a shared library into the process and return it.  This method always
+      returns a new instance of the library.
 
-これらの前もって作られたライブラリローダーを利用することができます。:
+These prefabricated library loaders are available:
 
 
 .. data:: cdll
    :noindex:
 
-   :class:`CDLL` インスタンスを作ります。
+   Creates :class:`CDLL` instances.
 
 
 .. data:: windll
    :noindex:
 
-   Windows用: :class:`WinDLL` インスタンスを作ります。
+   Windows only: Creates :class:`WinDLL` instances.
 
 
 .. data:: oledll
    :noindex:
 
-   Windows用: :class:`OleDLL` インスタンスを作ります。
+   Windows only: Creates :class:`OleDLL` instances.
 
 
 .. data:: pydll
    :noindex:
 
-   :class:`PyDLL` インスタンスを作ります。
+   Creates :class:`PyDLL` instances.
 
-C Python api に直接アクセするために、すぐに使用できる Python 共有ライ
-ブラリオブジェクトが用意されています。:
+For accessing the C Python api directly, a ready-to-use Python shared library
+object is available:
 
 
 .. data:: pythonapi
    :noindex:
 
-   属性として Python C api 関数を公開する :class:`PyDLL` のインスタン
-   ス。これらすべての関数は C :c:type:`int` を返すと仮定されますが、もちろん
-   常に正しいとは限りません。そのため、これらの関数を使うためには正し
-   い :attr:`restype` 属性を代入しなければなりません。
+   An instance of :class:`PyDLL` that exposes Python C API functions as
+   attributes.  Note that all these functions are assumed to return C
+   :c:type:`int`, which is of course not always the truth, so you have to assign
+   the correct :attr:`restype` attribute to use these functions.
 
 
 .. _ctypes-foreign-functions:
 
-外部関数
-^^^^^^^^
+Foreign functions
+^^^^^^^^^^^^^^^^^
 
-前節で説明した通り、外部関数はロードされた共有ライブラリの属性としてア
-クセスできます。デフォルトではこの方法で作成された関数オブジェクトはど
-んな数の引数でも受け取り、引数としてどんな ctypes データのインスタンス
-をも受け取り、そして、ライブラリローダーが指定したデフォルトの結果の値
-の型を返します。関数オブジェクトはプライベートクラスのインスタンスで
-す。:
+As explained in the previous section, foreign functions can be accessed as
+attributes of loaded shared libraries.  The function objects created in this way
+by default accept any number of arguments, accept any ctypes data instances as
+arguments, and return the default result type specified by the library loader.
+They are instances of a private class:
 
 
 .. class:: _FuncPtr
 
-   C の呼び出し可能外部関数のためのベースクラス。
+   Base class for C callable foreign functions.
 
-   外部関数のインスタンスも C 互換データ型です。それらは C の関数ポイ
-   ンタを表しています。
+   Instances of foreign functions are also C compatible data types; they
+   represent C function pointers.
 
-   この振る舞いは外部関数オブジェクトの特別な属性に代入することによっ
-   て、カスタマイズすることができます。
+   This behavior can be customized by assigning to special attributes of the
+   foreign function object.
 
 
    .. attribute:: restype
 
-      外部関数の結果の型を指定するために ctypes 型を代入する。何も返さ
-      ない関数を表す :c:type:`void` に対しては ``None`` を使います。
+      Assign a ctypes type to specify the result type of the foreign function.
+      Use ``None`` for :c:type:`void`, a function not returning anything.
 
-      ctypes 型ではない呼び出し可能な Python オブジェクトを代入するこ
-      とは可能です。このような場合、関数が C :c:type:`int` を返すと仮定され、
-      呼び出し可能オブジェクトはこの整数を引数に呼び出されます。さらに
-      処理を行ったり、エラーチェックをしたりできるようにするためです。
-      これの使用は推奨されません。より柔軟な後処理やエラーチェックのた
-      めには restype として ctypes 型を使い、 :attr:`errcheck` 属性へ
-      呼び出し可能オブジェクトを代入してください。
+      It is possible to assign a callable Python object that is not a ctypes
+      type, in this case the function is assumed to return a C :c:type:`int`, and
+      the callable will be called with this integer, allowing to do further
+      processing or error checking.  Using this is deprecated, for more flexible
+      post processing or error checking use a ctypes data type as
+      :attr:`restype` and assign a callable to the :attr:`errcheck` attribute.
 
 
    .. attribute:: argtypes
 
-      関数が受け取る引数の型を指定するために ctypes 型のタプルを代入し
-      ます。 ``stdcall`` 呼び出し規約をつかう関数はこのタプルの長さと同じ
-      数の引数で呼び出されます。その上、 C 呼び出し規約をつかう関数は追加
-      の不特定の引数も取ります。
+      Assign a tuple of ctypes types to specify the argument types that the
+      function accepts.  Functions using the ``stdcall`` calling convention can
+      only be called with the same number of arguments as the length of this
+      tuple; functions using the C calling convention accept additional,
+      unspecified arguments as well.
 
-      外部関数が呼ばれたとき、それぞれの実引数は :attr:`argtypes` タプ
-      ルの要素の :meth:`from_param` クラスメソッドへ渡されます。このメ
-      ソッドは実引数を外部関数が受け取るオブジェクトに合わせて変えられ
-      るようにします。
-      例えば、 :attr:`argtypes` タプルの :class:`c_char_p` 要素は、
-      ctypes 変換規則にしたがって引数として渡されたユニコード文字列を
-      バイト文字列へ変換するでしょう。
+      When a foreign function is called, each actual argument is passed to the
+      :meth:`from_param` class method of the items in the :attr:`argtypes`
+      tuple, this method allows to adapt the actual argument to an object that
+      the foreign function accepts.  For example, a :class:`c_char_p` item in
+      the :attr:`argtypes` tuple will convert a unicode string passed as
+      argument into an byte string using ctypes conversion rules.
 
-      新: ctypes 型でない要素を argtypes に入れることができますが、個々
-      の要素は引数として使える値 ( 整数、文字列、 ctypes インスタンス
-      ) を返す :meth:`from_param` メソッドを持っていなければなりません。
-      これにより関数パラメータとしてカスタムオブジェクトを適合するよう
-      に変更できるアダプタが定義可能となります。
+      New: It is now possible to put items in argtypes which are not ctypes
+      types, but each item must have a :meth:`from_param` method which returns a
+      value usable as argument (integer, string, ctypes instance).  This allows
+      to define adapters that can adapt custom objects as function parameters.
 
 
    .. attribute:: errcheck
 
-      Python 関数または他の呼び出し可能オブジェクトをこの属性に代入し
-      ます。呼び出し可能オブジェクトは三つ以上の引数とともに呼び出され
-      ます。
-
+      Assign a Python function or another callable to this attribute. The
+      callable will be called with three or more arguments:
 
       .. function:: callable(result, func, arguments)
          :noindex:
 
-         *result* は外部関数が返すもので、 :attr:`restype` 属性で指定さ
-         れます。
+         *result* is what the foreign function returns, as specified by the
+         :attr:`restype` attribute.
 
-         *func* は外部関数オブジェクト自身で、これにより複数の関数の処
-         理結果をチェックまたは後処理するために、同じ呼び出し可能オブジェ
-         クトを再利用できるようになります。
+         *func* is the foreign function object itself, this allows to reuse the
+         same callable object to check or post process the results of several
+         functions.
 
-         *arguments* は関数呼び出しに最初に渡されたパラメータが入っ
-         たタプルです。これにより使われた引数に基づた特別な振る舞いを
-         させることができるようになります。
+         *arguments* is a tuple containing the parameters originally passed to
+         the function call, this allows to specialize the behavior on the
+         arguments used.
 
-      この関数が返すオブジェクトは外部関数呼び出しから返された値でしょ
-      う。しかし、戻り値をチェックして、外部関数呼び出しが失敗している
-      なら例外を送出させることもできます。
+      The object that this function returns will be returned from the
+      foreign function call, but it can also check the result value
+      and raise an exception if the foreign function call failed.
 
 
 .. exception:: ArgumentError()
 
-   この例外は外部関数呼び出しが渡された引数を変換できなかったときに送
-   出されます。
+   This exception is raised when a foreign function call cannot convert one of the
+   passed arguments.
 
 
 .. _ctypes-function-prototypes:
 
-関数プロトタイプ
-^^^^^^^^^^^^^^^^
+Function prototypes
+^^^^^^^^^^^^^^^^^^^
 
-外部関数は関数プロトタイプをインスタンス化することによって作成されます。
-関数プロトタイプは C の関数プロトタイプと似ています。実装を定義せずに、
-関数 ( 戻り値、引数の型、呼び出し規約 ) を記述します。ファクトリ関数は
-関数に要求する戻り値の型と引数の型とともに呼び出されます。
+Foreign functions can also be created by instantiating function prototypes.
+Function prototypes are similar to function prototypes in C; they describe a
+function (return type, argument types, calling convention) without defining an
+implementation.  The factory functions must be called with the desired result
+type and the argument types of the function.
 
 
 .. function:: CFUNCTYPE(restype, *argtypes, use_errno=False, use_last_error=False)
 
-   返された関数プロトタイプは標準 C 呼び出し規約をつかう関数を作成しま
-   す。関数は呼び出されている間 GIL を解放します。
-   *use_errno* が True に設定されれば、呼び出しの前後で System 変数
-   :data:`errno` の ctypesプライベートコピーは本当の :data:`errno` の値と交換され
-   ます。
-   *use_last_error* も Windows エラーコードに対するのと同様です。
+   The returned function prototype creates functions that use the standard C
+   calling convention.  The function will release the GIL during the call.  If
+   *use_errno* is set to True, the ctypes private copy of the system
+   :data:`errno` variable is exchanged with the real :data:`errno` value before
+   and after the call; *use_last_error* does the same for the Windows error
+   code.
 
    .. versionchanged:: 2.6
-      オプションの *use_errno* と *use_last_error* 変数が追加されました。
+      The optional *use_errno* and *use_last_error* parameters were added.
 
 
 .. function:: WINFUNCTYPE(restype, *argtypes, use_errno=False, use_last_error=False)
 
-   Windows 用: 返された関数プロトタイプは ``stdcall`` 呼び出し規約をつかう関数を作成します。
-   ただし、 :func:`WINFUNCTYPE` が :func:`CFUNCTYPE` と同じである Windows CE を除きます。
-   関数は呼び出されている間 GIL を解放します。
-   *use_errno* と *use_last_error* は前述と同じ意味を持ちます。
+   Windows only: The returned function prototype creates functions that use the
+   ``stdcall`` calling convention, except on Windows CE where
+   :func:`WINFUNCTYPE` is the same as :func:`CFUNCTYPE`.  The function will
+   release the GIL during the call.  *use_errno* and *use_last_error* have the
+   same meaning as above.
 
 
 .. function:: PYFUNCTYPE(restype, *argtypes)
 
-   返された関数プロトタイプは Python 呼び出し規約をつかう関数を作成し
-   ます。関数は呼び出されている間 GIL を解放 *しません* 。
+   The returned function prototype creates functions that use the Python calling
+   convention.  The function will *not* release the GIL during the call.
 
-ファクトリ関数によって作られた関数プロトタイプは呼び出しのパラメータの
-型と数に依存した別の方法でインスタンス化することができます。 :
+Function prototypes created by these factory functions can be instantiated in
+different ways, depending on the type and number of the parameters in the call:
 
 
    .. function:: prototype(address)
       :noindex:
       :module:
 
-      指定されたアドレス(整数でなくてはなりません)の外部関数を返します。
+      Returns a foreign function at the specified address which must be an integer.
 
 
    .. function:: prototype(callable)
       :noindex:
       :module:
 
-      Python の *callable* から C の呼び出し可能関数(コールバック関数)
-      を作成します。
+      Create a C callable function (a callback function) from a Python *callable*.
 
 
    .. function:: prototype(func_spec[, paramflags])
       :noindex:
       :module:
 
-      共有ライブラリがエクスポートしている外部関数を返します。
-      *func_spec* は 2 要素タプル ``(name_or_ordinal, library)`` でなけ
-      ればなりません。第一要素はエクスポートされた関数の名前である文字列、
-      またはエクスポートされた関数の序数である小さい整数です。第二要素は
-      共有ライブラリインスタンスです。
+      Returns a foreign function exported by a shared library. *func_spec* must be a
+      2-tuple ``(name_or_ordinal, library)``. The first item is the name of the
+      exported function as string, or the ordinal of the exported function as small
+      integer.  The second item is the shared library instance.
 
 
    .. function:: prototype(vtbl_index, name[, paramflags[, iid]])
       :noindex:
       :module:
 
-      COM メソッドを呼び出す外部関数を返します。 *vtbl_index* は仮想
-      関数テーブルのインデックスで、非負の小さい整数です。
-      *name* は COM メソッドの名前です。 *iid* はオプションのインター
-      フェイス識別子へのポインタで、拡張されたエラー情報の提供のために
-      使われます。
+      Returns a foreign function that will call a COM method. *vtbl_index* is the
+      index into the virtual function table, a small non-negative integer. *name* is
+      name of the COM method. *iid* is an optional pointer to the interface identifier
+      which is used in extended error reporting.
 
-      COM メソッドは特殊な呼び出し規約を用います。このメソッドは
-      :attr:`argtypes` タプルに指定されたパラメータに加えて、第一引数
-      として COM インターフェイスへのポインタを必要とします。
+      COM methods use a special calling convention: They require a pointer to the COM
+      interface as first argument, in addition to those parameters that are specified
+      in the :attr:`argtypes` tuple.
 
-   オプションの *paramflags* パラメータは上述した機能より多機能な外部
-   関数ラッパーを作成します。
+   The optional *paramflags* parameter creates foreign function wrappers with much
+   more functionality than the features described above.
 
-   *paramflags* は :attr:`argtypes` と同じ長さのタプルでなければなりま
-   せん。
+   *paramflags* must be a tuple of the same length as :attr:`argtypes`.
 
-   このタプルの個々の要素はパラメータについてのより詳細な情報を持ち、
-   1 、 2 もしくは 3 要素を含むタプルでなければなりません。
+   Each item in this tuple contains further information about a parameter, it must
+   be a tuple containing one, two, or three items.
 
-   第一要素はパラメータについてのフラグの組み合わせを含んだ整数です。
-
+   The first item is an integer containing a combination of direction
+   flags for the parameter:
 
       1
-         入力パラメータを関数に指定します。
+         Specifies an input parameter to the function.
 
       2
-         出力パラメータ。外部関数が値を書き込みます。
+         Output parameter.  The foreign function fills in a value.
 
       4
-         デフォルトで整数ゼロになる入力パラメータ。
+         Input parameter which defaults to the integer zero.
 
-   オプションの第二要素はパラメータ名の文字列です。これが指定された場
-   合は、外部関数を名前付きパラメータで呼び出すことができます。
+   The optional second item is the parameter name as string.  If this is specified,
+   the foreign function can be called with named parameters.
 
-   オプションの第三要素はこのパラメータのデフォルト値です。
+   The optional third item is the default value for this parameter.
 
-この例では、デフォルトパラメータと名前付き引数をサポートするために
-Windows ``MessageBoxA`` 関数をラップする方法を示します。
-windowsヘッダファイルの C の宣言はこれです。::
+This example demonstrates how to wrap the Windows ``MessageBoxA`` function so
+that it supports default parameters and named arguments. The C declaration from
+the windows header file is this::
 
    WINUSERAPI int WINAPI
    MessageBoxA(
-       HWND hWnd ,
+       HWND hWnd,
        LPCSTR lpText,
        LPCSTR lpCaption,
        UINT uType);
 
-:mod:`ctypes` を使ってラップします。::
+Here is the wrapping with :mod:`ctypes`::
 
    >>> from ctypes import c_int, WINFUNCTYPE, windll
    >>> from ctypes.wintypes import HWND, LPCSTR, UINT
@@ -1775,24 +1739,23 @@ windowsヘッダファイルの C の宣言はこれです。::
    >>> MessageBox = prototype(("MessageBoxA", windll.user32), paramflags)
    >>>
 
-今は MessageBox 外部関数をこのような方法で呼び出すことができます。::
+The MessageBox foreign function can now be called in these ways::
 
    >>> MessageBox()
    >>> MessageBox(text="Spam, spam, spam")
    >>> MessageBox(flags=2, text="foo bar")
    >>>
 
-二番目の例は出力パラメータについて説明します。 win32 の
-``GetWindowRect`` 関数は、指定されたウィンドウの大きさを呼び出し側が与
-える ``RECT`` 構造体へコピーすることで取り出します。 C の宣言はこうで
-す。::
+A second example demonstrates output parameters.  The win32 ``GetWindowRect``
+function retrieves the dimensions of a specified window by copying them into
+``RECT`` structure that the caller has to supply.  Here is the C declaration::
 
    WINUSERAPI BOOL WINAPI
    GetWindowRect(
         HWND hWnd,
         LPRECT lpRect);
 
-:mod:`ctypes` を使ってラップします。::
+Here is the wrapping with :mod:`ctypes`::
 
    >>> from ctypes import POINTER, WINFUNCTYPE, windll, WinError
    >>> from ctypes.wintypes import BOOL, HWND, RECT
@@ -1801,17 +1764,15 @@ windowsヘッダファイルの C の宣言はこれです。::
    >>> GetWindowRect = prototype(("GetWindowRect", windll.user32), paramflags)
    >>>
 
-もし単一の値もしくは一つより多い場合には出力パラメータ値が入ったタプル
-があるならば、出力パラメータを持つ関数は自動的に出力パラメータ値を返す
-でしょう。
-そのため、今は GetWindowRect 関数は呼び出されたときに RECT インスタン
-スを返します。
+Functions with output parameters will automatically return the output parameter
+value if there is a single one, or a tuple containing the output parameter
+values when there are more than one, so the GetWindowRect function now returns a
+RECT instance, when called.
 
-さらに出力処理やエラーチェックを行うために、出力パラメータを
-:attr:`errcheck` プロトコルと組み合わせることができます。 win32
-``GetWindowRect`` api 関数は成功したか失敗したかを知らせるために
-``BOOL`` を返します。そのため、この関数はエラーチェックを行って、
-api 呼び出しが失敗した場合に例外を送出させることができます。::
+Output parameters can be combined with the :attr:`errcheck` protocol to do
+further output processing and error checking.  The win32 ``GetWindowRect`` api
+function returns a ``BOOL`` to signal success or failure, so this function could
+do the error checking, and raises an exception when the api call failed::
 
    >>> def errcheck(result, func, args):
    ...     if not result:
@@ -1821,11 +1782,11 @@ api 呼び出しが失敗した場合に例外を送出させることができ�
    >>> GetWindowRect.errcheck = errcheck
    >>>
 
-:attr:`errcheck` 関数が変更なしに受け取った引数タプルを返したならば、
-:mod:`ctypes` は出力パラメータに対して通常の処理を続けます。
-``RECT`` インスタンスの代わりに window 座標のタプルを返してほしいなら、
-関数のフィールドを取り出し、代わりにそれらを返すことができます。
-通常処理はもはや行われないでしょう。::
+If the :attr:`errcheck` function returns the argument tuple it receives
+unchanged, :mod:`ctypes` continues the normal processing it does on the output
+parameters.  If you want to return a tuple of window coordinates instead of a
+``RECT`` instance, you can retrieve the fields in the function and return them
+instead, the normal processing will no longer take place::
 
    >>> def errcheck(result, func, args):
    ...     if not result:
@@ -1839,667 +1800,640 @@ api 呼び出しが失敗した場合に例外を送出させることができ�
 
 .. _ctypes-utility-functions:
 
-ユーティリティ関数
-^^^^^^^^^^^^^^^^^^
+Utility functions
+^^^^^^^^^^^^^^^^^
 
 
 .. function:: addressof(obj)
 
-   メモリバッファのアドレスを示す整数を返します。 *obj* は ctypes 型
-   のインスタンスでなければなりません。
+   Returns the address of the memory buffer as integer.  *obj* must be an
+   instance of a ctypes type.
 
 
 .. function:: alignment(obj_or_type)
 
-   ctypes 型のアライメントの必要条件を返します。 *obj_or_type* は
-   ctypes 型またはインスタンスでなければなりません。
+   Returns the alignment requirements of a ctypes type. *obj_or_type* must be a
+   ctypes type or instance.
 
 
 .. function:: byref(obj[, offset])
 
-   *obj* (ctypes 型のインスタンスでなければならない) への軽量ポインタを
-   返します。 *offset* はデフォルトでは 0 で、内部ポインターへ加算される
-   整数です。
+   Returns a light-weight pointer to *obj*, which must be an instance of a
+   ctypes type.  *offset* defaults to zero, and must be an integer that will be
+   added to the internal pointer value.
 
-   ``byref(obj, offset)`` は、 C コードとしては、以下のようにみなされ
-   ます。::
+   ``byref(obj, offset)`` corresponds to this C code::
 
       (((char *)&obj) + offset)
 
-   返されるオブジェクトは外部関数呼び出しのパラメータとしてのみ使用で
-   きます。 ``pointer(obj)`` と似たふるまいをしますが、作成が非常に速
-   く行えます。
+   The returned object can only be used as a foreign function call
+   parameter.  It behaves similar to ``pointer(obj)``, but the
+   construction is a lot faster.
 
    .. versionadded:: 2.6
-      *offset* オプション引数が追加されました。
+      The *offset* optional argument was added.
 
 
 .. function:: cast(obj, type)
 
-   この関数は C のキャスト演算子に似ています。 *obj* と同じメモリブ
-   ロックを指している *type* の新しいインスタンスを返します。
-   *type* はポインタ型でなければならず、 *obj* はポインタとして解
-   釈できるオブジェクトでなければなりません。
+   This function is similar to the cast operator in C.  It returns a new
+   instance of *type* which points to the same memory block as *obj*.  *type*
+   must be a pointer type, and *obj* must be an object that can be interpreted
+   as a pointer.
 
 
 .. function:: create_string_buffer(init_or_size[, size])
 
-   この関数は変更可能な文字バッファを作成します。返されるオブジェクト
-   は :class:`c_char` の ctypes 配列です。
+   This function creates a mutable character buffer. The returned object is a
+   ctypes array of :class:`c_char`.
 
-   *init_or_size* は配列のサイズを指定する整数もしくは配列要素を初期
-   化するために使われる文字列である必要があります。
+   *init_or_size* must be an integer which specifies the size of the array, or a
+   string which will be used to initialize the array items.
 
-   第一引数として文字列が指定された場合は、バッファが文字列の長さより
-   一要素分大きく作られます。配列の最後の要素が NUL 終端文字であるため
-   です。
-   文字列の長さを使うべきでない場合は、配列のサイズを指定するために整
-   数を第二引数として渡すことができます。
+   If a string is specified as first argument, the buffer is made one item larger
+   than the length of the string so that the last element in the array is a NUL
+   termination character. An integer can be passed as second argument which allows
+   to specify the size of the array if the length of the string should not be used.
 
-   第一引数がユニコード文字列ならば、 ctypes 変換規則にしたがい 8 ビッ
-   ト文字列へ変換されます。
+   If the first parameter is a unicode string, it is converted into an 8-bit string
+   according to ctypes conversion rules.
 
 
 .. function:: create_unicode_buffer(init_or_size[, size])
 
-   この関数は変更可能なユニコード文字バッファを作成します。返されるオ
-   ブジェクトは :class:`c_wchar` の ctypes 配列です。
+   This function creates a mutable unicode character buffer. The returned object is
+   a ctypes array of :class:`c_wchar`.
 
-   *init_or_size* は配列のサイズを指定する整数もしくは配列要素を初期
-   化するために使われるユニコード文字列です。
+   *init_or_size* must be an integer which specifies the size of the array, or a
+   unicode string which will be used to initialize the array items.
 
-   第一引数としてユニコード文字列が指定された場合は、バッファが文字列
-   の長さより一要素分大きく作られます。配列の最後の要素が NUL 終端文字
-   であるためです。
-   文字列の長さを使うべきでない場合は、配列のサイズを指定するために整
-   数を第二引数として渡すことができます。
+   If a unicode string is specified as first argument, the buffer is made one item
+   larger than the length of the string so that the last element in the array is a
+   NUL termination character. An integer can be passed as second argument which
+   allows to specify the size of the array if the length of the string should not
+   be used.
 
-   第一引数が 8 ビット文字列ならば、 ctypes 変換規則にしたがいユニコー
-   ド文字列へ変換されます。
+   If the first parameter is a 8-bit string, it is converted into an unicode string
+   according to ctypes conversion rules.
 
 
 .. function:: DllCanUnloadNow()
 
-   Windows用: この関数は ctypes をつかってインプロセス COM サーバーを
-   実装できるようにするためのフックです。 _ctypes 拡張 dll がエクスポー
-   トしている DllCanUnloadNow 関数から呼び出されます。
+   Windows only: This function is a hook which allows to implement in-process
+   COM servers with ctypes.  It is called from the DllCanUnloadNow function that
+   the _ctypes extension dll exports.
 
 
 .. function:: DllGetClassObject()
 
-   Windows用: この関数は ctypes をつかってインプロセス COM サーバーを
-   実装できるようにするためのフックです。 ``_ctypes`` 拡張 dll が
-   エクスポートしている DllGetClassObject 関数から呼び出されます。
+   Windows only: This function is a hook which allows to implement in-process
+   COM servers with ctypes.  It is called from the DllGetClassObject function
+   that the ``_ctypes`` extension dll exports.
 
 
 .. function:: find_library(name)
    :module: ctypes.util
 
-   ライブラリを検索し、パス名を返します。
-   *name* は ``lib`` のような接頭辞、
-   ``.so`` や ``.dylib`` のような接尾辞、そして、バージョンナンバー
-   を除くライブラリ名です (これは posix のリンカーオプション
-   :option:`-l` で使われる書式です) 。もしライブラリが見つからなければ、
-   ``None`` を返します。
+   Try to find a library and return a pathname.  *name* is the library name
+   without any prefix like ``lib``, suffix like ``.so``, ``.dylib`` or version
+   number (this is the form used for the posix linker option :option:`-l`).  If
+   no library can be found, returns ``None``.
 
-   実際の機能はシステムに依存します。
+   The exact functionality is system dependent.
 
    .. versionchanged:: 2.6
-      Windows限定: ``find_library("m")`` もしくは ``find_library("c")``
-      は ``find_msvcrt()`` の呼び出し結果を返します。
+      Windows only: ``find_library("m")`` or ``find_library("c")`` return the
+      result of a call to ``find_msvcrt()``.
+
 
 .. function:: find_msvcrt()
    :module: ctypes.util
 
-   Windows用: Python と拡張モジュールで使われる VC ランタイプライブラ
-   リのファイル名を返します。もしライブラリ名が同定できなければ、
-   ``None`` を返します。
+   Windows only: return the filename of the VC runtime library used by Python,
+   and by the extension modules.  If the name of the library cannot be
+   determined, ``None`` is returned.
 
-   もし、例えば拡張モジュールにより割り付けられたメモリを ``free(void
-   *)`` で解放する必要があるなら、メモリ割り付けを行ったのと同じライブ
-   ラリの関数を使うことが重要です。
+   If you need to free memory, for example, allocated by an extension module
+   with a call to the ``free(void *)``, it is important that you use the
+   function in the same library that allocated the memory.
 
    .. versionadded:: 2.6
 
 
 .. function:: FormatError([code])
 
-   Windows用: エラーコード *code* の説明文を返します。エラーコードが指定されな
-   い場合は、 Windows api 関数 GetLastError を呼び出して、もっとも新し
-   いエラーコードが使われます。
+   Windows only: Returns a textual description of the error code *code*.  If no
+   error code is specified, the last error code is used by calling the Windows
+   api function GetLastError.
 
 
 .. function:: GetLastError()
 
-   Windows用: 呼び出し側のスレッド内で Windows によって設定された最新
-   のエラーコードを返します。
-   この関数はWindowsの `GetLastError()` 関数を直接実行します。
-   ctypesのプライベートなエラーコードのコピーを返したりはしません。
-
+   Windows only: Returns the last error code set by Windows in the calling thread.
+   This function calls the Windows `GetLastError()` function directly,
+   it does not return the ctypes-private copy of the error code.
 
 .. function:: get_errno()
 
-   システムの :data:`errno` 変数の、スレッドローカルなプライベートコピーを返します。
+   Returns the current value of the ctypes-private copy of the system
+   :data:`errno` variable in the calling thread.
 
    .. versionadded:: 2.6
 
 .. function:: get_last_error()
 
-   Windowsのみ: システムの :data:`LastError` 変数の、スレッドローカルなプライベートコピーを返します。
+   Windows only: returns the current value of the ctypes-private copy of the system
+   :data:`LastError` variable in the calling thread.
 
    .. versionadded:: 2.6
 
 .. function:: memmove(dst, src, count)
 
-   標準 C の memmove ライブラリ関数と同じものです。: *count* バイトを
-   *src* から *dst* へコピーします。 *dst* と *src* はポインタへ変
-   換可能な整数または ctypes インスタンスでなければなりません。
+   Same as the standard C memmove library function: copies *count* bytes from
+   *src* to *dst*. *dst* and *src* must be integers or ctypes instances that can
+   be converted to pointers.
 
 
 .. function:: memset(dst, c, count)
 
-   標準 C の memset ライブラリ関数と同じものです。: アドレス *dst* の
-   メモリブロックを値 *c* を *count* バイト分書き込みます。
-   *dst* はアドレスを指定する整数または ctypes インスタンスである必要
-   があります。
+   Same as the standard C memset library function: fills the memory block at
+   address *dst* with *count* bytes of value *c*. *dst* must be an integer
+   specifying an address, or a ctypes instance.
 
 
 .. function:: POINTER(type)
 
-   このファクトリ関数は新しい ctypes ポインタ型を作成して返します。ポ
-   インタ型はキャッシュされ、内部で再利用されます。したがって、この関
-   数を繰り返し呼び出してもコストは小さいです。 *type* は ctypes 型でなけれ
-   ばなりません。
+   This factory function creates and returns a new ctypes pointer type. Pointer
+   types are cached an reused internally, so calling this function repeatedly is
+   cheap. *type* must be a ctypes type.
 
 
 .. function:: pointer(obj)
 
-   この関数は *obj* を指す新しいポインタインスタンスを作成します。戻
-   り値は ``POINTER(type(obj))`` 型のオブジェクトです。
+   This function creates a new pointer instance, pointing to *obj*. The returned
+   object is of the type ``POINTER(type(obj))``.
 
-   注意: 外部関数呼び出しへオブジェクトへのポインタを渡したいだけなら、
-   はるかに高速な ``byref(obj)`` を使うべきです。
+   Note: If you just want to pass a pointer to an object to a foreign function
+   call, you should use ``byref(obj)`` which is much faster.
 
 
 .. function:: resize(obj, size)
 
-   この関数は *obj* の内部メモリバッファのサイズを変更します。 *obj*
-   は ctypes 型のインスタンスでなければなりません。
-   バッファを ``sizeof(type(obj))`` で与えられるオブジェクト型の本来の
-   サイズより小さくすることはできませんが、バッファを拡大することはできます。
+   This function resizes the internal memory buffer of *obj*, which must be an
+   instance of a ctypes type.  It is not possible to make the buffer smaller
+   than the native size of the objects type, as given by ``sizeof(type(obj))``,
+   but it is possible to enlarge the buffer.
 
 
 .. function:: set_conversion_mode(encoding, errors)
 
-   この関数は 8 ビット文字列とユニコード文字列の間で変換するときに使わ
-   れる規則を設定します。 *encoding* は ``'utf-8'`` や ``'mbcs'`` のよう
-   なエンコーディングを指定する文字列でなければなりません。 *errors* は
-   エンコーディング/デコーディングエラーについてのエラー処理を指定する
-   文字列でなければなりません。指定可能な値の例としては、 ``"strict"``,
-   ``"replace"``,  ``"ignore"`` があります。
+   This function sets the rules that ctypes objects use when converting between
+   8-bit strings and unicode strings.  *encoding* must be a string specifying an
+   encoding, like ``'utf-8'`` or ``'mbcs'``, *errors* must be a string
+   specifying the error handling on encoding/decoding errors.  Examples of
+   possible values are ``"strict"``, ``"replace"``, or ``"ignore"``.
 
-   :func:`set_conversion_mode` は以前の変換規則を含む 2 要素タプルを返します。
-   windows では初期の変換規則は ``('mbcs', 'ignore')`` であり、
-   他のシステムでは ``('ascii', 'strict')`` です。
+   :func:`set_conversion_mode` returns a 2-tuple containing the previous
+   conversion rules.  On windows, the initial conversion rules are ``('mbcs',
+   'ignore')``, on other systems ``('ascii', 'strict')``.
 
 
 .. function:: set_errno(value)
 
-   システム変数 `errno` の、呼び出し元スレッドでの ctypes のプライベー
-   トコピーの現在値を `value` に設定し、前の値を返します。
+   Set the current value of the ctypes-private copy of the system :data:`errno`
+   variable in the calling thread to *value* and return the previous value.
 
    .. versionadded:: 2.6
 
 
 .. function:: set_last_error(value)
 
-   Windows用: システム変数 `LastError` の、呼び出し元スレッドでの
-   ctypes のプライベートコピーの現在値を `value` に設定し、前の値を返
-   します。
+   Windows only: set the current value of the ctypes-private copy of the system
+   :data:`LastError` variable in the calling thread to *value* and return the
+   previous value.
 
    .. versionadded:: 2.6
 
 
 .. function:: sizeof(obj_or_type)
 
-   ctypes 型もしくはインスタンスのメモリバッファのサイズをバイト単位で
-   返します。 C の ``sizeof()`` 関数と同じ動作です。
+   Returns the size in bytes of a ctypes type or instance memory buffer.
+   Does the same as the C ``sizeof`` operator.
 
 
 .. function:: string_at(address[, size])
 
-   この関数はメモリアドレス address から始まる文字列を返します。 size
-   が指定された場合はサイズとして使われます。指定されなければ、文字列
-   がゼロ終端されていると仮定します。
+   This function returns the string starting at memory address *address*. If size
+   is specified, it is used as size, otherwise the string is assumed to be
+   zero-terminated.
 
 
 .. function:: WinError(code=None, descr=None)
 
-   Windows用: この関数は ctypes の中でもおそらく最悪な名前がつけられたも
-   のです。
-   WindowsError のインスタンスを作成します。 *code* が指定されないなら
-   ば、エラーコードを決めるために ``GetLastError`` が呼び出されます。
-   *descr* が指定されないならば、 :func:`FormatError` がエラーの説明
-   文を得るために呼び出されます。
+   Windows only: this function is probably the worst-named thing in ctypes.  It
+   creates an instance of WindowsError.  If *code* is not specified,
+   ``GetLastError`` is called to determine the error code.  If ``descr`` is not
+   specified, :func:`FormatError` is called to get a textual description of the
+   error.
 
 
 .. function:: wstring_at(address[, size])
 
-   この関数はユニコード文字列としてメモリアドレス *address* から始ま
-   るワイドキャラクタ文字列を返します。 *size* が指定されたならば、
-   文字列の文字数として使われます。指定されなければ、文字列がゼロ終端
-   されていると仮定します。
+   This function returns the wide character string starting at memory address
+   *address* as unicode string.  If *size* is specified, it is used as the
+   number of characters of the string, otherwise the string is assumed to be
+   zero-terminated.
 
 
 .. _ctypes-data-types:
 
-データ型
-^^^^^^^^
+Data types
+^^^^^^^^^^
 
 
 .. class:: _CData
 
-   この非公開クラスはすべての ctypes データ型の共通のベースクラスです。
-   他のことはさておき、すべての ctypes 型インスタンスは C 互換データを
-   保持するメモリブロックを内部に持ちます。このメモリブロック
-   のアドレスは :func:`addressof` ヘルパー関数が返します。別のインスタ
-   ンス変数が :attr:`_objects` として公開されます。これはメモリブロッ
-   クがポインタを含む場合に存続し続ける必要のある他の Python オブジェ
-   クトを含んでいます。
+   This non-public class is the common base class of all ctypes data types.
+   Among other things, all ctypes type instances contain a memory block that
+   hold C compatible data; the address of the memory block is returned by the
+   :func:`addressof` helper function.  Another instance variable is exposed as
+   :attr:`_objects`; this contains other Python objects that need to be kept
+   alive in case the memory block contains pointers.
 
-   ctypes データ型の共通メソッド、すべてのクラスメソッドが存在します
-   (正確には、メタクラスのメソッドです):
+   Common methods of ctypes data types, these are all class methods (to be
+   exact, they are methods of the :term:`metaclass`):
 
 
    .. method:: _CData.from_buffer(source[, offset])
 
-      このメソッドは *source* オブジェクトのバッファを共有する ctypes の
-      インスタンスを返します。 *source* オブジェクトは書き込み可能バッ
-      ファインターフェースをサポートしている必要があります。オプション
-      の *offset* 引数では *source* バッファのオフセットをバイト単位で
-      指定します。
-      デフォルトではゼロです。もし *source* バッファが十分に大きくなけれ
-      ば、 :exc:`ValueError` が送出されます。
+      This method returns a ctypes instance that shares the buffer of the
+      *source* object.  The *source* object must support the writeable buffer
+      interface.  The optional *offset* parameter specifies an offset into the
+      source buffer in bytes; the default is zero.  If the source buffer is not
+      large enough a :exc:`ValueError` is raised.
 
       .. versionadded:: 2.6
 
 
    .. method:: _CData.from_buffer_copy(source[, offset])
 
-      このメソッドは *source* オブジェクトの読み出し可能バッファをコピー
-      することで、ctypes のインスタンスを生成します。オプションの
-      *offset* 引数では *source* バッファのオフセットをバイト単位で指
-      定します。
-      デフォルトではゼロです。もし *source* バッファが十分に大きくなけれ
-      ば、 :exc:`ValueError` が送出されます。
+      This method creates a ctypes instance, copying the buffer from the
+      *source* object buffer which must be readable.  The optional *offset*
+      parameter specifies an offset into the source buffer in bytes; the default
+      is zero.  If the source buffer is not large enough a :exc:`ValueError` is
+      raised.
 
       .. versionadded:: 2.6
 
 
    .. method:: from_address(address)
 
-      このメソッドは *address* で指定されたメモリを使って ctypes 型の
-      インスタンスを返します。 *address* は整数でなければなりません。
+      This method returns a ctypes type instance using the memory specified by
+      *address* which must be an integer.
 
 
    .. method:: from_param(obj)
 
-      このメソッドは *obj* を ctypes 型に適合させます。外部関数の
-      :attr:`argtypes` タプルに、その型があるとき、外部関数呼び出しで
-      実際に使われるオブジェクトと共に呼び出されます。
+      This method adapts *obj* to a ctypes type.  It is called with the actual
+      object used in a foreign function call when the type is present in the
+      foreign function's :attr:`argtypes` tuple; it must return an object that
+      can be used as a function call parameter.
 
-      すべての ctypes のデータ型は、それが型のインスタンスであれば、
-      *obj* を返すこのクラスメソッドのデフォルトの実装を持ちます。
-      いくつかの型は、別のオブジェクトも受け付けます。
+      All ctypes data types have a default implementation of this classmethod
+      that normally returns *obj* if that is an instance of the type.  Some
+      types accept other objects as well.
 
 
    .. method:: in_dll(library, name)
 
-      このメソッドは、共有ライブラリによってエクスポートされた ctypes
-      型のインスタンスを返します。
-      *name* はエクスポートされたデータの名前で、 *library* はロードさ
-      れた共有ライブラリです。
+      This method returns a ctypes type instance exported by a shared
+      library. *name* is the name of the symbol that exports the data, *library*
+      is the loaded shared library.
 
 
-   ctypes データ型共通のインスタンス変数:
-
+   Common instance variables of ctypes data types:
 
    .. attribute:: _b_base_
 
-      ctypes 型データのインスタンスは、それ自身のメモリブロックを持たず、
-      基底オブジェクトのメモリブロックの一部を共有することがあります。
-      :attr:`_b_base_` 読み出し専用属性は、メモリブロックを保持する
-      ctypes の基底オブジェクトです。
+      Sometimes ctypes data instances do not own the memory block they contain,
+      instead they share part of the memory block of a base object.  The
+      :attr:`_b_base_` read-only member is the root ctypes object that owns the
+      memory block.
 
 
    .. attribute:: _b_needsfree_
 
-      この読み出し専用の変数は、 ctypes データインスタンスが、それ自身
-      に割り当てられたメモリブロックを持つとき true になります。それ以
-      外の場合は false になります。
+      This read-only variable is true when the ctypes data instance has
+      allocated the memory block itself, false otherwise.
 
 
    .. attribute:: _objects
 
-      このメンバは ``None`` 、または、メモリブロックの内容が正しく保
-      つために、生存させておかなくてはならない Python オブジェクトを持
-      つディクショナリです。このオブジェクトはデバッグでのみ使われま
-      す。決してディクショナリの内容を変更しないで下さい。
+      This member is either ``None`` or a dictionary containing Python objects
+      that need to be kept alive so that the memory block contents is kept
+      valid.  This object is only exposed for debugging; never modify the
+      contents of this dictionary.
 
 
 .. _ctypes-fundamental-data-types-2:
 
-基本データ型
-^^^^^^^^^^^^
+Fundamental data types
+^^^^^^^^^^^^^^^^^^^^^^
 
 
 .. class:: _SimpleCData
 
-   この非公開クラスはすべての基本 ctypes データ型のベースクラスです。
-   ここでこのクラスに触れたのは、基本 ctypes データ型の共通属性を含ん
-   でいるからです。
-   :class:`_SimpleCData` は :class:`_CData` のサブクラスですので、
-   そのメソッドと属性を継承しています。
+   This non-public class is the base class of all fundamental ctypes data
+   types. It is mentioned here because it contains the common attributes of the
+   fundamental ctypes data types.  :class:`_SimpleCData` is a subclass of
+   :class:`_CData`, so it inherits their methods and attributes.
 
    .. versionchanged:: 2.6
-      ポインタと、ポインタを含まない ctypes データ型が pickle 化できる
-      ようになりました。
+      ctypes data types that are not and do not contain pointers can now be
+      pickled.
 
-
-   インスタンスは一つだけ属性を持ちます:
+   Instances have a single attribute:
 
    .. attribute:: value
 
-      この属性は、インスタンスの実際の値を持ちます。整数型とポインタ型
-      に対しては整数型、文字型に対しては一文字の文字列、文字へのポイン
-      タに対しては Python の文字列もしくはユニコード文字列となります。
+      This attribute contains the actual value of the instance. For integer and
+      pointer types, it is an integer, for character types, it is a single
+      character string, for character pointer types it is a Python string or
+      unicode string.
 
-      ``value`` 属性が ctypes インスタンスより参照されたとき、大抵の場
-      合はそれぞれに対し新しいオブジェクトを返します。 :mod:`ctypes` はオ
-      リジナルのオブジェクトを返す実装にはなって *おらず* 新しいオブジェ
-      クトを構築します。同じことが他の ctypes オブジェクトインスタンス
-      に対しても言えます。
+      When the ``value`` attribute is retrieved from a ctypes instance, usually
+      a new object is returned each time.  :mod:`ctypes` does *not* implement
+      original object return, always a new object is constructed.  The same is
+      true for all other ctypes object instances.
 
 
-基本データ型は、外部関数呼び出しの結果として返されたときや、例えば構造
-体のフィールドメンバーや配列要素を取り出すときに、ネイティブの Python
-型へ透過的に変換されます。言い換えると、外部関数が :class:`c_char_p`
-の :attr:`restype` を持つ場合は、 :class:`c_char_p` インスタンスでは
-*なく* 常に Python 文字列を受け取ることでしょう。
+Fundamental data types, when returned as foreign function call results, or, for
+example, by retrieving structure field members or array items, are transparently
+converted to native Python types.  In other words, if a foreign function has a
+:attr:`restype` of :class:`c_char_p`, you will always receive a Python string,
+*not* a :class:`c_char_p` instance.
 
-基本データ型のサブクラスはこの振る舞いを継承 *しません* 。したがって、
-外部関数の :attr:`restype` が :class:`c_void_p` のサブクラスならば、関
-数呼び出しからこのサブクラスのインスタンスを受け取ります。もちろん、
-``value`` 属性にアクセスしてポインタの値を得ることができます。
+Subclasses of fundamental data types do *not* inherit this behavior. So, if a
+foreign functions :attr:`restype` is a subclass of :class:`c_void_p`, you will
+receive an instance of this subclass from the function call. Of course, you can
+get the value of the pointer by accessing the ``value`` attribute.
 
-これらが基本データ型です:
+These are the fundamental ctypes data types:
 
 .. class:: c_byte
 
-   C の :c:type:`signed char` データ型を表し、小整数として値を解釈します。
-   コンストラクタはオプションの整数初期化子を受け取ります。
-   オーバーフローのチェックは行われません。
+   Represents the C :c:type:`signed char` datatype, and interprets the value as
+   small integer.  The constructor accepts an optional integer initializer; no
+   overflow checking is done.
 
 
 .. class:: c_char
 
-   C :c:type:`char` データ型を表し、単一の文字として値を解釈します。
-   コンストラクタはオプションの文字列初期化子を受け取り、その文字列の長さちょうど
-   一文字である必要があります。
+   Represents the C :c:type:`char` datatype, and interprets the value as a single
+   character.  The constructor accepts an optional string initializer, the
+   length of the string must be exactly one character.
 
 
 .. class:: c_char_p
 
-   C :c:type:`char *` データ型を表し、ゼロ終端文字列へのポインタ
-   でなければなりません。バイナリデータを指す可能性のある一般的な
-   ポインタに対しては ``POINTER(c_char)`` を使わなければなりません。
-   コンストラクタは整数のアドレスもしくは文字列を受け取ります。
+   Represents the C :c:type:`char *` datatype when it points to a zero-terminated
+   string.  For a general character pointer that may also point to binary data,
+   ``POINTER(c_char)`` must be used.  The constructor accepts an integer
+   address, or a string.
 
 
 .. class:: c_double
 
-   C :c:type:`double` データ型を表します。コンストラクタはオプションの浮動小数点
-   数初期化子を受け取ります。
+   Represents the C :c:type:`double` datatype.  The constructor accepts an
+   optional float initializer.
 
 
 .. class:: c_longdouble
 
-   C :c:type:`long double` データ型を表します。コンストラクタはオプションで浮動
-   小数点数初期化子を受け取ります。 ``sizeof(long double) ==
-   sizeof(double)`` であるプラットホームでは :class:`c_double` の別名
-   です。
+   Represents the C :c:type:`long double` datatype.  The constructor accepts an
+   optional float initializer.  On platforms where ``sizeof(long double) ==
+   sizeof(double)`` it is an alias to :class:`c_double`.
 
    .. versionadded:: 2.6
 
-
 .. class:: c_float
 
-   C :c:type:`float` データ型を表します。コンストラクタはオプションの浮動小数点
-   数初期化子を受け取ります。
+   Represents the C :c:type:`float` datatype.  The constructor accepts an
+   optional float initializer.
 
 
 .. class:: c_int
 
-   C :c:type:`signed int` データ型を表します。コンストラクタはオプションの整数初
-   期化子を受け取ります。オーバーフローのチェックは行われません。
-   ``sizeof(int) == sizeof(long)`` であるプラットホームでは、
-   :class:`c_long` の別名です。
+   Represents the C :c:type:`signed int` datatype.  The constructor accepts an
+   optional integer initializer; no overflow checking is done.  On platforms
+   where ``sizeof(int) == sizeof(long)`` it is an alias to :class:`c_long`.
 
 
 .. class:: c_int8
 
-   C 8-bit :c:type:`signed int` データ型を表します。たいていは、
-   :class:`c_byte` の別名です。
+   Represents the C 8-bit :c:type:`signed int` datatype.  Usually an alias for
+   :class:`c_byte`.
 
 
 .. class:: c_int16
 
-   C 16-bit :c:type:`signed int` データ型を表します。たいていは、
-   :class:`c_short` の別名です。
+   Represents the C 16-bit :c:type:`signed int` datatype.  Usually an alias for
+   :class:`c_short`.
 
 
 .. class:: c_int32
 
-   C 32-bit :c:type:`signed int` データ型を表します。たいていは、
-   :class:`c_int` の別名です。
+   Represents the C 32-bit :c:type:`signed int` datatype.  Usually an alias for
+   :class:`c_int`.
 
 
 .. class:: c_int64
 
-   C 64-bit :c:type:`signed int` データ型を表します。たいていは、
-   :class:`c_longlong` の別名です。
+   Represents the C 64-bit :c:type:`signed int` datatype.  Usually an alias for
+   :class:`c_longlong`.
 
 
 .. class:: c_long
 
-   C :c:type:`signed long` データ型を表します。コンストラクタはオプションの
-   整数初期化子を受け取ります。オーバーフローのチェックは行われません。
+   Represents the C :c:type:`signed long` datatype.  The constructor accepts an
+   optional integer initializer; no overflow checking is done.
 
 
 .. class:: c_longlong
 
-   C :c:type:`signed long long` データ型を表します。コンストラクタはオプションの
-   整数初期化子を受け取ります。オーバーフローのチェックは行われません。
+   Represents the C :c:type:`signed long long` datatype.  The constructor accepts
+   an optional integer initializer; no overflow checking is done.
 
 
 .. class:: c_short
 
-   C :c:type:`signed short` データ型を表します。コンストラクタはオプションの
-   整数初期化子を受け取ります。オーバーフローのチェックは行われません。
+   Represents the C :c:type:`signed short` datatype.  The constructor accepts an
+   optional integer initializer; no overflow checking is done.
 
 
 .. class:: c_size_t
 
-   C :c:type:`size_t` データ型を表します。
+   Represents the C :c:type:`size_t` datatype.
 
 
 .. class:: c_ssize_t
 
-   C :c:type:`ssize_t` データ型を表します。
+   Represents the C :c:type:`ssize_t` datatype.
 
    .. versionadded:: 2.7
 
 
 .. class:: c_ubyte
 
-   C :c:type:`unsigned char` データ型を表します。その値は小整数として解釈さ
-   れます。コンストラクタはオプションの整数初期化子を受け取ります。オー
-   バーフローのチェックは行われません。
+   Represents the C :c:type:`unsigned char` datatype, it interprets the value as
+   small integer.  The constructor accepts an optional integer initializer; no
+   overflow checking is done.
 
 
 .. class:: c_uint
 
-   C :c:type:`unsigned int` データ型を表します。コンストラクタはオプションの
-   整数初期化子を受け取ります。オーバーフローのチェックは行われません。
-   ``sizeof(int) == sizeof(long)`` であるプラットホームでは、
-   :class:`c_ulong` の別名です。
+   Represents the C :c:type:`unsigned int` datatype.  The constructor accepts an
+   optional integer initializer; no overflow checking is done.  On platforms
+   where ``sizeof(int) == sizeof(long)`` it is an alias for :class:`c_ulong`.
 
 
 .. class:: c_uint8
 
-   C 8-bit :c:type:`unsigned int` データ型を表します。たいていは、
-   :class:`c_ubyte` の別名です。
+   Represents the C 8-bit :c:type:`unsigned int` datatype.  Usually an alias for
+   :class:`c_ubyte`.
 
 
 .. class:: c_uint16
 
-   C 16-bit :c:type:`unsigned int` データ型を表します。たいていは、
-   :class:`c_ushort` の別名です。
+   Represents the C 16-bit :c:type:`unsigned int` datatype.  Usually an alias for
+   :class:`c_ushort`.
 
 
 .. class:: c_uint32
 
-   C 32-bit :c:type:`unsigned int` データ型を表します。たいていは、
-   :class:`c_uint` の別名です。
+   Represents the C 32-bit :c:type:`unsigned int` datatype.  Usually an alias for
+   :class:`c_uint`.
 
 
 .. class:: c_uint64
 
-   C 64-bit :c:type:`unsigned int` データ型を表します。たいていは、
-   :class:`c_ulonglong` の別名です。
+   Represents the C 64-bit :c:type:`unsigned int` datatype.  Usually an alias for
+   :class:`c_ulonglong`.
 
 
 .. class:: c_ulong
 
-   C :c:type:`unsigned long` データ型を表します。コンストラクタはオプション
-   の整数初期化子を受け取ります。オーバーフローのチェックは行われませ
-   ん。
+   Represents the C :c:type:`unsigned long` datatype.  The constructor accepts an
+   optional integer initializer; no overflow checking is done.
 
 
 .. class:: c_ulonglong
 
-   C :c:type:`unsigned long long` データ型を表します。コンストラクタはオプショ
-   ンの整数初期化子を受け取ります。オーバーフローのチェックは行われま
-   せん。
+   Represents the C :c:type:`unsigned long long` datatype.  The constructor
+   accepts an optional integer initializer; no overflow checking is done.
 
 
 .. class:: c_ushort
 
-   C :c:type:`unsigned short` データ型を表します。コンストラクタはオプション
-   の整数初期化子を受け取ります。オーバーフローのチェックは行われませ
-   ん。
+   Represents the C :c:type:`unsigned short` datatype.  The constructor accepts
+   an optional integer initializer; no overflow checking is done.
 
 
 .. class:: c_void_p
 
-   C :c:type:`void *` データ型を表します。値は整数として表されます。コンスト
-   ラクタはオプションの整数初期化子を受け取ります。
+   Represents the C :c:type:`void *` type.  The value is represented as integer.
+   The constructor accepts an optional integer initializer.
 
 
 .. class:: c_wchar
 
-   C :c:type:`wchar_t` データ型を表し、値はユニコード文字列の単一の文字とし
-   て解釈されます。コンストラクタはオプションの文字列初期化子を受け取
-   り、その文字列の長さはちょうど一文字である必要があります。
+   Represents the C :c:type:`wchar_t` datatype, and interprets the value as a
+   single character unicode string.  The constructor accepts an optional string
+   initializer, the length of the string must be exactly one character.
 
 
 .. class:: c_wchar_p
 
-   C :c:type:`wchar_t *` データ型を表し、ゼロ終端ワイド文字列へのポインタで
-   なければなりません。コンストラクタは整数のアドレスもしくは文字列を
-   受け取ります。
+   Represents the C :c:type:`wchar_t *` datatype, which must be a pointer to a
+   zero-terminated wide character string.  The constructor accepts an integer
+   address, or a string.
 
 
 .. class:: c_bool
 
-   C :c:type:`bool` データ型 (より正確には、C99 の :c:type:`_Bool`) を表します。そ
-   の値は True または False であり、コンストラクタはどんなオブジェクト
-   ( 真値を持ちます ) でも受け取ります。
+   Represent the C :c:type:`bool` datatype (more accurately, :c:type:`_Bool` from
+   C99).  Its value can be ``True`` or ``False``, and the constructor accepts any object
+   that has a truth value.
 
    .. versionadded:: 2.6
 
 
 .. class:: HRESULT
 
-   Windows用: :c:type:`HRESULT` 値を表し、関数またはメソッド呼び出しに
-   対する成功またはエラーの情報を含んでいます。
+   Windows only: Represents a :c:type:`HRESULT` value, which contains success or
+   error information for a function or method call.
 
 
 .. class:: py_object
 
-   C :c:type:`PyObject *` データ型を表します。引数なしでこれを呼び出すと
-   ``NULL`` :c:type:`PyObject *` ポインタを作成します。
+   Represents the C :c:type:`PyObject *` datatype.  Calling this without an
+   argument creates a ``NULL`` :c:type:`PyObject *` pointer.
 
-:mod:`ctypes.wintypes` モジュールは他の Windows 固有のデータ型を提供します。
-例えば、 :c:type:`HWND`, :c:type:`WPARAM`, :c:type:`DWORD` です。
-:c:type:`MSG` や :c:type:`RECT` のような有用な構造体も定義されています。
+The :mod:`ctypes.wintypes` module provides quite some other Windows specific
+data types, for example :c:type:`HWND`, :c:type:`WPARAM`, or :c:type:`DWORD`.  Some
+useful structures like :c:type:`MSG` or :c:type:`RECT` are also defined.
 
 
 .. _ctypes-structured-data-types:
 
-標準データ型
-^^^^^^^^^^^^
+Structured data types
+^^^^^^^^^^^^^^^^^^^^^
 
 
 .. class:: Union(*args, **kw)
 
-   ネイティブのバイトオーダーでの共用体のための抽象ベースクラス。
+   Abstract base class for unions in native byte order.
 
 
 .. class:: BigEndianStructure(*args, **kw)
 
-   *ビックエンディアン* バイトオーダーでの構造体のための抽象ベースクラス。
+   Abstract base class for structures in *big endian* byte order.
 
 
 .. class:: LittleEndianStructure(*args, **kw)
 
-   *リトルエンディアン* バイトオーダーでの構造体のための抽象ベースクラス。
+   Abstract base class for structures in *little endian* byte order.
 
-ネイティブではないバイトオーダーを持つ構造体にポインタ型フィールドある
-いはポインタ型フィールドを含む他のどんなデータ型をも入れることはでき
-ません。
+Structures with non-native byte order cannot contain pointer type fields, or any
+other data types containing pointer type fields.
 
 
 .. class:: Structure(*args, **kw)
 
-   *ネイティブ* のバイトオーダーでの構造体のための抽象ベースクラス。
+   Abstract base class for structures in *native* byte order.
 
-具象構造体型と具象共用体型はこれらの型の一つをサブクラス化することで作
-らなければなりません。少なくとも、 :attr:`_fields_` クラス変数を定義す
-る必要があります。 :mod:`ctypes` は、属性に直接アクセスしてフィールドを読
-み書きできるようにする記述子 ( :term:`descriptor` ) を作成するでしょう。
-これらは、
+   Concrete structure and union types must be created by subclassing one of these
+   types, and at least define a :attr:`_fields_` class variable. :mod:`ctypes` will
+   create :term:`descriptor`\s which allow reading and writing the fields by direct
+   attribute accesses.  These are the
 
 
    .. attribute:: _fields_
 
-      構造体のフィールドを定義するシーケンス。要素は2要素タプルか3要素
-      タプルでなければなりません。第一要素はフィールドの名前です。第
-      二要素はフィールドの型を指定します。それはどんな ctypes データ型で
-      も構いません。
+      A sequence defining the structure fields.  The items must be 2-tuples or
+      3-tuples.  The first item is the name of the field, the second item
+      specifies the type of the field; it can be any ctypes data type.
 
-      :class:`c_int` のような整数型のために、オプションの第三要素を与
-      えることができます。フィールドのビット幅を定義する正の小整数であ
-      る必要があります。
+      For integer type fields like :class:`c_int`, a third optional item can be
+      given.  It must be a small positive integer defining the bit width of the
+      field.
 
-      一つの構造体と共用体の中で、フィールド名はただ一つである必要があ
-      ります。これはチェックされません。名前が繰り返しでてきたときにア
-      クセスできるのは一つのフィールドだけです。
+      Field names must be unique within one structure or union.  This is not
+      checked, only one field can be accessed when names are repeated.
 
-      Structure サブクラスを定義するクラス文の *後で* 、
-      :attr:`_fields_` クラス変数を定義することができます。
-      これにより自身を直接または間接的に参照するデータ型を作成できるよ
-      うになります。::
+      It is possible to define the :attr:`_fields_` class variable *after* the
+      class statement that defines the Structure subclass, this allows to create
+      data types that directly or indirectly reference themselves::
 
          class List(Structure):
              pass
@@ -2507,41 +2441,35 @@ api 呼び出しが失敗した場合に例外を送出させることができ�
                           ...
                          ]
 
-      しかし、 :attr:`_fields_` クラス変数はその型が最初に使われる (
-      インスタンスが作成される、それに対して ``sizeof()`` が呼び出される
-      など ) より前に定義されていなければなりません。その後
-      :attr:`_fields_` クラス変数へ代入すると AttributeError が送出されます。
+      The :attr:`_fields_` class variable must, however, be defined before the
+      type is first used (an instance is created, ``sizeof()`` is called on it,
+      and so on).  Later assignments to the :attr:`_fields_` class variable will
+      raise an AttributeError.
 
-      構造体および共用体サブクラスは位置引数と名前付き引数の両方を受け取
-      ります。位置引数は :attr:`_fields_` 定義中に現れたのと同じ順番で
-      フィールドを初期化するために使われ、名前付き引数は対応する名前を
-      使ってフィールドを初期化するために使われます。
-
-      構造体型のサブクラスを定義することができ、もしあるならサブクラス
-      内で定義された :attr:`_fields_` に加えて、ベースクラスのフィールドも
-      継承します。
+      It is possible to defined sub-subclasses of structure types, they inherit
+      the fields of the base class plus the :attr:`_fields_` defined in the
+      sub-subclass, if any.
 
 
    .. attribute:: _pack_
 
-      インスタンスの構造体フィールドのアライメントを上書きできるように
-      するオブションの小整数。 :attr:`_pack_` は :attr:`_fields_` が
-      代入されたときすでに定義されていなければなりません。そうでなけれ
-      ば、何ら影響はありません。
+      An optional small integer that allows to override the alignment of
+      structure fields in the instance.  :attr:`_pack_` must already be defined
+      when :attr:`_fields_` is assigned, otherwise it will have no effect.
 
 
    .. attribute:: _anonymous_
 
-      無名 (匿名) フィールドの名前が並べあげられたオプションのシーケ
-      ンス。 :attr:`_fields_` が代入されたとき、 :attr:`_anonymous_` がすでに
-      定義されていなければなりません。そうでなければ、何ら影響はありません。
+      An optional sequence that lists the names of unnamed (anonymous) fields.
+      :attr:`_anonymous_` must be already defined when :attr:`_fields_` is
+      assigned, otherwise it will have no effect.
 
-      この変数に並べあげられたフィールドは構造体型もしくは共用体型フィー
-      ルドである必要があります。構造体フィールドまたは共用体フィールド
-      を作る必要なく、入れ子になったフィールドに直接アクセスできるよう
-      にするために、 :mod:`ctypes` は構造体型の中に記述子を作成します。
+      The fields listed in this variable must be structure or union type fields.
+      :mod:`ctypes` will create descriptors in the structure type that allows to
+      access the nested fields directly, without the need to create the
+      structure or union field.
 
-      型の例です(Windows)::
+      Here is an example type (Windows)::
 
          class _U(Union):
              _fields_ = [("lptdesc", POINTER(TYPEDESC)),
@@ -2554,35 +2482,36 @@ api 呼び出しが失敗した場合に例外を送出させることができ�
                          ("vt", VARTYPE)]
 
 
-      ``TYPEDESC`` 構造体はCOMデータ型を表現しており、 ``vt`` フィール
-      ドは共用体フィールドのどれが有効であるかを指定します。 ``u`` フィー
-      ルドは匿名フィールドとして定義されているため、 TYPEDESC インスタ
-      ンスから取り除かれてそのメンバーへ直接アクセスできます。
-      ``td.lptdesc`` と ``td.u.lptdesc`` は同等ですが、前者がより高速
-      です。なぜなら一時的な共用体インスタンスを作る必要がないためで
-      す。::
+      The ``TYPEDESC`` structure describes a COM data type, the ``vt`` field
+      specifies which one of the union fields is valid.  Since the ``u`` field
+      is defined as anonymous field, it is now possible to access the members
+      directly off the TYPEDESC instance. ``td.lptdesc`` and ``td.u.lptdesc``
+      are equivalent, but the former is faster since it does not need to create
+      a temporary union instance::
 
          td = TYPEDESC()
          td.vt = VT_PTR
          td.lptdesc = POINTER(some_type)
          td.u.lptdesc = POINTER(some_type)
 
-   構造体のサブ-サブクラスを定義することができ、ベースクラスのフィールド
-   を継承します。サブクラス定義に別の :attr:`_fields_` 変数がある場合は、
-   この中で指定されたフィールドはベースクラスのフィールドへ追加されます。
+   It is possible to defined sub-subclasses of structures, they inherit the
+   fields of the base class.  If the subclass definition has a separate
+   :attr:`_fields_` variable, the fields specified in this are appended to the
+   fields of the base class.
 
-   構造体と共用体のコンストラクタは位置引数とキーワード引数の両方を受け取ります。
-   位置引数は :attr:`_fields_` の中に現れたのと同じ順番でメンバーフィールドを
-   初期化するために使われます。コンストラクタのキーワード引数は属性代入と
-   して解釈され、そのため、同じ名前をもつ :attr:`_fields_` を初期化するか、
-   :attr:`_fields_` に存在しない名前に対しては新しい属性を作ります。
+   Structure and union constructors accept both positional and keyword
+   arguments.  Positional arguments are used to initialize member fields in the
+   same order as they are appear in :attr:`_fields_`.  Keyword arguments in the
+   constructor are interpreted as attribute assignments, so they will initialize
+   :attr:`_fields_` with the same name, or create new attributes for names not
+   present in :attr:`_fields_`.
 
 
 .. _ctypes-arrays-pointers:
 
-配列とポインタ
-^^^^^^^^^^^^^^
+Arrays and pointers
+^^^^^^^^^^^^^^^^^^^
 
-未作成 - チュートリアルの節 :ref:`ctypes-pointers` と
-:ref:`ctypes-arrays` を参照してください。
+Not yet written - please see the sections :ref:`ctypes-pointers` and section
+:ref:`ctypes-arrays` in the tutorial.
 

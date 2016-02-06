@@ -1,31 +1,34 @@
 .. _debugger:
 
-:mod:`pdb` --- Python デバッガ
+:mod:`pdb` --- The Python Debugger
 ==================================
 
 .. module:: pdb
-   :synopsis: 対話的インタプリタのためのPythonデバッガ。
+   :synopsis: The Python debugger for interactive interpreters.
 
+**Source code:** :source:`Lib/pdb.py`
+
+--------------
 
 .. index:: single: debugging
 
-モジュール :mod:`pdb` はPythonプログラム用の対話的ソースコードデバッガを定義します。
-(条件付き)ブレークポイントの設定やソース行レベルでのシングルステップ実行、
-スタックフレームのインスペクション、ソースコードリスティングおよびいかなるスタックフレームのコンテキストにおける任意のPythonコードの評価をサポートしています。
-事後解析デバッギングもサポートし、プログラムの制御下で呼び出すことができます。
+The module :mod:`pdb` defines an interactive source code debugger for Python
+programs.  It supports setting (conditional) breakpoints and single stepping at
+the source line level, inspection of stack frames, source code listing, and
+evaluation of arbitrary Python code in the context of any stack frame.  It also
+supports post-mortem debugging and can be called under program control.
 
 .. index::
    single: Pdb (class in pdb)
    module: bdb
    module: cmd
 
-デバッガは拡張可能です ---
-実際にはクラス :class:`Pdb` として定義されています。
-現在これについてのドキュメントはありませんが、ソースを読めば簡単に理解できます。
-拡張インターフェースはモジュール :mod:`bdb` と :mod:`cmd` を使っています。
+The debugger is extensible --- it is actually defined as the class :class:`Pdb`.
+This is currently undocumented but easily understood by reading the source.  The
+extension interface uses the modules :mod:`bdb` and :mod:`cmd`.
 
-デバッガのプロンプトは ``(Pdb)`` です。
-デバッガに制御された状態でプログラムを実行するための典型的な使い方は::
+The debugger's prompt is ``(Pdb)``. Typical usage to run a program under control
+of the debugger is::
 
    >>> import pdb
    >>> import mymodule
@@ -38,29 +41,30 @@
    > <string>(1)?()
    (Pdb)
 
-他のスクリプトをデバッグするために、
-:file:`pdb.py` をスクリプトとして呼び出すこともできます。例えば::
+:file:`pdb.py` can also be invoked as a script to debug other scripts.  For
+example::
 
    python -m pdb myscript.py
 
-スクリプトとして pdb を起動すると、
-デバッグ中のプログラムが異常終了した時に pdb が自動的に事後デバッグモードに入ります。
-事後デバッグ後 (またはプログラムの正常終了後) には、 pdb はプログラムを再起動します。
-自動再起動を行った場合、 pdb の状態 (ブレークポイントなど) はそのまま維持されるので、
-たいていの場合、プログラム終了時にデバッガも終了させるよりも便利なはずです。
+When invoked as a script, pdb will automatically enter post-mortem debugging if
+the program being debugged exits abnormally. After post-mortem debugging (or
+after normal exit of the program), pdb will restart the program. Automatic
+restarting preserves pdb's state (such as breakpoints) and in most cases is more
+useful than quitting the debugger upon program's exit.
 
 .. versionadded:: 2.4
-   事後デバッグ後の再起動機能が追加されました.
+   Restarting post-mortem behavior added.
 
-実行するプログラムをデバッガで分析する典型的な使い方は::
+The typical usage to break into the debugger from a running program is to
+insert ::
 
    import pdb; pdb.set_trace()
 
-をデバッガで分析したい場所に挿入することです。
-そうすることで、コードの中の以下に続く文をステップ実行できます、
-そして、 ``c`` コマンドでデバッガを走らせることなく続けることもできます。
+at the location you want to break into the debugger.  You can then step through
+the code following this statement, and continue running without the debugger using
+the ``c`` command.
 
-クラッシュしたプログラムを調べるための典型的な使い方は::
+The typical usage to inspect a crashed program is::
 
    >>> import pdb
    >>> import mymodule
@@ -78,303 +82,291 @@
    (Pdb)
 
 
-モジュールは以下の関数を定義しています。
-それぞれが少しづつ違った方法でデバッガに入ります:
+The module defines the following functions; each enters the debugger in a
+slightly different way:
 
 .. function:: run(statement[, globals[, locals]])
 
-   デバッガに制御された状態で(文字列として与えられた) *statement* を実行します。
-   デバッガプロンプトはあらゆるコードが実行される前に現れます。
-   ブレークポイントを設定し、 ``continue`` とタイプできます。
-   あるいは、文を ``step`` や ``next`` を使って一つづつ実行することができます
-   (これらのコマンドはすべて下で説明します) 。
-   オプションの *globals* と *locals* 引数はコードを実行する環境を指定します。
-   デフォルトでは、モジュール :mod:`__main__` の辞書が使われます。
-   (:keyword:`exec` 文または :func:`eval` 組み込み関数の説明を参照してください。)
+   Execute the *statement* (given as a string) under debugger control.  The
+   debugger prompt appears before any code is executed; you can set breakpoints and
+   type ``continue``, or you can step through the statement using ``step`` or
+   ``next`` (all these commands are explained below).  The optional *globals* and
+   *locals* arguments specify the environment in which the code is executed; by
+   default the dictionary of the module :mod:`__main__` is used.  (See the
+   explanation of the :keyword:`exec` statement or the :func:`eval` built-in
+   function.)
 
 
 .. function:: runeval(expression[, globals[, locals]])
 
-   デバッガの制御もとで(文字列として与えられる) *expression* を評価します。
-   :func:`runeval` がリターンしたとき、式の値を返します。
-   その他の点では、この関数は :func:`run` と同様です。
+   Evaluate the *expression* (given as a string) under debugger control.  When
+   :func:`runeval` returns, it returns the value of the expression.  Otherwise this
+   function is similar to :func:`run`.
 
 
 .. function:: runcall(function[, argument, ...])
 
-   *function* (関数またはメソッドオブジェクト、文字列ではありません)
-   を与えられた引数とともに呼び出します。
-   :func:`runcall` がリターンしたとき、関数呼び出しが返したものは何でも返します。
-   デバッガプロンプトは関数に入るとすぐに現れます。
+   Call the *function* (a function or method object, not a string) with the given
+   arguments.  When :func:`runcall` returns, it returns whatever the function call
+   returned.  The debugger prompt appears as soon as the function is entered.
 
 
 .. function:: set_trace()
 
-   スタックフレームを呼び出したところでデバッガに入ります。
-   たとえコードが別の方法でデバッグされている最中でなくても
-   (例えば、アサーションが失敗するとき)、
-   これはプログラムの所定の場所でブレークポイントをハードコードするために役に立ちます。
+   Enter the debugger at the calling stack frame.  This is useful to hard-code a
+   breakpoint at a given point in a program, even if the code is not otherwise
+   being debugged (e.g. when an assertion fails).
 
 
 .. function:: post_mortem([traceback])
 
-   与えられた *traceback* オブジェクトの事後解析デバッギングに入ります。
-   もし *traceback* が与えられなければ、
-   その時点で取り扱っている例外のうちのひとつを使います。
-   (デフォルト動作をさせるには、例外を取り扱っている最中である必要があります。)
+   Enter post-mortem debugging of the given *traceback* object.  If no
+   *traceback* is given, it uses the one of the exception that is currently
+   being handled (an exception must be being handled if the default is to be
+   used).
 
 
 .. function:: pm()
 
-   :data:`sys.last_traceback` のトレースバックの事後解析デバッギングに入ります。
+   Enter post-mortem debugging of the traceback found in
+   :data:`sys.last_traceback`.
 
 
-``run*`` 関数と :func:`set_trace` は、 :class:`Pdb` クラスをインスタンス化して
-同名のメソッドを実行することのエイリアス関数です。
-それ以上の機能を利用したい場合は、インスタンス化を自分でしなければなりません。
+The ``run*`` functions and :func:`set_trace` are aliases for instantiating the
+:class:`Pdb` class and calling the method of the same name.  If you want to
+access further features, you have to do this yourself:
 
 .. class:: Pdb(completekey='tab', stdin=None, stdout=None, skip=None)
 
-   :class:`Pdb` はデバッガークラスです。
+   :class:`Pdb` is the debugger class.
 
-   *completekey*, *stdin*, *stdout* 引数は、基底にある :class:`cmd.Cmd`
-   クラスに渡されます。そちらの解説を参照してください。
+   The *completekey*, *stdin* and *stdout* arguments are passed to the
+   underlying :class:`cmd.Cmd` class; see the description there.
 
-   *skip* 引数が指定された場合、 glob スタイルのモジュール名パターンの iterable
-   (イテレート可能オブジェクト) でなければなりません。
-   デバッガはこのパターンのどれかにマッチするモジュールに属するフレームには
-   ステップ・インしません。 [1]_
+   The *skip* argument, if given, must be an iterable of glob-style module name
+   patterns.  The debugger will not step into frames that originate in a module
+   that matches one of these patterns. [1]_
 
-   *skip* を使ってトレースする呼び出しの例::
+   Example call to enable tracing with *skip*::
 
       import pdb; pdb.Pdb(skip=['django.*']).set_trace()
 
    .. versionadded:: 2.7
-      *skip* 引数
+      The *skip* argument.
 
    .. method:: run(statement[, globals[, locals]])
                runeval(expression[, globals[, locals]])
                runcall(function[, argument, ...])
                set_trace()
 
-      上で説明された関数のドキュメントを参照してください。
+      See the documentation for the functions explained above.
 
 
 .. _debugger-commands:
 
-デバッガコマンド
-================
+Debugger Commands
+=================
 
-デバッガは以下のコマンドを認識します。
-ほとんどのコマンドは一文字または二文字に省略することができます。
-例えば、 ``h(elp)`` が意味するのは、ヘルプコマンドを入力するために
-``h`` か ``help`` のどちらか一方を使うことができるということです
-( が、 ``he`` や ``hel`` は使えず、また ``H`` や ``Help`` 、 ``HELP`` も使えません ) 。
-コマンドの引数は空白 ( スペースまたはタブ ) で区切られなければなりません。
-オプションの引数はコマンド構文の角括弧 (``[]``) の中に入れなければなりません。
-角括弧をタイプしてはいけません。
-コマンド構文における選択肢は垂直バー (``|``) で区切られます。
+The debugger recognizes the following commands.  Most commands can be
+abbreviated to one or two letters; e.g. ``h(elp)`` means that either ``h`` or
+``help`` can be used to enter the help command (but not ``he`` or ``hel``, nor
+``H`` or ``Help`` or ``HELP``).  Arguments to commands must be separated by
+whitespace (spaces or tabs).  Optional arguments are enclosed in square brackets
+(``[]``) in the command syntax; the square brackets must not be typed.
+Alternatives in the command syntax are separated by a vertical bar (``|``).
 
-空行を入力すると入力された直前のコマンドを繰り返します。
-例外: 直前のコマンドが ``list`` コマンドならば、次の11行がリストされます。
+Entering a blank line repeats the last command entered.  Exception: if the last
+command was a ``list`` command, the next 11 lines are listed.
 
-デバッガが認識しないコマンドは Python 文とみなして、
-デバッグしているプログラムのコンテキストおいて実行されます。
-Python 文は感嘆符 (``!``) を前に付けることもできます。
-これはデバッグ中のプログラムを調査する強力な方法です。
-変数を変更したり関数を呼び出したりすることさえ可能です。
-このような文で例外が発生した場合には例外名がプリントされますが、デバッガの状態は変化しません。
+Commands that the debugger doesn't recognize are assumed to be Python statements
+and are executed in the context of the program being debugged.  Python
+statements can also be prefixed with an exclamation point (``!``).  This is a
+powerful way to inspect the program being debugged; it is even possible to
+change a variable or call a function.  When an exception occurs in such a
+statement, the exception name is printed but the debugger's state is not
+changed.
 
-複数のコマンドを ``;;`` で区切って一行で入力することができます。
-(一つだけの ``;`` は使われません。
-なぜなら、 Python パーサへ渡される行内の複数のコマンドのための分離記号だからです。)
-コマンドを分割するために何も知的なことはしていません。
-たとえ引用文字列の途中であっても、入力は最初の ``;;`` 対で分割されます。
+Multiple commands may be entered on a single line, separated by ``;;``.  (A
+single ``;`` is not used as it is the separator for multiple commands in a line
+that is passed to the Python parser.) No intelligence is applied to separating
+the commands; the input is split at the first ``;;`` pair, even if it is in the
+middle of a quoted string.
 
-デバッガはエイリアスをサポートします。エイリアスはパラメータを持つことができ、
-調査中のコンテキストに対して人がある程度柔軟に対応できます。
+The debugger supports aliases.  Aliases can have parameters which allows one a
+certain level of adaptability to the context under examination.
 
 .. index::
    pair: .pdbrc; file
    triple: debugger; configuration; file
 
-ファイル :file:`.pdbrc` はユーザのホームディレクトリか、またはカレントディレクトリにあります。
-それはまるでデバッガのプロンプトでタイプしたかのように読み込まれて実行されます。
-これは特にエイリアスのために便利です。
-両方のファイルが存在する場合、ホームディレクトリのものが最初に読まれ、
-そこに定義されているエイリアスはローカルファイルにより上書きされることがあります。
+If a file :file:`.pdbrc`  exists in the user's home directory or in the current
+directory, it is read in and executed as if it had been typed at the debugger
+prompt. This is particularly useful for aliases.  If both files exist, the one
+in the home directory is read first and aliases defined there can be overridden
+by the local file.
 
 h(elp) [*command*]
-   引数なしでは、利用できるコマンドの一覧をプリントします。
-   引数として *command* がある場合は、そのコマンドについてのヘルプをプリントします。
-   ``help pdb`` は完全ドキュメンテーションファイルを表示します。
-   環境変数 :envvar:`PAGER` が定義されているならば、
-   代わりにファイルはそのコマンドへパイプされます。
-   *command* 引数が識別子でなければならないので、
-   ``!`` コマンドについてのヘルプを得るためには ``help exec`` と入力しなければなりません。
+   Without argument, print the list of available commands.  With a *command* as
+   argument, print help about that command.  ``help pdb`` displays the full
+   documentation file; if the environment variable :envvar:`PAGER` is defined, the
+   file is piped through that command instead.  Since the *command* argument must
+   be an identifier, ``help exec`` must be entered to get help on the ``!``
+   command.
 
 w(here)
-   スタックの底にある最も新しいフレームと一緒にスタックトレースをプリントします。
-   矢印はカレントフレームを指し、それがほとんどのコマンドのコンテキストを決定します。
+   Print a stack trace, with the most recent frame at the bottom.  An arrow
+   indicates the current frame, which determines the context of most commands.
 
 d(own)
-   ( より新しいフレームに向かって ) スタックトレース内でカレントフレームを1レベル下げます。
+   Move the current frame one level down in the stack trace (to a newer frame).
 
 u(p)
-   ( より古いフレームに向かって ) スタックトレース内でカレントフレームを1レベル上げます。
+   Move the current frame one level up in the stack trace (to an older frame).
 
-b(reak) [[*filename*:]\ *lineno* | *function* \ [, *condition*]]
-   *lineno* 引数がある場合は、現在のファイルのその場所にブレークポイントを設定します。
-   *function* 引数がある場合は、その関数の中の最初の実行可能文にブレークポイントを設定します。
-   別のファイル ( まだロードされていないかもしれないもの ) のブレークポイントを指定するために、
-   行番号はファイル名とコロンをともに先頭に付けられます。
-   ファイルは ``sys.path`` にそって検索されます。
-   各ブレークポイントは番号を割り当てられ、
-   その番号を他のすべてのブレークポイントコマンドが参照することに注意してください。
+b(reak) [[*filename*:]\ *lineno* | *function*\ [, *condition*]]
+   With a *lineno* argument, set a break there in the current file.  With a
+   *function* argument, set a break at the first executable statement within that
+   function. The line number may be prefixed with a filename and a colon, to
+   specify a breakpoint in another file (probably one that hasn't been loaded yet).
+   The file is searched on ``sys.path``. Note that each breakpoint is assigned a
+   number to which all the other breakpoint commands refer.
 
-   第二引数を指定する場合、その値は式で、
-   その評価値が真でなければブレークポイントは有効になりません。
+   If a second argument is present, it is an expression which must evaluate to true
+   before the breakpoint is honored.
 
-   引数なしの場合は、それぞれのブレークポイントに対して、
-   そのブレークポイントに行き当たった回数、現在の通過カウント ( ignore count ) と、
-   もしあれば関連条件を含めてすべてのブレークポイントをリストします。
+   Without argument, list all breaks, including for each breakpoint, the number of
+   times that breakpoint has been hit, the current ignore count, and the associated
+   condition if any.
 
 tbreak [[*filename*:]\ *lineno* | *function*\ [, *condition*]]
-   一時的なブレークポイントで、最初にそこに達したときに自動的に取り除かれます。
-   引数は break と同じです。
+   Temporary breakpoint, which is removed automatically when it is first hit.  The
+   arguments are the same as break.
 
 cl(ear) [*filename:lineno* | *bpnumber* [*bpnumber ...*]]
-   *filename:lineno* 引数を与えると、その行にある全てのブレークポイントを解除します。
-   スペースで区切られたブレークポイントナンバーのリストを与えると、
-   それらのブレークポイントを解除します。
-   引数なしの場合は、すべてのブレークポイントを解除します
-   ( が、はじめに確認します ) 。
+   With a *filename:lineno* argument, clear all the breakpoints at this line.
+   With a space separated list of breakpoint numbers, clear those breakpoints.
+   Without argument, clear all breaks (but first ask confirmation).
 
 disable [*bpnumber* [*bpnumber ...*]]
-   スペースで区切られたブレークポイントナンバーのリストとして与えられるブレークポイントを無効にします。
-   ブレークポイントを無効にすると、プログラムの実行を止めることができなくなりますが、
-   ブレークポイントの解除と違いブレークポイントのリストに残ったままになり、
-   (再び)有効にすることができます。
+   Disables the breakpoints given as a space separated list of breakpoint numbers.
+   Disabling a breakpoint means it cannot cause the program to stop execution, but
+   unlike clearing a breakpoint, it remains in the list of breakpoints and can be
+   (re-)enabled.
 
 enable [*bpnumber* [*bpnumber ...*]]
-   指定したブレークポイントを有効にします。
+   Enables the breakpoints specified.
 
 ignore *bpnumber* [*count*]
-   与えられたブレークポイントナンバーに通過カウントを設定します。
-   count が省略されると、通過カウントは 0 に設定されます。
-   通過カウントがゼロになったとき、ブレークポイントが機能する状態になります。
-   ゼロでないときは、そのブレークポイントが無効にされず、
-   どんな関連条件も真に評価されていて、
-   ブレークポイントに来るたびに count が減らされます。
+   Sets the ignore count for the given breakpoint number.  If count is omitted, the
+   ignore count is set to 0.  A breakpoint becomes active when the ignore count is
+   zero.  When non-zero, the count is decremented each time the breakpoint is
+   reached and the breakpoint is not disabled and any associated condition
+   evaluates to true.
 
 condition *bpnumber* [*condition*]
-   condition はブレークポイントが取り上げられる前に真と評価されなければならない式です。
-   condition がない場合は、どんな既存の条件も取り除かれます。
-   すなわち、ブレークポイントは無条件になります。
+   Condition is an expression which must evaluate to true before the breakpoint is
+   honored.  If condition is absent, any existing condition is removed; i.e., the
+   breakpoint is made unconditional.
 
 commands [*bpnumber*]
-   ブレークポイントナンバー *bpnumber* にコマンドのリストを指定します。
-   コマンドそのものはその後の行に続けます。
-   'end' だけからなる行を入力することでコマンド群の終わりを示します。
-   例を挙げます::
+   Specify a list of commands for breakpoint number *bpnumber*.  The commands
+   themselves appear on the following lines.  Type a line containing just 'end' to
+   terminate the commands. An example::
 
       (Pdb) commands 1
       (com) print some_variable
       (com) end
       (Pdb)
 
-   ブレークポイントからコマンドを取り除くには、 commands のあとに end だけを続けます。
-   つまり、コマンドを一つも指定しないようにします。
+   To remove all commands from a breakpoint, type commands and follow it
+   immediately with  end; that is, give no commands.
 
-   *bpnumber* 引数が指定されない場合、
-   最後にセットされたブレークポイントを参照することになります。
+   With no *bpnumber* argument, commands refers to the last breakpoint set.
 
-   ブレークポイントコマンドはプログラムを走らせ直すのに使えます。
-   ただ continue コマンドや step、その他実行を再開するコマンドを使えば良いのです。
+   You can use breakpoint commands to start your program up again. Simply use the
+   continue command, or step, or any other command that resumes execution.
 
-   実行を再開するコマンド
-   ( 現在のところ continue, step, next, return, jump, quit とそれらの省略形 ) によって、
-   コマンドリストは終了するものと見なされます
-   ( コマンドにすぐ end が続いているかのように ) 。
-   というのも実行を再開すれば ( それが単純な next や step であっても )
-   別のブレークポイントに到達するかもしれないからです。
-   そのブレークポイントにさらにコマンドリストがあれば、
-   どちらのリストを実行すべきか状況が曖昧になります。
+   Specifying any command resuming execution (currently continue, step, next,
+   return, jump, quit and their abbreviations) terminates the command list (as if
+   that command was immediately followed by end). This is because any time you
+   resume execution (even with a simple next or step), you may encounter another
+   breakpoint--which could have its own command list, leading to ambiguities about
+   which list to execute.
 
-   コマンドリストの中で 'silent' コマンドを使うと、
-   ブレークポイントで停止したという通常のメッセージはプリントされません。
-   この振る舞いは特定のメッセージを出して実行を続けるようなブレークポイントでは望ましいものでしょう。
-   他のコマンドが何も画面出力をしなければ、
-   そのブレークポイントに到達したというサインを見ないことになります。
+   If you use the 'silent' command in the command list, the usual message about
+   stopping at a breakpoint is not printed.  This may be desirable for breakpoints
+   that are to print a specific message and then continue.  If none of the other
+   commands print anything, you see no sign that the breakpoint was reached.
 
    .. versionadded:: 2.5
 
 s(tep)
-   現在の行を実行し、最初に実行可能なものがあらわれたときに
-   (呼び出された関数の中か、現在の関数の次の行で) 停止します。
+   Execute the current line, stop at the first possible occasion (either in a
+   function that is called or on the next line in the current function).
 
 n(ext)
-   現在の関数の次の行に達するか、あるいは関数が返るまで実行を継続します。
-   ( ``next`` と ``step`` の差は ``step`` が呼び出された関数の内部で停止するのに対し、
-   ``next`` は呼び出された関数を ( ほぼ ) 全速力で実行し、
-   現在の関数内の次の行で停止するだけです。)
+   Continue execution until the next line in the current function is reached or it
+   returns.  (The difference between ``next`` and ``step`` is that ``step`` stops
+   inside a called function, while ``next`` executes called functions at (nearly)
+   full speed, only stopping at the next line in the current function.)
 
 unt(il)
-   行番号が現在行より大きくなるまで、もしくは、現在のフレームから戻るまで、
-   実行を続けます。
+   Continue execution until the line with the line number greater than the
+   current one is reached or when returning from current frame.
 
    .. versionadded:: 2.6
 
 r(eturn)
-   現在の関数が返るまで実行を継続します。
+   Continue execution until the current function returns.
 
 c(ont(inue))
-   ブレークポイントに出会うまで、実行を継続します。
+   Continue execution, only stop when a breakpoint is encountered.
 
 j(ump) *lineno*
-   次に実行する行を指定します。最も底のフレーム中でのみ実行可能です。
-   前に戻って実行したり、不要な部分をスキップして先の処理を実行する場合に使用します。
+   Set the next line that will be executed.  Only available in the bottom-most
+   frame.  This lets you jump back and execute code again, or jump forward to skip
+   code that you don't want to run.
 
-   ジャンプには制限があり、例えば :keyword:`for` ループの中には飛び込めませんし、
-   :keyword:`finally` 節の外にも飛ぶ事ができません。
+   It should be noted that not all jumps are allowed --- for instance it is not
+   possible to jump into the middle of a :keyword:`for` loop or out of a
+   :keyword:`finally` clause.
 
 l(ist) [*first*\ [, *last*]]
-   現在のファイルのソースコードをリスト表示します。
-   引数なしの場合は、現在の行の周囲を11行リストするか、
-   または前のリストの続きを表示します。
-   引数が一つある場合は、その行の周囲を11行表示します。
-   引数が二つの場合は、与えられた範囲をリスト表示します。
-   第二引数が第一引数より小さいときは、カウントと解釈されます。
+   List source code for the current file.  Without arguments, list 11 lines around
+   the current line or continue the previous listing.  With one argument, list 11
+   lines around at that line.  With two arguments, list the given range; if the
+   second argument is less than the first, it is interpreted as a count.
 
 a(rgs)
-   現在の関数の引数リストをプリントします。
+   Print the argument list of the current function.
 
 p *expression*
-   現在のコンテキストにおいて *expression* を評価し、その値をプリントします。
-   (注意: ``print`` も使うことができますが、デバッガコマンドではありません
-   --- これは Python の :keyword:`print` 文を実行します。)
+   Evaluate the *expression* in the current context and print its value.
+
+   .. note::
+
+      ``print`` can also be used, but is not a debugger command --- this executes the
+      Python :keyword:`print` statement.
 
 pp *expression*
-   :mod:`pprint` モジュールを使って例外の値が整形されることを除いて
-   ``p`` コマンドと同様です。
+   Like the ``p`` command, except the value of the expression is pretty-printed
+   using the :mod:`pprint` module.
 
 alias [*name* [command]]
-   *name* という名前の *command* を実行するエイリアスを作成します。
-   コマンドは引用符で囲まれていては *いけません* 。
-   入れ替え可能なパラメータは ``%1`` 、 ``%2`` などで指し示され、
-   さらに ``%*`` は全パラメータに置き換えられます。
-   コマンドが与えられなければ、 *name* に対する現在のエイリアスを表示します。
-   引数が与えられなければ、すべてのエイリアスがリストされます。
+   Creates an alias called *name* that executes *command*.  The command must *not*
+   be enclosed in quotes.  Replaceable parameters can be indicated by ``%1``,
+   ``%2``, and so on, while ``%*`` is replaced by all the parameters.  If no
+   command is given, the current alias for *name* is shown. If no arguments are
+   given, all aliases are listed.
 
-   エイリアスは入れ子になってもよく、
-   pdb プロンプトで合法的にタイプできるどんなものでも含めることができます。
-   内部 pdb コマンドをエイリアスによって上書きすることが *できます* 。
-   そのとき、このようなコマンドはエイリアスが取り除かれるまで隠されます。
-   エイリアス化はコマンド行の最初の語へ再帰的に適用されます。
-   行の他のすべての語はそのままです。
+   Aliases may be nested and can contain anything that can be legally typed at the
+   pdb prompt.  Note that internal pdb commands *can* be overridden by aliases.
+   Such a command is then hidden until the alias is removed.  Aliasing is
+   recursively applied to the first word of the command line; all other words in
+   the line are left alone.
 
-   例として、二つの便利なエイリアスがあります
-   (特に :file:`.pdbrc` ファイルに置かれたときに)::
+   As an example, here are two useful aliases (especially when placed in the
+   :file:`.pdbrc` file)::
 
       #Print instance variables (usage "pi classInst")
       alias pi for k in %1.__dict__.keys(): print "%1.",k,"=",%1.__dict__[k]
@@ -382,30 +374,29 @@ alias [*name* [command]]
       alias ps pi self
 
 unalias *name*
-   指定したエイリアスを削除します。
+   Deletes the specified alias.
 
 [!]\ *statement*
-   現在のスタックフレームのコンテキストにおいて(一行の) *statement* を実行します。
-   文の最初の語がデバッガコマンドと共通でない場合は、感嘆符を省略することができます。
-   グローバル変数を設定するために、
-   同じ行に ``global`` コマンドとともに代入コマンドの前に付けることができます。::
+   Execute the (one-line) *statement* in the context of the current stack frame.
+   The exclamation point can be omitted unless the first word of the statement
+   resembles a debugger command. To set a global variable, you can prefix the
+   assignment command with a ``global`` command on the same line, e.g.::
 
       (Pdb) global list_options; list_options = ['-l']
       (Pdb)
 
 run [*args* ...]
-   デバッグ中のプログラムを再実行します。もし引数が与えられると、
-   "shlex" で分割され、結果が新しい sys.argv として使われます。
-   ヒストリー、ブレークポイント、アクション、そして、
-   デバッガーオプションは引き継がれます。 "restart" は "run" の別名です。
+   Restart the debugged Python program. If an argument is supplied, it is split
+   with "shlex" and the result is used as the new sys.argv. History, breakpoints,
+   actions and debugger options are preserved. "restart" is an alias for "run".
 
    .. versionadded:: 2.6
 
 q(uit)
-   デバッガを終了します。実行しているプログラムは中断されます。
+   Quit from the debugger. The program being executed is aborted.
 
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [1] フレームが属するモジュールは、そのフレームのグローバルの
-       ``__name__`` によって決定されます。
+.. [1] Whether a frame is considered to originate in a certain module
+       is determined by the ``__name__`` in the frame globals.

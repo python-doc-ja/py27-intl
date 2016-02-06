@@ -1,9 +1,8 @@
-
-:mod:`pydoc` --- ドキュメント生成とオンラインヘルプシステム
-===========================================================
+:mod:`pydoc` --- Documentation generator and online help system
+===============================================================
 
 .. module:: pydoc
-   :synopsis: ドキュメント生成とオンラインヘルプシステム
+   :synopsis: Documentation generator and online help system.
 .. moduleauthor:: Ka-Ping Yee <ping@lfw.org>
 .. sectionauthor:: Ka-Ping Yee <ping@lfw.org>
 
@@ -15,64 +14,73 @@
    single: documentation; online
    single: help; online
 
-:mod:`pydoc` モジュールは、Pythonモジュールから自動的にドキュメントを生成します。
-生成されたドキュメントをテキスト形式でコンソールに表示したり、
-Web ブラウザにサーバとして提供したり、HTMLファイルとして保存したりできます。
+**Source code:** :source:`Lib/pydoc.py`
 
-組み込み関数の :func:`help` を使うことで、対話型のインタプリタからオンラインヘルプを\
-起動することができます。
-コンソール用のテキスト形式のドキュメントをつくるのにオンラインヘルプでは
-:mod:`pydoc` を使っています。
-:program:`pydoc` をPythonインタプリタからはなく、オペレーティングシステムの\
-コマンドプロンプトから起動した場合でも、同じテキスト形式のドキュメントを見ることができます。
-例えば、以下をshellから実行すると ::
+--------------
+
+The :mod:`pydoc` module automatically generates documentation from Python
+modules.  The documentation can be presented as pages of text on the console,
+served to a Web browser, or saved to HTML files.
+
+For modules, classes, functions and methods, the displayed documentation is
+derived from the docstring (i.e. the :attr:`__doc__` attribute) of the object,
+and recursively of its documentable members.  If there is no docstring,
+:mod:`pydoc` tries to obtain a description from the block of comment lines just
+above the definition of the class, function or method in the source file, or at
+the top of the module (see :func:`inspect.getcomments`).
+
+The built-in function :func:`help` invokes the online help system in the
+interactive interpreter, which uses :mod:`pydoc` to generate its documentation
+as text on the console.  The same text documentation can also be viewed from
+outside the Python interpreter by running :program:`pydoc` as a script at the
+operating system's command prompt. For example, running ::
 
    pydoc sys
 
-:mod:`sys` モジュールのドキュメントを、Unix の :program:`man` コマンドのような形式で表示させることができます。
-:program:`pydoc` の引数として与えることができるのは、関数名・モジュール名・パッケージ名、
-また、モジュールやパッケージ内のモジュールに含まれるクラス・メソッド・関数へのドット"."形式での参照です。
-:program:`pydoc` への引数がパスと解釈されるような場合で(オペレーティングシステムのパス区切り記号を含む場合です。
-例えばUnixならば "/"(スラッシュ)含む場合になります)、さらに、\
-そのパスがPythonのソースファイルを指しているなら、そのファイルに対するドキュメントが生成されます。
+at a shell prompt will display documentation on the :mod:`sys` module, in a
+style similar to the manual pages shown by the Unix :program:`man` command.  The
+argument to :program:`pydoc` can be the name of a function, module, or package,
+or a dotted reference to a class, method, or function within a module or module
+in a package.  If the argument to :program:`pydoc` looks like a path (that is,
+it contains the path separator for your operating system, such as a slash in
+Unix), and refers to an existing Python source file, then documentation is
+produced for that file.
 
 .. note::
 
-   オブジェクトとそのドキュメントを探すために、 :mod:`pydoc` はドキュメント\
-   対象のモジュールを import します。そのため、モジュールレベルのコードは\
-   そのときに実行されます。
-   ``if __name__ == '__main__':`` ガードを使って、ファイルがスクリプトとして\
-   実行したときのみコードを実行し、importされたときには実行されないようにして\
-   下さい。
+   In order to find objects and their documentation, :mod:`pydoc` imports the
+   module(s) to be documented.  Therefore, any code on module level will be
+   executed on that occasion.  Use an ``if __name__ == '__main__':`` guard to
+   only execute code when a file is invoked as a script and not just imported.
 
-.. % (訳者注："pydoc"を直接起動できない場合には、"pydoc.py"を明示的にpythonに与えます。
-.. % pydoc.pyは、pythonのディレクトリの下のlibのディレクトリにありますので、
-.. % begin{verbatim}
-.. % python <pythondir>\lib\pydoc.py sys
-.. % end{verbatim}
-.. % とします。)
+When printing output to the console, :program:`pydoc` attempts to paginate the
+output for easier reading.  If the :envvar:`PAGER` environment variable is set,
+:program:`pydoc` will use its value as a pagination program.
 
-引数の前に ``-w`` フラグを指定すると、コンソールにテキストを表示させるかわりに
-カレントディレクトリにHTMLドキュメントを生成します。
+Specifying a ``-w`` flag before the argument will cause HTML documentation
+to be written out to a file in the current directory, instead of displaying text
+on the console.
 
-引数の前に ``-k`` フラグを指定すると、引数をキーワードとして利用可能な全ての
-モジュールの概要を検索します。
-検索のやりかたは、Unixの :program:`man` コマンドと同様です。モジュールの概要というのは、モジュールのドキュメントの一行目のことです。
+Specifying a ``-k`` flag before the argument will search the synopsis
+lines of all available modules for the keyword given as the argument, again in a
+manner similar to the Unix :program:`man` command.  The synopsis line of a
+module is the first line of its documentation string.
 
-また、 :program:`pydoc` を使うことでローカルマシンに Web browserから
-閲覧可能なドキュメントを提供するHTTPサーバーを起動することもできます。
-:program:`pydoc -p 1234` とすると、HTTPサーバーをポート1234に起動します。
-これで、お好きなWebブラウザを使って ``http://localhost:1234/`` から
-ドキュメントを見ることができます。
-:program:`pydoc -g` はサーバーを起動したうえで、検索用に小さい :mod:`Tkinter`
-ベースのGUIを表示します。
+You can also use :program:`pydoc` to start an HTTP server on the local machine
+that will serve documentation to visiting Web browsers. :program:`pydoc -p 1234`
+will start a HTTP server on port 1234, allowing you to browse
+the documentation at ``http://localhost:1234/`` in your preferred Web browser.
+:program:`pydoc -g` will start the server and additionally bring up a
+small :mod:`Tkinter`\ -based graphical interface to help you search for
+documentation pages.
 
-:program:`pydoc` でドキュメントを生成する場合、その時点での環境とパス情報に基づいて
-モジュールがどこにあるのか決定されます。
-そのため、 :program:`pydoc spam` を実行した場合につくられるドキュメントは、
-Pythonインタプリタを起動して ``import spam`` と入力したときに読み込まれるモジュールに対するドキュメントになります。
+When :program:`pydoc` generates documentation, it uses the current environment
+and path to locate modules.  Thus, invoking :program:`pydoc spam`
+documents precisely the version of the module you would get if you started the
+Python interpreter and typed ``import spam``.
 
-コアモジュールのドキュメントは http://docs.python.org/library/ にあると仮定されています。
-これは、ライブラリリファレンスマニュアルを置いている異なるURLかローカルディレクトリを
-環境変数 :envvar:`PYTHONDOCS` に設定することでオーバーライドすることができます。
+Module docs for core modules are assumed to reside in
+https://docs.python.org/library/.  This can be overridden by setting the
+:envvar:`PYTHONDOCS` environment variable to a different URL or to a local
+directory containing the Library Reference Manual pages.
 

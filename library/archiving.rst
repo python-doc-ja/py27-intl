@@ -1,12 +1,13 @@
 
 .. _archiving:
 
-**********************
-データ圧縮とアーカイブ
-**********************
+******************************
+Data Compression and Archiving
+******************************
 
-この章で説明されるモジュールは zlib, gzip, bzip2 アルゴリズムによるデータの圧縮と、
-ZIP, tar フォーマットのアーカイブ作成をサポートします。
+The modules described in this chapter support data compression with the zlib,
+gzip, and bzip2 algorithms, and  the creation of ZIP- and tar-format archives.
+See also :ref:`archiving-operations` provided by the :mod:`shutil` module.
 
 
 .. toctree::

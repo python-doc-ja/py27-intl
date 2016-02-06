@@ -1,55 +1,59 @@
-
-:mod:`functools` --- 高階関数と呼び出し可能オブジェクトの操作
-=============================================================
+:mod:`functools` --- Higher-order functions and operations on callable objects
+==============================================================================
 
 .. module:: functools
-   :synopsis: 高階関数と呼び出し可能オブジェクトの操作
+   :synopsis: Higher-order functions and operations on callable objects.
 .. moduleauthor:: Peter Harris <scav@blueyonder.co.uk>
 .. moduleauthor:: Raymond Hettinger <python@rcn.com>
 .. moduleauthor:: Nick Coghlan <ncoghlan@gmail.com>
 .. sectionauthor:: Peter Harris <scav@blueyonder.co.uk>
 
-
 .. versionadded:: 2.5
 
-:mod:`functools` モジュールは高階関数、つまり関数に対する関数、あるいは他の関数を返す関数、のためのものです。
-一般に、どんな呼び出し可能オブジェクトでもこのモジュールの目的には関数として扱えます。
+**Source code:** :source:`Lib/functools.py`
 
-.. seealso::
+--------------
 
-   最新バージョンの `functools の Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/functools.py?view=markup>`_
+The :mod:`functools` module is for higher-order functions: functions that act on
+or return other functions. In general, any callable object can be treated as a
+function for the purposes of this module.
 
-モジュール :mod:`functools` では以下の関数を定義します。
+The :mod:`functools` module defines the following functions:
 
 ..  function:: cmp_to_key(func)
 
-   古いスタイルの比較関数を key 関数に変換します。
-   key 関数を受け取る関数 (:func:`sorted`, :func:`min`, :func:`max`, :func:`heapq.nlargest`,
-   :func:`heapq.nsmallest`, :func:`itertools.groupby` など) と共に使用します。
-   この関数は、主に比較関数をサポートしていない Python 3.x への移行のためのツールとして
-   用意されています。
+   Transform an old-style comparison function to a :term:`key function`.  Used
+   with tools that accept key functions (such as :func:`sorted`, :func:`min`,
+   :func:`max`, :func:`heapq.nlargest`, :func:`heapq.nsmallest`,
+   :func:`itertools.groupby`).  This function is primarily used as a transition
+   tool for programs being converted to Python 3 where comparison functions are
+   no longer supported.
 
-   比較関数は2つの引数を受け取り、それらを比較し、"より小さい" (less-than)の場合は負の値を、
-   同値の場合には 0 を、 "より大きい" (greater-than) 場合には正の値を返します。
-   key 関数は1つの引数を受け取り、ある順序で並べた時の位置に相当する値を返します。
+   A comparison function is any callable that accept two arguments, compares them,
+   and returns a negative number for less-than, zero for equality, or a positive
+   number for greater-than.  A key function is a callable that accepts one
+   argument and returns another value to be used as the sort key.
 
-   例::
+   Example::
 
-       sorted(iterable, key=cmp_to_key(locale.strcoll))  # ロケールに準拠したソート順
+       sorted(iterable, key=cmp_to_key(locale.strcoll))  # locale-aware sort order
+
+   For sorting examples and a brief sorting tutorial, see :ref:`sortinghowto`.
+
 
    .. versionadded:: 2.7
 
 .. function:: total_ordering(cls)
 
-   1つ以上のリッチ順序比較メソッドを定義したクラスを受け取り、残りを実装する
-   クラスデコレータ。
-   このデコレータは全てのリッチ順序比較演算をサポートするための労力を軽減します。
+   Given a class defining one or more rich comparison ordering methods, this
+   class decorator supplies the rest.  This simplifies the effort involved
+   in specifying all of the possible rich comparison operations:
 
-   引数のクラスは、 :meth:`__lt__`, :meth:`__le__`, :meth:`__gt__`, :meth:`__ge__`
-   の中からどれか1つと、 :meth:`__eq__` メソッドを定義する必要があります。
+   The class must define one of :meth:`__lt__`, :meth:`__le__`,
+   :meth:`__gt__`, or :meth:`__ge__`.
+   In addition, the class should supply an :meth:`__eq__` method.
 
-   例::
+   For example::
 
        @total_ordering
        class Student:
@@ -64,18 +68,19 @@
 
 .. function:: reduce(function, iterable[, initializer])
 
-   これは :func:`reduce` 関数と同じものです。
-   このモジュールからも使えるようにしたのは Python 3 と前方互換なコードを書けるようにするためです。
+   This is the same function as :func:`reduce`.  It is made available in this module
+   to allow writing code more forward-compatible with Python 3.
 
    .. versionadded:: 2.6
 
 
-.. function:: partial(func[, *args][, **keywords])
+.. function:: partial(func[,*args][, **keywords])
 
-   新しい :class:`partial` オブジェクトを返します。このオブジェクトは呼び出されると位置引数 *args* とキーワード引数
-   *keywords* 付きで呼び出された *func* のように振る舞います。呼び出しに際してさらなる引数が渡された場合、それらは *args*
-   に付け加えられます。追加のキーワード引数が渡された場合には、それらで *keywords* を拡張または上書きします。大雑把にいうと、次のコードと等価です。
-   ::
+   Return a new :class:`partial` object which when called will behave like *func*
+   called with the positional arguments *args* and keyword arguments *keywords*. If
+   more arguments are supplied to the call, they are appended to *args*. If
+   additional keyword arguments are supplied, they extend and override *keywords*.
+   Roughly equivalent to::
 
       def partial(func, *args, **keywords):
           def newfunc(*fargs, **fkeywords):
@@ -87,9 +92,11 @@
           newfunc.keywords = keywords
           return newfunc
 
-   関数 :func:`partial` は、関数の引数と/かキーワードの一部を「凍結」した部分適用として使われ、
-   簡素化された引数形式をもった新たなオブジェクトを作り出します。例えば、 :func:`partial` を使って *base* 引数のデフォルトが 2 である
-   :func:`int` 関数のように振る舞う呼び出し可能オブジェクトを作ることができます。  :
+   The :func:`partial` is used for partial function application which "freezes"
+   some portion of a function's arguments and/or keywords resulting in a new object
+   with a simplified signature.  For example, :func:`partial` can be used to create
+   a callable that behaves like the :func:`int` function where the *base* argument
+   defaults to two:
 
       >>> from functools import partial
       >>> basetwo = partial(int, base=2)
@@ -100,26 +107,29 @@
 
 .. function:: update_wrapper(wrapper, wrapped[, assigned][, updated])
 
-   *wrapper* 関数を *wrapped* 関数に見えるようにアップデートします。
-   オプション引数はタプルで、元の関数のどの属性が wrapper
-   関数の一致する属性に直接書き込まれる(assigned)か、また wrapper
-   関数のどの属性が元の関数の対応する属性でアップデートされる(updated)か、
-   を指定します。これらの引数のデフォルト値はモジュール定数
-   *WRAPPER_ASSIGNMENTS* (wrapper 関数に *__name__* 、 *__module__*
-   そしてドキュメンテーション文字列 *__doc__* を書き込みます) と
-   *WRAPPER_UPDATES* (wrapper 関数のインスタンス辞書をアップデートします) です。
+   Update a *wrapper* function to look like the *wrapped* function. The optional
+   arguments are tuples to specify which attributes of the original function are
+   assigned directly to the matching attributes on the wrapper function and which
+   attributes of the wrapper function are updated with the corresponding attributes
+   from the original function. The default values for these arguments are the
+   module level constants *WRAPPER_ASSIGNMENTS* (which assigns to the wrapper
+   function's *__name__*, *__module__* and *__doc__*, the documentation string) and
+   *WRAPPER_UPDATES* (which updates the wrapper function's *__dict__*, i.e. the
+   instance dictionary).
 
-   この関数は主に関数を包んで wrapper を返すデコレータ関数(:term:`decorator`)
-   の中で使われるよう意図されています。
-   もし wrapper 関数がアップデートされないとすると、
-   返される関数のメタデータは元の関数の定義ではなく wrapper 関数の定義を反映してしまい、
-   これは典型的に役立たずです。
+   The main intended use for this function is in :term:`decorator` functions which
+   wrap the decorated function and return the wrapper. If the wrapper function is
+   not updated, the metadata of the returned function will reflect the wrapper
+   definition rather than the original function definition, which is typically less
+   than helpful.
 
 
 .. function:: wraps(wrapped[, assigned][, updated])
 
-   これはラッパ関数を定義するときに ``partial(update_wrapper, wrapped=wrapped, assigned=assigned,
-   updated=updated)`` を関数デコレータとして呼び出す便宜関数です。  :
+   This is a convenience function for invoking :func:`update_wrapper` as a
+   function decorator when defining a wrapper function.  It is equivalent to
+   ``partial(update_wrapper, wrapped=wrapped, assigned=assigned, updated=updated)``.
+   For example::
 
       >>> from functools import wraps
       >>> def my_decorator(f):
@@ -142,35 +152,41 @@
       >>> example.__doc__
       'Docstring'
 
-   このデコレータ・ファクトリーを使わなければ、上の例中の関数の名前は ``'wrapper'``
-   となり、元々の :func:`example` のドキュメンテーション文字列は失われたところです。
+   Without the use of this decorator factory, the name of the example function
+   would have been ``'wrapper'``, and the docstring of the original :func:`example`
+   would have been lost.
 
 
 .. _partial-objects:
 
-:class:`partial` オブジェクト
------------------------------
+:class:`partial` Objects
+------------------------
 
-:class:`partial` オブジェクトは、 :func:`partial` 関数によって作られる呼び出し可能オブジェクトです。
-オブジェクトには読み取り専用の属性が三つあります。
+:class:`partial` objects are callable objects created by :func:`partial`. They
+have three read-only attributes:
 
 
 .. attribute:: partial.func
 
-   呼び出し可能オブジェクトまたは関数です。 :class:`partial` の呼び出しは新しい引数とキーワードと共に :attr:`func` に転送されます。
+   A callable object or function.  Calls to the :class:`partial` object will be
+   forwarded to :attr:`func` with new arguments and keywords.
 
 
 .. attribute:: partial.args
 
-   最左の位置引数で、 :class:`partial` オブジェクトの呼び出し時にその呼び出しの際の位置引数の前に追加されます。
+   The leftmost positional arguments that will be prepended to the positional
+   arguments provided to a :class:`partial` object call.
 
 
 .. attribute:: partial.keywords
 
-   :class:`partial` オブジェクトの呼び出し時に渡されるキーワード引数です。
+   The keyword arguments that will be supplied when the :class:`partial` object is
+   called.
 
-:class:`partial` オブジェクトは :class:`function` オブジェクトのように呼び出し可能で、
-弱参照可能で、属性を持つことができます。重要な相違点もあります。例えば、 :attr:`__name__` と :attr:`__doc__`
-両属性は自動では作られません。また、クラス中で定義された :class:`partial` オブジェクトはスタティックメソッドのように振る舞い、
-インスタンスの属性問い合わせの中で束縛メソッドに変換されません。
+:class:`partial` objects are like :class:`function` objects in that they are
+callable, weak referencable, and can have attributes.  There are some important
+differences.  For instance, the :attr:`__name__` and :attr:`__doc__` attributes
+are not created automatically.  Also, :class:`partial` objects defined in
+classes behave like static methods and do not transform into bound methods
+during instance attribute look-up.
 

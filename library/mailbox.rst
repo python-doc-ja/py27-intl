@@ -1,288 +1,276 @@
 
-:mod:`mailbox` --- 様々な形式のメールボックス操作
-=================================================
+:mod:`mailbox` --- Manipulate mailboxes in various formats
+==========================================================
 
 .. module:: mailbox
-   :synopsis: 様々な形式のメールボックス操作
+   :synopsis: Manipulate mailboxes in various formats
 .. moduleauthor:: Gregory K. Johnson <gkj@gregorykjohnson.com>
 .. sectionauthor:: Gregory K. Johnson <gkj@gregorykjohnson.com>
 
 
-このモジュールでは二つのクラス :class:`Mailbox` および :class:`Message`
-をディスク上のメールボックスとそこに収められたメッセージへのアクセスと操作のために定義しています。
-:class:`Mailbox` は辞書のようなキーからメッセージへの対応付けを提供しています。
-:class:`Message` は :mod:`email.Message` モジュールの
-:class:`Message` を拡張して形式ごとの状態と振る舞いを追加しています。
-サポートされるメールボックスの形式は Maildir, mbox, MH, Babyl, MMDF です。
+This module defines two classes, :class:`Mailbox` and :class:`Message`, for
+accessing and manipulating on-disk mailboxes and the messages they contain.
+:class:`Mailbox` offers a dictionary-like mapping from keys to messages.
+:class:`Message` extends the :mod:`email.message` module's
+:class:`~email.message.Message` class with format-specific state and behavior.
+Supported mailbox formats are
+Maildir, mbox, MH, Babyl, and MMDF.
 
 
 .. seealso::
 
    Module :mod:`email`
-      メッセージの表現と操作
+      Represent and manipulate messages.
 
 
 .. _mailbox-objects:
 
-:class:`Mailbox` オブジェクト
------------------------------
+:class:`Mailbox` objects
+------------------------
 
 
 .. class:: Mailbox
 
-   メールボックス。中を見られたり変更されたりします。
+   A mailbox, which may be inspected and modified.
 
-   :class:`Mailbox` 自体はインタフェースを定義し形式ごとのサブクラスに\
-   継承されるように意図されたもので、インスタンス化されることは想定されていません。
-   インスタンス化したいならばサブクラスを代わりに使うべきです。
+   The :class:`Mailbox` class defines an interface and is not intended to be
+   instantiated.  Instead, format-specific subclasses should inherit from
+   :class:`Mailbox` and your code should instantiate a particular subclass.
 
-   :class:`Mailbox` のインタフェースは辞書風で、小さなキーがメッセージに対応します。
-   キーは対象となる :class:`Mailbox`
-   インスタンスが発行するもので、そのインスタンスに対してのみ意味を持ちます。
-   一つのキーは一つのメッセージにひも付けられ、その対応はメッセージが\
-   他のメッセージで置き換えられるような更新をされたあとも続きます。
+   The :class:`Mailbox` interface is dictionary-like, with small keys
+   corresponding to messages. Keys are issued by the :class:`Mailbox` instance
+   with which they will be used and are only meaningful to that :class:`Mailbox`
+   instance. A key continues to identify a message even if the corresponding
+   message is modified, such as by replacing it with another message.
 
-   メッセージを :class:`Mailbox` インスタンスに追加するには集合風のメソッド
-   :meth:`add` を使います。
-   また削除は ``del`` 文または集合風の :meth:`remove` や :meth:`discard`
-   を使って行ないます。
+   Messages may be added to a :class:`Mailbox` instance using the set-like
+   method :meth:`add` and removed using a ``del`` statement or the set-like
+   methods :meth:`remove` and :meth:`discard`.
 
-   :class:`Mailbox` インタフェースのセマンティクスと辞書のそれとは\
-   注意すべき違いがあります。
-   メッセージは、要求されるたびに新しい表現(典型的には
-   :class:`Message` インスタンス)が現在のメールボックスの状態に基づいて生成されます。
-   同様に、メッセージが :class:`Mailbox`
-   インスタンスに追加される時も、渡されたメッセージ表現の内容がコピーされます。
-   どちらの場合も :class:`Makebox` インスタンスにメッセージ表現への参照は保たれません。
+   :class:`Mailbox` interface semantics differ from dictionary semantics in some
+   noteworthy ways. Each time a message is requested, a new representation
+   (typically a :class:`Message` instance) is generated based upon the current
+   state of the mailbox. Similarly, when a message is added to a
+   :class:`Mailbox` instance, the provided message representation's contents are
+   copied. In neither case is a reference to the message representation kept by
+   the :class:`Mailbox` instance.
 
-   デフォルトの :class:`Mailbox` イテレータはメッセージ表現ごとに繰り返すもので、
-   辞書のイテレータのようにキーごとの繰り返しではありません。
-   さらに、繰り返し中のメールボックスを変更することは安全であり整合的に定義されています。
-   イテレータが作られた後にメールボックスに追加されたメッセージは\
-   そのイテレータからは見えません。
-   そのイテレータが yield するまえにメールボックスから削除されたメッセージは\
-   黙ってスキップされますが、イテレータからのキーを使ったときにはそのキーに対応する\
-   メッセージが削除されているならば :exc:`KeyError` を受け取ることになります。
+   The default :class:`Mailbox` iterator iterates over message representations,
+   not keys as the default dictionary iterator does. Moreover, modification of a
+   mailbox during iteration is safe and well-defined. Messages added to the
+   mailbox after an iterator is created will not be seen by the
+   iterator. Messages removed from the mailbox before the iterator yields them
+   will be silently skipped, though using a key from an iterator may result in a
+   :exc:`KeyError` exception if the corresponding message is subsequently
+   removed.
 
    .. warning::
 
-      十分な注意を、何か他のプロセスによっても同時に変更される可能性のある\
-      メールボックスを更新する時は、払わなければなりません。
-      そのようなタスクをこなすのに最も安全なメールボックス形式は Maildir で、
-      mbox のような単一ファイルの形式を並行した書き込みに利用するのは避けるように\
-      努力しましょう。
-      メールボックスを更新する場面では、 *必ず* :meth:`lock` と :meth:`unlock`
-      メソッドを、ファイル内のメッセージを読んだり書き込んだり削除したりといった操作をする
-      *前* に、呼び出してロックします。
-      メールボックスをロックし損なうと、\
-      メッセージを失ったりメールボックス全体をぐちゃぐちゃにしたりする羽目に陥ります。
+      Be very cautious when modifying mailboxes that might be simultaneously
+      changed by some other process.  The safest mailbox format to use for such
+      tasks is Maildir; try to avoid using single-file formats such as mbox for
+      concurrent writing.  If you're modifying a mailbox, you *must* lock it by
+      calling the :meth:`lock` and :meth:`unlock` methods *before* reading any
+      messages in the file or making any changes by adding or deleting a
+      message.  Failing to lock the mailbox runs the risk of losing messages or
+      corrupting the entire mailbox.
 
-   :class:`Mailbox` インスタンスには次のメソッドがあります。
+   :class:`Mailbox` instances have the following methods:
 
 
    .. method:: add(message)
 
-      メールボックスに *message* を追加し、それに割り当てられたキーを返します。
+      Add *message* to the mailbox and return the key that has been assigned to
+      it.
 
-      引数 *message* は :class:`Message` インスタンス、
-      :class:`email.Message.Message` インスタンス、文字列、ファイル風オブジェクト
-      (テキストモードで開かれていなければなりませんが)を使えます。
-      *message* が適切な形式に特化した :class:`Message` サブクラスのインスタンス
-      (例えばメールボックスが :class:`mbox` インスタンスのときの
-      :class:`mboxMessage` インスタンス)であれば、形式ごとの情報が利用されます。
-      そうでなければ、形式ごとに必要な情報は適当なデフォルトが使われます。
+      Parameter *message* may be a :class:`Message` instance, an
+      :class:`email.message.Message` instance, a string, or a file-like object
+      (which should be open in text mode). If *message* is an instance of the
+      appropriate format-specific :class:`Message` subclass (e.g., if it's an
+      :class:`mboxMessage` instance and this is an :class:`mbox` instance), its
+      format-specific information is used. Otherwise, reasonable defaults for
+      format-specific information are used.
 
 
    .. method:: remove(key)
                __delitem__(key)
                discard(key)
 
-      メールボックスから *key* に対応するメッセージを削除します。
+      Delete the message corresponding to *key* from the mailbox.
 
-      対応するメッセージが無い場合、メソッドが :meth:`remove` または
-      :meth:`__delitem__` として呼び出されている時は
-      :exc:`KeyError` 例外が送出されます。
-      しかし、 :meth:`discard` として呼び出されている場合は例外は発生しません。
-      基づいているメールボックス形式が別のプロセスからの平行した変更をサポートしている\
-      ならば、この :meth:`discard` の振る舞いの方が好まれるかもしれません。
+      If no such message exists, a :exc:`KeyError` exception is raised if the
+      method was called as :meth:`remove` or :meth:`__delitem__` but no
+      exception is raised if the method was called as :meth:`discard`. The
+      behavior of :meth:`discard` may be preferred if the underlying mailbox
+      format supports concurrent modification by other processes.
 
 
    .. method:: __setitem__(key, message)
 
-      *key* に対応するメッセージを *message* で置き換えます。
-      *key* に対応しているメッセージが既に無くなっている場合
-      :exc:`KeyError` 例外が送出されます。
+      Replace the message corresponding to *key* with *message*. Raise a
+      :exc:`KeyError` exception if no message already corresponds to *key*.
 
-      :meth:`add` と同様に、引数の *message* には :class:`Message` インスタンス、
-      :class:`email.Message.Message` インスタンス、文字列、ファイル風オブジェクト
-      (テキストモードで開かれていなければなりませんが)を使えます。
-      *message* が適切な形式に特化した :class:`Message` サブクラスのインスタンス
-      (例えばメールボックスが :class:`mbox` インスタンスのときの :class:`mboxMessage`
-      インスタンス)であれば、形式ごとの情報が利用されます。
-      そうでなければ、現在 *key* に対応するメッセージの形式ごとの情報が\
-      変更されずに残ります。
+      As with :meth:`add`, parameter *message* may be a :class:`Message`
+      instance, an :class:`email.message.Message` instance, a string, or a
+      file-like object (which should be open in text mode). If *message* is an
+      instance of the appropriate format-specific :class:`Message` subclass
+      (e.g., if it's an :class:`mboxMessage` instance and this is an
+      :class:`mbox` instance), its format-specific information is
+      used. Otherwise, the format-specific information of the message that
+      currently corresponds to *key* is left unchanged.
 
 
    .. method:: iterkeys()
                keys()
 
-      :meth:`iterkeys` として呼び出されると全てのキーについてのイテレータを返しますが、
-      :meth:`keys` として呼び出されるとキーのリストを返します。
+      Return an iterator over all keys if called as :meth:`iterkeys` or return a
+      list of keys if called as :meth:`keys`.
 
 
    .. method:: itervalues()
                __iter__()
                values()
 
-      :meth:`itervalues` または :meth:`__iter__`
-      として呼び出されると全てのメッセージの表現についてのイテレータを返しますが、
-      :meth:`values` として呼び出されるとその表現のリストを返します。
-      メッセージは適切な形式ごとの :class:`Message`
-      サブクラスのインスタンスとして表現されるのが普通ですが、
-      :class:`Mailbox` インスタンスが初期化されるときに指定すればお好みの\
-      メッセージファクトリを使うこともできます。
+      Return an iterator over representations of all messages if called as
+      :meth:`itervalues` or :meth:`__iter__` or return a list of such
+      representations if called as :meth:`values`. The messages are represented
+      as instances of the appropriate format-specific :class:`Message` subclass
+      unless a custom message factory was specified when the :class:`Mailbox`
+      instance was initialized.
 
       .. note::
 
-         :meth:`__iter__` は辞書のそれのようにキーについてのイテレータではありません。
+         The behavior of :meth:`__iter__` is unlike that of dictionaries, which
+         iterate over keys.
 
 
    .. method:: iteritems()
                items()
 
-      (*key*, *message*) ペア、ただし *key* はキーで *message* はメッセージ表現、
-      のイテレータ(:meth:`iteritems` として呼び出された場合)、
-      またはリスト(:meth:`items` として呼び出された場合)を返します。
-      メッセージは適切な形式ごとの :class:`Message`
-      サブクラスのインスタンスとして表現されるのが普通ですが、
-      :class:`Mailbox` インスタンスが初期化されるときに指定すればお好みの\
-      メッセージファクトリを使うこともできます。
+      Return an iterator over (*key*, *message*) pairs, where *key* is a key and
+      *message* is a message representation, if called as :meth:`iteritems` or
+      return a list of such pairs if called as :meth:`items`. The messages are
+      represented as instances of the appropriate format-specific
+      :class:`Message` subclass unless a custom message factory was specified
+      when the :class:`Mailbox` instance was initialized.
 
 
-   .. method:: get(key[, default=None])
+   .. method:: get(key, default=None)
                __getitem__(key)
 
-      *key* に対応するメッセージの表現を返します。
-      対応するメッセージが存在しない場合、 :meth:`get` として呼び出されたなら
-      *default* を返しますが、 :meth:`__getitem__` として呼び出されたなら
-      :exc:`KeyError` 例外が送出されます。
-      メッセージは適切な形式ごとの :class:`Message`
-      サブクラスのインスタンスとして表現されるのが普通ですが、
-      :class:`Mailbox` インスタンスが初期化されるときに指定すればお好みの\
-      メッセージファクトリを使うこともできます。
+      Return a representation of the message corresponding to *key*. If no such
+      message exists, *default* is returned if the method was called as
+      :meth:`get` and a :exc:`KeyError` exception is raised if the method was
+      called as :meth:`__getitem__`. The message is represented as an instance
+      of the appropriate format-specific :class:`Message` subclass unless a
+      custom message factory was specified when the :class:`Mailbox` instance
+      was initialized.
 
 
-   .. method:: Mailbox.get_message(key)
+   .. method:: get_message(key)
 
-      *key* に対応するメッセージの表現を形式ごとの :class:`Message`
-      サブクラスのインスタンスとして返します。
-      もし対応するメッセージが存在しなければ :exc:`KeyError` 例外が送出されます。
+      Return a representation of the message corresponding to *key* as an
+      instance of the appropriate format-specific :class:`Message` subclass, or
+      raise a :exc:`KeyError` exception if no such message exists.
 
 
    .. method:: get_string(key)
 
-      *key* に対応するメッセージの表現を文字列として返します。
-      もし対応するメッセージが存在しなければ :exc:`KeyError` 例外が送出されます。
+      Return a string representation of the message corresponding to *key*, or
+      raise a :exc:`KeyError` exception if no such message exists.
 
 
    .. method:: get_file(key)
 
-      *key* に対応するメッセージの表現をファイル風表現として返します。
-      もし対応するメッセージが存在しなければ :exc:`KeyError` 例外が送出されます。
-      ファイル風オブジェクトはバイナリモードで開かれているように振る舞います。
-      このファイルは必要がなくなったら閉じなければなりません。
+      Return a file-like representation of the message corresponding to *key*,
+      or raise a :exc:`KeyError` exception if no such message exists. The
+      file-like object behaves as if open in binary mode. This file should be
+      closed once it is no longer needed.
 
       .. note::
 
-         他の表現方法とは違い、ファイル風オブジェクトはそれを作り出した
-         :class:`Mailbox` インスタンスやそれが基づいているメールボックスと\
-         独立である必要がありません。
-         より詳細な説明は各サブクラスごとにあります。
+         Unlike other representations of messages, file-like representations are
+         not necessarily independent of the :class:`Mailbox` instance that
+         created them or of the underlying mailbox. More specific documentation
+         is provided by each subclass.
 
 
    .. method:: has_key(key)
                __contains__(key)
 
-      *key* がメッセージに対応していれば ``True`` を、
-      そうでなければ ``False`` を返します。
+      Return ``True`` if *key* corresponds to a message, ``False`` otherwise.
 
 
    .. method:: __len__()
 
-      メールボックス中のメッセージ数を返します。
+      Return a count of messages in the mailbox.
 
 
    .. method:: clear()
 
-      メールボックスから全てのメッセージを削除します。
+      Delete all messages from the mailbox.
 
 
    .. method:: pop(key[, default])
 
-      *key* に対応するメッセージの表現を返します。
-      もし対応するメッセージが存在しなければ *default*
-      が供給されていればその値を返し、そうでなければ
-      :exc:`KeyError` 例外を送出します。
-      メッセージは適切な形式ごとの :class:`Message`
-      サブクラスのインスタンスとして表現されるのが普通ですが、
-      :class:`Mailbox` インスタンスが初期化されるときに指定すればお好みの\
-      メッセージファクトリを使うこともできます。
+      Return a representation of the message corresponding to *key* and delete
+      the message. If no such message exists, return *default* if it was
+      supplied or else raise a :exc:`KeyError` exception. The message is
+      represented as an instance of the appropriate format-specific
+      :class:`Message` subclass unless a custom message factory was specified
+      when the :class:`Mailbox` instance was initialized.
 
 
    .. method:: popitem()
 
-      任意に選んだ (*key*, *message*) ペアを返します。
-      ただしここで *key* はキーで *message* はメッセージ表現です。
-      もしメールボックスが空ならば、 :exc:`KeyError` 例外を送出します。
-      メッセージは適切な形式ごとの :class:`Message`
-      サブクラスのインスタンスとして表現されるのが普通ですが、
-      :class:`Mailbox` インスタンスが初期化されるときに指定すればお好みの\
-      メッセージファクトリを使うこともできます。
+      Return an arbitrary (*key*, *message*) pair, where *key* is a key and
+      *message* is a message representation, and delete the corresponding
+      message. If the mailbox is empty, raise a :exc:`KeyError` exception. The
+      message is represented as an instance of the appropriate format-specific
+      :class:`Message` subclass unless a custom message factory was specified
+      when the :class:`Mailbox` instance was initialized.
 
 
    .. method:: update(arg)
 
-      引数 *arg* は *key* から *message* へのマッピングまたは (*key*, *message*)
-      ペアのイテレート可能オブジェクトでなければなりません。
-      メールボックスは、各 *key* と *message* のペアについて
-      :meth:`__setitem__` を使ったかのように *key* に対応するメッセージが
-      *message* になるように更新されます。
-      :meth:`__setitem__` と同様に、
-      *key* は既存のメールボックス中のメッセージに対応しているものでなければならず、
-      そうでなければ :exc:`KeyError` が送出されます。
-      ですから、一般的には *arg* に :class:`Mailbox` インスタンスを渡すのは間違いです。
+      Parameter *arg* should be a *key*-to-*message* mapping or an iterable of
+      (*key*, *message*) pairs. Updates the mailbox so that, for each given
+      *key* and *message*, the message corresponding to *key* is set to
+      *message* as if by using :meth:`__setitem__`. As with :meth:`__setitem__`,
+      each *key* must already correspond to a message in the mailbox or else a
+      :exc:`KeyError` exception will be raised, so in general it is incorrect
+      for *arg* to be a :class:`Mailbox` instance.
 
       .. note::
 
-         辞書と違い、キーワード引数はサポートされていません。
+         Unlike with dictionaries, keyword arguments are not supported.
 
 
    .. method:: flush()
 
-      保留されている変更をファイルシステムに書き込みます。
-      :class:`Mailbox` のサブクラスによっては変更はいつも直ちにファイルに書き込まれ
-      :meth:`flush` は何もしないということもありますが、\
-      それでもこのメソッドを呼ぶように習慣付けておきましょう。
+      Write any pending changes to the filesystem. For some :class:`Mailbox`
+      subclasses, changes are always written immediately and :meth:`flush` does
+      nothing, but you should still make a habit of calling this method.
 
 
    .. method:: lock()
 
-      メールボックスの排他的アドバイザリロックを取得し、\
-      他のプロセスが変更しないようにします。
-      ロックが取得できない場合 :exc:`ExternalClashError` が送出されます。
-      ロック機構はメールボックス形式によって変わります。
-      メールボックスの内容に変更を加えるときは *いつも* ロックを掛けるべきです。
+      Acquire an exclusive advisory lock on the mailbox so that other processes
+      know not to modify it. An :exc:`ExternalClashError` is raised if the lock
+      is not available. The particular locking mechanisms used depend upon the
+      mailbox format.  You should *always* lock the mailbox before making any
+      modifications to its contents.
 
 
    .. method:: unlock()
 
-      メールボックスのロックを、もしあれば、解放します。
+      Release the lock on the mailbox, if any.
 
 
    .. method:: close()
 
-      メールボックスをフラッシュし、必要ならばアンロックし、開いているファイルを閉じます。
-      :class:`Mailbox` サブクラスによっては何もしないこともあります。
+      Flush the mailbox, unlock it if necessary, and close any open files. For
+      some :class:`Mailbox` subclasses, this method does nothing.
 
 
 .. _mailbox-maildir:
@@ -291,95 +279,92 @@
 ^^^^^^^^^^^^^^^^
 
 
-.. class:: Maildir(dirname[, factory=rfc822.Message[, create=True]])
+.. class:: Maildir(dirname, factory=rfc822.Message, create=True)
 
-   Maildir 形式のメールボックスのための :class:`Mailbox` のサブクラス。パラメータ *factory* は呼び出し可能オブジェクトで
-   (バイナリモードで開かれているかのように振る舞う)ファイル風メッセージ表現を受け付けて好みの表現を返すものです。 *factory* が
-   ``None`` ならば、 :class:`MaildirMessage` がデフォルトのメッセージ表現として使われます。 *create* が ``True``
-   ならばメールボックスが存在しないときには作成します。
+   A subclass of :class:`Mailbox` for mailboxes in Maildir format. Parameter
+   *factory* is a callable object that accepts a file-like message representation
+   (which behaves as if opened in binary mode) and returns a custom representation.
+   If *factory* is ``None``, :class:`MaildirMessage` is used as the default message
+   representation. If *create* is ``True``, the mailbox is created if it does not
+   exist.
 
-   *factory* のデフォルトが :class:`rfc822.Message` であったり、 *path* ではなく *dirname*
-   という名前であったりというのは歴史的理由によるものです。 :class:`Maildir` インスタンスが他の :class:`Mailbox`
-   サブクラスと同じように振る舞わせるためには、 *factory* に ``None`` をセットしてください。
+   It is for historical reasons that *factory* defaults to :class:`rfc822.Message`
+   and that *dirname* is named as such rather than *path*. For a :class:`Maildir`
+   instance that behaves like instances of other :class:`Mailbox` subclasses, set
+   *factory* to ``None``.
 
-   Maildir はディレクトリ型のメールボックス形式でメール転送エージェント qmail
-   用に発明され、現在では多くの他のプログラムでもサポートされているものです。
-   Maildir メールボックス中のメッセージは共通のディレクトリ構造の下で\
-   個別のファイルに保存されます。
-   このデザインにより、Maildir メールボックスは複数の無関係のプログラムから\
-   データを失うことなくアクセスしたり変更したりできます。
-   そのためロックは不要です。
+   Maildir is a directory-based mailbox format invented for the qmail mail
+   transfer agent and now widely supported by other programs. Messages in a
+   Maildir mailbox are stored in separate files within a common directory
+   structure. This design allows Maildir mailboxes to be accessed and modified
+   by multiple unrelated programs without data corruption, so file locking is
+   unnecessary.
 
-   Maildir メールボックスには三つのサブディレクトリ
-   :file:`tmp`, :file:`new`, :file:`cur` があります。
-   メッセージはまず :file:`tmp` サブディレクトリに瞬間的に作られた後、
-   :file:`new` サブディレクトリに移動されて配送を完了します。
-   メールユーザエージェントが引き続いて :file:`cur` サブディレクトリにメッセージを移動し\
-   メッセージの状態についての情報をファイル名に追加される特別な
-   "info" セクションに保存することができます。
+   Maildir mailboxes contain three subdirectories, namely: :file:`tmp`,
+   :file:`new`, and :file:`cur`. Messages are created momentarily in the
+   :file:`tmp` subdirectory and then moved to the :file:`new` subdirectory to
+   finalize delivery. A mail user agent may subsequently move the message to the
+   :file:`cur` subdirectory and store information about the state of the message
+   in a special "info" section appended to its file name.
 
-   Courier メール転送エージェントによって導入されたスタイルのフォルダもサポートされます。
-   主たるメールボックスのサブディレクトリは ``'.'``
-   がファイル名の先頭であればフォルダと見なされます。
-   フォルダ名は :class:`Maildir` によって先頭の ``'.'``
-   を除いて表現されます。
-   各フォルダはまた Maildir メールボックスですがさらにフォルダを含むことはできません。
-   その代わり、論理的包含関係は例えば
-   "Archived.2005.07" のような ``'.'`` を使ったレベル分けで表わされます。
+   Folders of the style introduced by the Courier mail transfer agent are also
+   supported. Any subdirectory of the main mailbox is considered a folder if
+   ``'.'`` is the first character in its name. Folder names are represented by
+   :class:`Maildir` without the leading ``'.'``. Each folder is itself a Maildir
+   mailbox but should not contain other folders. Instead, a logical nesting is
+   indicated using ``'.'`` to delimit levels, e.g., "Archived.2005.07".
 
    .. note::
 
-      本来の Maildir 仕様ではある種のメッセージのファイル名にコロン (``':'``)
-      を使う必要があります。
-      しかしながら、オペレーティングシステムによってはこの文字をファイル名に\
-      含めることができないことがあります。
-      そういった環境で Maildir のような形式を使いたい場合、\
-      代わりに使われる文字を指定する必要があります。
-      感嘆符 (``'!'``) を使うのが一般的な選択です。
-      以下の例を見てください。
-      ::
+      The Maildir specification requires the use of a colon (``':'``) in certain
+      message file names. However, some operating systems do not permit this
+      character in file names, If you wish to use a Maildir-like format on such
+      an operating system, you should specify another character to use
+      instead. The exclamation point (``'!'``) is a popular choice. For
+      example::
 
          import mailbox
          mailbox.Maildir.colon = '!'
 
-      :attr:`colon` 属性はインスタンスごとにセットしても構いません。
+      The :attr:`colon` attribute may also be set on a per-instance basis.
 
-   :class:`Maildir` インスタンスには :class:`Mailbox` の全てのメソッドに加え\
-   以下のメソッドもあります。
+   :class:`Maildir` instances have all of the methods of :class:`Mailbox` in
+   addition to the following:
 
 
    .. method:: list_folders()
 
-      全てのフォルダ名のリストを返します。
+      Return a list of the names of all folders.
 
 
    .. method:: get_folder(folder)
 
-      名前が *folder* であるフォルダを表わす :class:`Maildir` インスタンスを返します。
-      そのようなフォルダが存在しなければ
-      :exc:`NoSuchMailboxError` 例外が送出されます。
+      Return a :class:`Maildir` instance representing the folder whose name is
+      *folder*. A :exc:`NoSuchMailboxError` exception is raised if the folder
+      does not exist.
 
 
-   .. method:: Maildir.add_folder(folder)
+   .. method:: add_folder(folder)
 
-      名前が *folder* であるフォルダを作り、それを表わす :class:`Maildir`
-      インスタンスを返します。
+      Create a folder whose name is *folder* and return a :class:`Maildir`
+      instance representing it.
 
 
    .. method:: remove_folder(folder)
 
-      名前が *folder* であるフォルダを削除します。
-      もしフォルダに一つでもメッセージが含まれていれば :exc:`NotEmptyError`
-      例外が送出されフォルダは削除されません。
+      Delete the folder whose name is *folder*. If the folder contains any
+      messages, a :exc:`NotEmptyError` exception will be raised and the folder
+      will not be deleted.
 
 
    .. method:: clean()
 
-      過去36時間以内にアクセスされなかったメールボックス内の一時ファイルを削除します。
-      Maildir 仕様はメールを読むプログラムはときどきこの作業をすべきだとしています。
+      Delete temporary files from the mailbox that have not been accessed in the
+      last 36 hours. The Maildir specification says that mail-reading programs
+      should do this occasionally.
 
-   :class:`Maildir` で実装された :class:`Mailbox` のいくつかのメソッドには\
-   特別な注意が必要です。
+   Some :class:`Mailbox` methods implemented by :class:`Maildir` deserve special
+   remarks:
 
 
    .. method:: add(message)
@@ -388,48 +373,49 @@
 
       .. warning::
 
-         これらのメソッドは一意的なファイル名をプロセスIDに基づいて生成します。
-         複数のスレッドを使う場合は、同じメールボックスを同時に操作しないように\
-         スレッド間で調整しておかないと検知されない名前の衝突が起こり\
-         メールボックスを壊すかもしれません。
+         These methods generate unique file names based upon the current process
+         ID. When using multiple threads, undetected name clashes may occur and
+         cause corruption of the mailbox unless threads are coordinated to avoid
+         using these methods to manipulate the same mailbox simultaneously.
 
 
    .. method:: flush()
 
-      Maildir メールボックスへの変更は即時に適用されるので、このメソッドは何もしません。
+      All changes to Maildir mailboxes are immediately applied, so this method
+      does nothing.
 
 
    .. method:: lock()
                unlock()
 
-      Maildir メールボックスはロックをサポート(または要求)しないので、\
-      このメソッドは何もしません。
+      Maildir mailboxes do not support (or require) locking, so these methods do
+      nothing.
 
 
    .. method:: close()
 
-      :class:`Maildir` インスタンスは開いたファイルを保持しませんし\
-      メールボックスはロックをサポートしませんので、このメソッドは何もしません。
+      :class:`Maildir` instances do not keep any open files and the underlying
+      mailboxes do not support locking, so this method does nothing.
 
 
    .. method:: get_file(key)
 
-      ホストのプラットフォームによっては、返されたファイルが開いている間、\
-      元になったメッセージを変更したり削除したりできない場合があります。
+      Depending upon the host platform, it may not be possible to modify or
+      remove the underlying message while the returned file remains open.
 
 
 .. seealso::
 
-   `qmail の maildir man  ページ <http://www.qmail.org/man/man5/maildir.html>`_
-      Maildir 形式のオリジナルの仕様
+   `maildir man page from qmail <http://www.qmail.org/man/man5/maildir.html>`_
+      The original specification of the format.
 
    `Using maildir format <http://cr.yp.to/proto/maildir.html>`_
-      Maildir 形式の発明者による注意書き。
-      更新された名前生成規則と "info" の解釈についても含まれます。
+      Notes on Maildir by its inventor. Includes an updated name-creation scheme and
+      details on "info" semantics.
 
-   `Courier の maildir man ページ <http://www.courier-mta.org/maildir.html>`_
-      Maildir 形式のもう一つの仕様。
-      フォルダをサポートする一般的な拡張について記述されています。
+   `maildir man page from Courier <http://www.courier-mta.org/maildir.html>`_
+      Another specification of the format. Describes a common extension for supporting
+      folders.
 
 
 .. _mailbox-mbox:
@@ -438,56 +424,58 @@
 ^^^^^^^^^^^^^
 
 
-.. class:: mbox(path[, factory=None[, create=True]])
+.. class:: mbox(path, factory=None, create=True)
 
-   mbox 形式のメールボックスのための :class:`Mailbox` のサブクラス。パラメータ *factory* は呼び出し可能オブジェクトで
-   (バイナリモードで開かれているかのように振る舞う)ファイル風メッセージ表現を受け付けて好みの表現を返すものです。 *factory* が
-   ``None`` ならば、 :class:`mboxMessage` がデフォルトのメッセージ表現として使われます。 *create* が ``True``
-   ならばメールボックスが存在しないときには作成します。
+   A subclass of :class:`Mailbox` for mailboxes in mbox format. Parameter *factory*
+   is a callable object that accepts a file-like message representation (which
+   behaves as if opened in binary mode) and returns a custom representation. If
+   *factory* is ``None``, :class:`mboxMessage` is used as the default message
+   representation. If *create* is ``True``, the mailbox is created if it does not
+   exist.
 
-   mbox 形式は Unixシステム上でメールを保存する古くからある形式です。
-   mbox メールボックスでは全てのメッセージが一つのファイルに保存されており\
-   それぞれのメッセージは "From " という5文字で始まる行を先頭に付けられています。
+   The mbox format is the classic format for storing mail on Unix systems. All
+   messages in an mbox mailbox are stored in a single file with the beginning of
+   each message indicated by a line whose first five characters are "From ".
 
-   mbox 形式には幾つかのバリエーションがあり、それぞれオリジナルの形式にあった欠点を\
-   克服すると主張しています。互換性のために、 :class:`mbox`
-   はオリジナルの(時に :dfn:`mboxo` と呼ばれる) 形式を実装しています。
-   すなわち、 :mailheader:`Content-Length`
-   ヘッダはもしあっても無視され、メッセージのボディにある行頭の
-   "From " はメッセージを保存する際に ">From " に変換されますが、この
-   ">From " は読み出し時にも "From " に変換されません。
+   Several variations of the mbox format exist to address perceived shortcomings in
+   the original. In the interest of compatibility, :class:`mbox` implements the
+   original format, which is sometimes referred to as :dfn:`mboxo`. This means that
+   the :mailheader:`Content-Length` header, if present, is ignored and that any
+   occurrences of "From " at the beginning of a line in a message body are
+   transformed to ">From " when storing the message, although occurrences of ">From
+   " are not transformed to "From " when reading the message.
 
-   :class:`mbox` で実装された :class:`Mailbox` のいくつかのメソッドには\
-   特別な注意が必要です。
+   Some :class:`Mailbox` methods implemented by :class:`mbox` deserve special
+   remarks:
 
 
    .. method:: get_file(key)
 
-      :class:`mbox` インスタンスに対し :meth:`flush` や :meth:`close` を呼び出した\
-      後でファイルを使用すると予期しない結果を引き起こしたり例外が送出されたりすることが\
-      あります。
+      Using the file after calling :meth:`flush` or :meth:`close` on the
+      :class:`mbox` instance may yield unpredictable results or raise an
+      exception.
 
 
    .. method:: lock()
                unlock()
 
-      3種類のロック機構が使われます --- ドットロッキングと、もし使用可能ならば
-      :c:func:`flock` と :c:func:`lockf` システムコールです。
+      Three locking mechanisms are used---dot locking and, if available, the
+      :c:func:`flock` and :c:func:`lockf` system calls.
 
 
 .. seealso::
 
-   `qmail の mbox man ページ <http://www.qmail.org/man/man5/mbox.html>`_
-      mbox 形式の仕様および種々のバリエーション
+   `mbox man page from qmail <http://www.qmail.org/man/man5/mbox.html>`_
+      A specification of the format and its variations.
 
-   `tin の mbox man ページ <http://www.tin.org/bin/man.cgi?section=5&topic=mbox>`_
-      もう一つの mbox 形式の仕様でロックについての詳細を含む
+   `mbox man page from tin <http://www.tin.org/bin/man.cgi?section=5&topic=mbox>`_
+      Another specification of the format, with details on locking.
 
    `Configuring Netscape Mail on Unix: Why The Content-Length Format is Bad <http://www.jwz.org/doc/content-length.html>`_
-      バリエーションの一つではなくオリジナルの mbox を使う理由
+      An argument for using the original mbox format rather than a variation.
 
-   `"mbox" is a family of several mutually incompatible mailbox formats <http://homepages.tesco.net./~J.deBoynePollard/FGA/mail-mbox-formats.html>`_
-      mbox バリエーションの歴史
+   `"mbox" is a family of several mutually incompatible mailbox formats <http://homepage.ntlworld.com/jonathan.deboynepollard/FGA/mail-mbox-formats.html>`_
+      A history of mbox variations.
 
 
 .. _mailbox-mh:
@@ -496,124 +484,128 @@
 ^^^^^^^^^^^
 
 
-.. class:: MH(path[, factory=None[, create=True]])
+.. class:: MH(path, factory=None, create=True)
 
-   MH 形式のメールボックスのための :class:`Mailbox` のサブクラス。パラメータ *factory* は呼び出し可能オブジェクトで
-   (バイナリモードで開かれているかのように振る舞う)ファイル風メッセージ表現を受け付けて好みの表現を返すものです。 *factory* が
-   ``None`` ならば、 :class:`MHMessage` がデフォルトのメッセージ表現として使われます。 *create* が ``True``
-   ならばメールボックスが存在しないときには作成します。
+   A subclass of :class:`Mailbox` for mailboxes in MH format. Parameter *factory*
+   is a callable object that accepts a file-like message representation (which
+   behaves as if opened in binary mode) and returns a custom representation. If
+   *factory* is ``None``, :class:`MHMessage` is used as the default message
+   representation. If *create* is ``True``, the mailbox is created if it does not
+   exist.
 
-   MH はディレクトリに基づいたメールボックス形式で MH Message Handling System
-   というメールユーザエージェントのために発明されました。
-   MH メールボックス中のそれぞれのメッセージは一つのファイルとして収められています。
-   MH メールボックスにはメッセージの他に別の MH メールボックス
-   (:dfn:`フォルダ` と呼ばれます)を含んでもかまいません。
-   フォルダは無限にネストできます。
-   MH メールボックスにはもう一つ :dfn:`シーケンス` という名前付きのリストで\
-   メッセージをサブフォルダに移動することなく論理的に分類するものがサポートされています。
-   シーケンスは各フォルダの :file:`.mh_sequences` というファイルで定義されます。
+   MH is a directory-based mailbox format invented for the MH Message Handling
+   System, a mail user agent. Each message in an MH mailbox resides in its own
+   file. An MH mailbox may contain other MH mailboxes (called :dfn:`folders`) in
+   addition to messages. Folders may be nested indefinitely. MH mailboxes also
+   support :dfn:`sequences`, which are named lists used to logically group
+   messages without moving them to sub-folders. Sequences are defined in a file
+   called :file:`.mh_sequences` in each folder.
 
-   :class:`MH` クラスは MH メールボックスを操作しますが、
-   :program:`mh` の動作の全てを模倣しようとはしていません。
-   特に、 :program:`mh` が状態と設定を保存する :file:`context` や
-   :file:`.mh_profile` といったファイルは書き換えませんし影響も受けません。
+   The :class:`MH` class manipulates MH mailboxes, but it does not attempt to
+   emulate all of :program:`mh`'s behaviors. In particular, it does not modify
+   and is not affected by the :file:`context` or :file:`.mh_profile` files that
+   are used by :program:`mh` to store its state and configuration.
 
-   :class:`MH` インスタンスには :class:`Mailbox` の全てのメソッドの他に\
-   次のメソッドがあります。
+   :class:`MH` instances have all of the methods of :class:`Mailbox` in addition
+   to the following:
 
 
    .. method:: list_folders()
 
-      全てのフォルダの名前のリストを返します。
+      Return a list of the names of all folders.
 
 
    .. method:: get_folder(folder)
 
-      *folder* という名前のフォルダを表わす :class:`MH` インスタンスを返します。
-      もしフォルダが存在しなければ
-      :exc:`NoSuchMailboxError` 例外が送出されます。
+      Return an :class:`MH` instance representing the folder whose name is
+      *folder*. A :exc:`NoSuchMailboxError` exception is raised if the folder
+      does not exist.
 
 
    .. method:: add_folder(folder)
 
-      *folder* という名前のフォルダを作成し、それを表わす :class:`MH`
-      インスタンスを返します。
+      Create a folder whose name is *folder* and return an :class:`MH` instance
+      representing it.
 
 
    .. method:: remove_folder(folder)
 
-      *folder* という名前のフォルダを削除します。
-      フォルダにメッセージが一つでも残っていれば、 :exc:`NotEmptyError`
-      例外が送出されフォルダは削除されません。
+      Delete the folder whose name is *folder*. If the folder contains any
+      messages, a :exc:`NotEmptyError` exception will be raised and the folder
+      will not be deleted.
 
 
    .. method:: get_sequences()
 
-      シーケンス名をキーのリストに対応付ける辞書を返します。
-      シーケンスが一つもなければ空の辞書を返します。
+      Return a dictionary of sequence names mapped to key lists. If there are no
+      sequences, the empty dictionary is returned.
 
 
    .. method:: set_sequences(sequences)
 
-      メールボックス中のシーケンスを :meth:`get_sequences`
-      で返されるような名前とキーのリストを対応付ける辞書 *sequences*
-      に基づいて再定義します。
+      Re-define the sequences that exist in the mailbox based upon *sequences*,
+      a dictionary of names mapped to key lists, like returned by
+      :meth:`get_sequences`.
 
 
    .. method:: pack()
 
-      番号付けの間隔を詰める必要に応じてメールボックス中のメッセージの名前を付け替えます。
-      シーケンスのリストのエントリもそれに応じて更新されます。
+      Rename messages in the mailbox as necessary to eliminate gaps in
+      numbering.  Entries in the sequences list are updated correspondingly.
 
       .. note::
 
-         既に発行されたキーはこの操作によって無効になるのでそれ以降使ってはなりません。
+         Already-issued keys are invalidated by this operation and should not be
+         subsequently used.
 
-   :class:`MH` で実装された :class:`Mailbox` のいくつかのメソッドには\
-   特別な注意が必要です。
+   Some :class:`Mailbox` methods implemented by :class:`MH` deserve special
+   remarks:
 
 
    .. method:: remove(key)
                __delitem__(key)
                discard(key)
 
-      これらのメソッドはメッセージを直ちに削除します。
-      名前の前にコンマを付加してメッセージに削除の印を付けるという MH の規約は使いません。
+      These methods immediately delete the message. The MH convention of marking
+      a message for deletion by prepending a comma to its name is not used.
 
 
    .. method:: lock()
                unlock()
 
-      3種類のロック機構が使われます --- ドットロッキングと、もし使用可能ならば
-      :c:func:`flock` と :c:func:`lockf` システムコールです。
-      MH メールボックスに対するロックとは :file:`.mh_sequences` のロックと、
-      それが影響を与える操作中だけの個々のメッセージファイルに対するロックを意味します。
+      Three locking mechanisms are used---dot locking and, if available, the
+      :c:func:`flock` and :c:func:`lockf` system calls. For MH mailboxes, locking
+      the mailbox means locking the :file:`.mh_sequences` file and, only for the
+      duration of any operations that affect them, locking individual message
+      files.
 
 
    .. method:: get_file(key)
 
-      ホストのプラットフォームによっては、返されたファイルが開いている間、\
-      元になったメッセージを変更したり削除したりできない場合があります。
+      Depending upon the host platform, it may not be possible to remove the
+      underlying message while the returned file remains open.
 
 
    .. method:: flush()
 
-      MH メールボックスへの変更は即時に適用されますのでこのメソッドは何もしません。
+      All changes to MH mailboxes are immediately applied, so this method does
+      nothing.
 
 
    .. method:: close()
 
-      :class:`MH` インスタンスは開いたファイルを保持しませんので\
-      このメソッドは :meth:`unlock` と同じです。
+      :class:`MH` instances do not keep any open files, so this method is
+      equivalent to :meth:`unlock`.
 
 
 .. seealso::
 
    `nmh - Message Handling System <http://www.nongnu.org/nmh/>`_
-      :program:`mh` の改良版である :program:`nmh` のホームページ
+      Home page of :program:`nmh`, an updated version of the original :program:`mh`.
 
-   `MH & nmh:  Email for Users & Programmers <http://rand-mh.sourceforge.net/book/>`_
-      GPLライセンスの :program:`mh` および :program:`nmh` の本で、このメールボックス形式についての情報があります
+   `MH & nmh: Email for Users & Programmers <http://rand-mh.sourceforge.net/book/>`_
+      A GPL-licensed book on :program:`mh` and :program:`nmh`, with some information
+      on the mailbox format.
 
 
 .. _mailbox-babyl:
@@ -622,72 +614,74 @@
 ^^^^^^^^^^^^^^
 
 
-.. class:: Babyl(path[, factory=None[, create=True]])
+.. class:: Babyl(path, factory=None, create=True)
 
-   Babyl 形式のメールボックスのための :class:`Mailbox` のサブクラス。パラメータ *factory* は呼び出し可能オブジェクトで
-   (バイナリモードで開かれているかのように振る舞う)ファイル風メッセージ表現を受け付けて好みの表現を返すものです。 *factory* が
-   ``None`` ならば、 :class:`BabylMessage` がデフォルトのメッセージ表現として使われます。 *create* が ``True``
-   ならばメールボックスが存在しないときには作成します。
+   A subclass of :class:`Mailbox` for mailboxes in Babyl format. Parameter
+   *factory* is a callable object that accepts a file-like message representation
+   (which behaves as if opened in binary mode) and returns a custom representation.
+   If *factory* is ``None``, :class:`BabylMessage` is used as the default message
+   representation. If *create* is ``True``, the mailbox is created if it does not
+   exist.
 
-   Babyl は単一ファイルのメールボックス形式で Emacs に付属している
-   Rmail メールユーザエージェントで使われているものです。
-   メッセージの開始は Control-Underscore (``'\\037'``) および
-   Control-L (``'\\014'``) の二文字を含む行で示されます。
-   メッセージの終了は次のメッセージの開始または最後のメッセージの場合には
-   Control-Underscore を含む行で示されます。
+   Babyl is a single-file mailbox format used by the Rmail mail user agent
+   included with Emacs. The beginning of a message is indicated by a line
+   containing the two characters Control-Underscore (``'\037'``) and Control-L
+   (``'\014'``). The end of a message is indicated by the start of the next
+   message or, in the case of the last message, a line containing a
+   Control-Underscore (``'\037'``) character.
 
-   Babyl メールボックス中のメッセージには二つのヘッダのセット、
-   オリジナルヘッダといわゆる可視ヘッダ、があります。
-   可視ヘッダは典型的にはオリジナルヘッダの一部を分り易いように再整形したり\
-   短くしたりしたものです。
-   Babyl メールボックス中のそれぞれのメッセージには :dfn:`ラベル`
-   というそのメッセージについての追加情報を記録する短い文字列のリストを伴い、
-   メールボックス中に見出されるユーザが定義した全てのラベルのリストは Babyl
-   オプションセクションに保持されます。
+   Messages in a Babyl mailbox have two sets of headers, original headers and
+   so-called visible headers. Visible headers are typically a subset of the
+   original headers that have been reformatted or abridged to be more
+   attractive. Each message in a Babyl mailbox also has an accompanying list of
+   :dfn:`labels`, or short strings that record extra information about the
+   message, and a list of all user-defined labels found in the mailbox is kept
+   in the Babyl options section.
 
-   :class:`Babyl` インスタンスには :class:`Mailbox` の全てのメソッドの他に\
-   次のメソッドがあります。
+   :class:`Babyl` instances have all of the methods of :class:`Mailbox` in
+   addition to the following:
 
 
    .. method:: get_labels()
 
-      メールボックスで使われているユーザが定義した全てのラベルのリストを返します。
+      Return a list of the names of all user-defined labels used in the mailbox.
 
       .. note::
 
-         メールボックスにどのようなラベルが存在するかを決めるのに、
-         Babyl オプションセクションのリストを参考にせず、実際のメッセージを捜索しますが、
-         Babyl セクションもメールボックスが変更されたときにはいつでも更新されます。
+         The actual messages are inspected to determine which labels exist in
+         the mailbox rather than consulting the list of labels in the Babyl
+         options section, but the Babyl section is updated whenever the mailbox
+         is modified.
 
-   :class:`Babyl` で実装された :class:`Mailbox` のいくつかのメソッドには\
-   特別な注意が必要です。
+   Some :class:`Mailbox` methods implemented by :class:`Babyl` deserve special
+   remarks:
 
 
    .. method:: get_file(key)
 
-      Babyl メールボックスにおいて、メッセージのヘッダはボディと繋がって\
-      格納されていません。
-      ファイル風の表現を生成するために、ヘッダとボディが
-      (:mod:`StringIO` モジュールの) ファイルと同じ API を持つ
-      :class:`StringIO` インスタンスに一緒にコピーされます。
-      その結果、ファイル風オブジェクトは本当に元にしているメールボックスとは\
-      独立していますが、文字列表現と比べてメモリーを節約することにもなりません。
+      In Babyl mailboxes, the headers of a message are not stored contiguously
+      with the body of the message. To generate a file-like representation, the
+      headers and body are copied together into a :class:`~StringIO.StringIO` instance
+      (from the :mod:`StringIO` module), which has an API identical to that of a
+      file. As a result, the file-like object is truly independent of the
+      underlying mailbox but does not save memory compared to a string
+      representation.
 
 
    .. method:: lock()
                unlock()
 
-      3種類のロック機構が使われます --- ドットロッキングと、もし使用可能ならば
-      :c:func:`flock` と :c:func:`lockf` システムコールです。
+      Three locking mechanisms are used---dot locking and, if available, the
+      :c:func:`flock` and :c:func:`lockf` system calls.
 
 
 .. seealso::
 
    `Format of Version 5 Babyl Files <http://quimby.gnus.org/notes/BABYL>`_
-      Babyl 形式の仕様
+      A specification of the Babyl format.
 
    `Reading Mail with Rmail <http://www.gnu.org/software/emacs/manual/html_node/emacs/Rmail.html>`_
-      Rmail のマニュアルで Babyl のセマンティクスについての情報も少しある
+      The Rmail manual, with some information on Babyl semantics.
 
 
 .. _mailbox-mmdf:
@@ -696,48 +690,50 @@
 ^^^^^^^^^^^^^
 
 
-.. class:: MMDF(path[, factory=None[, create=True]])
+.. class:: MMDF(path, factory=None, create=True)
 
-   MMDF 形式のメールボックスのための :class:`Mailbox` のサブクラス。パラメータ *factory* は呼び出し可能オブジェクトで
-   (バイナリモードで開かれているかのように振る舞う)ファイル風メッセージ表現を受け付けて好みの表現を返すものです。 *factory* が
-   ``None`` ならば、 :class:`BabylMessage` がデフォルトのメッセージ表現として使われます。 *create* が ``True``
-   ならばメールボックスが存在しないときには作成します。
+   A subclass of :class:`Mailbox` for mailboxes in MMDF format. Parameter *factory*
+   is a callable object that accepts a file-like message representation (which
+   behaves as if opened in binary mode) and returns a custom representation. If
+   *factory* is ``None``, :class:`MMDFMessage` is used as the default message
+   representation. If *create* is ``True``, the mailbox is created if it does not
+   exist.
 
-   MMDF は単一ファイルのメールボックス形式で
-   Multichannel Memorandum Distribution Facility
-   というメール転送エージェント用に発明されたものです。
-   各メッセージは mbox と同様の形式で収められますが、前後を4つの Control-A
-   (``'\\001'``) を含む行で挟んであります。
-   mbox 形式と同じようにそれぞれのメッセージの開始は "From " の5文字を含む行で\
-   示されますが、それ以外の場所での "From " は格納の際 ">From " には変えられません。
-   それは追加されたメッセージ区切りによって新たなメッセージの開始と見間違うことが\
-   避けられるからです。
+   MMDF is a single-file mailbox format invented for the Multichannel Memorandum
+   Distribution Facility, a mail transfer agent. Each message is in the same
+   form as an mbox message but is bracketed before and after by lines containing
+   four Control-A (``'\001'``) characters. As with the mbox format, the
+   beginning of each message is indicated by a line whose first five characters
+   are "From ", but additional occurrences of "From " are not transformed to
+   ">From " when storing messages because the extra message separator lines
+   prevent mistaking such occurrences for the starts of subsequent messages.
 
-   :class:`MMDF` で実装された :class:`Mailbox` のいくつかのメソッドには\
-   特別な注意が必要です。
+   Some :class:`Mailbox` methods implemented by :class:`MMDF` deserve special
+   remarks:
 
 
    .. method:: get_file(key)
 
-      :class:`MMDF` インスタンスに対し :meth:`flush` や :meth:`close` を呼び出した\
-      後でファイルを使用すると予期しない結果を引き起こしたり例外が送出されたりすることが\
-      あります。
+      Using the file after calling :meth:`flush` or :meth:`close` on the
+      :class:`MMDF` instance may yield unpredictable results or raise an
+      exception.
 
 
    .. method:: lock()
                unlock()
 
-      3種類のロック機構が使われます --- ドットロッキングと、もし使用可能ならば
-      :c:func:`flock` と :c:func:`lockf` システムコールです。
+      Three locking mechanisms are used---dot locking and, if available, the
+      :c:func:`flock` and :c:func:`lockf` system calls.
 
 
 .. seealso::
 
-   `tin の  mmdf man page <http://www.tin.org/bin/man.cgi?section=5&topic=mmdf>`_
-      ニュースリーダ tin のドキュメント中の MMDF 形式仕様
+   `mmdf man page from tin <http://www.tin.org/bin/man.cgi?section=5&topic=mmdf>`_
+      A specification of MMDF format from the documentation of tin, a newsreader.
 
    `MMDF <http://en.wikipedia.org/wiki/MMDF>`_
-      Multichannel Memorandum Distribution Facility についてのウィキペディアの記事
+      A Wikipedia article describing the Multichannel Memorandum Distribution
+      Facility.
 
 
 .. _mailbox-message-objects:
@@ -748,28 +744,32 @@
 
 .. class:: Message([message])
 
-   :mod:`email.Message` モジュールの :class:`Message` のサブクラス。 :class:`mailbox.Message`
-   のサブクラスはメールボックス形式ごとの状態と動作を追加します。
+   A subclass of the :mod:`email.message` module's
+   :class:`~email.message.Message`. Subclasses of :class:`mailbox.Message` add
+   mailbox-format-specific state and behavior.
 
-   *message* が省略された場合、新しいインスタンスはデフォルトの空の状態で生成されます。 *message* が
-   :class:`email.Message.Message` インスタンスならばその内容がコピーされます。さらに、 *message* が
-   :class:`Message` インスタンスならば、形式固有の情報も可能な限り変換されます。 *message* が文字列または
-   ファイルならば、読まれ解析されるべき :rfc:`2822` 準拠のメッセージを含んでいなければなりません
+   If *message* is omitted, the new instance is created in a default, empty state.
+   If *message* is an :class:`email.message.Message` instance, its contents are
+   copied; furthermore, any format-specific information is converted insofar as
+   possible if *message* is a :class:`Message` instance. If *message* is a string
+   or a file, it should contain an :rfc:`2822`\ -compliant message, which is read
+   and parsed.
 
-   サブクラスにより提供される形式ごとの状態と動作は様々ですが、一般に或るメールボックス\
-   に固有のものでないプロパティだけがサポートされます(おそらくプロパティのセットは\
-   メールボックス形式ごとに固有でしょうが)。例えば、単一ファイルメールボックス形式\
-   におけるファイルオフセットやディレクトリ式メールボックス形式におけるファイル名は\
-   保持されません、というのもそれらは元々のメールボックスにしか適用できないからです。
-   しかし、メッセージがユーザに読まれたかどうかあるいは重要だとマークされたかどうか\
-   という状態は保持されます、というのはそれらはメッセージ自体に適用されるからです。
+   The format-specific state and behaviors offered by subclasses vary, but in
+   general it is only the properties that are not specific to a particular
+   mailbox that are supported (although presumably the properties are specific
+   to a particular mailbox format). For example, file offsets for single-file
+   mailbox formats and file names for directory-based mailbox formats are not
+   retained, because they are only applicable to the original mailbox. But state
+   such as whether a message has been read by the user or marked as important is
+   retained, because it applies to the message itself.
 
-   :class:`Mailbox` インスタンスを使って取得したメッセージを表現するのに
-   :class:`Message` インスタンスが使われなければいけないとは要求していません。
-   ある種の状況では :class:`Message` による表現を生成するのに必要な時間やメモリーが\
-   受け入れられないこともあります。そういった状況では :class:`Mailbox` インスタンス\
-   は文字列やファイル風オブジェクトの表現も提供できますし、 :class:`Mailbox`
-   インスタンスを初期化する際にメッセージファクトリーを指定することもできます。
+   There is no requirement that :class:`Message` instances be used to represent
+   messages retrieved using :class:`Mailbox` instances. In some situations, the
+   time and memory required to generate :class:`Message` representations might
+   not be acceptable. For such situations, :class:`Mailbox` instances also
+   offer string and file-like representations, and a custom message factory may
+   be specified when a :class:`Mailbox` instance is initialized.
 
 
 .. _mailbox-maildirmessage:
@@ -780,164 +780,164 @@
 
 .. class:: MaildirMessage([message])
 
-   Maildir 固有の動作をするメッセージ。
-   引数 *message* は :class:`Message` のコンストラクタと同じ意味を持ちます。
+   A message with Maildir-specific behaviors. Parameter *message* has the same
+   meaning as with the :class:`Message` constructor.
 
-   通常、メールユーザエージェントは :file:`new` サブディレクトリにある\
-   全てのメッセージをユーザが最初にメールボックスを開くか閉じるかした後で
-   :file:`cur` サブディレクトリに移動し、メッセージが実際に読まれたかどうかを記録します。
-   :file:`cur` にある各メッセージには状態情報を保存するファイル名に付け加えられた
-   "info" セクションがあります。(メールリーダの中には "info" セクションを
-   :file:`new` にあるメッセージに付けることもあります。)
-   "info" セクションには二つの形式があります。一つは "2,"
-   の後に標準化されたフラグのリストを付けたもの (たとえば "2,FR")、もう一つは "1,"
-   の後にいわゆる実験的情報を付け加えるものです。 Maildir
-   の標準的なフラグは以下の通りです:
+   Typically, a mail user agent application moves all of the messages in the
+   :file:`new` subdirectory to the :file:`cur` subdirectory after the first time
+   the user opens and closes the mailbox, recording that the messages are old
+   whether or not they've actually been read. Each message in :file:`cur` has an
+   "info" section added to its file name to store information about its state.
+   (Some mail readers may also add an "info" section to messages in
+   :file:`new`.)  The "info" section may take one of two forms: it may contain
+   "2," followed by a list of standardized flags (e.g., "2,FR") or it may
+   contain "1," followed by so-called experimental information. Standard flags
+   for Maildir messages are as follows:
 
-   +--------+---------------------+--------------------------+
-   | フラグ | 意味                | 説明                     |
-   +========+=====================+==========================+
-   | D      | ドラフト(Draft)     | 作成中                   |
-   +--------+---------------------+--------------------------+
-   | F      | フラグ付き(Flagged) | 重要とされたもの         |
-   +--------+---------------------+--------------------------+
-   | P      | 通過(Passed)        | 転送、再送またはバウンス |
-   +--------+---------------------+--------------------------+
-   | R      | 返答済み(Replied)   | 返答されたもの           |
-   +--------+---------------------+--------------------------+
-   | S      | 既読(Seen)          | 読んだもの               |
-   +--------+---------------------+--------------------------+
-   | T      | ごみ(Trashed)       | 削除予定とされたもの     |
-   +--------+---------------------+--------------------------+
+   +------+---------+--------------------------------+
+   | Flag | Meaning | Explanation                    |
+   +======+=========+================================+
+   | D    | Draft   | Under composition              |
+   +------+---------+--------------------------------+
+   | F    | Flagged | Marked as important            |
+   +------+---------+--------------------------------+
+   | P    | Passed  | Forwarded, resent, or bounced  |
+   +------+---------+--------------------------------+
+   | R    | Replied | Replied to                     |
+   +------+---------+--------------------------------+
+   | S    | Seen    | Read                           |
+   +------+---------+--------------------------------+
+   | T    | Trashed | Marked for subsequent deletion |
+   +------+---------+--------------------------------+
 
-   :class:`MaildirMessage` インスタンスは以下のメソッドを提供します。
+   :class:`MaildirMessage` instances offer the following methods:
 
 
    .. method:: get_subdir()
 
-      "new" (メッセージが :file:`new` サブディレクトリに保存されるべき場合)
-      または "cur" (メッセージが :file:`cur`
-      サブディレクトリに保存されるべき場合)のどちらかを返します。
+      Return either "new" (if the message should be stored in the :file:`new`
+      subdirectory) or "cur" (if the message should be stored in the :file:`cur`
+      subdirectory).
 
       .. note::
 
-         メッセージは通常メールボックスがアクセスされた後、\
-         メッセージが読まれたかどうかに関わらず :file:`new` から :file:`cur`
-         に移動されます。
-         メッセージ ``msg`` は ``"S" not in msg.get_flags()`` が ``True``
-         ならば読まれています。
+         A message is typically moved from :file:`new` to :file:`cur` after its
+         mailbox has been accessed, whether or not the message is has been
+         read. A message ``msg`` has been read if ``"S" in msg.get_flags()`` is
+         ``True``.
 
 
    .. method:: set_subdir(subdir)
 
-      メッセージが保存されるべきサブディレクトリをセットします。
-      パラメータ *subdir* は "new" または "cur" のいずれかでなければなりません。
+      Set the subdirectory the message should be stored in. Parameter *subdir*
+      must be either "new" or "cur".
 
 
    .. method:: get_flags()
 
-      現在セットされているフラグを特定する文字列を返します。
-      メッセージが標準 Maildir 形式に準拠しているならば、\
-      結果はアルファベット順に並べられたゼロまたは1回の ``'D'`` 、
-      ``'F'`` 、 ``'P'`` 、 ``'R'`` 、 ``'S'`` 、 ``'T'`` をつなげたものです。
-      空文字列が返されるのはフラグが一つもない場合、または
-      "info" が実験的セマンティクスを使っている場合です。
+      Return a string specifying the flags that are currently set. If the
+      message complies with the standard Maildir format, the result is the
+      concatenation in alphabetical order of zero or one occurrence of each of
+      ``'D'``, ``'F'``, ``'P'``, ``'R'``, ``'S'``, and ``'T'``. The empty string
+      is returned if no flags are set or if "info" contains experimental
+      semantics.
 
 
    .. method:: set_flags(flags)
 
-      *flags* で指定されたフラグをセットし、他のフラグは下ろします。
+      Set the flags specified by *flags* and unset all others.
 
 
    .. method:: add_flag(flag)
 
-      *flags* で指定されたフラグをセットしますが他のフラグは変えません。
-      一度に二つ以上のフラグをセットすることは、 *flag* に2文字以上の文字列を\
-      指定すればできます。
-      現在の "info" はフラグの代わりに実験的情報を使っていても上書きされます。
+      Set the flag(s) specified by *flag* without changing other flags. To add
+      more than one flag at a time, *flag* may be a string of more than one
+      character. The current "info" is overwritten whether or not it contains
+      experimental information rather than flags.
 
 
    .. method:: remove_flag(flag)
 
-      *flags* で指定されたフラグを下ろしますが他のフラグは変えません。
-      一度に二つ以上のフラグを取り除くことは、 *flag* に2文字以上の文字列を\
-      指定すればできます。
-      "info" がフラグの代わりに実験的情報を使っている場合は現在の
-      "info" は書き換えられません。
+      Unset the flag(s) specified by *flag* without changing other flags. To
+      remove more than one flag at a time, *flag* maybe a string of more than
+      one character.  If "info" contains experimental information rather than
+      flags, the current "info" is not modified.
 
 
    .. method:: get_date()
 
-      メッセージの配送日時をエポックからの秒数を表わす浮動小数点数で返します。
+      Return the delivery date of the message as a floating-point number
+      representing seconds since the epoch.
 
 
    .. method:: set_date(date)
 
-      メッセージの配送日時を *date* にセットします。
-      *date* はエポックからの秒数を表わす浮動小数点数です。
+      Set the delivery date of the message to *date*, a floating-point number
+      representing seconds since the epoch.
 
 
    .. method:: get_info()
 
-      メッセージの "info" を含む文字列を返します。
-      このメソッドは実験的 (即ちフラグのリストでない) "info"
-      にアクセスし、また変更するのに役立ちます。
+      Return a string containing the "info" for a message. This is useful for
+      accessing and modifying "info" that is experimental (i.e., not a list of
+      flags).
 
 
    .. method:: set_info(info)
 
-      "info" に文字列 *info* をセットします。
+      Set "info" to *info*, which should be a string.
 
-:class:`MaildirMessage` インスタンスが :class:`mboxMessage` や :class:`MMDFMessage`
-のインスタンスに基づいて生成されるとき、 :mailheader:`Status` および :mailheader:`X-Status`
-ヘッダは省かれ以下の変換が行われます:
+When a :class:`MaildirMessage` instance is created based upon an
+:class:`mboxMessage` or :class:`MMDFMessage` instance, the :mailheader:`Status`
+and :mailheader:`X-Status` headers are omitted and the following conversions
+take place:
 
-+------------------------+--------------------------------------------------+
-| 結果の状態             | :class:`mboxMessage` または :class:`MMDFMessage` |
-|                        | の状態                                           |
-+========================+==================================================+
-| "cur" サブディレクトリ | O フラグ                                         |
-+------------------------+--------------------------------------------------+
-| F フラグ               | F フラグ                                         |
-+------------------------+--------------------------------------------------+
-| R フラグ               | A フラグ                                         |
-+------------------------+--------------------------------------------------+
-| S フラグ               | R フラグ                                         |
-+------------------------+--------------------------------------------------+
-| T フラグ               | D フラグ                                         |
-+------------------------+--------------------------------------------------+
++--------------------+----------------------------------------------+
+| Resulting state    | :class:`mboxMessage` or :class:`MMDFMessage` |
+|                    | state                                        |
++====================+==============================================+
+| "cur" subdirectory | O flag                                       |
++--------------------+----------------------------------------------+
+| F flag             | F flag                                       |
++--------------------+----------------------------------------------+
+| R flag             | A flag                                       |
++--------------------+----------------------------------------------+
+| S flag             | R flag                                       |
++--------------------+----------------------------------------------+
+| T flag             | D flag                                       |
++--------------------+----------------------------------------------+
 
-:class:`MaildirMessage` インスタンスが :class:`MHMessage` インスタンスに\
-基づいて生成されるとき、以下の変換が行われます:
+When a :class:`MaildirMessage` instance is created based upon an
+:class:`MHMessage` instance, the following conversions take place:
 
-+---------------------------------------+---------------------------+
-| 結果の状態                            | :class:`MHMessage` の状態 |
-+=======================================+===========================+
-| "cur" サブディレクトリ                | "unseen" シーケンス       |
-+---------------------------------------+---------------------------+
-| "cur" サブディレクトリおよび S フラグ | "unseen" シーケンス無し   |
-+---------------------------------------+---------------------------+
-| F フラグ                              | "flagged" シーケンス      |
-+---------------------------------------+---------------------------+
-| R フラグ                              | "replied" シーケンス      |
-+---------------------------------------+---------------------------+
++-------------------------------+--------------------------+
+| Resulting state               | :class:`MHMessage` state |
++===============================+==========================+
+| "cur" subdirectory            | "unseen" sequence        |
++-------------------------------+--------------------------+
+| "cur" subdirectory and S flag | no "unseen" sequence     |
++-------------------------------+--------------------------+
+| F flag                        | "flagged" sequence       |
++-------------------------------+--------------------------+
+| R flag                        | "replied" sequence       |
++-------------------------------+--------------------------+
 
-:class:`MaildirMessage` インスタンスが :class:`BabylMessage` インスタンスに\
-基づいて生成されるとき、以下の変換が行われます:
+When a :class:`MaildirMessage` instance is created based upon a
+:class:`BabylMessage` instance, the following conversions take place:
 
-+---------------------------------------+------------------------------------+
-| 結果の状態                            | :class:`BabylMessage` の状態       |
-+=======================================+====================================+
-| "cur" サブディレクトリ                | "unseen" ラベル                    |
-+---------------------------------------+------------------------------------+
-| "cur" サブディレクトリおよび S フラグ | "unseen" ラベル無し                |
-+---------------------------------------+------------------------------------+
-| P フラグ                              | "forwarded" または "resent" ラベル |
-+---------------------------------------+------------------------------------+
-| R フラグ                              | "answered" ラベル                  |
-+---------------------------------------+------------------------------------+
-| T フラグ                              | "deleted" ラベル                   |
-+---------------------------------------+------------------------------------+
++-------------------------------+-------------------------------+
+| Resulting state               | :class:`BabylMessage` state   |
++===============================+===============================+
+| "cur" subdirectory            | "unseen" label                |
++-------------------------------+-------------------------------+
+| "cur" subdirectory and S flag | no "unseen" label             |
++-------------------------------+-------------------------------+
+| P flag                        | "forwarded" or "resent" label |
++-------------------------------+-------------------------------+
+| R flag                        | "answered" label              |
++-------------------------------+-------------------------------+
+| T flag                        | "deleted" label               |
++-------------------------------+-------------------------------+
 
 
 .. _mailbox-mboxmessage:
@@ -948,145 +948,150 @@
 
 .. class:: mboxMessage([message])
 
-   mbox 固有の動作をするメッセージ。引数 *message* は :class:`Message` のコンストラクタと同じ意味を持ちます。
+   A message with mbox-specific behaviors. Parameter *message* has the same meaning
+   as with the :class:`Message` constructor.
 
-   mbox メールボックス中のメッセージは単一ファイルにまとめて格納されています。
-   送り主のエンベロープアドレスおよび配送日時は通常メッセージの開始を示す
-   "From " から始まる行に記録されますが、正確なフォーマットに関しては mbox の実装ごとに\
-   大きな違いがあります。メッセージの状態を示すフラグ、たとえば読んだかどうか\
-   あるいは重要だとマークを付けられているかどうかといったようなもの、は典型的には
-   :mailheader:`Status` および :mailheader:`X-Status` に収められます。
+   Messages in an mbox mailbox are stored together in a single file. The
+   sender's envelope address and the time of delivery are typically stored in a
+   line beginning with "From " that is used to indicate the start of a message,
+   though there is considerable variation in the exact format of this data among
+   mbox implementations. Flags that indicate the state of the message, such as
+   whether it has been read or marked as important, are typically stored in
+   :mailheader:`Status` and :mailheader:`X-Status` headers.
 
-   規定されている mbox メッセージのフラグは以下の通りです:
+   Conventional flags for mbox messages are as follows:
 
-   +--------+---------------------+-------------------------+
-   | フラグ | 意味                | 説明                    |
-   +========+=====================+=========================+
-   | R      | 既読(Read)          | 読んだ                  |
-   +--------+---------------------+-------------------------+
-   | O      | 古い(Old)           | 以前に MUA に発見された |
-   +--------+---------------------+-------------------------+
-   | D      | 削除(Deleted)       | 削除予定                |
-   +--------+---------------------+-------------------------+
-   | F      | フラグ付き(Flagged) | 重要だとマークされた    |
-   +--------+---------------------+-------------------------+
-   | A      | 返答済み(Answered)  | 返答した                |
-   +--------+---------------------+-------------------------+
+   +------+----------+--------------------------------+
+   | Flag | Meaning  | Explanation                    |
+   +======+==========+================================+
+   | R    | Read     | Read                           |
+   +------+----------+--------------------------------+
+   | O    | Old      | Previously detected by MUA     |
+   +------+----------+--------------------------------+
+   | D    | Deleted  | Marked for subsequent deletion |
+   +------+----------+--------------------------------+
+   | F    | Flagged  | Marked as important            |
+   +------+----------+--------------------------------+
+   | A    | Answered | Replied to                     |
+   +------+----------+--------------------------------+
 
-   "R" および "O" フラグは :mailheader:`Status` ヘッダに記録され、
-   "D"、"F"、"A" フラグは :mailheader:`X-Status` ヘッダに記録されます。
-   フラグとヘッダは通常記述された順番に出現します。
+   The "R" and "O" flags are stored in the :mailheader:`Status` header, and the
+   "D", "F", and "A" flags are stored in the :mailheader:`X-Status` header. The
+   flags and headers typically appear in the order mentioned.
 
-   :class:`mboxMessage` インスタンスは以下のメソッドを提供します:
+   :class:`mboxMessage` instances offer the following methods:
 
 
    .. method:: get_from()
 
-      mbox メールボックスのメッセージの開始を示す "From " 行を表わす文字列を返します。
-      先頭の "From " および末尾の改行は含まれません。
+      Return a string representing the "From " line that marks the start of the
+      message in an mbox mailbox. The leading "From " and the trailing newline
+      are excluded.
 
 
-   .. method:: set_from(from_[, time_=None])
+   .. method:: set_from(from_, time_=None)
 
-      "From " 行を *from_* にセットします。
-      *from_* は先頭の "From " や末尾の改行を含まない形で指定しなければなりません。
-      利便性のために、 *time_* を指定して適切に整形して *from_*
-      に追加させることができます。
-      *time_* を指定する場合、それは :class:`struct_time`
-      インスタンス、 :meth:`time.strftime` に渡すのに適したタプル、または
-      ``True`` (この場合 :meth:`time.gmtime` を使います)
-      のいずれかでなければなりません。
+      Set the "From " line to *from_*, which should be specified without a
+      leading "From " or trailing newline. For convenience, *time_* may be
+      specified and will be formatted appropriately and appended to *from_*. If
+      *time_* is specified, it should be a :class:`time.struct_time` instance, a
+      tuple suitable for passing to :meth:`time.strftime`, or ``True`` (to use
+      :meth:`time.gmtime`).
 
 
    .. method:: get_flags()
 
-      現在セットされているフラグを特定する文字列を返します。
-      メッセージが規定された形式に準拠しているならば、結果は次の順に並べられた
-      0回か1回の ``'R'`` 、 ``'O'`` 、 ``'D'`` 、 ``'F'`` 、 ``'A'`` です。
+      Return a string specifying the flags that are currently set. If the
+      message complies with the conventional format, the result is the
+      concatenation in the following order of zero or one occurrence of each of
+      ``'R'``, ``'O'``, ``'D'``, ``'F'``, and ``'A'``.
 
 
    .. method:: set_flags(flags)
 
-      *flags* で指定されたフラグをセットして、他のフラグは下ろします。
-      *flags* は並べられたゼロまたは1回の ``'R'`` 、
-      ``'O'`` 、 ``'D'`` 、 ``'F'`` 、 ``'A'`` です。
+      Set the flags specified by *flags* and unset all others. Parameter *flags*
+      should be the concatenation in any order of zero or more occurrences of
+      each of ``'R'``, ``'O'``, ``'D'``, ``'F'``, and ``'A'``.
 
 
    .. method:: add_flag(flag)
 
-      *flags* で指定されたフラグをセットしますが他のフラグは変えません。
-      一度に二つ以上のフラグをセットすることは、 *flag* に2文字以上の文字列を\
-      指定すればできます。
+      Set the flag(s) specified by *flag* without changing other flags. To add
+      more than one flag at a time, *flag* may be a string of more than one
+      character.
 
 
    .. method:: remove_flag(flag)
 
-      *flags* で指定されたフラグを下ろしますが他のフラグは変えません。
-      一度に二つ以上のフラグを取り除くことは、 *flag* に2文字以上の文字列を\
-      指定すればできます。
+      Unset the flag(s) specified by *flag* without changing other flags. To
+      remove more than one flag at a time, *flag* maybe a string of more than
+      one character.
 
-:class:`mboxMessage` インスタンスが :class:`MaildirMessage` インスタンスに
-基づいて生成されるとき、 :class:`MaildirMessage` インスタンスの配送日時に基づいて "From " 行が作り出され、次の変換が行われます:
+When an :class:`mboxMessage` instance is created based upon a
+:class:`MaildirMessage` instance, a "From " line is generated based upon the
+:class:`MaildirMessage` instance's delivery date, and the following conversions
+take place:
 
-+------------+--------------------------------+
-| 結果の状態 | :class:`MaildirMessage` の状態 |
-+============+================================+
-| R フラグ   | S フラグ                       |
-+------------+--------------------------------+
-| O フラグ   | "cur" サブディレクトリ         |
-+------------+--------------------------------+
-| D フラグ   | T フラグ                       |
-+------------+--------------------------------+
-| F フラグ   | F フラグ                       |
-+------------+--------------------------------+
-| A フラグ   | R フラグ                       |
-+------------+--------------------------------+
++-----------------+-------------------------------+
+| Resulting state | :class:`MaildirMessage` state |
++=================+===============================+
+| R flag          | S flag                        |
++-----------------+-------------------------------+
+| O flag          | "cur" subdirectory            |
++-----------------+-------------------------------+
+| D flag          | T flag                        |
++-----------------+-------------------------------+
+| F flag          | F flag                        |
++-----------------+-------------------------------+
+| A flag          | R flag                        |
++-----------------+-------------------------------+
 
-:class:`mboxMessage` インスタンスが :class:`MHMessage` インスタンスに基づいて生成されるとき、以下の変換が行われます。
+When an :class:`mboxMessage` instance is created based upon an
+:class:`MHMessage` instance, the following conversions take place:
 
-+--------------------------+-------------------------+
-| 結果の状態               | :class:`MHMessage` 状態 |
-+==========================+=========================+
-| R フラグおよび O フラグ  | "unseen" シーケンス無し |
-+--------------------------+-------------------------+
-| O フラグ                 | "unseen" シーケンス     |
-+--------------------------+-------------------------+
-| F フラグ                 | "flagged" シーケンス    |
-+--------------------------+-------------------------+
-| A フラグ                 | "replied" シーケンス    |
-+--------------------------+-------------------------+
++-------------------+--------------------------+
+| Resulting state   | :class:`MHMessage` state |
++===================+==========================+
+| R flag and O flag | no "unseen" sequence     |
++-------------------+--------------------------+
+| O flag            | "unseen" sequence        |
++-------------------+--------------------------+
+| F flag            | "flagged" sequence       |
++-------------------+--------------------------+
+| A flag            | "replied" sequence       |
++-------------------+--------------------------+
 
-:class:`mboxMessage` インスタンスが :class:`BabylMessage` インスタンスに\
-基づいて生成されるとき、以下の変換が行われます:
+When an :class:`mboxMessage` instance is created based upon a
+:class:`BabylMessage` instance, the following conversions take place:
 
-+--------------------------+------------------------------+
-| 結果の状態               | :class:`BabylMessage` の状態 |
-+==========================+==============================+
-| R フラグおよび O フラグ  | "unseen" ラベル無し          |
-+--------------------------+------------------------------+
-| O フラグ                 | "unseen" ラベル              |
-+--------------------------+------------------------------+
-| D フラグ                 | "deleted" ラベル             |
-+--------------------------+------------------------------+
-| A フラグ                 | "answered" ラベル            |
-+--------------------------+------------------------------+
++-------------------+-----------------------------+
+| Resulting state   | :class:`BabylMessage` state |
++===================+=============================+
+| R flag and O flag | no "unseen" label           |
++-------------------+-----------------------------+
+| O flag            | "unseen" label              |
++-------------------+-----------------------------+
+| D flag            | "deleted" label             |
++-------------------+-----------------------------+
+| A flag            | "answered" label            |
++-------------------+-----------------------------+
 
-:class:`mboxMessage` インスタンスが :class:`MMDFMessage` インスタンスに基づいて生成されるとき、"From "
-行はコピーされ全てのフラグは直接対応します:
+When a :class:`Message` instance is created based upon an :class:`MMDFMessage`
+instance, the "From " line is copied and all flags directly correspond:
 
-+------------+-----------------------------+
-| 結果の状態 | :class:`MMDFMessage` の状態 |
-+============+=============================+
-| R フラグ   | R フラグ                    |
-+------------+-----------------------------+
-| O フラグ   | O フラグ                    |
-+------------+-----------------------------+
-| D フラグ   | D フラグ                    |
-+------------+-----------------------------+
-| F フラグ   | F フラグ                    |
-+------------+-----------------------------+
-| A フラグ   | A フラグ                    |
-+------------+-----------------------------+
++-----------------+----------------------------+
+| Resulting state | :class:`MMDFMessage` state |
++=================+============================+
+| R flag          | R flag                     |
++-----------------+----------------------------+
+| O flag          | O flag                     |
++-----------------+----------------------------+
+| D flag          | D flag                     |
++-----------------+----------------------------+
+| F flag          | F flag                     |
++-----------------+----------------------------+
+| A flag          | A flag                     |
++-----------------+----------------------------+
 
 
 .. _mailbox-mhmessage:
@@ -1097,84 +1102,86 @@
 
 .. class:: MHMessage([message])
 
-   MH 固有の動作をするメッセージ。引数 *message* は :class:`Message` のコンストラクタと同じ意味を持ちます。
+   A message with MH-specific behaviors. Parameter *message* has the same meaning
+   as with the :class:`Message` constructor.
 
-   MH メッセージは伝統的な意味あいにおいてマークやフラグをサポートしません。
-   しかし、MH メッセージにはシーケンスがあり任意のメッセージを論理的に\
-   グループ分けできます。いくつかのメールソフト(標準の :program:`mh` や
-   :program:`nmh` はそうではありませんが) は他の形式におけるフラグとほぼ\
-   同じようにシーケンスを使います。
+   MH messages do not support marks or flags in the traditional sense, but they
+   do support sequences, which are logical groupings of arbitrary messages. Some
+   mail reading programs (although not the standard :program:`mh` and
+   :program:`nmh`) use sequences in much the same way flags are used with other
+   formats, as follows:
 
-   +------------+-------------------------------------------+
-   | シーケンス | 説明                                      |
-   +============+===========================================+
-   | unseen     | 読んではいないが既にMUAに見つけられている |
-   +------------+-------------------------------------------+
-   | replied    | 返答した                                  |
-   +------------+-------------------------------------------+
-   | flagged    | 重要だとマークされた                      |
-   +------------+-------------------------------------------+
+   +----------+------------------------------------------+
+   | Sequence | Explanation                              |
+   +==========+==========================================+
+   | unseen   | Not read, but previously detected by MUA |
+   +----------+------------------------------------------+
+   | replied  | Replied to                               |
+   +----------+------------------------------------------+
+   | flagged  | Marked as important                      |
+   +----------+------------------------------------------+
 
-   :class:`MHMessage` インスタンスは以下のメソッドを提供します:
+   :class:`MHMessage` instances offer the following methods:
 
 
    .. method:: get_sequences()
 
-      このメッセージを含むシーケンスの名前のリストを返す。
+      Return a list of the names of sequences that include this message.
 
 
    .. method:: set_sequences(sequences)
 
-      このメッセージを含むシーケンスのリストをセットする。
+      Set the list of sequences that include this message.
 
 
    .. method:: add_sequence(sequence)
 
-      *sequence* をこのメッセージを含むシーケンスのリストに追加する。
+      Add *sequence* to the list of sequences that include this message.
 
 
    .. method:: remove_sequence(sequence)
 
-      *sequence* をこのメッセージを含むシーケンスのリストから除く。
+      Remove *sequence* from the list of sequences that include this message.
 
-:class:`MHMessage` インスタンスが :class:`MaildirMessage` インスタンスに\
-基づいて生成されるとき、以下の変換が行われます:
+When an :class:`MHMessage` instance is created based upon a
+:class:`MaildirMessage` instance, the following conversions take place:
 
-+----------------------+--------------------------------+
-| 結果の状態           | :class:`MaildirMessage` の状態 |
-+======================+================================+
-| "unseen" シーケンス  | S フラグ無し                   |
-+----------------------+--------------------------------+
-| "replied" シーケンス | R フラグ                       |
-+----------------------+--------------------------------+
-| "flagged" シーケンス | F フラグ                       |
-+----------------------+--------------------------------+
++--------------------+-------------------------------+
+| Resulting state    | :class:`MaildirMessage` state |
++====================+===============================+
+| "unseen" sequence  | no S flag                     |
++--------------------+-------------------------------+
+| "replied" sequence | R flag                        |
++--------------------+-------------------------------+
+| "flagged" sequence | F flag                        |
++--------------------+-------------------------------+
 
-:class:`MHMessage` インスタンスが :class:`mboxMessage` や :class:`MMDFMessage`
-のインスタンスに基づいて生成されるとき、 :mailheader:`Status` および :mailheader:`X-Status`
-ヘッダは省かれ以下の変換が行われます:
+When an :class:`MHMessage` instance is created based upon an
+:class:`mboxMessage` or :class:`MMDFMessage` instance, the :mailheader:`Status`
+and :mailheader:`X-Status` headers are omitted and the following conversions
+take place:
 
-+----------------------+--------------------------------------------------+
-| 結果の状態           | :class:`mboxMessage` または :class:`MMDFMessage` |
-|                      | の状態                                           |
-+======================+==================================================+
-| "unseen" シーケンス  | R フラグ無し                                     |
-+----------------------+--------------------------------------------------+
-| "replied" シーケンス | A フラグ                                         |
-+----------------------+--------------------------------------------------+
-| "flagged" シーケンス | F フラグ                                         |
-+----------------------+--------------------------------------------------+
++--------------------+----------------------------------------------+
+| Resulting state    | :class:`mboxMessage` or :class:`MMDFMessage` |
+|                    | state                                        |
++====================+==============================================+
+| "unseen" sequence  | no R flag                                    |
++--------------------+----------------------------------------------+
+| "replied" sequence | A flag                                       |
++--------------------+----------------------------------------------+
+| "flagged" sequence | F flag                                       |
++--------------------+----------------------------------------------+
 
-:class:`MHMessage` インスタンスが :class:`BabylMessage` インスタンスに
-基づいて生成されるとき、以下の変換が行われます:
+When an :class:`MHMessage` instance is created based upon a
+:class:`BabylMessage` instance, the following conversions take place:
 
-+----------------------+------------------------------+
-| 結果の状態           | :class:`BabylMessage` の状態 |
-+======================+==============================+
-| "unseen" シーケンス  | "unseen" ラベル              |
-+----------------------+------------------------------+
-| "replied" シーケンス | "answered" ラベル            |
-+----------------------+------------------------------+
++--------------------+-----------------------------+
+| Resulting state    | :class:`BabylMessage` state |
++====================+=============================+
+| "unseen" sequence  | "unseen" label              |
++--------------------+-----------------------------+
+| "replied" sequence | "answered" label            |
++--------------------+-----------------------------+
 
 
 .. _mailbox-babylmessage:
@@ -1185,121 +1192,124 @@
 
 .. class:: BabylMessage([message])
 
-   Babyl 固有の動作をするメッセージ。引数 *message* は :class:`Message` のコンストラクタと同じ意味を持ちます。
+   A message with Babyl-specific behaviors. Parameter *message* has the same
+   meaning as with the :class:`Message` constructor.
 
-   ある種のメッセージラベルは :dfn:`アトリビュート` と呼ばれ、規約により特別な意味が与えられています。アトリビュートは以下の通りです:
+   Certain message labels, called :dfn:`attributes`, are defined by convention
+   to have special meanings. The attributes are as follows:
 
-   +-----------+------------------------------------------------+
-   | ラベル    | 説明                                           |
-   +===========+================================================+
-   | unseen    | 読んでいないが既に MUA に見つかっている        |
-   +-----------+------------------------------------------------+
-   | deleted   | 削除予定                                       |
-   +-----------+------------------------------------------------+
-   | filed     | 他のファイルまたはメールボックスにコピーされた |
-   +-----------+------------------------------------------------+
-   | answered  | 返答済み                                       |
-   +-----------+------------------------------------------------+
-   | forwarded | 転送された                                     |
-   +-----------+------------------------------------------------+
-   | edited    | ユーザによって変更された                       |
-   +-----------+------------------------------------------------+
-   | resent    | 再送された                                     |
-   +-----------+------------------------------------------------+
+   +-----------+------------------------------------------+
+   | Label     | Explanation                              |
+   +===========+==========================================+
+   | unseen    | Not read, but previously detected by MUA |
+   +-----------+------------------------------------------+
+   | deleted   | Marked for subsequent deletion           |
+   +-----------+------------------------------------------+
+   | filed     | Copied to another file or mailbox        |
+   +-----------+------------------------------------------+
+   | answered  | Replied to                               |
+   +-----------+------------------------------------------+
+   | forwarded | Forwarded                                |
+   +-----------+------------------------------------------+
+   | edited    | Modified by the user                     |
+   +-----------+------------------------------------------+
+   | resent    | Resent                                   |
+   +-----------+------------------------------------------+
 
-   デフォルトでは Rmail は可視ヘッダのみ表示します。
-   :class:`BabylMessage` クラスはしかし、
-   オリジナルヘッダをより完全だという理由で使います。
-   可視ヘッダは望むならそのように指示してアクセスすることができます。
+   By default, Rmail displays only visible headers. The :class:`BabylMessage`
+   class, though, uses the original headers because they are more
+   complete. Visible headers may be accessed explicitly if desired.
 
-   :class:`BabylMessage` インスタンスは以下のメソッドを提供します:
+   :class:`BabylMessage` instances offer the following methods:
 
 
    .. method:: get_labels()
 
-      メッセージに付いているラベルのリストを返します。
+      Return a list of labels on the message.
 
 
    .. method:: set_labels(labels)
 
-      メッセージに付いているラベルのリストを *labels* にセットします。
+      Set the list of labels on the message to *labels*.
 
 
    .. method:: add_label(label)
 
-      メッセージに付いているラベルのリストに *label* を追加します。
+      Add *label* to the list of labels on the message.
 
 
    .. method:: remove_label(label)
 
-      メッセージに付いているラベルのリストから *label* を削除します。
+      Remove *label* from the list of labels on the message.
 
 
    .. method:: get_visible()
 
-      ヘッダがメッセージの可視ヘッダでありボディが空であるような
-      :class:`Message` インスタンスを返します。
+      Return an :class:`Message` instance whose headers are the message's
+      visible headers and whose body is empty.
 
 
    .. method:: set_visible(visible)
 
-      メッセージの可視ヘッダを *visible* のヘッダと同じにセットします。
-      引数 *visible* は :class:`Message` インスタンスまたは
-      :class:`email.Message.Message` インスタンス、文字列、\
-      ファイル風オブジェクト(テキストモードで開かれてなければなりません)のいずれかです。
+      Set the message's visible headers to be the same as the headers in
+      *message*.  Parameter *visible* should be a :class:`Message` instance, an
+      :class:`email.message.Message` instance, a string, or a file-like object
+      (which should be open in text mode).
 
 
    .. method:: update_visible()
 
-      :class:`BabylMessage` インスタンスのオリジナルヘッダが変更されたとき、\
-      可視ヘッダは自動的に対応して変更されるわけではありません。
-      このメソッドは可視ヘッダを以下のように更新します。
-      対応するオリジナルヘッダのある可視ヘッダはオリジナルヘッダの値がセットされます。
-      対応するオリジナルヘッダの無い可視ヘッダは除去されます。
-      そして、オリジナルヘッダにあって可視ヘッダに無い :mailheader:`Date` 、
-      :mailheader:`From` 、 :mailheader:`Reply-To` 、 :mailheader:`To` 、
-      :mailheader:`CC` 、 :mailheader:`Subject` は可視ヘッダに追加されます。
+      When a :class:`BabylMessage` instance's original headers are modified, the
+      visible headers are not automatically modified to correspond. This method
+      updates the visible headers as follows: each visible header with a
+      corresponding original header is set to the value of the original header,
+      each visible header without a corresponding original header is removed,
+      and any of :mailheader:`Date`, :mailheader:`From`, :mailheader:`Reply-To`,
+      :mailheader:`To`, :mailheader:`CC`, and :mailheader:`Subject` that are
+      present in the original headers but not the visible headers are added to
+      the visible headers.
 
-:class:`BabylMessage` インスタンスが :class:`MaildirMessage` インスタンスに\
-基づいて生成されるとき、以下の変換が行われます:
+When a :class:`BabylMessage` instance is created based upon a
+:class:`MaildirMessage` instance, the following conversions take place:
 
-+--------------------+--------------------------------+
-| 結果の状態         | :class:`MaildirMessage` の状態 |
-+====================+================================+
-| "unseen" ラベル    | S フラグ無し                   |
-+--------------------+--------------------------------+
-| "deleted" ラベル   | T フラグ                       |
-+--------------------+--------------------------------+
-| "answered" ラベル  | R フラグ                       |
-+--------------------+--------------------------------+
-| "forwarded" ラベル | P フラグ                       |
-+--------------------+--------------------------------+
++-------------------+-------------------------------+
+| Resulting state   | :class:`MaildirMessage` state |
++===================+===============================+
+| "unseen" label    | no S flag                     |
++-------------------+-------------------------------+
+| "deleted" label   | T flag                        |
++-------------------+-------------------------------+
+| "answered" label  | R flag                        |
++-------------------+-------------------------------+
+| "forwarded" label | P flag                        |
++-------------------+-------------------------------+
 
-:class:`BabylMessage` インスタンスが :class:`mboxMessage` や :class:`MMDFMessage`
-のインスタンスに基づいて生成されるとき、 :mailheader:`Status` および :mailheader:`X-Status`
-ヘッダは省かれ以下の変換が行われます:
+When a :class:`BabylMessage` instance is created based upon an
+:class:`mboxMessage` or :class:`MMDFMessage` instance, the :mailheader:`Status`
+and :mailheader:`X-Status` headers are omitted and the following conversions
+take place:
 
-+-------------------+--------------------------------------------------+
-| 結果の状態        | :class:`mboxMessage` または :class:`MMDFMessage` |
-|                   | の状態                                           |
-+===================+==================================================+
-| "unseen" ラベル   | R フラグ無し                                     |
-+-------------------+--------------------------------------------------+
-| "deleted" ラベル  | D フラグ                                         |
-+-------------------+--------------------------------------------------+
-| "answered" ラベル | A フラグ                                         |
-+-------------------+--------------------------------------------------+
++------------------+----------------------------------------------+
+| Resulting state  | :class:`mboxMessage` or :class:`MMDFMessage` |
+|                  | state                                        |
++==================+==============================================+
+| "unseen" label   | no R flag                                    |
++------------------+----------------------------------------------+
+| "deleted" label  | D flag                                       |
++------------------+----------------------------------------------+
+| "answered" label | A flag                                       |
++------------------+----------------------------------------------+
 
-:class:`BabylMessage` インスタンスが :class:`MHMessage` インスタンスに
-基づいて生成されるとき、以下の変換が行われます:
+When a :class:`BabylMessage` instance is created based upon an
+:class:`MHMessage` instance, the following conversions take place:
 
-+-------------------+---------------------------+
-| 結果の状態        | :class:`MHMessage` の状態 |
-+===================+===========================+
-| "unseen" ラベル   | "unseen" シーケンス       |
-+-------------------+---------------------------+
-| "answered" ラベル | "replied" シーケンス      |
-+-------------------+---------------------------+
++------------------+--------------------------+
+| Resulting state  | :class:`MHMessage` state |
++==================+==========================+
+| "unseen" label   | "unseen" sequence        |
++------------------+--------------------------+
+| "answered" label | "replied" sequence       |
++------------------+--------------------------+
 
 
 .. _mailbox-mmdfmessage:
@@ -1310,274 +1320,295 @@
 
 .. class:: MMDFMessage([message])
 
-   MMDF 固有の動作をするメッセージ。引数 *message* は :class:`Message` のコンストラクタと同じ意味を持ちます。
+   A message with MMDF-specific behaviors. Parameter *message* has the same meaning
+   as with the :class:`Message` constructor.
 
-   mbox メールボックスのメッセージと同様に、MMDF メッセージは送り主のアドレスと\
-   配送日時が最初の "From " で始まる行に記録されています。
-   同様に、メッセージの状態を示すフラグは通常 :mailheader:`Status` および
-   :mailheader:`X-Status` ヘッダに収められています。
+   As with message in an mbox mailbox, MMDF messages are stored with the
+   sender's address and the delivery date in an initial line beginning with
+   "From ".  Likewise, flags that indicate the state of the message are
+   typically stored in :mailheader:`Status` and :mailheader:`X-Status` headers.
 
-よく使われる MMDF メッセージのフラグは mbox メッセージのものと同一で以下の通りです:
+   Conventional flags for MMDF messages are identical to those of mbox message
+   and are as follows:
 
-   +--------+---------------------+-------------------------+
-   | フラグ | 意味                | 説明                    |
-   +========+=====================+=========================+
-   | R      | 既読(Read)          | 読んだ                  |
-   +--------+---------------------+-------------------------+
-   | O      | 古い(Old)           | 以前に MUA に発見された |
-   +--------+---------------------+-------------------------+
-   | D      | 削除(Deleted)       | 削除予定                |
-   +--------+---------------------+-------------------------+
-   | F      | フラグ付き(Flagged) | 重要だとマークされた    |
-   +--------+---------------------+-------------------------+
-   | A      | 返答済み(Answered)  | 返答した                |
-   +--------+---------------------+-------------------------+
+   +------+----------+--------------------------------+
+   | Flag | Meaning  | Explanation                    |
+   +======+==========+================================+
+   | R    | Read     | Read                           |
+   +------+----------+--------------------------------+
+   | O    | Old      | Previously detected by MUA     |
+   +------+----------+--------------------------------+
+   | D    | Deleted  | Marked for subsequent deletion |
+   +------+----------+--------------------------------+
+   | F    | Flagged  | Marked as important            |
+   +------+----------+--------------------------------+
+   | A    | Answered | Replied to                     |
+   +------+----------+--------------------------------+
 
-   "R" および "O" フラグは :mailheader:`Status` ヘッダに記録され、
-   "D"、"F"、"A" フラグは
-   :mailheader:`X-Status` ヘッダに記録されます。
-   フラグとヘッダは通常記述された順番に出現します。
+   The "R" and "O" flags are stored in the :mailheader:`Status` header, and the
+   "D", "F", and "A" flags are stored in the :mailheader:`X-Status` header. The
+   flags and headers typically appear in the order mentioned.
 
-   :class:`MMDFMessage` インスタンスは :class:`mboxMessage`
-   インスタンスと同一の以下のメソッドを提供します:
+   :class:`MMDFMessage` instances offer the following methods, which are
+   identical to those offered by :class:`mboxMessage`:
 
 
    .. method:: get_from()
 
-      MMDF メールボックスのメッセージの開始を示す "From " 行を表わす文字列を返します。
-      先頭の "From " および末尾の改行は含まれません。
+      Return a string representing the "From " line that marks the start of the
+      message in an mbox mailbox. The leading "From " and the trailing newline
+      are excluded.
 
 
-   .. method:: set_from(from_[, time_=None])
+   .. method:: set_from(from_, time_=None)
 
-      "From " 行を *from_* にセットします。 *from_* は先頭の "From " や\
-      末尾の改行を含まない形で指定しなければなりません。
-      利便性のために、 *time_* を指定して適切に整形して *from_*
-      に追加させることができます。
-      *time_* を指定する場合、それは :class:`struct_time` インスタンス、
-      :meth:`time.strftime` に渡すのに適したタプル、または ``True``
-      (この場合 :meth:`time.gmtime` を使います) のいずれかでなければなりません。
+      Set the "From " line to *from_*, which should be specified without a
+      leading "From " or trailing newline. For convenience, *time_* may be
+      specified and will be formatted appropriately and appended to *from_*. If
+      *time_* is specified, it should be a :class:`time.struct_time` instance, a
+      tuple suitable for passing to :meth:`time.strftime`, or ``True`` (to use
+      :meth:`time.gmtime`).
 
 
    .. method:: get_flags()
 
-      現在セットされているフラグを特定する文字列を返します。
-      メッセージが規定された形式に準拠しているならば、結果は次の順に並べられた\
-      ゼロまたは1回の ``'R'`` 、 ``'O'`` 、 ``'D'`` 、 ``'F'`` 、 ``'A'`` です。
+      Return a string specifying the flags that are currently set. If the
+      message complies with the conventional format, the result is the
+      concatenation in the following order of zero or one occurrence of each of
+      ``'R'``, ``'O'``, ``'D'``, ``'F'``, and ``'A'``.
 
 
    .. method:: set_flags(flags)
 
-      *flags* で指定されたフラグをセットして、他のフラグは下ろします。
-      *flags* は並べられたゼロまたは1回の ``'R'`` 、
-      ``'O'`` 、 ``'D'`` 、 ``'F'`` 、 ``'A'`` です。
+      Set the flags specified by *flags* and unset all others. Parameter *flags*
+      should be the concatenation in any order of zero or more occurrences of
+      each of ``'R'``, ``'O'``, ``'D'``, ``'F'``, and ``'A'``.
 
 
    .. method:: add_flag(flag)
 
-      *flags* で指定されたフラグをセットしますが他のフラグは変えません。
-      一度に二つ以上のフラグをセットすることは、 *flag* に2文字以上の文字列を\
-      指定すればできます。
+      Set the flag(s) specified by *flag* without changing other flags. To add
+      more than one flag at a time, *flag* may be a string of more than one
+      character.
 
 
    .. method:: remove_flag(flag)
 
-      *flags* で指定されたフラグを下ろしますが他のフラグは変えません。
-      一度に二つ以上のフラグを取り除くことは、 *flag* に2文字以上の文字列を\
-      指定すればできます。
+      Unset the flag(s) specified by *flag* without changing other flags. To
+      remove more than one flag at a time, *flag* maybe a string of more than
+      one character.
 
-:class:`MMDFMessage` インスタンスが :class:`MaildirMessage` インスタンスに\
-基づいて生成されるとき、 :class:`MaildirMessage` インスタンスの配送日時に基づいて
-"From " 行が作り出され、次の変換が行われます:
+When an :class:`MMDFMessage` instance is created based upon a
+:class:`MaildirMessage` instance, a "From " line is generated based upon the
+:class:`MaildirMessage` instance's delivery date, and the following conversions
+take place:
 
-+------------+--------------------------------+
-| 結果の状態 | :class:`MaildirMessage` の状態 |
-+============+================================+
-| R フラグ   | S フラグ                       |
-+------------+--------------------------------+
-| O フラグ   | "cur" サブディレクトリ         |
-+------------+--------------------------------+
-| D フラグ   | T フラグ                       |
-+------------+--------------------------------+
-| F フラグ   | F フラグ                       |
-+------------+--------------------------------+
-| A フラグ   | R フラグ                       |
-+------------+--------------------------------+
++-----------------+-------------------------------+
+| Resulting state | :class:`MaildirMessage` state |
++=================+===============================+
+| R flag          | S flag                        |
++-----------------+-------------------------------+
+| O flag          | "cur" subdirectory            |
++-----------------+-------------------------------+
+| D flag          | T flag                        |
++-----------------+-------------------------------+
+| F flag          | F flag                        |
++-----------------+-------------------------------+
+| A flag          | R flag                        |
++-----------------+-------------------------------+
 
-:class:`MMDFMessage` インスタンスが :class:`MHMessage` インスタンスに基づいて生成されるとき、以下の変換が行われます。
+When an :class:`MMDFMessage` instance is created based upon an
+:class:`MHMessage` instance, the following conversions take place:
 
-+--------------------------+-------------------------+
-| 結果の状態               | :class:`MHMessage` 状態 |
-+==========================+=========================+
-| R フラグおよび O フラグ  | "unseen" シーケンス無し |
-+--------------------------+-------------------------+
-| O フラグ                 | "unseen" シーケンス     |
-+--------------------------+-------------------------+
-| F フラグ                 | "flagged" シーケンス    |
-+--------------------------+-------------------------+
-| A フラグ                 | "replied" シーケンス    |
-+--------------------------+-------------------------+
++-------------------+--------------------------+
+| Resulting state   | :class:`MHMessage` state |
++===================+==========================+
+| R flag and O flag | no "unseen" sequence     |
++-------------------+--------------------------+
+| O flag            | "unseen" sequence        |
++-------------------+--------------------------+
+| F flag            | "flagged" sequence       |
++-------------------+--------------------------+
+| A flag            | "replied" sequence       |
++-------------------+--------------------------+
 
-:class:`MMDFMessage` インスタンスが :class:`BabylMessage` インスタンスに\
-基づいて生成されるとき、以下の変換が行われます:
+When an :class:`MMDFMessage` instance is created based upon a
+:class:`BabylMessage` instance, the following conversions take place:
 
-+--------------------------+------------------------------+
-| 結果の状態               | :class:`BabylMessage` の状態 |
-+==========================+==============================+
-| R フラグおよび O フラグ  | "unseen" ラベル無し          |
-+--------------------------+------------------------------+
-| O フラグ                 | "unseen" ラベル              |
-+--------------------------+------------------------------+
-| D フラグ                 | "deleted" ラベル             |
-+--------------------------+------------------------------+
-| A フラグ                 | "answered" ラベル            |
-+--------------------------+------------------------------+
++-------------------+-----------------------------+
+| Resulting state   | :class:`BabylMessage` state |
++===================+=============================+
+| R flag and O flag | no "unseen" label           |
++-------------------+-----------------------------+
+| O flag            | "unseen" label              |
++-------------------+-----------------------------+
+| D flag            | "deleted" label             |
++-------------------+-----------------------------+
+| A flag            | "answered" label            |
++-------------------+-----------------------------+
 
-:class:`MMDFMessage` インスタンスが :class:`mboxMessage` インスタンスに基づいて生成されるとき、"From "
-行はコピーされ全てのフラグは直接対応します:
+When an :class:`MMDFMessage` instance is created based upon an
+:class:`mboxMessage` instance, the "From " line is copied and all flags directly
+correspond:
 
-+------------+-----------------------------+
-| 結果の状態 | :class:`mboxMessage` の状態 |
-+============+=============================+
-| R フラグ   | R フラグ                    |
-+------------+-----------------------------+
-| O フラグ   | O フラグ                    |
-+------------+-----------------------------+
-| D フラグ   | D フラグ                    |
-+------------+-----------------------------+
-| F フラグ   | F フラグ                    |
-+------------+-----------------------------+
-| A フラグ   | A フラグ                    |
-+------------+-----------------------------+
++-----------------+----------------------------+
+| Resulting state | :class:`mboxMessage` state |
++=================+============================+
+| R flag          | R flag                     |
++-----------------+----------------------------+
+| O flag          | O flag                     |
++-----------------+----------------------------+
+| D flag          | D flag                     |
++-----------------+----------------------------+
+| F flag          | F flag                     |
++-----------------+----------------------------+
+| A flag          | A flag                     |
++-----------------+----------------------------+
 
 
-例外
-----
+Exceptions
+----------
 
-:mod:`mailbox` モジュールでは以下の例外クラスが定義されています:
+The following exception classes are defined in the :mod:`mailbox` module:
 
 
 .. exception:: Error()
 
-   他の全てのモジュール固有の例外の基底クラス。
+   The based class for all other module-specific exceptions.
 
 
 .. exception:: NoSuchMailboxError()
 
-   メールボックスがあると思っていたが見つからなかった場合に送出されます。これはたとえば :class:`Mailbox`
-   のサブクラスを存在しないパスでインスタンス化しようとしたとき(かつ *create* パラメータは ``False`` であった場合)、
-   あるいは存在しないフォルダを開こうとした時などに発生します。
+   Raised when a mailbox is expected but is not found, such as when instantiating a
+   :class:`Mailbox` subclass with a path that does not exist (and with the *create*
+   parameter set to ``False``), or when opening a folder that does not exist.
 
 
 .. exception:: NotEmptyError()
 
-   メールボックスが空であることを期待されているときに空でない場合、たとえばメッセージの残っているフォルダを削除しようとした時などに送出されます。
+   Raised when a mailbox is not empty but is expected to be, such as when deleting
+   a folder that contains messages.
 
 
 .. exception:: ExternalClashError()
 
-   メールボックスに関係したある条件がプログラムの制御を外れてそれ以上作業を
-   続けられなくなった場合、たとえば他のプログラムが既に保持しているロックを取得しようとして
-   失敗したとき、あるいは一意的に生成されたファイル名が既に存在していた場合などに送出されます。
+   Raised when some mailbox-related condition beyond the control of the program
+   causes it to be unable to proceed, such as when failing to acquire a lock that
+   another program already holds a lock, or when a uniquely-generated file name
+   already exists.
 
 
 .. exception:: FormatError()
 
-   ファイル中のデータが解析できない場合、たとえば :class:`MH` インスタンスが壊れた :file:`.mh_sequences`
-   ファイルを読もうと試みた場合などに送出されます。
+   Raised when the data in a file cannot be parsed, such as when an :class:`MH`
+   instance attempts to read a corrupted :file:`.mh_sequences` file.
 
 
 .. _mailbox-deprecated:
 
-撤廃されたクラスとメソッド
---------------------------
+Deprecated classes and methods
+------------------------------
 
 .. deprecated:: 2.6
 
-古いバージョンの :mod:`mailbox` モジュールはメッセージの追加や削除といった
-メールボックスの変更をサポートしていませんでした。また形式ごとのメッセージプロパティ
-を表現するクラスも提供していませんでした。後方互換性のために、古いメールボックスクラスもまだ使うことができますが、できるだけ新しいクラスを使うべきです。
-古いクラスは Python 3.0 で削除されます。
+Older versions of the :mod:`mailbox` module do not support modification of
+mailboxes, such as adding or removing message, and do not provide classes to
+represent format-specific message properties. For backward compatibility, the
+older mailbox classes are still available, but the newer classes should be used
+in preference to them.  The old classes have been removed in Python 3.
 
-古いメールボックスオブジェクトは繰り返しと一つの公開メソッドだけを提供していました:
+Older mailbox objects support only iteration and provide a single public method:
 
 
 .. method:: oldmailbox.next()
 
-   メールボックスオブジェクトのコンストラクタに渡された、オプションの *factory* 引数を使って、メールボックス中の次のメッセージを
-   生成して返します。標準の設定では、 *factory* は :class:`rfc822.Message` オブジェクトです (:mod:`rfc822`
-   モジュールを参照してください)。メールボックスの実装により、このオブジェクトの *fp* 属性は真のファイルオブジェクトかもしれないし、
-   複数のメールメッセージが単一のファイルに収められているなどの場合に、メッセージ間の境界を注意深く扱うためにファイルオブジェクトをシミュレート
-   するクラスのインスタンスであるかもしれません。次のメッセージがない場合、このメソッドは ``None`` を返します。
+   Return the next message in the mailbox, created with the optional *factory*
+   argument passed into the mailbox object's constructor. By default this is an
+   :class:`rfc822.Message` object (see the :mod:`rfc822` module).  Depending on the
+   mailbox implementation the *fp* attribute of this object may be a true file
+   object or a class instance simulating a file object, taking care of things like
+   message boundaries if multiple mail messages are contained in a single file,
+   etc.  If no more messages are available, this method returns ``None``.
 
-ほとんどの古いメールボックスクラスは現在のメールボックスクラスと違う名前ですが、 :class:`Maildir` だけは例外です。そのため、新しい方の
-:class:`Maildir` クラスには :meth:`!next` メソッドが定義され、コンストラクタも他の新しいメールボックスクラスとは少し異なります。
+Most of the older mailbox classes have names that differ from the current
+mailbox class names, except for :class:`Maildir`. For this reason, the new
+:class:`Maildir` class defines a :meth:`!next` method and its constructor differs
+slightly from those of the other new mailbox classes.
 
-古いメールボックスのクラスで名前が新しい対応物と同じでないものは以下の通りです:
+The older mailbox classes whose names are not the same as their newer
+counterparts are as follows:
 
 
 .. class:: UnixMailbox(fp[, factory])
 
-   全てのメッセージが単一のファイルに収められ、 ``From``  (``From_`` として知られています) 行によって分割されているような、旧来の
-   Unix形式のメールボックスにアクセスします。ファイルオブジェクト *fp* はメールボックスファイルを指します。オプションの *factory*
-   パラメタは新たなメッセージオブジェクトを生成するような呼び出し可能オブジェクトです。 *factory* は、メールボックスオブジェクトに対して
-   :meth:`!next` メソッドを実行した際に、単一の引数、 *fp* を伴って呼び出されます。この引数の標準の値は
-   :class:`rfc822.Message` クラスです (:mod:`rfc822` モジュール -- および以下 -- を参照してください)。
+   Access to a classic Unix-style mailbox, where all messages are contained in a
+   single file and separated by ``From`` (a.k.a. ``From_``) lines.  The file object
+   *fp* points to the mailbox file.  The optional *factory* parameter is a callable
+   that should create new message objects.  *factory* is called with one argument,
+   *fp* by the :meth:`!next` method of the mailbox object.  The default is the
+   :class:`rfc822.Message` class (see the :mod:`rfc822` module -- and the note
+   below).
 
    .. note::
 
-      このモジュールの実装上の理由により、 *fp* オブジェクトはバイナリモードで開くようにしてください。特にWindows上では注意が必要です。
+      For reasons of this module's internal implementation, you will probably want to
+      open the *fp* object in binary mode.  This is especially important on Windows.
 
-   可搬性を最大限にするために、Unix形式のメールボックス内にあるメッセージは、正確に ``'From '`` (末尾の空白に注意してください)
-   で始まる文字列が、直前の正しく二つの改行の後にくるような行で分割されます。現実的には広範なバリエーションがあるため、それ以外の ``From_``
-   行について考慮すべきではないのですが、現在の実装では先頭の二つの改行をチェックしていません。これはほとんどのアプリケーションでうまく動作します。
+   For maximum portability, messages in a Unix-style mailbox are separated by any
+   line that begins exactly with the string ``'From '`` (note the trailing space)
+   if preceded by exactly two newlines. Because of the wide-range of variations in
+   practice, nothing else on the ``From_`` line should be considered.  However, the
+   current implementation doesn't check for the leading two newlines.  This is
+   usually fine for most applications.
 
-   :class:`UnixMailbox` クラスでは、ほぼ正確に ``From_``
-   デリミタにマッチするような正規表現を用いることで、より厳密に ``From_``
-   行のチェックを行うバージョンを実装しています。
-   :class:`UnixMailbox` ではデリミタ行が ``From name time``
-   の行に分割されるものと考えます。
-   可搬性を最大限にするためには、代わりに :class:`PortableUnixMailbox`
-   クラスを使ってください。
-   このクラスは :class:`UnixMailbox` と同じですが、個々のメッセージは ``From``
-   行だけで分割されるものとみなします。
+   The :class:`UnixMailbox` class implements a more strict version of ``From_``
+   line checking, using a regular expression that usually correctly matched
+   ``From_`` delimiters.  It considers delimiter line to be separated by ``From
+   name time`` lines.  For maximum portability, use the
+   :class:`PortableUnixMailbox` class instead.  This class is identical to
+   :class:`UnixMailbox` except that individual messages are separated by only
+   ``From`` lines.
 
 
 .. class:: PortableUnixMailbox(fp[, factory])
 
-   厳密性の低い :class:`UnixMailbox` のバージョンで、メッセージを分割する行は ``From``
-   のみであると見なします。実際に見られるメールボックスのバリエーションに対応するため、 From 行における "*name* *time*"
-   部分は無視されます。メール処理ソフトウェアはメッセージ中の ``'From '`` で始まる行をクオートするため、この分割はうまく動作します。
+   A less-strict version of :class:`UnixMailbox`, which considers only the ``From``
+   at the beginning of the line separating messages.  The "*name* *time*" portion
+   of the From line is ignored, to protect against some variations that are
+   observed in practice.  This works since lines in the message which begin with
+   ``'From '`` are quoted by mail handling software at delivery-time.
 
 
 .. class:: MmdfMailbox(fp[, factory])
 
-   全てのメッセージが単一のファイルに収められ、4 つの control-A 文字によって分割されているような、MMDF 形式のメールボックスにアクセスします。
-   ファイルオブジェクト *fp* はメールボックスファイルをさします。オプションの *factory* は :class:`UnixMailbox`
-   クラスにおけるのと同様です。
+   Access an MMDF-style mailbox, where all messages are contained in a single file
+   and separated by lines consisting of 4 control-A characters.  The file object
+   *fp* points to the mailbox file. Optional *factory* is as with the
+   :class:`UnixMailbox` class.
 
 
 .. class:: MHMailbox(dirname[, factory])
 
-   数字で名前のつけられた別々のファイルに個々のメッセージを収めたディレクトリである、MH メールボックスにアクセスします。メールボックスディレクトリの名前は
-   *dirname* で渡します。 *factory* は :class:`UnixMailbox` クラスにおけるのと同様です。
+   Access an MH mailbox, a directory with each message in a separate file with a
+   numeric name. The name of the mailbox directory is passed in *dirname*.
+   *factory* is as with the :class:`UnixMailbox` class.
 
 
 .. class:: BabylMailbox(fp[, factory])
 
-   MMDF メールボックスと似ている、Babyl メールボックスにアクセスします。
-   Babyl 形式では、各メッセージは二つのヘッダからなるセット、
-   *original* ヘッダおよび *visible* ヘッダを持っています。
-   original ヘッダは ``'*** EOOH ***'`` (End-Of-Original-Headers)
-   だけを含む行の前にあり、visible ヘッダは ``EOOH`` 行の後にあります。Babyl
-   互換のメールリーダは visible ヘッダのみを表示し、
-   :class:`BabylMailbox` オブジェクトは visible
-   ヘッダのみを含むようなメッセージを返します。
-   メールメッセージは EOOH 行で始まり、 ``'\037\014'`` だけを含む行で終わります。
-   *factory* は :class:`UnixMailbox` クラスにおけるのと同様です。
+   Access a Babyl mailbox, which is similar to an MMDF mailbox.  In Babyl format,
+   each message has two sets of headers, the *original* headers and the *visible*
+   headers.  The original headers appear before a line containing only ``'*** EOOH
+   ***'`` (End-Of-Original-Headers) and the visible headers appear after the
+   ``EOOH`` line.  Babyl-compliant mail readers will show you only the visible
+   headers, and :class:`BabylMailbox` objects will return messages containing only
+   the visible headers.  You'll have to do your own parsing of the mailbox file to
+   get at the original headers.  Mail messages start with the EOOH line and end
+   with a line containing only ``'\037\014'``.  *factory* is as with the
+   :class:`UnixMailbox` class.
 
-古いメールボックスクラスを撤廃された :mod:`rfc822` モジュールではなく、 :mod:`email`
-モジュールと使いたいならば、以下のようにできます::
+If you wish to use the older mailbox classes with the :mod:`email` module rather
+than the deprecated :mod:`rfc822` module, you can do so as follows::
 
    import email
    import email.Errors
@@ -1593,7 +1624,8 @@
 
    mbox = mailbox.UnixMailbox(fp, msgfactory)
 
-一方、メールボックス内には正しい形式の MIME メッセージしか入っていないと分かっているのなら、単に以下のようにします::
+Alternatively, if you know your mailbox contains only well-formed MIME messages,
+you can simplify this to::
 
    import email
    import mailbox
@@ -1603,10 +1635,11 @@
 
 .. _mailbox-examples:
 
-例
---
+Examples
+--------
 
-メールボックス中の面白そうなメッセージのサブジェクトを全て印字する簡単な例::
+A simple example of printing the subjects of all messages in a mailbox that seem
+interesting::
 
    import mailbox
    for message in mailbox.mbox('~/mbox'):
@@ -1614,7 +1647,8 @@
        if subject and 'python' in subject.lower():
            print subject
 
-Babyl メールボックスから MH メールボックスへ全てのメールをコピーし、変換可能な全ての形式固有の情報を変換する::
+To copy all mail from a Babyl mailbox to an MH mailbox, converting all of the
+format-specific information that can be converted::
 
    import mailbox
    destination = mailbox.MH('~/Mail')
@@ -1624,14 +1658,13 @@ Babyl メールボックスから MH メールボックスへ全てのメール�
    destination.flush()
    destination.unlock()
 
-この例は幾つかのメーリングリストのメールをソートするものです。
-他のプログラムと平行して変更を加えることでメールが破損したり、\
-プログラムを中断することでメールを失ったり、\
-はたまた半端なメッセージがメールボックス中にあることで途中で終了してしまう、\
-といったことを避けるように注意深く扱っています。::
+This example sorts mail from several mailing lists into different mailboxes,
+being careful to avoid mail corruption due to concurrent modification by other
+programs, mail loss due to interruption of the program, or premature termination
+due to malformed messages in the mailbox::
 
    import mailbox
-   import email.Errors
+   import email.errors
 
    list_names = ('python-list', 'python-dev', 'python-bugs')
 
@@ -1641,7 +1674,7 @@ Babyl メールボックスから MH メールボックスへ全てのメール�
    for key in inbox.iterkeys():
        try:
            message = inbox[key]
-       except email.Errors.MessageParseError:
+       except email.errors.MessageParseError:
            continue                # The message is malformed. Just leave it.
 
        for name in list_names:

@@ -1,275 +1,286 @@
-
-:mod:`platform` ---  実行中プラットフォームの固有情報を参照する
-===============================================================
+:mod:`platform` ---  Access to underlying platform's identifying data
+=====================================================================
 
 .. module:: platform
-   :synopsis: 実行中プラットフォームからできるだけ多くの固有情報を取得する
+   :synopsis: Retrieves as much platform identifying data as possible.
 .. moduleauthor:: Marc-Andre Lemburg <mal@egenix.com>
 .. sectionauthor:: Bjorn Pettersen <bpettersen@corp.fairisaac.com>
 
 
 .. versionadded:: 2.3
 
+**Source code:** :source:`Lib/platform.py`
+
+--------------
+
 .. note::
 
-   プラットフォーム毎にアルファベット順に並べています。Linuxについては Unixセクションを参照してください。
+   Specific platforms listed alphabetically, with Linux included in the Unix
+   section.
 
 
-クロスプラットフォーム
------------------------
+Cross Platform
+--------------
 
 
 .. function:: architecture(executable=sys.executable, bits='', linkage='')
 
-   *executable* で指定した実行可能ファイル（省略時はPythonインタープリタのバイナリ）の各種アーキテクチャ情報を調べます。
+   Queries the given executable (defaults to the Python interpreter binary) for
+   various architecture information.
 
-   戻り値はタプル ``(bits, linkage)`` で、アーキテクチャのビット数と実行可能ファイルのリンク形式を示します。どちらの値も文字列で返ります。
+   Returns a tuple ``(bits, linkage)`` which contain information about the bit
+   architecture and the linkage format used for the executable. Both values are
+   returned as strings.
 
-   値が不明な場合は、パラメータで指定した値が返ります。 *bits* を
-   ``''`` と指定した場合、ビット数として :c:func:`sizeof(pointer)` が返
-   ります。（Pythonのバージョンが1.5.2以下の場合は、サポートされているポインタサイズとして :c:func:`sizeof(long)` を使用します。）
+   Values that cannot be determined are returned as given by the parameter presets.
+   If bits is given as ``''``, the :c:func:`sizeof(pointer)` (or
+   :c:func:`sizeof(long)` on Python version < 1.5.2) is used as indicator for the
+   supported pointer size.
 
-   この関数は、システムの :file:`file` コマンドを使用します。 :file:`file` はほ
-   とんどのUnixプラットフォームと一部の非Unixプラットフォームで利用
-   可能ですが、 :file:`file` コマンドが利用できず、かつ *executable* が Pythonインタープリタでない場合には適切なデフォルト値が返ります。
+   The function relies on the system's :file:`file` command to do the actual work.
+   This is available on most if not all Unix  platforms and some non-Unix platforms
+   and then only if the executable points to the Python interpreter.  Reasonable
+   defaults are used when the above needs are not met.
 
    .. note::
 
-      Mac OS X (とひょっとすると他のプラットフォーム) では、実行可能ファイルは
-      複数のアーキテクチャを含んだユニバーサル形式かもしれません。
+      On Mac OS X (and perhaps other platforms), executable files may be
+      universal files containing multiple architectures.
 
-      現在のインタプリタが "64-bit" であるかどうかを調べるには、 :attr:`sys.maxsize`
-      の方が信頼できます。 ::
+      To get at the "64-bitness" of the current interpreter, it is more
+      reliable to query the :attr:`sys.maxsize` attribute::
 
          is_64bits = sys.maxsize > 2**32
 
 
 .. function:: machine()
 
-   ``'i386'`` のような、機種を返します。不明な場合は空文字列を返します。
+   Returns the machine type, e.g. ``'i386'``. An empty string is returned if the
+   value cannot be determined.
 
 
 .. function:: node()
 
-   コンピュータのネットワーク名を返します。ネットワーク名は完全修飾名とは限りません。不明な場合は空文字列を返します。
+   Returns the computer's network name (may not be fully qualified!). An empty
+   string is returned if the value cannot be determined.
 
 
 .. function:: platform(aliased=0, terse=0)
 
-   実行中プラットフォームを識別する文字列を返します。この文字列には、有益な情報をできるだけ多く付加しています。
+   Returns a single string identifying the underlying platform with as much useful
+   information as possible.
 
-   戻り値は機械で処理しやすい形式ではなく、 *人間にとって読みやすい* 形式となっています。異なったプラットフォームでは異なった戻り値となるようになっています。
+   The output is intended to be *human readable* rather than machine parseable. It
+   may look different on different platforms and this is intended.
 
-   *aliased* が真なら、システムの名称として一般的な名称ではなく、別名を使用して結果を返します。たとえば、SunOS は Solaris
-   となります。この機能は :func:`system_alias` で実装されています。
+   If *aliased* is true, the function will use aliases for various platforms that
+   report system names which differ from their common names, for example SunOS will
+   be reported as Solaris.  The :func:`system_alias` function is used to implement
+   this.
 
-   *terse* が真なら、プラットフォームを特定するために最低限必要な情報だけを返します。
+   Setting *terse* to true causes the function to return only the absolute minimum
+   information needed to identify the platform.
 
 
 .. function:: processor()
 
-   ``'amdk6'`` のような、（現実の）プロセッサ名を返します。
+   Returns the (real) processor name, e.g. ``'amdk6'``.
 
-   不明な場合は空文字列を返します。NetBSDのようにこの情報を提供しない、または :func:`machine` と同じ値しか返さないプラットフォームも多く存在
-   しますので、注意してください。
+   An empty string is returned if the value cannot be determined. Note that many
+   platforms do not provide this information or simply return the same value as for
+   :func:`machine`.  NetBSD does this.
 
 
 .. function:: python_build()
 
-   Pythonのビルド番号と日付を、 ``(buildno, builddate)`` のタプルで返します。
+   Returns a tuple ``(buildno, builddate)`` stating the Python build number and
+   date as strings.
 
 
 .. function:: python_compiler()
 
-   Pythonをコンパイルする際に使用したコンパイラを示す文字列を返します。
+   Returns a string identifying the compiler used for compiling Python.
 
 
 .. function:: python_branch()
 
-   .. Returns a string identifying the Python implementation SCM branch.
-
-   Python実装のバージョン管理システム上のブランチを特定する文字列を返します。
+   Returns a string identifying the Python implementation SCM branch.
 
    .. versionadded:: 2.6
 
 
 .. function:: python_implementation()
 
-   .. Returns a string identifying the Python implementation. Possible return values
-      are: 'CPython', 'IronPython', 'Jython'
-
-   Python実装を指定する文字列を返します。
-   戻り値は: 'CPython', 'IronPython', 'Jython', 'PyPy' のいずれかです。
+   Returns a string identifying the Python implementation. Possible return values
+   are: 'CPython', 'IronPython', 'Jython', 'PyPy'.
 
    .. versionadded:: 2.6
 
 
 .. function:: python_revision()
 
-   .. Returns a string identifying the Python implementation SCM revision.
-
-   Python実装のバージョン管理システム上のリビジョンを特定する文字列を返します。
+   Returns a string identifying the Python implementation SCM revision.
 
    .. versionadded:: 2.6
 
 
 .. function:: python_version()
 
-   Pythonのバージョンを、 ``'major.minor.patchlevel'`` 形式の文字列で返します。
+   Returns the Python version as string ``'major.minor.patchlevel'``.
 
-   ``sys.version`` と異なり、patchlevel（デフォルトでは0)も必ず含まれています。
+   Note that unlike the Python ``sys.version``, the returned value will always
+   include the patchlevel (it defaults to 0).
 
 
 .. function:: python_version_tuple()
 
-   Pythonのバージョンを、文字列のタプル ``(major, minor, patchlevel)``  で返します。
+   Returns the Python version as tuple ``(major, minor, patchlevel)`` of strings.
 
-   ``sys.version`` と異なり、patchlevel（デフォルトでは ``0``)も必ず含まれています。
+   Note that unlike the Python ``sys.version``, the returned value will always
+   include the patchlevel (it defaults to ``'0'``).
 
 
 .. function:: release()
 
-   ``'2.2.0'`` や ``'NT'`` のような、システムのリリース情報を返します。不明な場合は空文字列を返します。
+   Returns the system's release, e.g. ``'2.2.0'`` or ``'NT'`` An empty string is
+   returned if the value cannot be determined.
 
 
 .. function:: system()
 
-   ``'Linux'``, ``'Windows'``, ``'Java'`` のような、システム/OS 名を返します。不明な場合は空文字列を返します。
+   Returns the system/OS name, e.g. ``'Linux'``, ``'Windows'``, or ``'Java'``. An
+   empty string is returned if the value cannot be determined.
 
 
 .. function:: system_alias(system, release, version)
 
-   マーケティング目的で使われる一般的な別名に変換して ``(system, release, version)`` を返します。混乱を避けるために、情報を
-   並べなおす場合があります。
+   Returns ``(system, release, version)`` aliased to common marketing names used
+   for some systems.  It also does some reordering of the information in some cases
+   where it would otherwise cause confusion.
 
 
 .. function:: version()
 
-   ``'#3 on degas'`` のような、システムのリリース情報を返します。不明な場合は空文字列を返します。
+   Returns the system's release version, e.g. ``'#3 on degas'``. An empty string is
+   returned if the value cannot be determined.
 
 
 .. function:: uname()
 
-   非常に可搬性の高い uname インターフェースで、実行中プラットフォームを示す情報を、
-   文字列のタプル ``(system, node, release, version, machine, processor)``
-   で返します。
+   Fairly portable uname interface. Returns a tuple of strings ``(system, node,
+   release, version, machine, processor)`` identifying the underlying platform.
 
-   :func:`os.uname` と異なり、複数のプロセッサ名が候補としてタプルに追加される場合があります。
+   Note that unlike the :func:`os.uname` function this also returns possible
+   processor information as additional tuple entry.
 
-   不明な項目は ``''`` となります。
+   Entries which cannot be determined are set to ``''``.
 
 
-Java プラットフォーム
----------------------
+Java Platform
+-------------
 
 
 .. function:: java_ver(release='', vendor='', vminfo=('','',''), osinfo=('','',''))
 
-   Jython用のバージョンインターフェースです。
-   
-   タプル ``(release, vendor, vminfo, osinfo)`` を返します。 *vminfo* は
-   タプル ``(vm_name, vm_release, vm_vendor)`` 、 *osinfo* はタプル ``(os_name, os_version,
-   os_arch)`` です。不明な項目は引数で指定した値(デフォルトは ``''``) となります。
+   Version interface for Jython.
+
+   Returns a tuple ``(release, vendor, vminfo, osinfo)`` with *vminfo* being a
+   tuple ``(vm_name, vm_release, vm_vendor)`` and *osinfo* being a tuple
+   ``(os_name, os_version, os_arch)``. Values which cannot be determined are set to
+   the defaults given as parameters (which all default to ``''``).
 
 
-Windows プラットフォーム
-------------------------
+Windows Platform
+----------------
 
 
 .. function:: win32_ver(release='', version='', csd='', ptype='')
 
-   Windowsのレジストリからバージョン情報を取得し、バージョン番号/CSDレベル/OSタイプ（シングルプロセッサ又はマルチプロセッサ）をタプル
-   ``(version, csd, ptype)`` で返します。
+   Get additional version information from the Windows Registry and return a tuple
+   ``(release, version, csd, ptype)`` referring to OS release, version number,
+   CSD level (service pack) and OS type (multi/single processor).
 
-   参考： *ptype* はシングルプロセッサのNT上では ``'Uniprocessor Free'`` 、マルチプロセッサでは
-   ``'Multiprocessor Free'`` となります。
-   *'Free'* がついている場合はデバッグ用のコードが含まれていないことを示し、 *'Checked'* がつい
-   ていれば引数や範囲のチェックなどのデバッグ用コードが含まれていることを示します。
+   As a hint: *ptype* is ``'Uniprocessor Free'`` on single processor NT machines
+   and ``'Multiprocessor Free'`` on multi processor machines. The *'Free'* refers
+   to the OS version being free of debugging code. It could also state *'Checked'*
+   which means the OS version uses debugging code, i.e. code that checks arguments,
+   ranges, etc.
 
    .. note::
 
-      この関数は、Mark Hammondの :mod:`win32all` がインストールされた環境で
-      良く動作しますが、Python 2.3 以上なら一応動作します。(Python 2.6から
-      サポートされました)
-      もちろん、この関数が使えるのはWin32互換プラットフォームのみです。
+      This function works best with Mark Hammond's
+      :mod:`win32all` package installed, but also on Python 2.3 and
+      later (support for this was added in Python 2.6). It obviously
+      only runs on Win32 compatible platforms.
 
 
-Win95/98 固有
-^^^^^^^^^^^^^
+Win95/98 specific
+^^^^^^^^^^^^^^^^^
 
 .. function:: popen(cmd, mode='r', bufsize=None)
 
-   可搬性の高い :func:`popen` インターフェースで、可能なら
-   :func:`win32pipe.popen` を使用します。 :func:`win32pipe.popen` はWindows
-   NTでは利用可能ですが、Windows 9xではハングしてしまいます。
+   Portable :func:`popen` interface.  Find a working popen implementation
+   preferring :func:`win32pipe.popen`.  On Windows NT, :func:`win32pipe.popen`
+   should work; on Windows 9x it hangs due to bugs in the MS C library.
 
 
-Mac OS プラットフォーム
------------------------
+Mac OS Platform
+---------------
 
 
 .. function:: mac_ver(release='', versioninfo=('','',''), machine='')
 
-   Mac OSのバージョン情報を、タプル ``(release, versioninfo, machine)`` で返します。 *versioninfo* は、タ
-   プル ``(version, dev_stage, non_release_version)`` です。
+   Get Mac OS version information and return it as tuple ``(release, versioninfo,
+   machine)`` with *versioninfo* being a tuple ``(version, dev_stage,
+   non_release_version)``.
 
-   不明な項目は ``''`` となります。タプルの要素は全て文字列です。
-
-   この関数で使用している :c:func:`gestalt` API については、
-   http://www.rgaros.nl/gestalt/ を参照してください。
+   Entries which cannot be determined are set to ``''``.  All tuple entries are
+   strings.
 
 
-Unix プラットフォーム
----------------------
+Unix Platforms
+--------------
 
 
 .. function:: dist(distname='', version='', id='', supported_dists=('SuSE','debian','redhat','mandrake',...))
 
-   この関数は、現在 :func:`linux_distribution` が提供している機能の古い
-   バージョンです。新しいコードを書くときは、 :func:`linux_distribution`
-   を利用してください。
+   This is an old version of the functionality now provided by
+   :func:`linux_distribution`. For new code, please use the
+   :func:`linux_distribution`.
 
-   :func:`linux_distribution` との違いは、 ``dist()`` は常に ``supported_dists``
-   引数から取った短い名前を返す事です。
+   The only difference between the two is that ``dist()`` always
+   returns the short name of the distribution taken from the
+   ``supported_dists`` parameter.
+
+   .. deprecated:: 2.6
 
 .. function:: linux_distribution(distname='', version='', id='', supported_dists=('SuSE','debian','redhat','mandrake',...), full_distribution_name=1)
 
-   .. Tries to determine the name of the Linux OS distribution name.
+   Tries to determine the name of the Linux OS distribution name.
 
-   OSディストリビューション名の取得を試みます。
+   ``supported_dists`` may be given to define the set of Linux distributions to
+   look for. It defaults to a list of currently supported Linux distributions
+   identified by their release file name.
 
-   .. ``supported_dists`` may be given to define the set of Linux distributions to
-      look for. It defaults to a list of currently supported Linux distributions
-      identified by their release file name.
+   If ``full_distribution_name`` is true (default), the full distribution read
+   from the OS is returned. Otherwise the short name taken from
+   ``supported_dists`` is used.
 
-   ``supported_dists`` は、検索するLinuxディストリビューションを定義するために利用します。
-   デフォルトでは、リリースファイル名で定義されている、
-   現在サポートされているLinuxディストリビューションのリストです。
-
-   .. If ``full_distribution_name`` is true (default), the full distribution read
-      from the OS is returned. Otherwise the short name taken from
-      ``supported_dists`` is used.
-
-   ``full_distribution_name`` が ``True`` (デフォルト)の場合、
-   OSから読み込まれた完全なディストリビューション名が返されます。
-   それ以外の場合、 ``supported_dists`` で利用された短い名前が返されます。
-
-   .. Returns a tuple ``(distname,version,id)`` which defaults to the args given as
-      parameters.  ``id`` is the item in parentheses after the version number.  It
-      is usually the version codename.
-
-   戻り値はタプル ``(distname, version, id)`` で、不明な項目は引数で指定した値となります。
-
+   Returns a tuple ``(distname,version,id)`` which defaults to the args given as
+   parameters.  ``id`` is the item in parentheses after the version number.  It
+   is usually the version codename.
 
    .. versionadded:: 2.6
 
 .. function:: libc_ver(executable=sys.executable, lib='', version='', chunksize=2048)
 
-   executableで指定したファイル（省略時はPythonインタープリタ）がリンクしているlibcバージョンの取得を試みます。戻り値は文字列のタプル
-   ``(lib, version)`` で、不明な項目は引数で指定した値となります。
+   Tries to determine the libc version against which the file executable (defaults
+   to the Python interpreter) is linked.  Returns a tuple of strings ``(lib,
+   version)`` which default to the given parameters in case the lookup fails.
 
-   この関数は、実行形式に追加されるシンボルの細かな違いによって、libcのバージョンを特定します。この違いは :program:`gcc` でコンパイルされた実行
-   可能ファイルでのみ有効だと思われます。
+   Note that this function has intimate knowledge of how different libc versions
+   add symbols to the executable is probably only usable for executables compiled
+   using :program:`gcc`.
 
-   *chunksize* にはファイルから情報を取得するために読み込むバイト数を指定します。
+   The file is read and scanned in chunks of *chunksize* bytes.
 

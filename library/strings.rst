@@ -1,18 +1,19 @@
 
 .. _stringservices:
 
-**********
-文字列処理
-**********
+***************
+String Services
+***************
 
-この章で解説されているモジュールは文字列を操作するさまざまな処理を提供します。
+The modules described in this chapter provide a wide range of string
+manipulation operations.
 
-それに加えて、Python の組み込み文字列クラスたちは :ref:`typesseq`
-で説明されたシーケンス型のメソッドをサポートし、また :ref:`string-methods`
-で説明された文字列固有のメソッドもサポートします。
-フォーマットされた文字列の出力にはテンプレート文字列、つまり :ref:`string-formatting`
-で説明された ``%`` 演算子を使います。
-また、正規表現に基づいた文字列関数については :mod:`re` モジュールを参照してください。
+In addition, Python's built-in string classes support the sequence type
+methods described in the :ref:`typesseq` section, and also the
+string-specific methods described in the :ref:`string-methods` section.
+To output formatted strings use template strings or the ``%`` operator
+described in the :ref:`string-formatting` section. Also, see the
+:mod:`re` module for string functions based on regular expressions.
 
 
 .. toctree::
@@ -27,3 +28,4 @@
    unicodedata.rst
    stringprep.rst
    fpformat.rst
+

@@ -1,122 +1,140 @@
-
-:mod:`gettext` --- 多言語対応に関する国際化サービス
-===================================================
+:mod:`gettext` --- Multilingual internationalization services
+=============================================================
 
 .. module:: gettext
-   :synopsis: 多言語対応に関する国際化サービス。
+   :synopsis: Multilingual internationalization services.
 .. moduleauthor:: Barry A. Warsaw <barry@zope.com>
 .. sectionauthor:: Barry A. Warsaw <barry@zope.com>
 
+**Source code:** :source:`Lib/gettext.py`
 
-:mod:`gettext` モジュールは、 Python によるモジュールやアプリケーションの国際化 (I18N,
-I-nternationalizatio-N) および地域化  (L10N, L-ocalizatio-N) サービスを提供します。このモジュールは GNU
-``gettext`` メッセージカタログへの API と、より高レベルで Python ファイルに適しているクラスに基づいた API の
-両方をサポートしてます。以下で述べるインタフェースを使うことで、モジュールやアプリケーションのメッセージをある自然言語で記述しておき、
-翻訳されたメッセージのカタログを与えて他の異なる自然言語の環境下で動作させることができます。
+--------------
 
-ここでは Python のモジュールやアプリケーションを地域化するためのいくつかのヒントも提供しています。
+The :mod:`gettext` module provides internationalization (I18N) and localization
+(L10N) services for your Python modules and applications. It supports both the
+GNU ``gettext`` message catalog API and a higher level, class-based API that may
+be more appropriate for Python files.  The interface described below allows you
+to write your module and application messages in one natural language, and
+provide a catalog of translated messages for running under different natural
+languages.
+
+Some hints on localizing your Python modules and applications are also given.
 
 
 GNU :program:`gettext` API
 --------------------------
 
-:mod:`gettext` モジュールでは、以下の GNU :program:`gettext` API に非常に良く似た API を提供しています。この
-API を使う場合、メッセージ翻訳の影響はアプリケーション全体に及ぼすことになります。アプリケーションが単一の言語しか扱わず、各言語に依存する部分を
-ユーザのロケール情報によって選ぶのなら、ほとんどの場合この方法でやりたいことを実現できます。Python モジュールを地域化していたり、
-アプリケーションの実行中に言語を切り替えたい場合、おそらくクラスに基づいた API を使いたくなるでしょう。
+The :mod:`gettext` module defines the following API, which is very similar to
+the GNU :program:`gettext` API.  If you use this API you will affect the
+translation of your entire application globally.  Often this is what you want if
+your application is monolingual, with the choice of language dependent on the
+locale of your user.  If you are localizing a Python module, or if your
+application needs to switch languages on the fly, you probably want to use the
+class-based API instead.
 
 
 .. function:: bindtextdomain(domain[, localedir])
 
-   *domain* をロケール辞書 *localedir* に結び付け (bind) ます。具体的には、 :mod:`gettext`
-   は与えられたドメインに対するバイナリ形式の :file:`.mo` ファイルを、(Unixでは)
-   :file:`localedir/language/LC_MESSAGES/domain.mo` から探します。ここで *languages*
-   はそれぞれ環境変数 :envvar:`LANGUAGE` 、 :envvar:`LC_ALL` 、 :envvar:`LC_MESSAGES` 、および
-   :envvar:`LANG` の中から検索されます。
+   Bind the *domain* to the locale directory *localedir*.  More concretely,
+   :mod:`gettext` will look for binary :file:`.mo` files for the given domain using
+   the path (on Unix): :file:`localedir/language/LC_MESSAGES/domain.mo`, where
+   *languages* is searched for in the environment variables :envvar:`LANGUAGE`,
+   :envvar:`LC_ALL`, :envvar:`LC_MESSAGES`, and :envvar:`LANG` respectively.
 
-   *localedir* が省略されるか ``None`` の場合、現在 *domain* に結び付けられている内容が返されます。 [#]_
+   If *localedir* is omitted or ``None``, then the current binding for *domain* is
+   returned. [#]_
 
 
 .. function:: bind_textdomain_codeset(domain[, codeset])
 
-   *domain* を *codeset* に結び付けて、 :func:`gettext`  ファミリの関数が返す文字列のエンコード方式を変更します。
-   *codeset* を省略すると、現在結び付けられているコードセットを返します。
+   Bind the *domain* to *codeset*, changing the encoding of strings returned by the
+   :func:`gettext` family of functions. If *codeset* is omitted, then the current
+   binding is returned.
 
    .. versionadded:: 2.4
 
 
 .. function:: textdomain([domain])
 
-   現在のグローバルドメインを調べたり変更したりします。 *domain* が ``None`` の場合、現在のグローバルドメインが返され
-   ます。それ以外の場合にはグローバルドメインは *domain* に設定され、設定されたグローバルドメインを返します。
+   Change or query the current global domain.  If *domain* is ``None``, then the
+   current global domain is returned, otherwise the global domain is set to
+   *domain*, which is returned.
 
 
 .. function:: gettext(message)
 
-   現在のグローバルドメイン、言語、およびロケール辞書に基づいて、 *message* の特定地域向けの翻訳を返します。通常、ローカルな名前空間ではこの関数に
-   :func:`_` という別名をつけます (下の例を参照してください)。
+   Return the localized translation of *message*, based on the current global
+   domain, language, and locale directory.  This function is usually aliased as
+   :func:`_` in the local namespace (see examples below).
 
 
 .. function:: lgettext(message)
 
-   :func:`gettext` と同じですが、 :func:`bind_textdomain_codeset`
-   で特にエンコードを指定しない限り、翻訳結果を優先システムエンコーディング (preferred system encoding) で返します。
+   Equivalent to :func:`gettext`, but the translation is returned in the preferred
+   system encoding, if no other encoding was explicitly set with
+   :func:`bind_textdomain_codeset`.
 
    .. versionadded:: 2.4
 
 
 .. function:: dgettext(domain, message)
 
-   :func:`gettext` と同様ですが、指定された *domain* からメッセージを探します。
+   Like :func:`gettext`, but look the message up in the specified *domain*.
 
 
-.. function:: ldgettext(message)
+.. function:: ldgettext(domain, message)
 
-   :func:`dgettext` と同じですが、 :func:`bind_textdomain_codeset`
-   で特にエンコードを指定しない限り、翻訳結果を優先システムエンコーディング (preferred system encoding) で返します。
+   Equivalent to :func:`dgettext`, but the translation is returned in the preferred
+   system encoding, if no other encoding was explicitly set with
+   :func:`bind_textdomain_codeset`.
 
    .. versionadded:: 2.4
 
 
 .. function:: ngettext(singular, plural, n)
 
-   :func:`gettext` と同様ですが、複数形の場合を考慮しています。翻訳文字列が見つかった場合、 *n* の様式を適用し、
-   その結果得られたメッセージを返します (言語によっては二つ以上の複数形があります)。翻訳文字列が見つからなかった場合、 *n* が 1 なら
-   *singular* を返します; そうでない場合 *plural* を返します。
+   Like :func:`gettext`, but consider plural forms. If a translation is found,
+   apply the plural formula to *n*, and return the resulting message (some
+   languages have more than two plural forms). If no translation is found, return
+   *singular* if *n* is 1; return *plural* otherwise.
 
-   複数形の様式はカタログのヘッダから取り出されます。様式は C または Python の式で、自由な変数 *n* を持ちます; 式の評価値はカタログ中の
-   複数形のインデクスとなります。 :file:`.po` ファイルで用いられる詳細な文法と、様々な言語における様式については、GNU gettext
-   ドキュメントを参照してください。
+   The Plural formula is taken from the catalog header. It is a C or Python
+   expression that has a free variable *n*; the expression evaluates to the index
+   of the plural in the catalog. See the GNU gettext documentation for the precise
+   syntax to be used in :file:`.po` files and the formulas for a variety of
+   languages.
 
    .. versionadded:: 2.3
 
 
-.. function:: lngettext(message)
+.. function:: lngettext(singular, plural, n)
 
-   :func:`ngettext` と同じですが、 :func:`bind_textdomain_codeset`
-   で特にエンコードを指定しない限り、翻訳結果を優先システムエンコーディング (preferred system encoding) で返します。
+   Equivalent to :func:`ngettext`, but the translation is returned in the preferred
+   system encoding, if no other encoding was explicitly set with
+   :func:`bind_textdomain_codeset`.
 
    .. versionadded:: 2.4
 
 
 .. function:: dngettext(domain, singular, plural, n)
 
-   :func:`ngettext` と同様ですが、指定された *domain* からメッセージを探します。
+   Like :func:`ngettext`, but look the message up in the specified *domain*.
 
    .. versionadded:: 2.3
 
 
-.. function:: ldngettext(message)
+.. function:: ldngettext(domain, singular, plural, n)
 
-   :func:`dngettext` と同じですが、 :func:`bind_textdomain_codeset`
-   で特にエンコードを指定しない限り、翻訳結果を優先システムエンコーディング (preferred system encoding) で返します。
+   Equivalent to :func:`dngettext`, but the translation is returned in the
+   preferred system encoding, if no other encoding was explicitly set with
+   :func:`bind_textdomain_codeset`.
 
    .. versionadded:: 2.4
 
-GNU :program:`gettext` では :func:`dcgettext` も定義していますが、
-このメソッドはあまり有用ではないと思われるので、現在のところ実装されていません。
+Note that GNU :program:`gettext` also defines a :func:`dcgettext` method, but
+this was deemed not useful and so it is currently unimplemented.
 
-以下にこの API の典型的な使用法を示します::
+Here's an example of typical usage for this API::
 
    import gettext
    gettext.bindtextdomain('myapplication', '/path/to/my/language/directory')
@@ -126,268 +144,330 @@ GNU :program:`gettext` では :func:`dcgettext` も定義していますが、
    print _('This is a translatable string.')
 
 
-クラスに基づいた API
---------------------
+Class-based API
+---------------
 
-クラス形式の :mod:`gettext` モジュールのAPI は GNU :program:`gettext` API
-よりも高い柔軟性と利便性を持っています。 Python のアプリケーションやモジュールを地域化するにはこちらを使う方を勧めます。 :mod:`gettext`
-では、GNU :file:`.mo` 形式のファイルを解釈し、標準の 8 ビット文字列または Unicode 文字列形式でメッセージを返す "翻訳"
-クラスを定義しています。この "翻訳" クラスのインスタンスも、組み込み名前空間に関数  :func:`_` として組みこみ (install) できます。
+The class-based API of the :mod:`gettext` module gives you more flexibility and
+greater convenience than the GNU :program:`gettext` API.  It is the recommended
+way of localizing your Python applications and modules.  :mod:`gettext` defines
+a "translations" class which implements the parsing of GNU :file:`.mo` format
+files, and has methods for returning either standard 8-bit strings or Unicode
+strings. Instances of this "translations" class can also install themselves  in
+the built-in namespace as the function :func:`_`.
 
 
 .. function:: find(domain[, localedir[,  languages[, all]]])
 
-   この関数は標準的な :file:`.mo` ファイル検索アルゴリズムを実装しています。 :func:`textdomain` と同じく、 *domain*
-   を引数にとります。オプションの *localedir* は :func:`bindtextdomain` と同じです。またオプションの *languages*
-   は文字列を列挙したリストで、各文字列は言語コードを表します。
+   This function implements the standard :file:`.mo` file search algorithm.  It
+   takes a *domain*, identical to what :func:`textdomain` takes.  Optional
+   *localedir* is as in :func:`bindtextdomain`  Optional *languages* is a list of
+   strings, where each string is a language code.
 
-   *localedir* が与えられていない場合、標準のシステムロケールディレクトリが使われます。 [#]_
+   If *localedir* is not given, then the default system locale directory is used.
+   [#]_  If *languages* is not given, then the following environment variables are
+   searched: :envvar:`LANGUAGE`, :envvar:`LC_ALL`, :envvar:`LC_MESSAGES`, and
+   :envvar:`LANG`.  The first one returning a non-empty value is used for the
+   *languages* variable. The environment variables should contain a colon separated
+   list of languages, which will be split on the colon to produce the expected list
+   of language code strings.
 
-   *languages* が与えられなかった場合、以下の環境変数: :envvar:`LANGUAGE` 、 :envvar:`LC_ALL` 、
-   :envvar:`LC_MESSAGES` 、および :envvar:`LANG` が検索されます。空でない値を返した最初の候補が *languages*
-   変数として使われます。この環境変数は言語名をコロンで分かち書きしたリストを含んでいなければなりません。 :func:`find` はこの文字列をコロンで
-   分割し、言語コードの候補リストを生成します。
-
-   :func:`find` は次に言語コードを展開および正規化し、リストの各要素について、以下のパス構成:
+   :func:`find` then expands and normalizes the languages, and then iterates
+   through them, searching for an existing file built of these components:
 
    :file:`localedir/language/LC_MESSAGES/domain.mo`
 
-   からなる実在するファイルの探索を反復的に行います。 :func:`find`  は上記のような実在するファイルで最初に見つかったものを返します。
-   該当するファイルが見つからなかった場合、 ``None`` が返されます。 *all* が与えられていれば、全ファイル名のリストが言語リストまたは
-   環境変数で指定されている順番に並べられたものを返します。
+   The first such file name that exists is returned by :func:`find`. If no such
+   file is found, then ``None`` is returned. If *all* is given, it returns a list
+   of all file names, in the order in which they appear in the languages list or
+   the environment variables.
 
 
 .. function:: translation(domain[, localedir[, languages[, class_[, fallback[, codeset]]]]])
 
-   :class:`Translations` インスタンスを *domain* 、 *localedir* 、および *languages* に基づいて
-   生成して返します。 *domain* 、 *localedir* 、および *languages* はまず関連付けられている :file:`.mo`
-   ファイルパスのリストを取得するために :func:`find` に渡されます。同じ :file:`.mo` ファイル名を
-   持つインスタンスはキャッシュされます。実際にインスタンス化されるクラスは *class_* が与えられていればそのクラスが、そうでない時には
-   :class:`GNUTranslations` です。クラスのコンストラクタは単一の引数としてファイルオブジェクトを取らなくてはなりません。
-   *codeset* を指定した場合、翻訳文字列のエンコードに使う文字セットを変更します。
+   Return a :class:`Translations` instance based on the *domain*, *localedir*, and
+   *languages*, which are first passed to :func:`find` to get a list of the
+   associated :file:`.mo` file paths.  Instances with identical :file:`.mo` file
+   names are cached.  The actual class instantiated is either *class_* if provided,
+   otherwise :class:`GNUTranslations`.  The class's constructor must take a single
+   file object argument. If provided, *codeset* will change the charset used to
+   encode translated strings.
 
-   複数のファイルが発見された場合、後で見つかったファイルは前に見つかったファイルの代替でと見なされ、後で見つかった方が利用されます。
-   代替の設定を可能にするには、 :func:`copy.copy` を使ってキャッシュから翻訳オブジェクトを複製します;
-   こうすることで、実際のインスタンスデータはキャッシュのものと共有されます。
+   If multiple files are found, later files are used as fallbacks for earlier ones.
+   To allow setting the fallback, :func:`copy.copy` is used to clone each
+   translation object from the cache; the actual instance data is still shared with
+   the cache.
 
-   :file:`.mo` ファイルが見つからなかった場合、 *fallback* が偽 (標準の設定です) ならこの関数は :exc:`IOError` を送出し、
-   *fallback* が真なら :class:`NullTranslations` インスタンスが返されます。
+   If no :file:`.mo` file is found, this function raises :exc:`IOError` if
+   *fallback* is false (which is the default), and returns a
+   :class:`NullTranslations` instance if *fallback* is true.
 
    .. versionchanged:: 2.4
-      *codeset* パラメタを追加しました.
+      Added the *codeset* parameter.
 
 
 .. function:: install(domain[, localedir[, unicode [, codeset[, names]]]])
 
-   :func:`translation` に *domain* 、 *localedir* 、および *codeset* を渡してできる関数 :func:`_` を
-   Python の組み込み名前空間に組み込みます。 *unicode* フラグは :func:`translation` の返す翻訳オブジェクトの
-   :meth:`~NullTranslations.install` メソッドに渡されます。
+   This installs the function :func:`_` in Python's builtins namespace, based on
+   *domain*, *localedir*, and *codeset* which are passed to the function
+   :func:`translation`.  The *unicode* flag is passed to the resulting translation
+   object's :meth:`~NullTranslations.install` method.
 
-   *names* パラメタについては、翻訳オブジェクトの :meth:`~NullTranslations.install` メソッドの説明を参照ください。
+   For the *names* parameter, please see the description of the translation
+   object's :meth:`~NullTranslations.install` method.
 
-   以下に示すように、通常はアプリケーション中の文字列を関数 :func:`_`  の呼び出しで包み込んで翻訳対象候補であることを示します::
+   As seen below, you usually mark the strings in your application that are
+   candidates for translation, by wrapping them in a call to the :func:`_`
+   function, like this::
 
       print _('This string will be translated.')
 
-   利便性を高めるためには、 :func:`_` 関数を Python の組み込み名前空間に組み入れる必要があります。こうすることで、アプリケーション内の
-   全てのモジュールからアクセスできるようになります。
+   For convenience, you want the :func:`_` function to be installed in Python's
+   builtins namespace, so it is easily accessible in all modules of your
+   application.
 
    .. versionchanged:: 2.4
-      *codeset* パラメタを追加しました.
+      Added the *codeset* parameter.
 
    .. versionchanged:: 2.5
-      *names* パラメタを追加しました.
+      Added the *names* parameter.
 
 
-:class:`NullTranslations` クラス
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The :class:`NullTranslations` class
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-翻訳クラスは、元のソースファイル中のメッセージ文字列から翻訳されたメッセージ文字列への変換を実際に実装しているクラスです。
-全ての翻訳クラスが基底クラスとして用いるクラスが :class:`NullTranslations` です; このクラスでは独自の特殊な翻訳
-クラスを実装するために使うことができる基本的なインタフェースを以下に :class:`NullTranslations` のメソッドを示します:
+Translation classes are what actually implement the translation of original
+source file message strings to translated message strings. The base class used
+by all translation classes is :class:`NullTranslations`; this provides the basic
+interface you can use to write your own specialized translation classes.  Here
+are the methods of :class:`NullTranslations`:
 
 
 .. class:: NullTranslations([fp])
 
-   オプションのファイルオブジェクト *fp* を取ります。この引数は基底クラスでは無視されます。このメソッドは  "保護された (protected)"
-   インスタンス変数 *_info* および  *_charset* を初期化します。これらの変数の値は派生クラスで設定することができます。同様に
-   *_fallback* も初期化しますが、この値は :meth:`add_fallback` で設定されます。その後、 *fp* が ``None``
-   でない場合 ``self._parse(fp)`` を呼び出します。
+   Takes an optional file object *fp*, which is ignored by the base class.
+   Initializes "protected" instance variables *_info* and *_charset* which are set
+   by derived classes, as well as *_fallback*, which is set through
+   :meth:`add_fallback`.  It then calls ``self._parse(fp)`` if *fp* is not
+   ``None``.
 
 
    .. method:: _parse(fp)
 
-      基底クラスでは何もしない (no-op) ようになっています。このメソッドの役割はファイルオブジェクト *fp* を引数に取り、ファイルからデータを
-      読み出し、メッセージカタログを初期化することです。サポートされていないメッセージカタログ形式を使っている場合、その形式を解釈するためには
-      このメソッドを上書きしなくてはなりません。
+      No-op'd in the base class, this method takes file object *fp*, and reads
+      the data from the file, initializing its message catalog.  If you have an
+      unsupported message catalog file format, you should override this method
+      to parse your format.
 
 
    .. method:: add_fallback(fallback)
 
-      *fallback* を現在の翻訳オブジェクトの代替オブジェクトとして追加します。翻訳オブジェクトが与えられたメッセージに対して翻訳メッセージ
-      を提供できない場合、この代替オブジェクトに問い合わせることになります。
+      Add *fallback* as the fallback object for the current translation
+      object. A translation object should consult the fallback if it cannot provide a
+      translation for a given message.
 
 
    .. method:: gettext(message)
 
-      代替オブジェクトが設定されている場合、 :meth:`gettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを返します。
-      派生クラスで上書きするメソッドです。
+      If a fallback has been set, forward :meth:`gettext` to the
+      fallback. Otherwise, return the translated message.  Overridden in derived
+      classes.
 
 
    .. method:: lgettext(message)
 
-      代替オブジェクトが設定されている場合、 :meth:`lgettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを返します。
-      派生クラスで上書きするメソッドです。
+      If a fallback has been set, forward :meth:`lgettext` to the
+      fallback. Otherwise, return the translated message.  Overridden in derived
+      classes.
 
       .. versionadded:: 2.4
 
 
    .. method:: ugettext(message)
 
-      代替オブジェクトが設定されている場合、 :meth:`gettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを Unicode
-      文字列で返します。派生クラスで上書きするメソッドです。
+      If a fallback has been set, forward :meth:`ugettext` to the
+      fallback. Otherwise, return the translated message as a Unicode
+      string. Overridden in derived classes.
 
 
    .. method:: ngettext(singular, plural, n)
 
-      代替オブジェクトが設定されている場合、 :meth:`ngettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを返します。
-      派生クラスで上書きするメソッドです。
+      If a fallback has been set, forward :meth:`ngettext` to the
+      fallback. Otherwise, return the translated message.  Overridden in derived
+      classes.
 
       .. versionadded:: 2.3
 
 
    .. method:: lngettext(singular, plural, n)
 
-      代替オブジェクトが設定されている場合、 :meth:`lngettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを返します。
-      派生クラスで上書きするメソッドです。
+      If a fallback has been set, forward :meth:`lngettext` to the
+      fallback. Otherwise, return the translated message.  Overridden in derived
+      classes.
 
       .. versionadded:: 2.4
 
 
    .. method:: ungettext(singular, plural, n)
 
-      代替オブジェクトが設定されている場合、 :meth:`ungettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを
-      Unicode 文字列で返します。派生クラスで上書きするメソッドです。
+      If a fallback has been set, forward :meth:`ungettext` to the fallback.
+      Otherwise, return the translated message as a Unicode string. Overridden
+      in derived classes.
 
       .. versionadded:: 2.3
 
 
    .. method:: info()
 
-      "protected" の :attr:`_info` 変数を返します。
+      Return the "protected" :attr:`_info` variable.
 
 
    .. method:: charset()
 
-      "protected" の :attr:`_charset` 変数を返します。
+      Return the "protected" :attr:`_charset` variable.
 
 
    .. method:: output_charset()
 
-      翻訳メッセージとして返す文字列のエンコードを決める、 "protected" の :attr:`_output_charset` 変数を返します。
+      Return the "protected" :attr:`_output_charset` variable, which defines the
+      encoding used to return translated messages.
 
       .. versionadded:: 2.4
 
 
    .. method:: set_output_charset(charset)
 
-      翻訳メッセージとして返す文字列のエンコードを決める、 "protected" の変数 :attr:`_output_charset` を変更します。
+      Change the "protected" :attr:`_output_charset` variable, which defines the
+      encoding used to return translated messages.
 
       .. versionadded:: 2.4
 
 
    .. method:: install([unicode [, names]])
 
-      *unicode* フラグが偽の場合、このメソッドは :meth:`self.gettext` を組み込み名前空間に組み入れ、 ``_`` と結び付けます。
-      *unicode* が真の場合、 :meth:`self.gettext` の代わりに :meth:`self.ugettext` を結び付けます。標準では
-      *unicode* は偽です。
+      If the *unicode* flag is false, this method installs :meth:`self.gettext`
+      into the built-in namespace, binding it to ``_``.  If *unicode* is true,
+      it binds :meth:`self.ugettext` instead.  By default, *unicode* is false.
 
-      *names* パラメタには、 :func:`_` 以外に組み込みの名前空間にインストールしたい関数名のシーケンスを指定します。サポートしている名前は
-      ``'gettext'`` (*unicode* フラグの設定に応じて :meth:`self.gettext` あるいは
-      :meth:`self.ugettext` のいずれかに対応します)、 ``'ngettext'`` (*unicode* フラグの設定に応じて
-      :meth:`self.ngettext` あるいは :meth:`self.ungettext` のいずれかに対応します)、 ``'lgettext'``
-      および ``'lngettext'`` です。
+      If the *names* parameter is given, it must be a sequence containing the
+      names of functions you want to install in the builtins namespace in
+      addition to :func:`_`.  Supported names are ``'gettext'`` (bound to
+      :meth:`self.gettext` or :meth:`self.ugettext` according to the *unicode*
+      flag), ``'ngettext'`` (bound to :meth:`self.ngettext` or
+      :meth:`self.ungettext` according to the *unicode* flag), ``'lgettext'``
+      and ``'lngettext'``.
 
-      この方法はアプリケーションで :func:`_` 関数を利用できるようにするための最も便利な方法ですが、唯一の手段でもあるので注意してください。
-      この関数はアプリケーション全体、とりわけ組み込み名前空間に影響するので、地域化されたモジュールで :func:`_` を組み入れることが
-      できないのです。その代わりに、以下のコード::
+      Note that this is only one way, albeit the most convenient way, to make
+      the :func:`_` function available to your application.  Because it affects
+      the entire application globally, and specifically the built-in namespace,
+      localized modules should never install :func:`_`. Instead, they should use
+      this code to make :func:`_` available to their module::
 
          import gettext
          t = gettext.translation('mymodule', ...)
          _ = t.gettext
 
-      を使って :func:`_` を使えるようにしなければなりません。
-
-      この操作は :func:`_` をモジュール内だけのグローバル名前空間に組み入れるので、モジュール内の :func:`_` の呼び出しだけに影響します。
+      This puts :func:`_` only in the module's global namespace and so only
+      affects calls within this module.
 
       .. versionchanged:: 2.5
-         *names* パラメタを追加しました.
+         Added the *names* parameter.
 
 
-:class:`GNUTranslations` クラス
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The :class:`GNUTranslations` class
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:mod:`gettext` モジュールでは :class:`NullTranslations` から派生したもう一つのクラス:
-:class:`GNUTranslations` を提供しています。このクラスはビッグエンディアン、およびリトルエンディアン両方のバイナリ形式の GNU
-:program:`gettext` :file:`.mo` ファイルを読み出せるように :meth:`_parse` を上書きしています。
-また、このクラスはメッセージ id とメッセージ文字列の両方を Unicode に型強制します。
+The :mod:`gettext` module provides one additional class derived from
+:class:`NullTranslations`: :class:`GNUTranslations`.  This class overrides
+:meth:`_parse` to enable reading GNU :program:`gettext` format :file:`.mo` files
+in both big-endian and little-endian format. It also coerces both message ids
+and message strings to Unicode.
 
-このクラスではまた、翻訳カタログ以外に、オプションのメタデータを読み込んで解釈します。GNU :program:`gettext` では、空の文字列に
-対する変換先としてメタデータを取り込むことが慣習になっています。このメタデータは :rfc:`822` 形式の ``key: value`` のペアに
-なっており、 ``Project-Id-Version`` キーを含んでいなければなりません。キー ``Content-Type`` があった場合、
-``charset`` の特性値 (property) は "保護された" :attr:`_charset` インスタンス
-変数を初期化するために用いられます。値がない場合には、デフォルトとして ``None`` が使われます。
-エンコードに用いられる文字セットが指定されている場合、カタログから読み出された全てのメッセージ id とメッセージ文字列は、指定されたエンコードを用いて
-Unicode に変換されます。 :meth:`ugettext` は常に Unicode を返し、 :meth:`gettext` はエンコードされた 8
-ビット文字列を返します。どちらのメソッドにおける引数 id の場合も、Unicode 文字列か US-ASCII 文字のみを含む 8 ビット文字列
-だけが受理可能です。国際化されたPython プログラムでは、メソッドの Unicode 版 (すなわち :meth:`ugettext` や
-:meth:`ungettext`) の利用が推奨されています。
+:class:`GNUTranslations` parses optional meta-data out of the translation
+catalog.  It is convention with GNU :program:`gettext` to include meta-data as
+the translation for the empty string.  This meta-data is in :rfc:`822`\ -style
+``key: value`` pairs, and should contain the ``Project-Id-Version`` key.  If the
+key ``Content-Type`` is found, then the ``charset`` property is used to
+initialize the "protected" :attr:`_charset` instance variable, defaulting to
+``None`` if not found.  If the charset encoding is specified, then all message
+ids and message strings read from the catalog are converted to Unicode using
+this encoding.  The :meth:`ugettext` method always returns a Unicode, while the
+:meth:`gettext` returns an encoded 8-bit string.  For the message id arguments
+of both methods, either Unicode strings or 8-bit strings containing only
+US-ASCII characters are acceptable.  Note that the Unicode version of the
+methods (i.e. :meth:`ugettext` and :meth:`ungettext`) are the recommended
+interface to use for internationalized Python programs.
 
-key/value ペアの集合全体は辞書型データ中に配置され、"保護された"  :attr:`_info` インスタンス変数に設定されます。
+The entire set of key/value pairs are placed into a dictionary and set as the
+"protected" :attr:`_info` instance variable.
 
-:file:`.mo` ファイルのマジックナンバーが不正な場合、あるいはその他の問題がファイルの読み出し中に発生した場合、
-:class:`GNUTranslations` クラスのインスタンス化で :exc:`IOError` が送出されることがあります。
+If the :file:`.mo` file's magic number is invalid, or if other problems occur
+while reading the file, instantiating a :class:`GNUTranslations` class can raise
+:exc:`IOError`.
 
-以下のメソッドは基底クラスの実装からオーバライドされています:
+The following methods are overridden from the base class implementation:
 
 
 .. method:: GNUTranslations.gettext(message)
 
-   カタログから *message* id を検索して、対応するメッセージ文字列を、カタログの文字セットが既知のエンコードの場合、エンコードされた 8 ビット
-   文字列として返します。 *message* id に対するエントリがカタログに存在せず、フォールバックが設定されている場合、フォールバック検索はオブジェクトの
-   :meth:`gettext` メソッドに転送されます。そうでない場合、 *message* id 自体が返されます。
+   Look up the *message* id in the catalog and return the corresponding message
+   string, as an 8-bit string encoded with the catalog's charset encoding, if
+   known.  If there is no entry in the catalog for the *message* id, and a fallback
+   has been set, the look up is forwarded to the fallback's :meth:`gettext` method.
+   Otherwise, the *message* id is returned.
+
+
+.. method:: GNUTranslations.lgettext(message)
+
+   Equivalent to :meth:`gettext`, but the translation is returned in the preferred
+   system encoding, if no other encoding was explicitly set with
+   :meth:`set_output_charset`.
+
+   .. versionadded:: 2.4
 
 
 .. method:: GNUTranslations.ugettext(message)
 
-   カタログから *message* id を検索して、対応するメッセージ文字列を、 Unicode でエンコードして返します。 *message* id
-   に対するエントリがカタログに存在せず、フォールバックが設定されている場合、フォールバック検索はオブジェクトの :meth:`ugettext`
-   メソッドに転送されます。そうでない場合、 *message* id 自体が返されます。
+   Look up the *message* id in the catalog and return the corresponding message
+   string, as a Unicode string.  If there is no entry in the catalog for the
+   *message* id, and a fallback has been set, the look up is forwarded to the
+   fallback's :meth:`ugettext` method.  Otherwise, the *message* id is returned.
 
 
 .. method:: GNUTranslations.ngettext(singular, plural, n)
 
-   メッセージ id に対する複数形を検索します。カタログに対する検索では *singular* がメッセージ id として用いられ、 *n* には
-   どの複数形を用いるかを指定します。返されるメッセージ文字列は 8 ビットの文字列で、カタログの文字セットが既知の場合にはその
-   文字列セットでエンコードされています。
+   Do a plural-forms lookup of a message id.  *singular* is used as the message id
+   for purposes of lookup in the catalog, while *n* is used to determine which
+   plural form to use.  The returned message string is an 8-bit string encoded with
+   the catalog's charset encoding, if known.
 
-   メッセージ id がカタログ中に見つからず、フォールバックオブジェクトが指定されている場合、メッセージ検索要求はフォールバックオブジェクトの
-   :meth:`ngettext` メソッドに転送されます。そうでない場合、 *n* が 1 ならば *singular* が返され、それ以外に対しては
-   *plural* が返されます。
+   If the message id is not found in the catalog, and a fallback is specified, the
+   request is forwarded to the fallback's :meth:`ngettext` method.  Otherwise, when
+   *n* is 1 *singular* is returned, and *plural* is returned in all other cases.
 
    .. versionadded:: 2.3
 
 
+.. method:: GNUTranslations.lngettext(singular, plural, n)
+
+   Equivalent to :meth:`gettext`, but the translation is returned in the preferred
+   system encoding, if no other encoding was explicitly set with
+   :meth:`set_output_charset`.
+
+   .. versionadded:: 2.4
+
+
 .. method:: GNUTranslations.ungettext(singular, plural, n)
 
-   メッセージ id に対する複数形を検索します。カタログに対する検索では *singular* がメッセージ id として用いられ、 *n* には
-   どの複数形を用いるかを指定します。返されるメッセージ文字列は Unicode 文字列です。
+   Do a plural-forms lookup of a message id.  *singular* is used as the message id
+   for purposes of lookup in the catalog, while *n* is used to determine which
+   plural form to use.  The returned message string is a Unicode string.
 
-   メッセージ id がカタログ中に見つからず、フォールバックオブジェクトが指定されている場合、メッセージ検索要求はフォールバックオブジェクトの
-   :meth:`ungettext` メソッドに転送されます。そうでない場合、 *n* が 1 ならば *singular* が返され、それ以外に対しては
-   *plural* が返されます。
+   If the message id is not found in the catalog, and a fallback is specified, the
+   request is forwarded to the fallback's :meth:`ungettext` method.  Otherwise,
+   when *n* is 1 *singular* is returned, and *plural* is returned in all other
+   cases.
 
-   以下に例を示します。::
+   Here is an example::
 
       n = len(os.listdir('.'))
       cat = GNUTranslations(somefile)
@@ -399,50 +479,55 @@ key/value ペアの集合全体は辞書型データ中に配置され、"保護
    .. versionadded:: 2.3
 
 
-Solaris メッセージカタログ機構のサポート
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Solaris message catalog support
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Solaris オペレーティングシステムでは、独自の :file:`.mo`  バイナリファイル形式を定義していますが、この形式に関する
-ドキュメントが手に入らないため、現時点ではサポートされていません。
+The Solaris operating system defines its own binary :file:`.mo` file format, but
+since no documentation can be found on this format, it is not supported at this
+time.
 
 
-Catalog コンストラクタ
-^^^^^^^^^^^^^^^^^^^^^^
+The Catalog constructor
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. index:: single: GNOME
 
-GNOME では、James Henstridge によるあるバージョンの :mod:`gettext` モジュールを使っていますが、このバージョンは
-少し異なった API を持っています。ドキュメントに書かれている利用法は::
+GNOME uses a version of the :mod:`gettext` module by James Henstridge, but this
+version has a slightly different API.  Its documented usage was::
 
    import gettext
    cat = gettext.Catalog(domain, localedir)
    _ = cat.gettext
    print _('hello world')
 
-となっています。過去のモジュールとの互換性のために、 :func:`Catalog` は前述の :func:`translation`
-関数の別名になっています。
+For compatibility with this older module, the function :func:`Catalog` is an
+alias for the :func:`translation` function described above.
 
-このモジュールと Henstridge のバージョンとの間には一つ相違点があります: 彼のカタログオブジェクトはマップ型の API を介した
-アクセスがサポートされていましたが、この API は使われていないらしく、現在はサポートされていません。
+One difference between this module and Henstridge's: his catalog objects
+supported access through a mapping API, but this appears to be unused and so is
+not currently supported.
 
 
-プログラムやモジュールを国際化する
-----------------------------------
+Internationalizing your programs and modules
+--------------------------------------------
 
-国際化 (I18N, I-nternationalizatio-N) とは、プログラムを複数の言語に対応させる操作を指します。地域化 (L10N,
-L-ocalizatio-N) とは、すでに国際化されているプログラムを特定地域の言語や文化的な事情に対応させることを指します。Python
-プログラムに多言語メッセージ機能を追加するには、以下の手順を踏む必要があります:
+Internationalization (I18N) refers to the operation by which a program is made
+aware of multiple languages.  Localization (L10N) refers to the adaptation of
+your program, once internationalized, to the local language and cultural habits.
+In order to provide multilingual messages for your Python programs, you need to
+take the following steps:
 
-#. プログラムやモジュールで翻訳対象とする文字列に特殊なマークをつけて準備します
+#. prepare your program or module by specially marking translatable strings
 
-#. マークづけをしたファイルに一連のツールを走らせ、生のメッセージカタログを生成します
+#. run a suite of tools over your marked files to generate raw messages catalogs
 
-#. 特定の言語へのメッセージカタログの翻訳を作成します
+#. create language specific translations of the message catalogs
 
-#. メッセージ文字列を適切に変換するために :mod:`gettext` モジュールを使います
+#. use the :mod:`gettext` module so that message strings are properly translated
 
-ソースコードを I18N 化する準備として、ファイル内の全ての文字列を探す必要があります。翻訳を行う必要のある文字列はどれも ``_('...')`` ---
-すなわち関数 :func:`_` の呼び出しで包むことでマーク付けしなくてはなりません。例えば以下のようにします::
+In order to prepare your code for I18N, you need to look at all the strings in
+your files.  Any string that needs to be translated should be marked by wrapping
+it in ``_('...')`` --- that is, a call to the function :func:`_`.  For example::
 
    filename = 'mylog.txt'
    message = _('writing a log message')
@@ -450,80 +535,95 @@ L-ocalizatio-N) とは、すでに国際化されているプログラムを特�
    fp.write(message)
    fp.close()
 
-この例では、文字列 ``'writing a log message'`` が翻訳対象候補としてマーク付けされており、文字列 ``'mylog.txt'``
-および ``'w'`` はされていません。
+In this example, the string ``'writing a log message'`` is marked as a candidate
+for translation, while the strings ``'mylog.txt'`` and ``'w'`` are not.
 
-Python の配布物には、ソースコードに準備作業を行った後でメッセージカタログの生成を助ける 2 つのツールが付属します。
-これらはバイナリ配布の場合には付属していたりしなかったりしますが、ソースコード配布には入っており、 :file:`Tools/i18n` ディレクトリ
-にあります。
+The Python distribution comes with two tools which help you generate the message
+catalogs once you've prepared your source code.  These may or may not be
+available from a binary distribution, but they can be found in a source
+distribution, in the :file:`Tools/i18n` directory.
 
-:program:`pygettext` プログラム  [#]_  は全ての Python ソースコードを走査し、予め翻訳対象としてマーク
-した文字列を探し出します。このツールは GNU :program:`gettext` プログラムと同様ですが、Python ソースコードの機微について
-熟知している反面、C 言語や C++言語のソースコードについては全く知りません。(C 言語による拡張モジュールのように) C 言語の
-コードも翻訳対象にしたいのでない限り、 GNU ``gettext``  は必要ありません。
+The :program:`pygettext` [#]_ program scans all your Python source code looking
+for the strings you previously marked as translatable.  It is similar to the GNU
+:program:`gettext` program except that it understands all the intricacies of
+Python source code, but knows nothing about C or C++ source code.  You don't
+need GNU ``gettext`` unless you're also going to be translating C code (such as
+C extension modules).
 
-:program:`pygettext` は、テキスト形式 Uniforum スタイルによる人間が判読可能なメッセージカタログ :file:`.pot`
-ファイル群を生成します。このファイル群はソースコード中でマークされた全ての文字列と、それに対応する翻訳文字列のためのプレースホルダを含むファイル
-で構成されています。 :program:`pygettext` はコマンドライン形式のスクリプトで、 :program:`xgettext`
-と同様のコマンドラインインタフェースをサポートします; 使用法についての詳細を見るには::
+:program:`pygettext` generates textual Uniforum-style human readable message
+catalog :file:`.pot` files, essentially structured human readable files which
+contain every marked string in the source code, along with a placeholder for the
+translation strings. :program:`pygettext` is a command line script that supports
+a similar command line interface as :program:`xgettext`; for details on its use,
+run::
 
    pygettext.py --help
 
-を起動してください。
+Copies of these :file:`.pot` files are then handed over to the individual human
+translators who write language-specific versions for every supported natural
+language.  They send you back the filled in language-specific versions as a
+:file:`.po` file.  Using the :program:`msgfmt.py` [#]_ program (in the
+:file:`Tools/i18n` directory), you take the :file:`.po` files from your
+translators and generate the machine-readable :file:`.mo` binary catalog files.
+The :file:`.mo` files are what the :mod:`gettext` module uses for the actual
+translation processing during run-time.
 
-これら :file:`.pot` ファイルのコピーは次に、サポート対象の各自然言語について、言語ごとのバージョンを作成する個々の人間の
-翻訳者に頒布されます。翻訳者たちはプレースホルダ部分を埋めて言語ごとのバージョンをつくり、 :file:`.po` ファイルとして
-返します。(:file:`Tools/i18n` ディレクトリ内の)  :program:`msgfmt.py` [#]_
-プログラムを使い、翻訳者から返された :file:`.po` ファイルから機械可読な :file:`.mo` バイナリカタログファイルを生成します。
-:file:`.mo` ファイルは、 :mod:`gettext` モジュールが実行時に実際の翻訳処理を行うために使われます。
-
-:mod:`gettext` モジュールをソースコード中でどのように使うかは単一のモジュールを国際化するのか、それともアプリケーション全体を
-国際化するのかによります。次のふたつのセクションで、それぞれについて説明します。
+How you use the :mod:`gettext` module in your code depends on whether you are
+internationalizing a single module or your entire application. The next two
+sections will discuss each case.
 
 
-モジュールを地域化する
+Localizing your module
 ^^^^^^^^^^^^^^^^^^^^^^
 
-モジュールを地域化する場合、グローバルな変更、例えば組み込み名前空間への変更を行わないように注意しなければなりません。GNU ``gettext``  API
-ではなく、クラスベースの API を使うべきです。
+If you are localizing your module, you must take care not to make global
+changes, e.g. to the built-in namespace.  You should not use the GNU ``gettext``
+API but instead the class-based API.
 
-仮に対象のモジュール名を "spam" とし、モジュールの各言語における翻訳が収められた :file:`.mo` ファイルが
-:file:`/usr/share/locale`  に GNU :program:`gettext` 形式で置かれているとします。
-この場合、モジュールの最初で以下のようにします::
+Let's say your module is called "spam" and the module's various natural language
+translation :file:`.mo` files reside in :file:`/usr/share/locale` in GNU
+:program:`gettext` format.  Here's what you would put at the top of your
+module::
 
    import gettext
    t = gettext.translation('spam', '/usr/share/locale')
    _ = t.lgettext
 
-翻訳オブジェクトが :file:`.po` ファイル中の Unicode 文字列を返すようになっているのなら、上の代わりに以下のようにします::
+If your translators were providing you with Unicode strings in their :file:`.po`
+files, you'd instead do::
 
    import gettext
    t = gettext.translation('spam', '/usr/share/locale')
    _ = t.ugettext
 
 
-アプリケーションを地域化する
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Localizing your application
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-アプリケーションを地域化するのなら、関数 :func:`_` をグローバルな組み込み名前空間に組み入れなければならず、これは通常アプリケーションの主ドライバ
-(main driver) ファイルで行います。この操作によって、アプリケーション独自のファイルは明示的に各ファイルで :func:`_`
-の組み入れを行わなくても単に ``_('...')`` を使うだけで済むようになります。
+If you are localizing your application, you can install the :func:`_` function
+globally into the built-in namespace, usually in the main driver file of your
+application.  This will let all your application-specific files just use
+``_('...')`` without having to explicitly install it in each file.
 
-単純な場合では、単に以下の短いコードをアプリケーションの主ドライバファイルに追加するだけです::
+In the simple case then, you need only add the following bit of code to the main
+driver file of your application::
 
    import gettext
    gettext.install('myapplication')
 
-ロケールディレクトリや *unicode* フラグを設定する必要がある場合、それらの値を :func:`install` 関数に渡すことができます::
+If you need to set the locale directory or the *unicode* flag, you can pass
+these into the :func:`install` function::
 
    import gettext
    gettext.install('myapplication', '/usr/share/locale', unicode=1)
 
 
-動作中 (on the fly) に言語を切り替える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changing languages on the fly
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-多くの言語を同時にサポートする必要がある場合、複数の翻訳インスタンスを生成して、例えば以下のコード::
+If your program needs to support many languages at the same time, you may want
+to create multiple translation instances and then switch between them
+explicitly, like so::
 
    import gettext
 
@@ -540,14 +640,13 @@ Python の配布物には、ソースコードに準備作業を行った後で�
    # ... more time goes by, user selects language 3
    lang3.install()
 
-のように、インスタンスを明示的に切り替えてもかまいません。
 
+Deferred translations
+^^^^^^^^^^^^^^^^^^^^^
 
-翻訳処理の遅延解決
-^^^^^^^^^^^^^^^^^^
-
-コードを書く上では、ほとんどの状況で文字列はコードされた場所で翻訳されます。しかし場合によっては、翻訳対象として文字列をマーク
-はするが、その後実際に翻訳が行われるように遅延させる必要が生じます。古典的な例は以下のようなコートです::
+In most coding situations, strings are translated where they are coded.
+Occasionally however, you need to mark strings for translation, but defer actual
+translation until later.  A classic example is::
 
    animals = ['mollusk',
               'albatross',
@@ -558,9 +657,11 @@ Python の配布物には、ソースコードに準備作業を行った後で�
    for a in animals:
        print a
 
-ここで、リスト ``animals`` 内の文字列は翻訳対象としてマークはしたいが、文字列が出力されるまで実際に翻訳を行うのは避けたいとします。
+Here, you want to mark the strings in the ``animals`` list as being
+translatable, but you don't actually want to translate them until they are
+printed.
 
-こうした状況を処理する一つの方法を以下に示します::
+Here is one way you can handle this situation::
 
    def _(message): return message
 
@@ -576,14 +677,16 @@ Python の配布物には、ソースコードに準備作業を行った後で�
    for a in animals:
        print _(a)
 
-ダミーの :func:`_` 定義が単に文字列をそのまま返すようになっているので、上のコードはうまく動作します。かつ、このダミーの
-定義は、組み込み名前空間に置かれた :func:`_` の定義で (:keyword:`del` 命令を実行するまで) 一時的に上書きすることが
-できます。もしそれまでに :func:`_` をローカルな名前空間に持っていたら注意してください。
+This works because the dummy definition of :func:`_` simply returns the string
+unchanged.  And this dummy definition will temporarily override any definition
+of :func:`_` in the built-in namespace (until the :keyword:`del` command). Take
+care, though if you have a previous definition of :func:`_` in the local
+namespace.
 
-二つ目の例における :func:`_` の使い方では、"a" は文字列リテラルではないので、 :program:`pygettext` プログラムが翻訳可能な
-対象として識別しません。
+Note that the second use of :func:`_` will not identify "a" as being
+translatable to the :program:`pygettext` program, since it is not a string.
 
-もう一つの処理法は、以下の例のようなやり方です::
+Another way to handle this is with the following example::
 
    def N_(message): return message
 
@@ -597,28 +700,33 @@ Python の配布物には、ソースコードに準備作業を行った後で�
    for a in animals:
        print _(a)
 
-この例の場合では、翻訳可能な文字列を関数 :func:`N_` でマーク付けしており  [#]_  、 :func:`_`
-の定義とは全く衝突しません。しかしメッセージ展開プログラムには翻訳対象の文字列が :func:`N_` でマーク
-されていることを教える必要が出てくるでしょう。 :program:`pygettext` および :program:`xpot` は両方とも、コマンドライン
-上のスイッチでこの機能をサポートしています。
+In this case, you are marking translatable strings with the function :func:`N_`,
+[#]_ which won't conflict with any definition of :func:`_`.  However, you will
+need to teach your message extraction program to look for translatable strings
+marked with :func:`N_`. :program:`pygettext` and :program:`xpot` both support
+this through the use of command line switches.
 
 
 :func:`gettext` vs. :func:`lgettext`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Python 2.4 からは、 :func:`lgettext` ファミリが導入されました。この関数の目的は、現行の GNU gettext
-実装によりよく準拠した別の関数を提供することにあります。翻訳メッセージファイル中で使われているのと同じコードセットを使って文字列をエンコードして
-返す :func:`gettext` と違い、これらの関数は :func:`locale.getpreferredencoding` の返す
-優先システムエンコーディングを使って翻訳メッセージ文字列をエンコードして返します。また、Python 2.4 では、翻訳メッセージ文字列
-で使われているコードセットを明示的に選べるようにする関数が新たに導入されていることにも注意してください。コードセットを明示的に
-設定すると、 :func:`lgettext` でさえ、指定したコードセットで翻訳メッセージ文字列を返します。これは GNU gettext 実装が期待している
-仕様と同じです。
+In Python 2.4 the :func:`lgettext` family of functions were introduced. The
+intention of these functions is to provide an alternative which is more
+compliant with the current implementation of GNU gettext. Unlike
+:func:`gettext`, which returns strings encoded with the same codeset used in the
+translation file, :func:`lgettext` will return strings encoded with the
+preferred system encoding, as returned by :func:`locale.getpreferredencoding`.
+Also notice that Python 2.4 introduces new functions to explicitly choose the
+codeset used in translated strings. If a codeset is explicitly set, even
+:func:`lgettext` will return translated strings in the requested codeset, as
+would be expected in the GNU gettext implementation.
 
 
-謝辞
-----
+Acknowledgements
+----------------
 
-以下の人々が、このモジュールのコード、フィードバック、設計に関する助言、過去の実装、そして有益な経験談による貢献をしてくれました:
+The following people contributed code, feedback, design suggestions, previous
+implementations, and valuable experience to the creation of this module:
 
 * Peter Funk
 
@@ -634,23 +742,28 @@ Python 2.4 からは、 :func:`lgettext` ファミリが導入されました。
 
 * Barry Warsaw
 
-.. rubric:: 注記
+* Gustavo Niemeyer
 
-.. [#] 標準でロケールが収められているディレクトリはシステム依存です; 例えば、RedHat Linux では :file:`/usr/share/locale`
-   ですが、 Solaris では :file:`/usr/lib/locale` です。 :mod:`gettext`
-   モジュールはこうしたシステム依存の標準設定をサポートしません; その代わりに :file:`sys.prefix/share/locale` を標準の
-   設定とします。この理由から、常にアプリケーションの開始時に絶対パスで明示的に指定して :func:`bindtextdomain` を呼び出す
-   のが最良のやり方ということになります。
+.. rubric:: Footnotes
 
-.. [#] 上の :func:`bindtextdomain` に関する脚注を参照してください。
+.. [#] The default locale directory is system dependent; for example, on RedHat Linux
+   it is :file:`/usr/share/locale`, but on Solaris it is :file:`/usr/lib/locale`.
+   The :mod:`gettext` module does not try to support these system dependent
+   defaults; instead its default is :file:`sys.prefix/share/locale`. For this
+   reason, it is always best to call :func:`bindtextdomain` with an explicit
+   absolute path at the start of your application.
 
-.. [#] 同様の作業を行う :program:`xpot` と呼ばれるプログラムを  François Pinard が書いています。このプログラムは彼の
-   :program:`po-utils` パッケージの一部で、 http://po-utils.progiciels-bpi.ca/ で入手できます。
+.. [#] See the footnote for :func:`bindtextdomain` above.
 
-.. [#] :program:`msgfmt.py` は GNU :program:`msgfmt` とバイナリ互換ですが、より単純で、Python
-   だけを使った実装がされています。このプログラムと :program:`pygettext.py` があれば、通常 Python プログラムを国際化するために
-   GNU :program:`gettext` パッケージをインストールする必要はありません。
+.. [#] François Pinard has written a program called :program:`xpot` which does a
+   similar job.  It is available as part of his
+   `po-utils package <https://github.com/pinard/po-utils>`__.
 
-.. [#] この :func:`N_` をどうするかは全くの自由です;  :func:`MarkThisStringForTranslation`
-   などとしてもかまいません。
+.. [#] :program:`msgfmt.py` is binary compatible with GNU :program:`msgfmt` except that
+   it provides a simpler, all-Python implementation.  With this and
+   :program:`pygettext.py`, you generally won't need to install the GNU
+   :program:`gettext` package to internationalize your Python applications.
+
+.. [#] The choice of :func:`N_` here is totally arbitrary; it could have just as easily
+   been :func:`MarkThisStringForTranslation`.
 

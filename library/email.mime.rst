@@ -1,27 +1,24 @@
-:mod:`email.mime`: 電子メールおよび MIME オブジェクトをゼロから作成する
------------------------------------------------------------------------
+:mod:`email.mime`: Creating email and MIME objects from scratch
+---------------------------------------------------------------
 
 .. module:: email.mime
-   :synopsis: MIME メッセージを作成する
+   :synopsis: Build MIME messages.
 
 
-ふつう、メッセージオブジェクト構造はファイルまたは何がしかの\
-テキストをパーザに通すことで得られます。パーザは与えられた\
-テキストを解析し、基底となる root のメッセージオブジェクトを返します。\
-しかし、完全なメッセージオブジェクト構造を何もないところから作成することも\
-また可能です。個別の :class:`~email.message.Message` を手で作成することさえできます。\
-実際には、すでに存在するメッセージオブジェクト構造をとってきて、\
-そこに新たな :class:`~email.message.Message` オブジェクトを追加したり、あるものを\
-別のところへ移動させたりできます。これは MIME メッセージを\
-切ったりおろしたりするために非常に便利なインターフェイスを提供します。
+Ordinarily, you get a message object structure by passing a file or some text to
+a parser, which parses the text and returns the root message object.  However
+you can also build a complete message structure from scratch, or even individual
+:class:`~email.message.Message` objects by hand.  In fact, you can also take an
+existing structure and add new :class:`~email.message.Message` objects, move them
+around, etc.  This makes a very convenient interface for slicing-and-dicing MIME
+messages.
 
-新しいメッセージオブジェクト構造は :class:`~email.message.Message` インスタンスを\
-作成することにより作れます。ここに添付ファイルやその他適切なものを\
-すべて手で加えてやればよいのです。MIME メッセージの場合、
-:mod:`email` パッケージはこれらを簡単におこなえるようにするために\
-いくつかの便利なサブクラスを提供しています。
+You can create a new object structure by creating :class:`~email.message.Message`
+instances, adding attachments and all the appropriate headers manually.  For MIME
+messages though, the :mod:`email` package provides some convenient subclasses to
+make things easier.
 
-以下がそのサブクラスです:
+Here are the classes:
 
 .. currentmodule:: email.mime.base
 
@@ -29,23 +26,21 @@
 
    Module: :mod:`email.mime.base`
 
-   これはすべての :class:`~email.message.Message` の MIME 用サブクラスの基底となるクラスです。\
-   とくに :class:`MIMEBase` のインスタンスを直接作成することは
-   (可能ではありますが) ふつうはしないでしょう。
-   :class:`MIMEBase` は単により特化された MIME
-   用サブクラスのための便宜的な基底クラスとして提供されています。
+   This is the base class for all the MIME-specific subclasses of
+   :class:`~email.message.Message`.  Ordinarily you won't create instances
+   specifically of :class:`MIMEBase`, although you could.  :class:`MIMEBase`
+   is provided primarily as a convenient base class for more specific
+   MIME-aware subclasses.
 
-   *_maintype* は :mailheader:`Content-Type` の主形式 (maintype)
-   であり (:mimetype:`text` や :mimetype:`image` など)、
-   *_subtype* は :mailheader:`Content-Type` の副形式 (subtype) です
-   (:mimetype:`plain` や :mimetype:`gif` など)。
-   *_params* は各パラメータのキーと値を格納した辞書であり、
-   これは直接 :meth:`Message.add_header` に渡されます。
+   *_maintype* is the :mailheader:`Content-Type` major type (e.g. :mimetype:`text`
+   or :mimetype:`image`), and *_subtype* is the :mailheader:`Content-Type` minor
+   type  (e.g. :mimetype:`plain` or :mimetype:`gif`).  *_params* is a parameter
+   key/value dictionary and is passed directly to :meth:`Message.add_header
+   <email.message.Message.add_header>`.
 
-   :class:`MIMEBase` クラスはつねに
-   (*_maintype* 、 *_subtype* 、および *_params* にもとづいた)
-   :mailheader:`Content-Type` ヘッダと、 :mailheader:`MIME-Version` ヘッダ
-   (必ず ``1.0`` に設定される) を追加します。
+   The :class:`MIMEBase` class always adds a :mailheader:`Content-Type` header
+   (based on *_maintype*, *_subtype*, and *_params*), and a
+   :mailheader:`MIME-Version` header (always set to ``1.0``).
 
 
 .. currentmodule:: email.mime.nonmultipart
@@ -54,11 +49,12 @@
 
    Module: :mod:`email.mime.nonmultipart`
 
-   :class:`~email.mime.base.MIMEBase` のサブクラスで、これは :mimetype:`multipart` 形式でない MIME
-   メッセージのための中間的な基底クラスです。このクラスのおもな目的は、
-   通常 :mimetype:`multipart` 形式のメッセージに対してのみ意味をなす
-   :meth:`attach` メソッドの使用をふせぐことです。もし :meth:`attach` メソッドが\
-   呼ばれた場合、これは :exc:`~email.errors.MultipartConversionError` 例外を発生します。
+   A subclass of :class:`~email.mime.base.MIMEBase`, this is an intermediate base
+   class for MIME messages that are not :mimetype:`multipart`.  The primary
+   purpose of this class is to prevent the use of the
+   :meth:`~email.message.Message.attach` method, which only makes sense for
+   :mimetype:`multipart` messages.  If :meth:`~email.message.Message.attach`
+   is called, a :exc:`~email.errors.MultipartConversionError` exception is raised.
 
    .. versionadded:: 2.2.2
 
@@ -69,25 +65,25 @@
 
    Module: :mod:`email.mime.multipart`
 
-   :class:`~email.mime.base.MIMEBase` のサブクラスで、これは :mimetype:`multipart` 形式の MIME
-   メッセージのための中間的な基底クラスです。オプション引数 *_subtype* は\
-   デフォルトでは :mimetype:`mixed` になっていますが、そのメッセージの副形式
-   (subtype) を指定するのに使うことができます。メッセージオブジェクトには
-   :mimetype:`multipart/_subtype` という値をもつ :mailheader:`Content-Type` ヘッダとともに、
-   :mailheader:`MIME-Version` ヘッダが追加されるでしょう。
+   A subclass of :class:`~email.mime.base.MIMEBase`, this is an intermediate base
+   class for MIME messages that are :mimetype:`multipart`.  Optional *_subtype*
+   defaults to :mimetype:`mixed`, but can be used to specify the subtype of the
+   message.  A :mailheader:`Content-Type` header of :mimetype:`multipart/_subtype`
+   will be added to the message object.  A :mailheader:`MIME-Version` header will
+   also be added.
 
-   オプション引数 *boundary* は multipart の境界文字列です。
-   これが ``None`` の場合 (デフォルト)、境界は必要に応じて計算されます
-   （例えばメッセージがシリアライズされるときなど）。
+   Optional *boundary* is the multipart boundary string.  When ``None`` (the
+   default), the boundary is calculated when needed (for example, when the
+   message is serialized).
 
-   *_subparts* はそのペイロードの subpart の初期値からなるシーケンスです。
-   このシーケンスはリストに変換できるようになっている必要があります。
-   新しい subpart はつねに :meth:`Message.attach` メソッドを使って\
-   そのメッセージに追加できるようになっています。
+   *_subparts* is a sequence of initial subparts for the payload.  It must be
+   possible to convert this sequence to a list.  You can always attach new subparts
+   to the message by using the :meth:`Message.attach
+   <email.message.Message.attach>` method.
 
-   :mailheader:`Content-Type` ヘッダに対する追加のパラメータは\
-   キーワード引数 *_params* を介して取得あるいは設定されます。
-   これはキーワード辞書になっています。
+   Additional parameters for the :mailheader:`Content-Type` header are taken from
+   the keyword arguments, or passed into the *_params* argument, which is a keyword
+   dictionary.
 
    .. versionadded:: 2.2.2
 
@@ -98,25 +94,23 @@
 
    Module: :mod:`email.mime.application`
 
-   :class:`~email.mime.nonmultipart.MIMENonMultipart` のサブクラスである :class:`MIMEApplication`
-   クラスは MIME メッセージオブジェクトのメジャータイプ :mimetype:`application`
-   を表します。
-   *_data* は生のバイト列が入った文字列です。オプション引数 *_subtype* は
-   MIME のサブタイプを設定します。サブタイプのデフォルトは :mimetype:`octet-stream`
-   です。
+   A subclass of :class:`~email.mime.nonmultipart.MIMENonMultipart`, the
+   :class:`MIMEApplication` class is used to represent MIME message objects of
+   major type :mimetype:`application`.  *_data* is a string containing the raw
+   byte data.  Optional *_subtype* specifies the MIME subtype and defaults to
+   :mimetype:`octet-stream`.
 
-   オプション引数の *_encoder* は呼び出し可能なオブジェクト(関数など)で、
-   データの転送に使う実際のエンコード処理を行います。
-   この呼び出し可能なオブジェクトは引数を1つ取り、それは :class:`MIMEApplication`
-   のインスタンスです。
-   ペイロードをエンコードされた形式に変更するために :meth:`get_payload` と
-   :meth:`set_payload` を使い、必要に応じて
-   :mailheader:`Content-Transfer-Encoding` やその他のヘッダを\
-   メッセージオブジェクトに追加するべきです。デフォルトのエンコードは base64
-   です。組み込みのエンコーダの一覧は :mod:`email.encoders`
-   モジュールを見てください。
+   Optional *_encoder* is a callable (i.e. function) which will perform the actual
+   encoding of the data for transport.  This callable takes one argument, which is
+   the :class:`MIMEApplication` instance. It should use
+   :meth:`~email.message.Message.get_payload` and
+   :meth:`~email.message.Message.set_payload` to change the payload to encoded
+   form.  It should also add
+   any :mailheader:`Content-Transfer-Encoding` or other headers to the message
+   object as necessary.  The default encoding is base64.  See the
+   :mod:`email.encoders` module for a list of the built-in encoders.
 
-   *_params* は基底クラスのコンストラクタにそのまま渡されます。
+   *_params* are passed straight through to the base class constructor.
 
    .. versionadded:: 2.5
 
@@ -127,27 +121,26 @@
 
    Module: :mod:`email.mime.audio`
 
-   :class:`MIMEAudio` クラスは :class:`~email.mime.nonmultipart.MIMENonMultipart` のサブクラスで、
-   主形式 (maintype) が :mimetype:`audio` の MIME オブジェクトを作成\
-   するのに使われます。 *_audiodata* は実際の音声データを格納した文字列です。
-   もしこのデータが標準の Python モジュール :mod:`sndhdr` によって\
-   認識できるものであれば、
-   :mailheader:`Content-Type` ヘッダの副形式 (subtype) は自動的に決定されます。
-   そうでない場合はその画像の形式 (subtype) を *_subtype* で
-   明示的に指定する必要があります。副形式が自動的に決定できず、
-   *_subtype* の指定もない場合は、 :exc:`TypeError` が発生します。
+   A subclass of :class:`~email.mime.nonmultipart.MIMENonMultipart`, the
+   :class:`MIMEAudio` class is used to create MIME message objects of major type
+   :mimetype:`audio`. *_audiodata* is a string containing the raw audio data.  If
+   this data can be decoded by the standard Python module :mod:`sndhdr`, then the
+   subtype will be automatically included in the :mailheader:`Content-Type` header.
+   Otherwise you can explicitly specify the audio subtype via the *_subtype*
+   parameter.  If the minor type could not be guessed and *_subtype* was not given,
+   then :exc:`TypeError` is raised.
 
-   オプション引数 *_encoder* は呼び出し可能なオブジェクト (関数など) で、
-   トランスポートのさいに画像の実際のエンコードをおこないます。このオブジェクトは
-   :class:`MIMEAudio` インスタンスの引数をひとつだけ取ることができます。
-   この関数は、与えられたペイロードをエンコードされた形式に変換するのに
-   :meth:`get_payload` および :meth:`set_payload` を使う必要があります。
-   また、これは必要に応じて :mailheader:`Content-Transfer-Encoding` あるいは
-   そのメッセージに適した何らかのヘッダを追加する必要があります。
-   デフォルトのエンコーディングは base64 です。組み込みのエンコーダの詳細については
-   :mod:`email.encoders` を参照してください。
+   Optional *_encoder* is a callable (i.e. function) which will perform the actual
+   encoding of the audio data for transport.  This callable takes one argument,
+   which is the :class:`MIMEAudio` instance. It should use
+   :meth:`~email.message.Message.get_payload` and
+   :meth:`~email.message.Message.set_payload` to change the payload to encoded
+   form.  It should also add
+   any :mailheader:`Content-Transfer-Encoding` or other headers to the message
+   object as necessary.  The default encoding is base64.  See the
+   :mod:`email.encoders` module for a list of the built-in encoders.
 
-   *_params* は :class:`MIMEBase` コンストラクタに直接渡されます。
+   *_params* are passed straight through to the base class constructor.
 
 
 .. currentmodule:: email.mime.image
@@ -156,28 +149,27 @@
 
    Module: :mod:`email.mime.image`
 
-   :class:`MIMEImage` クラスは :class:`~email.mime.nonmultipart.MIMENonMultipart.MIMENonMultipart` のサブクラスで、
-   主形式 (maintype) が :mimetype:`image` の MIME オブジェクトを作成\
-   するのに使われます。 *_imagedata* は実際の画像データを格納した文字列です。
-   もしこのデータが標準の Python モジュール :mod:`imghdr` によって\
-   認識できるものであれば、
-   :mailheader:`Content-Type` ヘッダの副形式 (subtype) は自動的に決定されます。
-   そうでない場合はその画像の形式 (subtype) を *_subtype* で\
-   明示的に指定する必要があります。副形式が自動的に決定できず、
-   *_subtype* の指定もない場合は、 :exc:`TypeError` が発生します。
+   A subclass of :class:`~email.mime.nonmultipart.MIMENonMultipart`, the
+   :class:`MIMEImage` class is used to create MIME message objects of major type
+   :mimetype:`image`. *_imagedata* is a string containing the raw image data.  If
+   this data can be decoded by the standard Python module :mod:`imghdr`, then the
+   subtype will be automatically included in the :mailheader:`Content-Type` header.
+   Otherwise you can explicitly specify the image subtype via the *_subtype*
+   parameter.  If the minor type could not be guessed and *_subtype* was not given,
+   then :exc:`TypeError` is raised.
 
-   オプション引数 *_encoder* は呼び出し可能なオブジェクト (関数など) で、
-   トランスポートのさいに画像の実際のエンコードをおこないます。
-   このオブジェクトは :class:`MIMEImage` インスタンスの引数をひとつだけ\
-   取ることができます。
-   この関数は、与えられたペイロードをエンコードされた形式に変換するのに
-   :meth:`get_payload` および :meth:`set_payload` を使う必要があります。
-   また、これは必要に応じて :mailheader:`Content-Transfer-Encoding` あるいは\
-   そのメッセージに適した何らかのヘッダを追加する必要があります。
-   デフォルトのエンコーディングは base64 です。組み込みのエンコーダの詳細については
-   :mod:`email.encoders` を参照してください。
+   Optional *_encoder* is a callable (i.e. function) which will perform the actual
+   encoding of the image data for transport.  This callable takes one argument,
+   which is the :class:`MIMEImage` instance. It should use
+   :meth:`~email.message.Message.get_payload` and
+   :meth:`~email.message.Message.set_payload` to change the payload to encoded
+   form.  It should also add
+   any :mailheader:`Content-Transfer-Encoding` or other headers to the message
+   object as necessary.  The default encoding is base64.  See the
+   :mod:`email.encoders` module for a list of the built-in encoders.
 
-   *_params* は :class:`~email.mime.base.MIMEBase` コンストラクタに直接渡されます。
+   *_params* are passed straight through to the :class:`~email.mime.base.MIMEBase`
+   constructor.
 
 
 .. currentmodule:: email.mime.message
@@ -186,15 +178,14 @@
 
    Module: :mod:`email.mime.message`
 
-   :class:`MIMEMessage` クラスは :class:`~email.mime.nonmultipart.MIMENonMultipart` のサブクラスで、
-   主形式 (maintype) が :mimetype:`message` の MIME オブジェクトを作成\
-   するのに使われます。ペイロードとして使われるメッセージは *_msg*
-   になります。これは :class:`~email.message.Message` クラス (あるいはそのサブクラス) の\
-   インスタンスでなければいけません。そうでない場合、この関数は
-   :exc:`TypeError` を発生します。
+   A subclass of :class:`~email.mime.nonmultipart.MIMENonMultipart`, the
+   :class:`MIMEMessage` class is used to create MIME objects of main type
+   :mimetype:`message`. *_msg* is used as the payload, and must be an instance
+   of class :class:`~email.message.Message` (or a subclass thereof), otherwise
+   a :exc:`TypeError` is raised.
 
-   オプション引数 *_subtype* はそのメッセージの副形式 (subtype) を設定します。
-   デフォルトではこれは :mimetype:`rfc822` になっています。
+   Optional *_subtype* sets the subtype of the message; it defaults to
+   :mimetype:`rfc822`.
 
 
 .. currentmodule:: email.mime.text
@@ -203,17 +194,26 @@
 
    Module: :mod:`email.mime.text`
 
-   :class:`MIMEText` クラスは :class:`~email.mime.nonmultipart.MIMENonMultipart` のサブクラスで、
-   主形式 (maintype) が :mimetype:`text` の MIME オブジェクトを作成\
-   するのに使われます。ペイロードの文字列は *_text* になります。
-   *_subtype* には副形式 (subtype) を指定し、デフォルトは :mimetype:`plain` です。
-   *_charset* はテキストの文字セットで、
-   :class:`~email.mime.nonmultipart.MIMENonMultipart` コンストラクタに引数として渡されます。
-   デフォルトではこの値は ``us-ascii`` になっています。
-   *_text* が unicode の場合には *_charset* の *output_charset* でエンコードされ、
-   それ以外の場合にはそのまま使われます。
-   
-   .. versionchanged:: 2.4
-      以前、推奨されない引数であった *_encoding* は撤去されました。
-      *_charset* 引数を基にして Content Transfer Encodnig が暗黙に決定されます。
+   A subclass of :class:`~email.mime.nonmultipart.MIMENonMultipart`, the
+   :class:`MIMEText` class is used to create MIME objects of major type
+   :mimetype:`text`. *_text* is the string for the payload.  *_subtype* is the
+   minor type and defaults to :mimetype:`plain`.  *_charset* is the character
+   set of the text and is passed as a parameter to the
+   :class:`~email.mime.nonmultipart.MIMENonMultipart` constructor; it defaults
+   to ``us-ascii``.  If *_text* is unicode, it is encoded using the
+   *output_charset* of *_charset*, otherwise it is used as-is.
 
+   .. versionchanged:: 2.4
+      The previously deprecated *_encoding* argument has been removed.  Content
+      Transfer Encoding now happens implicitly based on the *_charset*
+      argument.
+
+   Unless the ``_charset`` parameter is explicitly set to ``None``, the
+   MIMEText object created will have both a :mailheader:`Content-Type` header
+   with a ``charset`` parameter, and a :mailheader:`Content-Transfer-Endcoding`
+   header.  This means that a subsequent ``set_payload`` call will not result
+   in an encoded payload, even if a charset is passed in the ``set_payload``
+   command.  You can "reset" this behavior by deleting the
+   ``Content-Transfer-Encoding`` header, after which a ``set_payload`` call
+   will automatically encode the new payload (and add a new
+   :mailheader:`Content-Transfer-Encoding` header).

@@ -1,100 +1,118 @@
-
-:mod:`asyncore` --- 非同期ソケットハンドラ
-==========================================
+:mod:`asyncore` --- Asynchronous socket handler
+===============================================
 
 .. module:: asyncore
-   :synopsis: 非同期なソケット制御サービスのためのベースクラス
+   :synopsis: A base class for developing asynchronous socket handling
+              services.
 .. moduleauthor:: Sam Rushing <rushing@nightmare.com>
 .. sectionauthor:: Christopher Petrilli <petrilli@amber.org>
 .. sectionauthor:: Steve Holden <sholden@holdenweb.com>
 .. heavily adapted from original documentation by Sam Rushing
 
+**Source code:** :source:`Lib/asyncore.py`
 
-このモジュールは、非同期ソケットサービスのクライアント・サーバを開発するための基盤として使われます。
+--------------
 
-CPUが一つしかない場合、プログラムが"二つのことを同時に"実行する方法は二つしかありません。
-もっとも簡単で一般的なのはマルチスレッドを利用する方法ですが、これとはまったく異なる
-テクニックで、一つのスレッドだけでマルチスレッドと同じような効果を得られるテクニックがあります。
-このテクニックはI/O処理が中心である場合にのみ有効で、CPU負荷の高いプログラムでは効果が無く、
-この場合にはプリエンプティブなスケジューリングが可能なスレッドが有効でしょう。
-しかし、多くの場合、ネットワークサーバではCPU負荷よりはIO負荷が問題となります。
+This module provides the basic infrastructure for writing asynchronous  socket
+service clients and servers.
 
-もしOSのI/Oライブラリがシステムコール :c:func:`select` をサポートしている場合
-（ほとんどの場合はサポートされている）、I/O処理は"バックグラウンド"で実行し、
-その間に他の処理を実行すれば、複数の通信チャネルを同時にこなすことができます。
-一見、この戦略は奇妙で複雑に思えるかもしれませんが、いろいろな面でマルチスレッドよりも理解しやすく、制御も容易です。
-:mod:`asyncore` は多くの複雑な問題を解決済みなので、洗練され、パフォーマンスにも優れた
-ネットワークサーバとクライアントを簡単に開発することができます。
-とくに、 :mod:`asynchat` のような、対話型のアプリケーションやプロトコルには非常に有効でしょう。
+There are only two ways to have a program on a single processor do  "more than
+one thing at a time." Multi-threaded programming is the  simplest and most
+popular way to do it, but there is another very different technique, that lets
+you have nearly all the advantages of  multi-threading, without actually using
+multiple threads.  It's really  only practical if your program is largely I/O
+bound.  If your program is processor bound, then pre-emptive scheduled threads
+are probably what you really need.  Network servers are rarely processor
+bound, however.
 
-基本的には、この二つのモジュールを使う場合は一つ以上のネットワーク *チャネル* を
-:class:`asyncore.dispatcher` クラス、または :class:`asynchat.async_chat`
-のインスタンスとして作成します。作成されたチャネルはグローバルマップに登録され、
-:func:`loop` 関数で参照されます。 :func:`loop` には、専用の *マップ* を渡す事も可能です。
+If your operating system supports the :c:func:`select` system call in its I/O
+library (and nearly all do), then you can use it to juggle multiple
+communication channels at once; doing other work while your I/O is taking
+place in the "background."  Although this strategy can seem strange and
+complex, especially at first, it is in many ways easier to understand and
+control than multi-threaded programming.  The :mod:`asyncore` module solves
+many of the difficult problems for you, making the task of building
+sophisticated high-performance network servers and clients a snap.  For
+"conversational" applications and protocols the companion :mod:`asynchat`
+module is invaluable.
 
-チャネルを生成後、 :func:`loop` を呼び出すとチャネル処理が開始し、最後のチャネル
-（非同期処理中にマップに追加されたチャネルを含む）が閉じるまで継続します。
+The basic idea behind both modules is to create one or more network
+*channels*, instances of class :class:`asyncore.dispatcher` and
+:class:`asynchat.async_chat`.  Creating the channels adds them to a global
+map, used by the :func:`loop` function if you do not provide it with your own
+*map*.
+
+Once the initial channel(s) is(are) created, calling the :func:`loop` function
+activates channel service, which continues until the last channel (including
+any that have been added to the map during asynchronous service) is closed.
 
 
 .. function:: loop([timeout[, use_poll[, map[,count]]]])
 
-   ポーリングループを開始し、count回が過ぎるか、全てのオープン済みチャネルがクローズ\
-   された場合のみ終了します。
-   全ての引数はオプションです。
-   引数 *count* のデフォルト値はNoneで、ループは全てのチャネルがクローズされた場合のみ終了します。
-   引数 *timeout* は :func:`select` または :func:`poll` の引数timeoutとして渡され、
-   秒単位で指定します。デフォルト値は30秒です。
-   引数 *use_poll* が真のとき、 :func:`select` ではなく :func:`poll` が使われます。
-   デフォルト値は ``False`` です。
+   Enter a polling loop that terminates after count passes or all open
+   channels have been closed.  All arguments are optional.  The *count*
+   parameter defaults to None, resulting in the loop terminating only when all
+   channels have been closed.  The *timeout* argument sets the timeout
+   parameter for the appropriate :func:`~select.select` or :func:`~select.poll`
+   call, measured in seconds; the default is 30 seconds.  The *use_poll*
+   parameter, if true, indicates that :func:`~select.poll` should be used in
+   preference to :func:`~select.select` (the default is ``False``).
 
-   引数 *map* には、監視するチャネルをアイテムとして格納した辞書を指定します。
-   チャネルがクローズされた時に *map* からそのチャネルが削除されます。
-   *map* が省略された場合、グローバルなマップが使用されます。
-   チャネル (:class:`asyncore.dispatcher`, :class:`asynchat.async_chat` とその\
-   サブクラス) は自由に混ぜて map に入れることができます。
+   The *map* parameter is a dictionary whose items are the channels to watch.
+   As channels are closed they are deleted from their map.  If *map* is
+   omitted, a global map is used. Channels (instances of
+   :class:`asyncore.dispatcher`, :class:`asynchat.async_chat` and subclasses
+   thereof) can freely be mixed in the map.
 
 
 .. class:: dispatcher()
 
-   :class:`dispatcher` クラスは、低レベルソケットオブジェクトの薄いラッパーです。
-   便宜上、非同期ループから呼び出されるイベント処理メソッドを追加していますが、\
-   これ以外の点では、non-blockingなソケットと同様です。
+   The :class:`dispatcher` class is a thin wrapper around a low-level socket
+   object. To make it more useful, it has a few methods for event-handling
+   which are called from the asynchronous loop.   Otherwise, it can be treated
+   as a normal non-blocking socket object.
 
-   非同期ループ内で低レベルイベントが発生した場合、発生のタイミングやコネクション\
-   の状態から特定の高レベルイベントへと置き換えることができます。
-   例えばソケットを他のホストに接続する場合、最初の書き込み可能イベントが発生すれば\
-   接続が完了した事が分かります(この時点で、ソケットへの書き込みは成功すると考えられる)。
-   このように判定できる高レベルイベントを以下に示します：
+   The firing of low-level events at certain times or in certain connection
+   states tells the asynchronous loop that certain higher-level events have
+   taken place.  For example, if we have asked for a socket to connect to
+   another host, we know that the connection has been made when the socket
+   becomes writable for the first time (at this point you know that you may
+   write to it with the expectation of success).  The implied higher-level
+   events are:
 
-   +----------------------+-----------------------------------------------------+
-   | イベント             | 解説                                                |
-   +======================+=====================================================+
-   | ``handle_connect()`` | 最初にreadもしくはwriteイベントが発生した時         |
-   +----------------------+-----------------------------------------------------+
-   | ``handle_close()``   | 読み込み可能なデータなしでreadイベントが発生した時  |
-   +----------------------+-----------------------------------------------------+
-   | ``handle_accept()``  | listen中のソケットでreadイベントが発生した時        |
-   +----------------------+-----------------------------------------------------+
+   +----------------------+----------------------------------------+
+   | Event                | Description                            |
+   +======================+========================================+
+   | ``handle_connect()`` | Implied by the first read or write     |
+   |                      | event                                  |
+   +----------------------+----------------------------------------+
+   | ``handle_close()``   | Implied by a read event with no data   |
+   |                      | available                              |
+   +----------------------+----------------------------------------+
+   | ``handle_accept()``  | Implied by a read event on a listening |
+   |                      | socket                                 |
+   +----------------------+----------------------------------------+
 
-   非同期処理中、マップに登録されたチャネルの :meth:`readable` メソッドと
-   :meth:`writable` メソッドが呼び出され、 :c:func:`select` か
-   :c:func:`poll` でread/writeイベントを検出するリストに登録するか否かを判定します。
+   During asynchronous processing, each mapped channel's :meth:`readable` and
+   :meth:`writable` methods are used to determine whether the channel's socket
+   should be added to the list of channels :c:func:`select`\ ed or
+   :c:func:`poll`\ ed for read and write events.
 
-   このようにして、チャネルでは低レベルなソケットイベントの種類より多くの種類のイベントを\
-   検出する事ができます。
-   以下にあげるイベントは、サブクラスでオーバライドすることが可能です：
+   Thus, the set of channel events is larger than the basic socket events.  The
+   full set of methods that can be overridden in your subclass follows:
 
 
    .. method:: handle_read()
 
-      非同期ループで、チャネルのソケットの :meth:`read` メソッドの呼び出しが成功した時に呼び出されます。
+      Called when the asynchronous loop detects that a :meth:`read` call on the
+      channel's socket will succeed.
 
 
    .. method:: handle_write()
 
-      非同期ループで、書き込み可能ソケットが実際に書き込み可能になった時に呼び出される。
-      このメソッドは、パフォーマンスの向上のためバッファリングを行う場合などに利用できます。
-      例：  ::
+      Called when the asynchronous loop detects that a writable socket can be
+      written.  Often this method will implement the necessary buffering for
+      performance.  For example::
 
          def handle_write(self):
              sent = self.send(self.buffer)
@@ -103,137 +121,148 @@ CPUが一つしかない場合、プログラムが"二つのことを同時に"
 
    .. method:: handle_expt()
 
-      out of band (OOB)データが検出された時に呼び出されます。
-      OOBはあまりサポートされておらず、また滅多に使われないので、
-      :meth:`handle_expt` が呼び出されることはほとんどありません。
+      Called when there is out of band (OOB) data for a socket connection.  This
+      will almost never happen, as OOB is tenuously supported and rarely used.
 
 
    .. method:: handle_connect()
 
-      ソケットの接続が確立した時に呼び出されます。
-      "welcome"バナーの送信、プロトコルネゴシエーションの初期化などを行います。
+      Called when the active opener's socket actually makes a connection.  Might
+      send a "welcome" banner, or initiate a protocol negotiation with the
+      remote endpoint, for example.
 
 
    .. method:: handle_close()
 
-      ソケットが閉じた時に呼び出されます。
+      Called when the socket is closed.
 
 
    .. method:: handle_error()
 
-      捕捉されない例外が発生した時に呼び出されます。
-      デフォルトでは、短縮したトレースバック情報が出力されます。
+      Called when an exception is raised and not otherwise handled.  The default
+      version prints a condensed traceback.
 
 
    .. method:: handle_accept()
 
-      listen中のチャネルがリモートホストからの :meth:`connect`
-      で接続され、接続が確立した時に呼び出されます。
+      Called on listening channels (passive openers) when a connection can be
+      established with a new remote endpoint that has issued a :meth:`connect`
+      call for the local endpoint.
 
 
    .. method:: readable()
 
-      非同期ループ中に呼び出され、readイベントの監視リストに加えるか否かを決定します。
-      デフォルトのメソッドでは ``True`` を返し、readイベントの発生を監視します。
+      Called each time around the asynchronous loop to determine whether a
+      channel's socket should be added to the list on which read events can
+      occur.  The default method simply returns ``True``, indicating that by
+      default, all channels will be interested in read events.
 
 
    .. method:: writable()
 
-      非同期ループ中に呼び出され、writeイベントの監視リストに加えるか否かを決定します。
-      デフォルトのメソッドでは ``True`` を返し、writeイベントの発生を監視します。
+      Called each time around the asynchronous loop to determine whether a
+      channel's socket should be added to the list on which write events can
+      occur.  The default method simply returns ``True``, indicating that by
+      default, all channels will be interested in write events.
 
-   さらに、チャネルにはソケットのメソッドとほぼ同じメソッドがあり、チャネルはソケットの\
-   メソッドの多くを委譲・拡張しており、ソケットとほぼ同じメソッドを持っています。
+
+   In addition, each channel delegates or extends many of the socket methods.
+   Most of these are nearly identical to their socket partners.
 
 
    .. method:: create_socket(family, type)
 
-      引数も含め、通常のソケット生成と同じ。 :mod:`socket` モジュールを参照のこと。
+      This is identical to the creation of a normal socket, and will use the
+      same options for creation.  Refer to the :mod:`socket` documentation for
+      information on creating sockets.
 
 
    .. method:: connect(address)
 
-      通常のソケットオブジェクトと同様、 *address* には一番目の値が接続先ホスト、\
-      2番目の値がポート番号であるタプルを指定します。
+      As with the normal socket object, *address* is a tuple with the first
+      element the host to connect to, and the second the port number.
 
 
    .. method:: send(data)
 
-      リモート側の端点に *data* を送出します。
+      Send *data* to the remote end-point of the socket.
 
 
    .. method:: recv(buffer_size)
 
-      リモート側の端点より、最大 *buffer_size* バイトのデータを読み込みます。
-      長さ0の文字列が返ってきた場合、チャネルはリモートから切断された事を示します。
+      Read at most *buffer_size* bytes from the socket's remote end-point.  An
+      empty string implies that the channel has been closed from the other end.
+
+      Note that :meth:`recv` may raise :exc:`socket.error` with
+      :data:`~errno.EAGAIN` or :data:`~errno.EWOULDBLOCK`, even though
+      :func:`select.select` or :func:`select.poll` has reported the socket
+      ready for reading.
 
 
    .. method:: listen(backlog)
 
-      ソケットへの接続を待つ。
-      引数 *backlog* は、キューイングできるコネクションの最大数を指定します(1以上)。
-      最大数はシステムに依存でします（通常は5)
+      Listen for connections made to the socket.  The *backlog* argument
+      specifies the maximum number of queued connections and should be at least
+      1; the maximum value is system-dependent (usually 5).
 
 
    .. method:: bind(address)
 
-      ソケットを *address* にバインドします。ソケットはバインド済みであってはなりません。
-      (*address* の形式は、アドレスファミリに依存します。 :mod:`socket` モジュールを参照のこと。)
-      ソケットを再利用可能にする (:const:`SO_REUSEADDR` オプションを設定する) には、 :class:`dispatcher` オブジェクトの :meth:`set_reuse_addr` メソッドを呼び出してください。
+      Bind the socket to *address*.  The socket must not already be bound.  (The
+      format of *address* depends on the address family --- refer to the
+      :mod:`socket` documentation for more information.)  To mark
+      the socket as re-usable (setting the :const:`SO_REUSEADDR` option), call
+      the :class:`dispatcher` object's :meth:`set_reuse_addr` method.
 
 
    .. method:: accept()
 
-      接続を受け入れます。
-      ソケットはアドレスにバインド済みであり、 :meth:`listen`
-      で接続待ち状態でなければなりません。
-      戻り値は ``None`` か ``(conn, address)`` のペアで、
-      *conn* はデータの送受信を行う **新しい** ソケットオブジェクト、
-      *address* は接続先ソケットがバインドされているアドレスです。
-      ``None`` が返された場合、接続が起こらなかったことを意味します。
-      その場合、サーバーはこのイベントを無視して後続の接続を待ち続けるべきです。
+      Accept a connection.  The socket must be bound to an address and listening
+      for connections.  The return value can be either ``None`` or a pair
+      ``(conn, address)`` where *conn* is a *new* socket object usable to send
+      and receive data on the connection, and *address* is the address bound to
+      the socket on the other end of the connection.
+      When ``None`` is returned it means the connection didn't take place, in
+      which case the server should just ignore this event and keep listening
+      for further incoming connections.
 
 
    .. method:: close()
 
-      ソケットをクローズします。
-      以降の全ての操作は失敗します。
-      リモート端点では、キューに溜まったデータ以外、これ以降のデータ受信は行えません。
-      ソケットはガベージコレクト時に自動的にクローズされます。
-
+      Close the socket.  All future operations on the socket object will fail.
+      The remote end-point will receive no more data (after queued data is
+      flushed).  Sockets are automatically closed when they are
+      garbage-collected.
 
 .. class:: dispatcher_with_send()
 
-   :class:`dispatcher` のサブクラスで、シンプルなバッファされた出力を持ちます。
-   シンプルなクライアントプログラムに適しています。
-   もっと高レベルな場合には :class:`asynchat.async_chat` を利用してください。
+   A :class:`dispatcher` subclass which adds simple buffered output capability,
+   useful for simple clients. For more sophisticated usage use
+   :class:`asynchat.async_chat`.
 
 .. class:: file_dispatcher()
 
-   file_dispatcher はファイルディスクリプタかファイルオブジェクトとオプションとして
-   map を引数にとって、 :c:func:`poll` か :c:func:`loop` 関数で利用できるようにラップします。
-   与えられたファイルオブジェクトなどが :c:func:`fileno` メソッドを持っているとき、
-   そのメソッドが呼び出されて戻り値が :class:`file_wrapper` のコンストラクタに\
-   渡されます。
-   利用できるプラットフォーム: UNIX
+   A file_dispatcher takes a file descriptor or file object along with an
+   optional map argument and wraps it for use with the :c:func:`poll` or
+   :c:func:`loop` functions.  If provided a file object or anything with a
+   :c:func:`fileno` method, that method will be called and passed to the
+   :class:`file_wrapper` constructor.  Availability: UNIX.
 
 .. class:: file_wrapper()
 
-   file_wrapper は整数のファイルディスクリプタを受け取って :func:`os.dup`
-   を呼び出してハンドルを複製するので、元のハンドルは file_wrapper と独立して\
-   close されます。
-   このクラスは :class:`file_dispatcher` クラスが使うために必要なソケットを\
-   エミュレートするメソッドを実装しています。
-   利用できるプラットフォーム: UNIX
+   A file_wrapper takes an integer file descriptor and calls :func:`os.dup` to
+   duplicate the handle so that the original handle may be closed independently
+   of the file_wrapper.  This class implements sufficient methods to emulate a
+   socket for use by the :class:`file_dispatcher` class.  Availability: UNIX.
 
 
 .. _asyncore-example-1:
 
-asyncoreの例：簡単なHTTPクライアント
-------------------------------------
+asyncore Example basic HTTP client
+----------------------------------
 
-基本的なサンプルとして、以下に非常に単純なHTTPクライアントを示します。こ
-のHTTPクライアントは :class:`dispatcher` クラスでソケットを利用しています。 ::
+Here is a very basic HTTP client that uses the :class:`dispatcher` class to
+implement its socket handling::
 
    import asyncore, socket
 
@@ -261,16 +290,17 @@ asyncoreの例：簡単なHTTPクライアント
            sent = self.send(self.buffer)
            self.buffer = self.buffer[sent:]
 
+
    client = HTTPClient('www.python.org', '/')
    asyncore.loop()
 
 .. _asyncore-example-2:
 
-基本的な echo サーバーの例
+asyncore Example basic echo server
 ----------------------------------
 
-この例の基本的な echoサーバーは、 :class:`dispatcher` を利用して接続を受けつけ、
-接続をハンドラーにディスパッチします。 ::
+Here is a basic echo server that uses the :class:`dispatcher` class to accept
+connections and dispatches the incoming connections to a handler::
 
     import asyncore
     import socket
@@ -293,13 +323,10 @@ asyncoreの例：簡単なHTTPクライアント
 
         def handle_accept(self):
             pair = self.accept()
-            if pair is None:
-                pass
-            else:
+            if pair is not None:
                 sock, addr = pair
                 print 'Incoming connection from %s' % repr(addr)
                 handler = EchoHandler(sock)
 
     server = EchoServer('localhost', 8080)
     asyncore.loop()
-

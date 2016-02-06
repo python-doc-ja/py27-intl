@@ -1,347 +1,430 @@
 
-:mod:`ossaudiodev` --- OSS互換オーディオデバイスへのアクセス
-============================================================
+:mod:`ossaudiodev` --- Access to OSS-compatible audio devices
+=============================================================
 
 .. module:: ossaudiodev
    :platform: Linux, FreeBSD
-   :synopsis: OSS互換オーディオデバイスへのアクセス。
+   :synopsis: Access to OSS-compatible audio devices.
 
 
 .. versionadded:: 2.3
 
-このモジュールを使うとOSS (Open Sound System) オーディオインターフェースにアクセスできます。
-OSSはオープンソースあるいは商用のUnixで広く利用でき、Linux (カーネル 2.4まで) とFreeBSDで標準のオーディオインターフェースです。
+This module allows you to access the OSS (Open Sound System) audio interface.
+OSS is available for a wide range of open-source and commercial Unices, and is
+the standard audio interface for Linux and recent versions of FreeBSD.
+
+.. Things will get more complicated for future Linux versions, since
+   ALSA is in the standard kernel as of 2.5.x.  Presumably if you
+   use ALSA, you'll have to make sure its OSS compatibility layer
+   is active to use ossaudiodev, but you're gonna need it for the vast
+   majority of Linux audio apps anyway.
+
+   Sounds like things are also complicated for other BSDs.  In response
+   to my python-dev query, Thomas Wouters said:
+
+   > Likewise, googling shows OpenBSD also uses OSS/Free -- the commercial
+   > OSS installation manual tells you to remove references to OSS/Free from the
+   > kernel :)
+
+   but Aleksander Piotrowsk actually has an OpenBSD box, and he quotes
+   from its <soundcard.h>:
+   >  * WARNING!  WARNING!
+   >  * This is an OSS (Linux) audio emulator.
+   >  * Use the Native NetBSD API for developing new code, and this
+   >  * only for compiling Linux programs.
+
+   There's also an ossaudio manpage on OpenBSD that explains things
+   further.  Presumably NetBSD and OpenBSD have a different standard
+   audio interface.  That's the great thing about standards, there are so
+   many to choose from ... ;-)
+
+   This probably all warrants a footnote or two, but I don't understand
+   things well enough right now to write it!   --GPW
 
 
 .. seealso::
 
    `Open Sound System Programmer's Guide <http://www.opensound.com/pguide/oss.pdf>`_
-      OSS C API の公式ドキュメント
+      the official documentation for the OSS C API
 
-   このモジュールではOSSデバイスドライバーが提供している多くの定数を定義しています; 定数のリストについては Linux や FreeBSDの
-   :file:`<sys/soundcard.h>` を参照してください。
+   The module defines a large number of constants supplied by the OSS device
+   driver; see ``<sys/soundcard.h>`` on either Linux or FreeBSD for a listing.
 
-:mod:`ossaudiodev` では以下の変数と関数を定義しています:
-
-
-.. exception:: error
-
-   何らかのエラーのときに送出される例外です。引数は何が誤っているかを示す文字列です。
-
-   (:mod:`ossaudiodev` が :c:func:`open` 、 :c:func:`write` 、 :c:func:`ioctl`
-   などのシステムコールからエラーを受け取った場合には :exc:`IOError` を送出します。 :mod:`ossaudiodev`
-   が直接エラーを検出した場合には :exc:`OSSAudioError` になります。)
-
-   (以前のバージョンとの互換性のため、この例外クラスは ``ossaudiodev.error`` としても利用できます。)
+:mod:`ossaudiodev` defines the following variables and functions:
 
 
-.. function:: open([device, ]mode)
+.. exception:: OSSAudioError
 
-   オーディオデバイスを開き、OSSオーディオデバイスオブジェクトを返します。
-   このオブジェクトは :meth:`read` 、 :meth:`write` 、 :meth:`fileno`
-   といったファイル類似オブジェクトのメソッドを数多くサポートしています。 (とはいえ、伝統的な Unix の read/write における意味づけと OSS
-   デバイスの read/write との間には微妙な違いがあります)。また、オーディオ特有の多くのメソッドがあります;メソッドの完全なリストに
-   ついては下記を参照してください。
+   This exception is raised on certain errors.  The argument is a string describing
+   what went wrong.
 
-   *device* は使用するオーディオデバイスファイルネームです。もしこれが指定されないなら、このモジュールは使うデバイスとして最初に環境
-   変数 :envvar:`AUDIODEV` を参照します。見つからなければ :file:`/dev/dsp` を参照します。
+   (If :mod:`ossaudiodev` receives an error from a system call such as
+   :c:func:`open`, :c:func:`write`, or :c:func:`ioctl`, it raises :exc:`IOError`.
+   Errors detected directly by :mod:`ossaudiodev` result in :exc:`OSSAudioError`.)
 
-   *mode* は読み出し専用アクセスの場合には ``'r'`` 、書き込み専用 (プレイバック) アクセスの場合には ``'w'`` 、
-   読み書きアクセスの場合には ``'rw'`` にします。多くのサウンドカードは一つのプロセスが一度にレコーダとプレーヤの
-   どちらかしか開けないようにしているため、必要な操作に応じたデバイスだけを開くようにするのがよいでしょう。また、サウンドカードには半二重 (half-
-   duplex) 方式のものがあります: こうしたカードでは、デバイスを読み出しまたは書き込み用に開くことはできますが、両方同時には開けません。
+   (For backwards compatibility, the exception class is also available as
+   ``ossaudiodev.error``.)
 
-   呼び出しの文法が普通と異なることに注意してください: *最初の* 引数は省略可能で、2番目が必須です。
-   これは :mod:`ossaudiodev` にとってかわられた古い :mod:`linuxaudiodev` との互換性のためという歴史的な産物です。
+
+.. function:: open(mode)
+              open(device, mode)
+
+   Open an audio device and return an OSS audio device object.  This object
+   supports many file-like methods, such as :meth:`read`, :meth:`write`, and
+   :meth:`fileno` (although there are subtle differences between conventional Unix
+   read/write semantics and those of OSS audio devices).  It also supports a number
+   of audio-specific methods; see below for the complete list of methods.
+
+   *device* is the audio device filename to use.  If it is not specified, this
+   module first looks in the environment variable :envvar:`AUDIODEV` for a device
+   to use.  If not found, it falls back to :file:`/dev/dsp`.
+
+   *mode* is one of ``'r'`` for read-only (record) access, ``'w'`` for
+   write-only (playback) access and ``'rw'`` for both. Since many sound cards
+   only allow one process to have the recorder or player open at a time, it is a
+   good idea to open the device only for the activity needed.  Further, some
+   sound cards are half-duplex: they can be opened for reading or writing, but
+   not both at once.
+
+   Note the unusual calling syntax: the *first* argument is optional, and the
+   second is required.  This is a historical artifact for compatibility with the
+   older :mod:`linuxaudiodev` module which :mod:`ossaudiodev` supersedes.
+
+   .. XXX it might also be motivated
+      by my unfounded-but-still-possibly-true belief that the default
+      audio device varies unpredictably across operating systems.  -GW
 
 
 .. function:: openmixer([device])
 
-   ミキサデバイスを開き、OSSミキサデバイスオブジェクトを返します。 *device* は使用するミキサデバイスのファイル名です。
-   *device* を指定しない場合、モジュールはまず環境変数 :envvar:`AUDIODEV` を参照して使用するデバイスを探します。
-   見つからなければ、 :file:`/dev/mixer` を参照します。
+   Open a mixer device and return an OSS mixer device object.   *device* is the
+   mixer device filename to use.  If it is not specified, this module first looks
+   in the environment variable :envvar:`MIXERDEV` for a device to use.  If not
+   found, it falls back to :file:`/dev/mixer`.
 
 
 .. _ossaudio-device-objects:
 
-オーディオデバイスオブジェクト
-------------------------------
+Audio Device Objects
+--------------------
 
-オーディオデバイスに読み書きできるようになるには、まず 3 つのメソッドを正しい順序で呼び出さねばなりません:
+Before you can write to or read from an audio device, you must call three
+methods in the correct order:
 
-#. :meth:`setfmt` で出力形式を設定し、
+#. :meth:`setfmt` to set the output format
 
-#. :meth:`channels` でチャンネル数を設定し、
+#. :meth:`channels` to set the number of channels
 
-#. :meth:`speed` でサンプリングレートを設定します。
+#. :meth:`speed` to set the sample rate
 
-この代わりに :meth:`setparameters` メソッドを呼び出せば、三つのオーディオパラメタを一度で設定できます。
-:meth:`setparameters` は便利ですが、多くの状況で柔軟性に欠けるでしょう。
+Alternately, you can use the :meth:`setparameters` method to set all three audio
+parameters at once.  This is more convenient, but may not be as flexible in all
+cases.
 
-:func:`.open` の返すオーディオデバイスオブジェクトには以下のメソッドおよび(読み出し専用の)属性があります:
+The audio device objects returned by :func:`.open` define the following methods
+and (read-only) attributes:
 
 
 .. method:: oss_audio_device.close()
 
-   オーディオデバイスを明示的に閉じます。オーディオデバイスは、読み出しや書き込みが終了したら必ず閉じねばなりません。閉じたオブジェクトを再度開くことは
-   できません。
+   Explicitly close the audio device.  When you are done writing to or reading from
+   an audio device, you should explicitly close it.  A closed device cannot be used
+   again.
 
 
 .. method:: oss_audio_device.fileno()
 
-   デバイスに関連付けられているファイル記述子を返します。
+   Return the file descriptor associated with the device.
 
 
 .. method:: oss_audio_device.read(size)
 
-   オーディオ入力から *size* バイトを読みだし、 Python 文字列型にして返します。多くの Unix デバイスドライバと違い、
-   ブロックデバイスモード (デフォルト) の OSS オーディオデバイスでは、要求した量のデータ全体を取り込むまで :func:`read` がブロックします。
+   Read *size* bytes from the audio input and return them as a Python string.
+   Unlike most Unix device drivers, OSS audio devices in blocking mode (the
+   default) will block :func:`read` until the entire requested amount of data is
+   available.
 
 
 .. method:: oss_audio_device.write(data)
 
-   Python 文字列 *data* の内容をオーディオデバイスに書き込み、書き込まれたバイト数を返します。オーディオデバイスがブロックモード (デフォルト)
-   の場合、常に文字列データ全体を書き込みます (前述のように、これは通常のUnix デバイスの振舞いとは異なります)。
-   デバイスが非ブロックモードの場合、データの一部が書き込まれないことがあります --- :meth:`writeall` を参照してください。
+   Write the Python string *data* to the audio device and return the number of
+   bytes written.  If the audio device is in blocking mode (the default), the
+   entire string is always written (again, this is different from usual Unix device
+   semantics).  If the device is in non-blocking mode, some data may not be written
+   ---see :meth:`writeall`.
 
 
 .. method:: oss_audio_device.writeall(data)
 
-   Python文字列の *data* 全体をオーディオデバイスに書き込みます。オーディオデバイスがデータを受け取れるようになるまで待機し、
-   書き込めるだけのデータを書き込むという操作を、 *data* を全て書き込み終わるまで繰り返します。デバイスがブロックモード (デフォルト)
-   の場合には、このメソッドは :meth:`write` と同じです。 :meth:`writeall` が有用なのは
-   非ブロックモードだけです。実際に書き込まれたデータの量と渡したデータの量は必ず同じになるので、戻り値はありません。
+   Write the entire Python string *data* to the audio device: waits until the audio
+   device is able to accept data, writes as much data as it will accept, and
+   repeats until *data* has been completely written. If the device is in blocking
+   mode (the default), this has the same effect as :meth:`write`; :meth:`writeall`
+   is only useful in non-blocking mode.  Has no return value, since the amount of
+   data written is always equal to the amount of data supplied.
 
-以下のメソッドの各々は :func:`ioctl` システムコール一つ一つに対応しています。対応関係ははっきりしています:
-例えば、 :meth:`setfmt` は ``SNDCTL_DSP_SETFMT`` ioctl に対応していますし、 :meth:`sync`
-は ``SNDCTL_DSP_SYNC`` に対応しています (このシンボル名は OSS のドキュメントを参照する時に助けになるでしょう)。根底にある
-:func:`ioctl` が失敗した場合、これらの関数は全て :exc:`IOError` を送出します。
+The following methods each map to exactly one :c:func:`ioctl` system call.  The
+correspondence is obvious: for example, :meth:`setfmt` corresponds to the
+``SNDCTL_DSP_SETFMT`` ioctl, and :meth:`sync` to ``SNDCTL_DSP_SYNC`` (this can
+be useful when consulting the OSS documentation).  If the underlying
+:c:func:`ioctl` fails, they all raise :exc:`IOError`.
 
 
 .. method:: oss_audio_device.nonblock()
 
-   デバイスを非ブロックモードにします。いったん非ブロックモードにしたら、ブロックモードは戻せません。
+   Put the device into non-blocking mode.  Once in non-blocking mode, there is no
+   way to return it to blocking mode.
 
 
 .. method:: oss_audio_device.getfmts()
 
-   サウンドカードがサポートしているオーディオ出力形式をビットマスクで返します。以下はOSSでサポートされているフォーマットの一部です。
+   Return a bitmask of the audio output formats supported by the soundcard.  Some
+   of the formats supported by OSS are:
 
-   +-------------------------+---------------------------------------------------------------+
-   | フォーマット            | 説明                                                          |
-   +=========================+===============================================================+
-   | :const:`AFMT_MU_LAW`    | 対数符号化 (Sun の ``.au`` 形式や :file:`/dev/audio`          |
-   |                         | で使われている形式)                                           |
-   +-------------------------+---------------------------------------------------------------+
-   | :const:`AFMT_A_LAW`     | 対数符号化                                                    |
-   +-------------------------+---------------------------------------------------------------+
-   | :const:`AFMT_IMA_ADPCM` | Interactive Multimedia Association で                         |
-   |                         | 定義されている 4:1 圧縮形式                                   |
-   +-------------------------+---------------------------------------------------------------+
-   | :const:`AFMT_U8`        | 符号なし 8 ビットオーディオ                                   |
-   +-------------------------+---------------------------------------------------------------+
-   | :const:`AFMT_S16_LE`    | 符号つき 16 ビットオーディオ、リトルエンディアンバイトオーダ  |
-   |                         | (Intelプロセッサで使われている形式)                           |
-   +-------------------------+---------------------------------------------------------------+
-   | :const:`AFMT_S16_BE`    | 符号つき 16 ビットオーディオ、ビッグエンディアンバイトオーダ  |
-   |                         | (68k、PowerPC、Sparcで使われている形式)                       |
-   +-------------------------+---------------------------------------------------------------+
-   | :const:`AFMT_S8`        | 符号つき 8 ビットオーディオ                                   |
-   +-------------------------+---------------------------------------------------------------+
-   | :const:`AFMT_U16_LE`    | 符号なし 16 ビットリトルエンディアンオーディオ                |
-   +-------------------------+---------------------------------------------------------------+
-   | :const:`AFMT_U16_BE`    | 符号なし 16 ビットビッグエンディアンオーディオ                |
-   +-------------------------+---------------------------------------------------------------+
+   +-------------------------+---------------------------------------------+
+   | Format                  | Description                                 |
+   +=========================+=============================================+
+   | :const:`AFMT_MU_LAW`    | a logarithmic encoding (used by Sun ``.au`` |
+   |                         | files and :file:`/dev/audio`)               |
+   +-------------------------+---------------------------------------------+
+   | :const:`AFMT_A_LAW`     | a logarithmic encoding                      |
+   +-------------------------+---------------------------------------------+
+   | :const:`AFMT_IMA_ADPCM` | a 4:1 compressed format defined by the      |
+   |                         | Interactive Multimedia Association          |
+   +-------------------------+---------------------------------------------+
+   | :const:`AFMT_U8`        | Unsigned, 8-bit audio                       |
+   +-------------------------+---------------------------------------------+
+   | :const:`AFMT_S16_LE`    | Signed, 16-bit audio, little-endian byte    |
+   |                         | order (as used by Intel processors)         |
+   +-------------------------+---------------------------------------------+
+   | :const:`AFMT_S16_BE`    | Signed, 16-bit audio, big-endian byte order |
+   |                         | (as used by 68k, PowerPC, Sparc)            |
+   +-------------------------+---------------------------------------------+
+   | :const:`AFMT_S8`        | Signed, 8 bit audio                         |
+   +-------------------------+---------------------------------------------+
+   | :const:`AFMT_U16_LE`    | Unsigned, 16-bit little-endian audio        |
+   +-------------------------+---------------------------------------------+
+   | :const:`AFMT_U16_BE`    | Unsigned, 16-bit big-endian audio           |
+   +-------------------------+---------------------------------------------+
 
-   オーディオ形式の完全なリストは OSS の文書をひもといてください。ただ、ほとんどのシステムは、こうした形式のサブセットしかサポートしていません。
-   古めのデバイスの中には :const:`AFMT_U8` だけしかサポートしていないものがあります。
-   現在使われている最も一般的な形式は :const:`AFMT_S16_LE` です。
+   Consult the OSS documentation for a full list of audio formats, and note that
+   most devices support only a subset of these formats.  Some older devices only
+   support :const:`AFMT_U8`; the most common format used today is
+   :const:`AFMT_S16_LE`.
 
 
 .. method:: oss_audio_device.setfmt(format)
 
-   現在のオーディオ形式を *format* に設定しようと試みます --- *format* については :meth:`getfmts` のリストを参照してください。
-   実際にデバイスに設定されたオーディオ形式を返します。要求通りの形式でないこともあります。 :const:`AFMT_QUERY` を渡すと
-   現在デバイスに設定されているオーディオ形式を返します。
+   Try to set the current audio format to *format*---see :meth:`getfmts` for a
+   list.  Returns the audio format that the device was set to, which may not be the
+   requested format.  May also be used to return the current audio format---do this
+   by passing an "audio format" of :const:`AFMT_QUERY`.
 
 
-.. method:: oss_audio_device.channels(num_channels)
+.. method:: oss_audio_device.channels(nchannels)
 
-   出力チャネル数を *num_channels* に設定します。 1 はモノラル、2 はステレオです。
-   いくつかのデバイスでは2つより多いチャンネルを持つものもありますし、ハイエンドなデバイスではモノラルをサポートしないものもあります。
-   デバイスに設定されたチャンネル数を返します。
+   Set the number of output channels to *nchannels*.  A value of 1 indicates
+   monophonic sound, 2 stereophonic.  Some devices may have more than 2 channels,
+   and some high-end devices may not support mono. Returns the number of channels
+   the device was set to.
 
 
 .. method:: oss_audio_device.speed(samplerate)
 
-   サンプリングレートを1秒あたり *samplerate* に設定しようと試み、実際に設定されたレートを返します。
-   たいていのサウンドデバイスでは任意のサンプリングレートをサポートしていません。一般的なレートは以下の通りです:
+   Try to set the audio sampling rate to *samplerate* samples per second.  Returns
+   the rate actually set.  Most sound devices don't support arbitrary sampling
+   rates.  Common rates are:
 
-   +--------+-------------------------------------------------------------------+
-   | レート | 説明                                                              |
-   +========+===================================================================+
-   | 8000   | :file:`/dev/audio` のデフォルト                                   |
-   +--------+-------------------------------------------------------------------+
-   | 11025  | 会話音声の録音に使われるレート                                    |
-   +--------+-------------------------------------------------------------------+
-   | 22050  |                                                                   |
-   +--------+-------------------------------------------------------------------+
-   | 44100  | (サンプルあたり 16 ビットで 2 チャネルの場合) CD 品質のオーディオ |
-   +--------+-------------------------------------------------------------------+
-   | 96000  | (サンプル当たり 24 ビットの場合) DVD 品質のオーディオ             |
-   +--------+-------------------------------------------------------------------+
+   +-------+-------------------------------------------+
+   | Rate  | Description                               |
+   +=======+===========================================+
+   | 8000  | default rate for :file:`/dev/audio`       |
+   +-------+-------------------------------------------+
+   | 11025 | speech recording                          |
+   +-------+-------------------------------------------+
+   | 22050 |                                           |
+   +-------+-------------------------------------------+
+   | 44100 | CD quality audio (at 16 bits/sample and 2 |
+   |       | channels)                                 |
+   +-------+-------------------------------------------+
+   | 96000 | DVD quality audio (at 24 bits/sample)     |
+   +-------+-------------------------------------------+
 
 
 .. method:: oss_audio_device.sync()
 
-   サウンドデバイスがバッファ内の全てのデータを再生し終えるまで待機します。 (デバイスを閉じると暗黙のうちに :meth:`sync` が起こります) OSS の
-   ドキュメント上では、 :meth:`sync` を使うよりデバイスを一度閉じて開き直すよう勧めています。
+   Wait until the sound device has played every byte in its buffer.  (This happens
+   implicitly when the device is closed.)  The OSS documentation recommends closing
+   and re-opening the device rather than using :meth:`sync`.
 
 
 .. method:: oss_audio_device.reset()
 
-   再生あるいは録音を即座に中止して、デバイスをコマンドを受け取れる状態に戻します。OSSのドキュメントでは、 :meth:`reset` を呼び出した後に
-   一度デバイスを閉じ、開き直すよう勧めています。
+   Immediately stop playing or recording and return the device to a state where it
+   can accept commands.  The OSS documentation recommends closing and re-opening
+   the device after calling :meth:`reset`.
 
 
 .. method:: oss_audio_device.post()
 
-   ドライバに出力の一時停止 (pause) が起きそうであることを伝え、ドライバが一時停止をより賢く扱えるようにします。
-   短いサウンドエフェクトを再生した直後やユーザ入力待ちの前、またディスク I/O 前などに使うことになるでしょう。
+   Tell the driver that there is likely to be a pause in the output, making it
+   possible for the device to handle the pause more intelligently.  You might use
+   this after playing a spot sound effect, before waiting for user input, or before
+   doing disk I/O.
 
-以下のメソッドは、複数の :func:`ioctl` を組み合わせたり、 :func:`ioctl` と単純な計算を組み合わせたりした便宜用メソッドです。
+The following convenience methods combine several ioctls, or one ioctl and some
+simple calculations.
 
 
-.. method:: oss_audio_device.setparameters(format, nchannels, samplerate, [, strict=False])
+.. method:: oss_audio_device.setparameters(format, nchannels, samplerate[, strict=False])
 
-   主要なオーディオパラメタ、サンプル形式、チャネル数、サンプルレートを一つのメソッド呼び出しで設定します。 *format* 、 *nchannels* および
-   *samplerate* には、それぞれ :meth:`setfmt` 、 :meth:`channels` および :meth:`speed`
-   と同じやり方で値を設定します。 *strict* の値が真の場合、 :meth:`setparameters` は値が実際に要求通りにデバイスに設定されたか
-   どうか調べ、違っていれば :exc:`OSSAudioError` を送出します。実際にデバイスドライバが設定したパラメタ値を表す  (*format*,
-   *nchannels*, *samplerate*) からなるタプルを返します (:meth:`setfmt` 、 :meth:`channels` および
-   :meth:`speed` の返す値と同じです)。
+   Set the key audio sampling parameters---sample format, number of channels, and
+   sampling rate---in one method call.  *format*,  *nchannels*, and *samplerate*
+   should be as specified in the :meth:`setfmt`, :meth:`channels`, and
+   :meth:`speed`  methods.  If *strict* is true, :meth:`setparameters` checks to
+   see if each parameter was actually set to the requested value, and raises
+   :exc:`OSSAudioError` if not.  Returns a tuple (*format*, *nchannels*,
+   *samplerate*) indicating the parameter values that were actually set by the
+   device driver (i.e., the same as the return values of :meth:`setfmt`,
+   :meth:`channels`, and :meth:`speed`).
 
-   以下に例を示します::
+   For example,  ::
 
       (fmt, channels, rate) = dsp.setparameters(fmt, channels, rate)
 
-   これは、以下と同等です ::
+   is equivalent to  ::
 
       fmt = dsp.setfmt(fmt)
       channels = dsp.channels(channels)
-      rate = dsp.rate(channels)
+      rate = dsp.rate(rate)
 
 
 .. method:: oss_audio_device.bufsize()
 
-   ハードウェアのバッファサイズをサンプル数で返します。
+   Returns the size of the hardware buffer, in samples.
 
 
 .. method:: oss_audio_device.obufcount()
 
-   ハードウェアバッファ上に残っていてまだ再生されていないサンプル数を返します。
+   Returns the number of samples that are in the hardware buffer yet to be played.
 
 
 .. method:: oss_audio_device.obuffree()
 
-   ブロックを起こさずにハードウェアの再生キューに書き込めるサンプル数を返します。
+   Returns the number of samples that could be queued into the hardware buffer to
+   be played without blocking.
 
-オーディオデバイスオブジェクトは読み出し専用の属性もサポートしています:
+Audio device objects also support several read-only attributes:
 
 
 .. attribute:: oss_audio_device.closed
 
-   デバイスが閉じられたかどうかを示す真偽値です。
+   Boolean indicating whether the device has been closed.
 
 
 .. attribute:: oss_audio_device.name
 
-   デバイスファイルの名前を含む文字列です。
+   String containing the name of the device file.
 
 
 .. attribute:: oss_audio_device.mode
 
-   ファイルの I/O モードで、 ``"r"``, ``"rw"``, ``"w"`` のどれかです。
+   The I/O mode for the file, either ``"r"``, ``"rw"``, or ``"w"``.
 
 
 .. _mixer-device-objects:
 
-ミキサデバイスオブジェクト
---------------------------
+Mixer Device Objects
+--------------------
 
-ミキサオブジェクトには、2つのファイル類似メソッドがあります:
+The mixer object provides two file-like methods:
 
 
 .. method:: oss_mixer_device.close()
 
-   すでに開かれているミキサデバイスファイルを閉じます。ファイルを閉じた後でミキサを使おうとすると、 :exc:`IOError` を送出します。
+   This method closes the open mixer device file.  Any further attempts to use the
+   mixer after this file is closed will raise an :exc:`IOError`.
 
 
 .. method:: oss_mixer_device.fileno()
 
-   開かれているミキサデバイスファイルのファイルハンドルナンバを返します。
+   Returns the file handle number of the open mixer device file.
 
-以下はオーディオミキシング固有のメソッドです。
+The remaining methods are specific to audio mixing:
 
 
 .. method:: oss_mixer_device.controls()
 
-   このメソッドは、利用可能なミキサコントロール (:const:`SOUND_MIXER_PCM` や :const:`SOUND_MIXER_SYNTH`
-   のように、ミキシングを行えるチャネル) を指定するビットマスクを返します。このビットマスクは利用可能な全てのミキサコントロールのサブセットです ---
-   定数 :const:`SOUND_MIXER_\*` はモジュールレベルで定義されています。例えば、もし現在のミキサオブジェクトがPCM
-   ミキサをサポートしているか調べるには、以下のPythonコードを実行します::
+   This method returns a bitmask specifying the available mixer controls ("Control"
+   being a specific mixable "channel", such as :const:`SOUND_MIXER_PCM` or
+   :const:`SOUND_MIXER_SYNTH`).  This bitmask indicates a subset of all available
+   mixer controls---the :const:`SOUND_MIXER_\*` constants defined at module level.
+   To determine if, for example, the current mixer object supports a PCM mixer, use
+   the following Python code::
 
+      mixer=ossaudiodev.openmixer()
       if mixer.controls() & (1 << ossaudiodev.SOUND_MIXER_PCM):
           # PCM is supported
           ... code ...
 
-   ほとんどの用途には、 :const:`SOUND_MIXER_VOLUME` (マスタボリューム)
-   と :const:`SOUND_MIXER_PCM` コントロールがあれば十分でしょう --- とはいえ、ミキサを使うコードを書くときには、コントロールを選ぶ時に
-   柔軟性を持たせるべきです。例えば Gravis Ultrasound には :const:`SOUND_MIXER_VOLUME` がありません。
+   For most purposes, the :const:`SOUND_MIXER_VOLUME` (master volume) and
+   :const:`SOUND_MIXER_PCM` controls should suffice---but code that uses the mixer
+   should be flexible when it comes to choosing mixer controls.  On the Gravis
+   Ultrasound, for example, :const:`SOUND_MIXER_VOLUME` does not exist.
 
 
 .. method:: oss_mixer_device.stereocontrols()
 
-   ステレオミキサコントロールを示すビットマスクを返します。ビットが立っているコントロールはステレオであることを示し、立っていない
-   コントロールはモノラルか、ミキサがサポートしていないコントロールである (どちらの理由かは :meth:`controls` と組み合わせて使うことで
-   判別できます) ことを示します。
+   Returns a bitmask indicating stereo mixer controls.  If a bit is set, the
+   corresponding control is stereo; if it is unset, the control is either
+   monophonic or not supported by the mixer (use in combination with
+   :meth:`controls` to determine which).
 
-   ビットマスクから情報を得る例は関数 :meth:`controls` のコード例を参照してください。
+   See the code example for the :meth:`controls` function for an example of getting
+   data from a bitmask.
 
 
 .. method:: oss_mixer_device.reccontrols()
 
-   録音に使用できるミキサコントロールを特定するビットマスクを返します。ビットマスクから情報を得る例は関数 :meth:`controls` のコード例を
-   参照してください。
+   Returns a bitmask specifying the mixer controls that may be used to record.  See
+   the code example for :meth:`controls` for an example of reading from a bitmask.
 
 
 .. method:: oss_mixer_device.get(control)
 
-   指定したミキサコントロールのボリュームを返します。 2 要素のタプル ``(left_volume,right_volume)`` を返します。ボリュームの値は
-   0 (無音) から100 (最大) で示されます。コントロールがモノラルでも2要素のタプルが返されますが、2つの要素の値は同じになります。
+   Returns the volume of a given mixer control.  The returned volume is a 2-tuple
+   ``(left_volume,right_volume)``.  Volumes are specified as numbers from 0
+   (silent) to 100 (full volume).  If the control is monophonic, a 2-tuple is still
+   returned, but both volumes are the same.
 
-   不正なコントロールを指定した場合は :exc:`OSSAudioError` を送出します。また、サポートされていないコントロールを指定した場合には
-   :exc:`IOError` を送出します。
+   Raises :exc:`OSSAudioError` if an invalid control was is specified, or
+   :exc:`IOError` if an unsupported control is specified.
 
 
 .. method:: oss_mixer_device.set(control, (left, right))
 
-   指定したミキサコントロールのボリュームを ``(left,right)`` に設定します。 ``left`` と ``right`` は整数で、0 (無音) から100
-   (最大) の間で指定せねばなりません。呼び出しに成功すると新しいボリューム値を 2 要素のタプルで返します。
-   サウンドカードによっては、ミキサの分解能上の制限から、指定したボリュームと厳密に同じにはならない場合があります。
+   Sets the volume for a given mixer control to ``(left,right)``. ``left`` and
+   ``right`` must be ints and between 0 (silent) and 100 (full volume).  On
+   success, the new volume is returned as a 2-tuple. Note that this may not be
+   exactly the same as the volume specified, because of the limited resolution of
+   some soundcard's mixers.
 
-   不正なコントロールを指定した場合や、指定したボリューム値が範囲外であった場合、 :exc:`IOError` を送出します。
+   Raises :exc:`OSSAudioError` if an invalid mixer control was specified, or if the
+   specified volumes were out-of-range.
 
 
 .. method:: oss_mixer_device.get_recsrc()
 
-   現在録音のソースに使われているコントロールを示すビットマスクを返します。
+   This method returns a bitmask indicating which control(s) are currently being
+   used as a recording source.
 
 
 .. method:: oss_mixer_device.set_recsrc(bitmask)
 
-   録音のソースを指定にはこの関数を使ってください。呼び出しに成功すると、新たな録音の (場合によっては複数の) ソースを示すビットマスクを返します;
-   不正なソースを指定すると :exc:`IOError` を送出します。現在の録音のソースとしてマイク入力を設定するには、以下のようにします::
+   Call this function to specify a recording source.  Returns a bitmask indicating
+   the new recording source (or sources) if successful; raises :exc:`IOError` if an
+   invalid source was specified.  To set the current recording source to the
+   microphone input::
 
       mixer.setrecsrc (1 << ossaudiodev.SOUND_MIXER_MIC)
 

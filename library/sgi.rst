@@ -1,12 +1,12 @@
 
 .. _sgi:
 
-***********************
-SGI IRIX 固有のサービス
-***********************
+**************************
+SGI IRIX Specific Services
+**************************
 
-この章で記述されているモジュールは、SGI の IRIX オペレーティングシステム
-(バージョン4と5) 固有の機能へのインターフェイスを提供します。
+The modules described in this chapter provide interfaces to features that are
+unique to SGI's IRIX operating system (versions 4 and 5).
 
 
 .. toctree::

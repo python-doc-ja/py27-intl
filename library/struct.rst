@@ -1,299 +1,303 @@
 
-:mod:`struct` --- 文字列データをパックされたバイナリデータとして解釈する
-========================================================================
+:mod:`struct` --- Interpret strings as packed binary data
+=========================================================
 
 .. module:: struct
-   :synopsis: 文字列データをパックされたバイナリデータとして解釈する.
+   :synopsis: Interpret strings as packed binary data.
 
 .. index::
    pair: C; structures
    triple: packing; binary; data
 
-このモジュールは、 Python の値と Python 上で文字列データとして表される
-C の構造体データとの間の変換を実現します。このモジュールは特に、
-ファイルに保存されたり、ネットワーク接続を経由したバイナリデータを扱うときに使われます。
-このモジュールでは、C 構造体のレイアウトおよび Python の値との間で行いたい変換を
-コンパクトに表現するために、
-:ref:`struct-format-strings` を使います。
+This module performs conversions between Python values and C structs represented
+as Python strings.  This can be used in handling binary data stored in files or
+from network connections, among other sources.  It uses
+:ref:`struct-format-strings` as compact descriptions of the layout of the C
+structs and the intended conversion to/from Python values.
 
 .. note::
 
-   デフォルトでは、与えられた C の構造体をパックする際に、関連する C データ型を
-   適切にアラインメント(alignment)するために数バイトのパディングを行うことがあります。
-   この挙動が選択されたのは、パックされた構造体のバイト表現を対応する C 構造体
-   のメモリレイアウトに正確に対応させるためです。プラットフォーム独立のデータ
-   フォーマットを扱ったり、隠れたパディングを排除したりするには、サイズ及びアラインメント
-   として `native` の代わりに `standard` を使うようにします:
-   詳しくは :ref:`struct-alignment` を参照して下さい。
+   By default, the result of packing a given C struct includes pad bytes in
+   order to maintain proper alignment for the C types involved; similarly,
+   alignment is taken into account when unpacking.  This behavior is chosen so
+   that the bytes of a packed struct correspond exactly to the layout in memory
+   of the corresponding C struct.  To handle platform-independent data formats
+   or omit implicit pad bytes, use ``standard`` size and alignment instead of
+   ``native`` size and alignment: see :ref:`struct-alignment` for details.
 
-関数と例外
-----------
+Functions and Exceptions
+------------------------
 
-このモジュールは以下の例外と関数を定義しています:
+The module defines the following exception and functions:
 
 
 .. exception:: error
 
-   様々な状況で送出された例外です; 引数は何が問題かを記述する文字列です。
+   Exception raised on various occasions; argument is a string describing what
+   is wrong.
 
 
 .. function:: pack(fmt, v1, v2, ...)
 
-   値 ``v1, v2, ...`` が与えられたフォーマットで含まれる文字列データを返します。
-   引数は指定したフォーマットが要求する型と正確に一致していなければなりません。
+   Return a string containing the values ``v1, v2, ...`` packed according to the
+   given format.  The arguments must match the values required by the format
+   exactly.
 
 
 .. function:: pack_into(fmt, buffer, offset, v1, v2, ...)
 
-   ``v1, v2, ...`` を与えられたフォーマットに従ってパックし、そのバイト列を書き込み可能な *buffer*
-   の *offset* を先頭に書き込みます。 offset が省略できないことに注意してください。
+   Pack the values ``v1, v2, ...`` according to the given format, write the
+   packed bytes into the writable *buffer* starting at *offset*. Note that the
+   offset is a required argument.
 
    .. versionadded:: 2.5
 
 
 .. function:: unpack(fmt, string)
 
-   (おそらく ``pack(fmt, ...)`` でパックされた) 文字列データを与えられた書式に従ってアンパックします。
-   値が一つしかない場合を含め、結果はタプルで返されます。
-   文字列データにはフォーマットが要求するだけのデータが正確に含まれていなければなりません
-   (``len(string)`` が ``calcsize(fmt)`` と一致しなければなりません)。
+   Unpack the string (presumably packed by ``pack(fmt, ...)``) according to the
+   given format.  The result is a tuple even if it contains exactly one item.
+   The string must contain exactly the amount of data required by the format
+   (``len(string)`` must equal ``calcsize(fmt)``).
 
 
 .. function:: unpack_from(fmt, buffer[,offset=0])
 
-   *buffer* を与えられたフォーマットでアンパックします。
-   値が一つしかない場合を含め、結果はタプルで返されます。
-   *buffer* には最低でも format に要求されるサイズのデータが必要です。
-   (``len(buffer[offset:])`` は ``calcsize(fmt)`` 以上でなければなりません)。
+   Unpack the *buffer* according to the given format. The result is a tuple even
+   if it contains exactly one item. The *buffer* must contain at least the
+   amount of data required by the format (``len(buffer[offset:])`` must be at
+   least ``calcsize(fmt)``).
 
    .. versionadded:: 2.5
 
 
 .. function:: calcsize(fmt)
 
-   与えられたフォーマットに対応する構造体のサイズ (すなわち文字列データのサイズ) を返します。
+   Return the size of the struct (and hence of the string) corresponding to the
+   given format.
 
 .. _struct-format-strings:
 
-フォーマット文字列
-------------------
+Format Strings
+--------------
 
-フォーマット文字列はデータをパックしたりアンパックしたりするときの
-期待されるレイアウトを指定するためのメカニズムです。
-文字列はパック/アンパックされるデータの型を指定する
-:ref:`format-characters` から組み立てられます。
-さらに、 :ref:`struct-alignment` を制御するための特殊文字もあります。
+Format strings are the mechanism used to specify the expected layout when
+packing and unpacking data.  They are built up from :ref:`format-characters`,
+which specify the type of data being packed/unpacked.  In addition, there are
+special characters for controlling the :ref:`struct-alignment`.
+
 
 .. _struct-alignment:
 
-バイトオーダ, サイズ, アラインメント
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Byte Order, Size, and Alignment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-デフォルトでは、C での型はマシンのネイティブ (native) の形式および
-バイトオーダ (byte order) で表され、適切にアラインメント
-(alignment) するために、必要に応じて数バイトのパディングを行ってスキップします
-(これは C コンパイラが用いるルールに従います)。
+By default, C types are represented in the machine's native format and byte
+order, and properly aligned by skipping pad bytes if necessary (according to the
+rules used by the C compiler).
 
-これに代わって、フォーマット文字列の最初の文字を使って、
-バイトオーダやサイズ、アラインメントを指定することができます。
-指定できる文字を以下のテーブルに示します:
+Alternatively, the first character of the format string can be used to indicate
+the byte order, size and alignment of the packed data, according to the
+following table:
 
-+-------+-------------------------------------+----------+----------------+
-| 文字  | バイトオーダ                        | サイズ   | アラインメント |
-+=======+=====================================+==========+================+
-| ``@`` | ネイティブ                          | native   | native         |
-+-------+-------------------------------------+----------+----------------+
-| ``=`` | ネイティブ                          | standard | none           |
-+-------+-------------------------------------+----------+----------------+
-| ``<`` | リトルエンディアン                  | standard | none           |
-+-------+-------------------------------------+----------+----------------+
-| ``>`` | ビッグエンディアン                  | standard | none           |
-+-------+-------------------------------------+----------+----------------+
-| ``!`` | ネットワーク (= ビッグエンディアン) | standard | none           |
-+-------+-------------------------------------+----------+----------------+
++-----------+------------------------+----------+-----------+
+| Character | Byte order             | Size     | Alignment |
++===========+========================+==========+===========+
+| ``@``     | native                 | native   | native    |
++-----------+------------------------+----------+-----------+
+| ``=``     | native                 | standard | none      |
++-----------+------------------------+----------+-----------+
+| ``<``     | little-endian          | standard | none      |
++-----------+------------------------+----------+-----------+
+| ``>``     | big-endian             | standard | none      |
++-----------+------------------------+----------+-----------+
+| ``!``     | network (= big-endian) | standard | none      |
++-----------+------------------------+----------+-----------+
 
-フォーマット文字列の最初の文字が上のいずれかでない場合、 ``'@'`` であるとみなされます。
+If the first character is not one of these, ``'@'`` is assumed.
 
-ネイティブのバイトオーダはビッグエンディアンかリトルエンディアンで、
-ホスト計算機に依存します。例えば、Intel x86 および AMD64 (x86-64) はリトルエンディアン
-です。Motorola 68000 および PowerPC G5 はビッグエンディアンです。
-ARM および Intel Itanium はエンディアンを切り替えられる機能を備えています
-(バイエンディアン)。
-使っているシステムでのエンディアンは ``sys.byteorder`` を使って調べて下さい。
+Native byte order is big-endian or little-endian, depending on the host
+system. For example, Intel x86 and AMD64 (x86-64) are little-endian;
+Motorola 68000 and PowerPC G5 are big-endian; ARM and Intel Itanium feature
+switchable endianness (bi-endian). Use ``sys.byteorder`` to check the
+endianness of your system.
 
-ネイティブのサイズおよびアラインメントは C コンパイラの ``sizeof`` 式で決定されます。
-ネイティブのサイズおよびアラインメントはネイティブのバイトオーダと同時に使われます。
+Native size and alignment are determined using the C compiler's
+``sizeof`` expression.  This is always combined with native byte order.
 
-標準サイズはフォーマット文字だけで決まります。 :ref:`format-characters` の
-表を参照して下さい。
+Standard size depends only on the format character;  see the table in
+the :ref:`format-characters` section.
 
-``'@'`` と ``'='`` の違いに注意してください: 
-両方ともネイティブのバイトオーダですが、後者のバイトサイズとアラインメントは
-標準のものに合わせてあります。
+Note the difference between ``'@'`` and ``'='``: both use native byte order, but
+the size and alignment of the latter is standardized.
 
-``'!'`` 表記法はネットワークバイトオーダがビッグエンディアンかリトルエンディアンか
-忘れちゃったという熱意に乏しい人向けに用意されています。
+The form ``'!'`` is available for those poor souls who claim they can't remember
+whether network byte order is big-endian or little-endian.
 
-バイトオーダに関して、「(強制的にバイトスワップを行う)ネイティブの逆」
-を指定する方法はありません。 ``'<'`` または ``'>'`` のうち
-ふさわしい方を選んでください。
+There is no way to indicate non-native byte order (force byte-swapping); use the
+appropriate choice of ``'<'`` or ``'>'``.
 
-注意:
+Notes:
 
-(1) パディングは構造体のメンバの並びの中にだけ自動で追加されます。
-    最初や最後にパディングが追加されることはありません。
+(1) Padding is only automatically added between successive structure members.
+    No padding is added at the beginning or the end of the encoded struct.
 
-(2) ネイティブでないサイズおよびアラインメントが使われる場合にはパディングは行われません。
-    (たとえば '<', '>', '=', '!' を使った場合です。)
+(2) No padding is added when using non-native size and alignment, e.g.
+    with '<', '>', '=', and '!'.
 
-(3) 特定の型によるアラインメント要求に従うように構造体の末端をそろえるには、
-    繰り返し回数をゼロにした特定の型でフォーマットを終端します。
-    :ref:`struct-examples` を参照して下さい。
+(3) To align the end of a structure to the alignment requirement of a
+    particular type, end the format with the code for that type with a repeat
+    count of zero.  See :ref:`struct-examples`.
 
 
 .. _format-characters:
 
-フォーマット文字
+Format Characters
 ^^^^^^^^^^^^^^^^^
 
-フォーマット文字 (format character) は以下の意味を持っています;
-C と Python の間の変換では、値は正確に以下に指定された型でなくてはなりません:
-「標準のサイズ」列は standard サイズ使用時にパックされた値が何バイトかを示します。
-つまり、フォーマット文字列が ``'<'``, ``'>'``, ``'!'``, ``'='`` のいずれかで
-始まっている場合のものです。native サイズ使用時にはパックされた値
-の大きさはプラットフォーム依存です。
+Format characters have the following meaning; the conversion between C and
+Python values should be obvious given their types.  The 'Standard size' column
+refers to the size of the packed value in bytes when using standard size; that
+is, when the format string starts with one of ``'<'``, ``'>'``, ``'!'`` or
+``'='``.  When using native size, the size of the packed value is
+platform-dependent.
 
-+--------------+--------------------------+------------------+--------------+------------+
-| フォーマット | C での型                 | Python 型        | 標準のサイズ | 備考       |
-+==============+==========================+==================+==============+============+
-| ``x``        | pad byte                 | no value         |              |            |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``c``        | :c:type:`char`           | 長さ 1 の文字列  | 1            |            |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``b``        | :c:type:`signed char`    | 整数型 (integer) | 1            | \(3)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``B``        | :c:type:`unsigned char`  | 整数型           | 1            | \(3)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``?``        | :c:type:`_Bool`          | 真偽値型(bool)   | 1            | \(1)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``h``        | :c:type:`short`          | 整数型           | 2            | \(3)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``H``        | :c:type:`unsigned short` | 整数型           | 2            | \(3)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``i``        | :c:type:`int`            | 整数型           | 4            | \(3)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``I``        | :c:type:`unsigned int`   | 整数型           | 4            | \(3)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``l``        | :c:type:`long`           | 整数型           | 4            | \(3)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``L``        | :c:type:`unsigned long`  | 整数型           | 4            | \(3)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``q``        | :c:type:`long long`      | 整数型           | 8            | \(2), \(3) |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``Q``        | :c:type:`unsigned long   | 整数型           | 8            | \(2), \(3) |
-|              | long`                    |                  |              |            |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``f``        | :c:type:`float`          | 浮動小数点型     | 4            | \(4)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``d``        | :c:type:`double`         | 浮動小数点型     | 8            | \(4)       |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``s``        | :c:type:`char[]`         | 文字列           |              |            |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``p``        | :c:type:`char[]`         | 文字列           |              |            |
-+--------------+--------------------------+------------------+--------------+------------+
-| ``P``        | :c:type:`void \*`        | 整数型           |              | \(5), \(3) |
-+--------------+--------------------------+------------------+--------------+------------+
++--------+--------------------------+--------------------+----------------+------------+
+| Format | C Type                   | Python type        | Standard size  | Notes      |
++========+==========================+====================+================+============+
+| ``x``  | pad byte                 | no value           |                |            |
++--------+--------------------------+--------------------+----------------+------------+
+| ``c``  | :c:type:`char`           | string of length 1 | 1              |            |
++--------+--------------------------+--------------------+----------------+------------+
+| ``b``  | :c:type:`signed char`    | integer            | 1              | \(3)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``B``  | :c:type:`unsigned char`  | integer            | 1              | \(3)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``?``  | :c:type:`_Bool`          | bool               | 1              | \(1)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``h``  | :c:type:`short`          | integer            | 2              | \(3)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``H``  | :c:type:`unsigned short` | integer            | 2              | \(3)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``i``  | :c:type:`int`            | integer            | 4              | \(3)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``I``  | :c:type:`unsigned int`   | integer            | 4              | \(3)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``l``  | :c:type:`long`           | integer            | 4              | \(3)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``L``  | :c:type:`unsigned long`  | integer            | 4              | \(3)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``q``  | :c:type:`long long`      | integer            | 8              | \(2), \(3) |
++--------+--------------------------+--------------------+----------------+------------+
+| ``Q``  | :c:type:`unsigned long   | integer            | 8              | \(2), \(3) |
+|        | long`                    |                    |                |            |
++--------+--------------------------+--------------------+----------------+------------+
+| ``f``  | :c:type:`float`          | float              | 4              | \(4)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``d``  | :c:type:`double`         | float              | 8              | \(4)       |
++--------+--------------------------+--------------------+----------------+------------+
+| ``s``  | :c:type:`char[]`         | string             |                |            |
++--------+--------------------------+--------------------+----------------+------------+
+| ``p``  | :c:type:`char[]`         | string             |                |            |
++--------+--------------------------+--------------------+----------------+------------+
+| ``P``  | :c:type:`void \*`        | integer            |                | \(5), \(3) |
++--------+--------------------------+--------------------+----------------+------------+
 
-
-注意事項:
+Notes:
 
 (1)
-   ``'?'`` 変換コードは C99 で定義された :c:type:`_Bool` 型に対応します。
-   その型が利用できない場合は、 :c:type:`char` で代用されます。
-   標準モードでは常に1バイトで表現されます。
+   The ``'?'`` conversion code corresponds to the :c:type:`_Bool` type defined by
+   C99. If this type is not available, it is simulated using a :c:type:`char`. In
+   standard mode, it is always represented by one byte.
 
    .. versionadded:: 2.6
 
 (2)
-   変換コード ``'q'`` および ``'Q'`` は、ネイティブモードでは
-   プラットフォームの C コンパイラが C の :c:type:`long long` 型を
-   サポートする場合、または Windows では :c:type:`__int64` を
-   サポートする場合にのみ利用できます。標準モードでは常に利用できます。
+   The ``'q'`` and ``'Q'`` conversion codes are available in native mode only if
+   the platform C compiler supports C :c:type:`long long`, or, on Windows,
+   :c:type:`__int64`.  They are always available in standard modes.
 
    .. versionadded:: 2.2
 
 (3)
-   整数変換コードで非整数をパックしようとするとき、その非整数が
-   :meth:`__index__` メソッドを持っていると、パッキングの前に、
-   そのメソッドが変数を整数に変換するために呼び出されます。
-   :meth:`__index__` メソッドが存在しないか、 :meth:`__index__` メソッドの
-   呼び出しが :exc:`TypeError` を送出したら、次に :meth:`__int__` メソッドが
-   試されます。しかし、 :meth:`__int__` の使用は非推奨で、
-   :exc:`DeprecationWarning` を送出します。
+   When attempting to pack a non-integer using any of the integer conversion
+   codes, if the non-integer has a :meth:`__index__` method then that method is
+   called to convert the argument to an integer before packing.  If no
+   :meth:`__index__` method exists, or the call to :meth:`__index__` raises
+   :exc:`TypeError`, then the :meth:`__int__` method is tried.  However, the use
+   of :meth:`__int__` is deprecated, and will raise :exc:`DeprecationWarning`.
 
    .. versionchanged:: 2.7
-      非整数への :meth:`__index__` メソッド の使用は 2.7 で追加されました。
+      Use of the :meth:`__index__` method for non-integers is new in 2.7.
 
    .. versionchanged:: 2.7
-      バージョン 2.7 以前では、すべての整数変換コードが変換に :meth:`__int__`
-      メソッドを使うわけではなく、浮動小数点の引数にのみ
-      :exc:`DeprecationWarning` が送出されていました。
+      Prior to version 2.7, not all integer conversion codes would use the
+      :meth:`__int__` method to convert, and :exc:`DeprecationWarning` was
+      raised only for float arguments.
 
 (4)
-   ``'f'`` および ``'d'`` 変換コードについて、
-   パックされた表現は IEEE 754 binary32 (``'f'`` の場合) または
-   binary64 (``'d'`` の場合) フォーマットが、プラットフォームにおける
-   浮動小数点数のフォーマットに関係なく使われます。
+   For the ``'f'`` and ``'d'`` conversion codes, the packed representation uses
+   the IEEE 754 binary32 (for ``'f'``) or binary64 (for ``'d'``) format,
+   regardless of the floating-point format used by the platform.
 
 (5)
-   ``'P'`` フォーマット文字はネイティブバイトオーダでのみ利用可能です
-   (デフォルトのネットワークバイトオーダに設定するか、
-   ``'@'`` バイトオーダ指定文字を指定しなければなりません)。
-   ``'='`` を指定した場合、ホスト計算機のバイトオーダに基づいてリトルエンディアンと
-   ビッグエンディアンのどちらを使うかを決めます。
-   struct モジュールはこの設定をネイティブのオーダ設定として解釈しないので、
-   ``'P'`` を使うことはできません。
+   The ``'P'`` format character is only available for the native byte ordering
+   (selected as the default or with the ``'@'`` byte order character). The byte
+   order character ``'='`` chooses to use little- or big-endian ordering based
+   on the host system. The struct module does not interpret this as native
+   ordering, so the ``'P'`` format is not available.
 
 
-フォーマット文字の前に整数をつけ、繰り返し回数 (count) を指定することができます。例えば、フォーマット文字列 ``'4h'`` は
-``'hhhh'`` と全く同じ意味です。
+A format character may be preceded by an integral repeat count.  For example,
+the format string ``'4h'`` means exactly the same as ``'hhhh'``.
 
-フォーマット文字間の空白文字は無視されます; count とフォーマット文字の間にはスペースを入れてはいけません。
+Whitespace characters between formats are ignored; a count and its format must
+not contain whitespace though.
 
-フォーマット文字 ``'s'`` では、count は文字列のサイズとして扱われます。他のフォーマット文字のように繰り返し回数ではありません;
-例えば、 ``'10c'`` が 10 個のキャラクタを表すのに対して、 ``'10s'``  は 10 バイトの長さを持った 1 個
-の文字列です。文字列をパックする際には、指定した長さにフィットするように、必要に応じて切り詰められたりヌル文字
-で穴埋めされたりします。また特殊なケースとして、(``'0c'`` が 0 個のキャラクタを表すのに対して) ``'0s'`` は 1
-個の空文字列を意味します。
+For the ``'s'`` format character, the count is interpreted as the size of the
+string, not a repeat count like for the other format characters; for example,
+``'10s'`` means a single 10-byte string, while ``'10c'`` means 10 characters.
+If a count is not given, it defaults to 1.  For packing, the string is
+truncated or padded with null bytes as appropriate to make it fit. For
+unpacking, the resulting string always has exactly the specified number of
+bytes.  As a special case, ``'0s'`` means a single, empty string (while
+``'0c'`` means 0 characters).
 
-フォーマット文字 ``'p'`` は "Pascal 文字列 (pascal string)"  をコードします。Pascal
-文字列は count で与えられる *固定長のバイト列* に収められた短い可変長の文字列です。このデータの先頭の 1
-バイトには文字列の長さか255 のうち、小さい方の数が収められます。その後に文字列のバイトデータが続きます。 :func:`pack` に渡された
-Pascal 文字列の長さが長すぎた (count-1 よりも長い) 場合、先頭の ``count-1`` バイトが書き込まれます。文字列が ``count-1``
-よりも短い場合、指定した count バイトに達するまでの残りの部分はヌルで埋められます。 :func:`unpack` では、フォーマット文字 ``'p'``
-は指定された count バイトだけデータを読み込みますが、返される文字列は決して 255 文字を超えることはないので注意してください。
+The ``'p'`` format character encodes a "Pascal string", meaning a short
+variable-length string stored in a *fixed number of bytes*, given by the count.
+The first byte stored is the length of the string, or 255, whichever is smaller.
+The bytes of the string follow.  If the string passed in to :func:`pack` is too
+long (longer than the count minus 1), only the leading ``count-1`` bytes of the
+string are stored.  If the string is shorter than ``count-1``, it is padded with
+null bytes so that exactly count bytes in all are used.  Note that for
+:func:`unpack`, the ``'p'`` format character consumes count bytes, but that the
+string returned can never contain more than 255 characters.
 
-フォーマット文字 ``'P'`` では、返される値は Python 整数型または long 整数型で、これはポインタの値を Python
-での整数にキャストする際に、値を保持するために必要なサイズに依存します。 *NULL* ポインタは常に Python 整数型の ``0`` になります。
-ポインタ型のサイズを持った値をパックする際には、Python 整数型および long 整数型オブジェクトを使うことができます。例えば、 Alpha および
-Merced プロセッサは 64 bit のポインタ値を使いますが、これはポインタを保持するために Python long 整数型が使われることを意味します;
-32 bit ポインタを使う他のプラットフォームでは Python 整数型が使われます。
+For the ``'P'`` format character, the return value is a Python integer or long
+integer, depending on the size needed to hold a pointer when it has been cast to
+an integer type.  A *NULL* pointer will always be returned as the Python integer
+``0``. When packing pointer-sized values, Python integer or long integer objects
+may be used.  For example, the Alpha and Merced processors use 64-bit pointer
+values, meaning a Python long integer will be used to hold the pointer; other
+platforms use 32-bit pointers and will use a Python integer.
 
-フォーマット文字 ``'?'`` では、返される値は :const:`True` か :const:`False` のどちらかです。
-パック時にはオブジェクトの真偽値が利用されます。
-0 か 1 のネイティブもしくは標準のbool表現がパックされます。
-そしてアンパック時には非ゼロの値は True になります。
+For the ``'?'`` format character, the return value is either :const:`True` or
+:const:`False`. When packing, the truth value of the argument object is used.
+Either 0 or 1 in the native or standard bool representation will be packed, and
+any non-zero value will be ``True`` when unpacking.
+
+
 
 .. _struct-examples:
 
-例
-^^^^
+Examples
+^^^^^^^^
 
 .. note::
-   全ての例は、ビッグエンディアンのマシンで、ネイティブのバイトオーダ、
-   サイズおよびアラインメントを仮定します。
+   All examples assume a native byte order, size, and alignment with a
+   big-endian machine.
 
-基本的な例として、三つの整数をパック/アンパックします::
+A basic example of packing/unpacking three integers::
 
    >>> from struct import *
    >>> pack('hhl', 1, 2, 3)
@@ -303,7 +307,8 @@ Merced プロセッサは 64 bit のポインタ値を使いますが、これ�
    >>> calcsize('hhl')
    8
 
-アンパックした結果のフィールドは、変数に割り当てるか named tuple でラップすることによって名前を付けることができます::
+Unpacked fields can be named by assigning them to variables or by wrapping
+the result in a named tuple::
 
     >>> record = 'raymond   \x32\x12\x08\x01\x08'
     >>> name, serialnum, school, gradelevel = unpack('<10sHHb', record)
@@ -313,8 +318,8 @@ Merced プロセッサは 64 bit のポインタ値を使いますが、これ�
     >>> Student._make(unpack('<10sHHb', record))
     Student(name='raymond   ', serialnum=4658, school=264, gradelevel=8)
 
-アラインメントの要求を満たすために必要なパディングが異なるという理由により、
-フォーマット文字の順番がサイズの違いを生み出すことがあります::
+The ordering of format characters may have an impact on size since the padding
+needed to satisfy alignment requirements is different::
 
     >>> pack('ci', '*', 0x12131415)
     '*\x00\x00\x00\x12\x13\x14\x15'
@@ -325,70 +330,74 @@ Merced プロセッサは 64 bit のポインタ値を使いますが、これ�
     >>> calcsize('ic')
     5
 
-以下のフォーマット ``'llh0l'`` は、 
-long 型が 4 バイトを境界としてそろえられていると仮定して、
-末端に 2 バイトをパディングします::
+The following format ``'llh0l'`` specifies two pad bytes at the end, assuming
+longs are aligned on 4-byte boundaries::
 
     >>> pack('llh0l', 1, 2, 3)
     '\x00\x00\x00\x01\x00\x00\x00\x02\x00\x03\x00\x00'
 
-この例はネイティブのサイズとアラインメントが使われているときだけ思った通りに動きます。
-標準のサイズとアラインメントはアラインメントの設定ではいかなる
-アラインメントも行いません。
+This only works when native size and alignment are in effect; standard size and
+alignment does not enforce any alignment.
 
 
 .. seealso::
 
    Module :mod:`array`
-      一様なデータ型からなるバイナリ記録データのパック
+      Packed binary storage of homogeneous data.
 
    Module :mod:`xdrlib`
-      XDR データのパックおよびアンパック。
+      Packing and unpacking of XDR data.
 
 
 .. _struct-objects:
 
-クラス
-------
+Classes
+-------
 
-:mod:`struct` モジュールは次の型を定義します:
+The :mod:`struct` module also defines the following type:
+
 
 .. class:: Struct(format)
 
-   フォーマット文字列 *format* に従ってバイナリデータを読み書きする、
-   新しい Struct オブジェクトを返します。
-   Struct オブジェクトを一度作ってからそのメソッドを使うと、
-   フォーマット文字列のコンパイルが一度で済むので、
-   :mod:`struct` モジュールの関数を同じフォーマットで何度も呼び出すよりも効率的です。
+   Return a new Struct object which writes and reads binary data according to
+   the format string *format*.  Creating a Struct object once and calling its
+   methods is more efficient than calling the :mod:`struct` functions with the
+   same format since the format string only needs to be compiled once.
 
    .. versionadded:: 2.5
 
-   コンパイルされた Struct オブジェクトは以下のメソッドと属性をサポートします:
+   Compiled Struct objects support the following methods and attributes:
+
 
    .. method:: pack(v1, v2, ...)
 
-      :func:`pack` 関数と同じ、コンパイルされたフォーマットを利用するメソッドです。
-      (``len(result)`` は :attr:`self.size` と等しいでしょう)
+      Identical to the :func:`pack` function, using the compiled format.
+      (``len(result)`` will equal :attr:`self.size`.)
+
 
    .. method:: pack_into(buffer, offset, v1, v2, ...)
 
-      :func:`pack_into` 関数と同じ、コンパイルされたフォーマットを利用するメソッドです。
+      Identical to the :func:`pack_into` function, using the compiled format.
+
 
    .. method:: unpack(string)
 
-      :func:`unpack` 関数と同じ、コンパイルされたフォーマットを利用するメソッドです。
-      (``len(string)`` は :attr:`self.size` と等しくなければなりません)。
+      Identical to the :func:`unpack` function, using the compiled format.
+      (``len(string)`` must equal :attr:`self.size`).
 
-   .. method:: unpack_from(buffer[, offset=0])
 
-      :func:`unpack_from` 関数と同じ、コンパイルされたフォーマットを利用するメソッドです。
-      (``len(buffer[offset:])`` は :attr:`self.size` 以上でなければなりません)。
+   .. method:: unpack_from(buffer, offset=0)
+
+      Identical to the :func:`unpack_from` function, using the compiled format.
+      (``len(buffer[offset:])`` must be at least :attr:`self.size`).
+
 
    .. attribute:: format
 
-      この Struct オブジェクトを作成する時に利用されたフォーマット文字列です。
+      The format string used to construct this Struct object.
 
    .. attribute:: size
 
-      :attr:`format` に対応する struct (とそれによる文字列) のサイズを計算したものです。
+      The calculated size of the struct (and hence of the string) corresponding
+      to :attr:`format`.
 

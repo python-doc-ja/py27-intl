@@ -1,108 +1,119 @@
-:mod:`SimpleHTTPServer` --- 簡潔な HTTP リクエストハンドラ
-==========================================================
+
+:mod:`SimpleHTTPServer` --- Simple HTTP request handler
+=======================================================
 
 .. module:: SimpleHTTPServer
-   :synopsis: このモジュールは HTTP サーバに基本的なリクエストハンドラを提供します。
+   :synopsis: This module provides a basic request handler for HTTP servers.
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
-.. .. note::
-   The :mod:`SimpleHTTPServer` module has been merged into :mod:`http.server` in
-   Python 3.0.  The :term:`2to3` tool will automatically adapt imports when
-   converting your sources to 3.0.
-
 .. note::
+   The :mod:`SimpleHTTPServer` module has been merged into :mod:`http.server` in
+   Python 3.  The :term:`2to3` tool will automatically adapt imports when
+   converting your sources to Python 3.
 
-   :mod:`SimpleHTTPServer` モジュールは、Python 3では :mod:`http.server` にリネームされました。
-   :term:`2to3` ツールが、ソースコード内のimportを自動的にPython 3用に修正します。
 
-.. The :mod:`SimpleHTTPServer` module defines a single class,
-   :class:`SimpleHTTPRequestHandler`, which is interface-compatible with
-   :class:`BaseHTTPServer.BaseHTTPRequestHandler`.
+The :mod:`SimpleHTTPServer` module defines a single class,
+:class:`SimpleHTTPRequestHandler`, which is interface-compatible with
+:class:`BaseHTTPServer.BaseHTTPRequestHandler`.
 
-:mod:`SimpleHTTPServer` モジュールは、 :class:`SimpleHTTPRequestHandler` クラス1つを提供しています。
-このクラスは、 :class:`BaseHTTPServer.BaseHTTPRequestHandler` に対して互換性のあるインタフェースを持っています。
-
-:mod:`SimpleHTTPServer` モジュールでは以下のクラスを定義しています:
+The :mod:`SimpleHTTPServer` module defines the following class:
 
 
 .. class:: SimpleHTTPRequestHandler(request, client_address, server)
 
-   このクラスは、現在のディレクトリ以下にあるファイルを、HTTP リクエストにおけるディレクトリ構造に直接対応付けて提供します。
+   This class serves files from the current directory and below, directly
+   mapping the directory structure to HTTP requests.
 
-   リクエストの解釈のような、多くの作業は基底クラス :class:`BaseHTTPServer.BaseHTTPRequestHandler` で行われます。
-   このクラスは関数 :func:`do_GET` および :func:`do_HEAD`  を実装しています。
+   A lot of the work, such as parsing the request, is done by the base class
+   :class:`BaseHTTPServer.BaseHTTPRequestHandler`.  This class implements the
+   :func:`do_GET` and :func:`do_HEAD` functions.
 
-   :class:`SimpleHTTPRequestHandler` では以下のメンバ変数を定義しています:
+   The following are defined as class-level attributes of
+   :class:`SimpleHTTPRequestHandler`:
 
 
    .. attribute:: server_version
 
-      この値は ``"SimpleHTTP/" + __version__`` になります。 ``__version__`` はこのモジュールで定義されている値です。
+   This will be ``"SimpleHTTP/" + __version__``, where ``__version__`` is
+   defined at the module level.
 
 
    .. attribute:: extensions_map
 
-      拡張子を MIME 型指定子に対応付ける辞書です。標準の型指定は空文字列で表され、この値は ``application/octet-stream``
-      と見なされます。対応付けは大小文字の区別をするので、小文字のキーのみを入れるべきです。
+      A dictionary mapping suffixes into MIME types. The default is
+      signified by an empty string, and is considered to be
+      ``application/octet-stream``. The mapping is used case-insensitively,
+      and so should contain only lower-cased keys.
 
-   :class:`SimpleHTTPRequestHandler` では以下のメソッドを定義しています:
+   The :class:`SimpleHTTPRequestHandler` class defines the following methods:
 
 
    .. method:: do_HEAD()
 
-      このメソッドは ``'HEAD'`` 型のリクエスト処理を実行します: すなわち、 ``GET`` リクエストの時に送信されるものと同じヘッダを送信します。
-      送信される可能性のあるヘッダについての完全な説明は :meth:`do_GET`  メソッドを参照してください。
+      This method serves the ``'HEAD'`` request type: it sends the headers it
+      would send for the equivalent ``GET`` request. See the :meth:`do_GET`
+      method for a more complete explanation of the possible headers.
 
 
    .. method:: do_GET()
 
-      リクエストを現在の作業ディレクトリからの相対的なパスとして解釈することで、リクエストをローカルシステム上のファイルと対応付けます。
+      The request is mapped to a local file by interpreting the request as a
+      path relative to the current working directory.
 
-      リクエストがディレクトリに対応付けられた場合、 ``index.html`` または ``index.htm`` をこの順序でチェックします。
-      もしファイルを発見できればその内容を、そうでなければディレクトリ一覧を :meth:`list_directory` メソッドで生成して、返します。
-      このメソッドは :func:`os.listdir` をディレクトリのスキャンに用いており、 :func:`listdir` が失敗した場合には ``404`` 応答
-      が返されます。
+      If the request was mapped to a directory, the directory is checked for a
+      file named ``index.html`` or ``index.htm`` (in that order). If found, the
+      file's contents are returned; otherwise a directory listing is generated
+      by calling the :meth:`list_directory` method. This method uses
+      :func:`os.listdir` to scan the directory, and returns a ``404`` error
+      response if the :func:`listdir` fails.
 
-      リクエストがファイルに対応付けられた場合、そのファイルを開いて内容を返します。要求されたファイルを開く際に何らかの :exc:`IOError` 例外
-      が送出された場合、リクエストは ``404`` 、 ``'File not found'``  エラーに対応づけられます。そうでない場合、コンテントタイプが
-      *extensions_map* 変数を用いて推測されます。
+      If the request was mapped to a file, it is opened and the contents are
+      returned.  Any :exc:`IOError` exception in opening the requested file is
+      mapped to a ``404``, ``'File not found'`` error. Otherwise, the content
+      type is guessed by calling the :meth:`guess_type` method, which in turn
+      uses the *extensions_map* variable.
 
-      出力は ``'Content-type:'`` と推測されたコンテントタイプで、その後にファイルサイズを示す ``'Content-Lenght;'``
-      ヘッダと、ファイルの更新日時を示す ``'Last-Modified:'`` ヘッダが続きます。
+      A ``'Content-type:'`` header with the guessed content type is output,
+      followed by a ``'Content-Length:'`` header with the file's size and a
+      ``'Last-Modified:'`` header with the file's modification time.
 
-      そしてヘッダの終了を示す空白行が続き、さらにその後にファイルの内容が続きます。このファイルはコンテントタイプが ``text/`` で始まっている場合
-      はテキストモードで、そうでなければバイナリモードで開かれます。
+      Then follows a blank line signifying the end of the headers, and then the
+      contents of the file are output. If the file's MIME type starts with
+      ``text/`` the file is opened in text mode; otherwise binary mode is used.
 
-      :mod:`SimpleHTTPServer` モジュールの :func:`test` 関数は
-      :class:`SimpleHTTPRequestHandler` をハンドラとして使うサーバを作る例になっています。
+      The :func:`test` function in the :mod:`SimpleHTTPServer` module is an
+      example which creates a server using the :class:`SimpleHTTPRequestHandler`
+      as the Handler.
 
       .. versionadded:: 2.5
-         ``'Last-Modified'`` ヘッダ.
+         The ``'Last-Modified'`` header.
 
-:mod:`SimpleHTTPServer` モジュールを使って現在のディレクトリ以下にあるファイルに
-アクセスできるだけの、非常に初歩的な Web サーバを立ち上げる方法は以下の通りです。 ::
+
+The :mod:`SimpleHTTPServer` module can be used in the following manner in order
+to set up a very basic web server serving files relative to the current
+directory. ::
 
    import SimpleHTTPServer
    import SocketServer
- 
+
    PORT = 8000
- 
+
    Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
- 
+
    httpd = SocketServer.TCPServer(("", PORT), Handler)
- 
+
    print "serving at port", PORT
    httpd.serve_forever()
 
-インタプリタの ``-m`` スイッチで :mod:`SimpleHTTPServer` モジュールと ``ポート番号``
-を指定して直接実行することもできます。
-上の例と同じように、ここで立ち上がったサーバは現在のディレクトリ以下のファイルへの
-アクセスを提供します。 ::
+The :mod:`SimpleHTTPServer` module can also be invoked directly using the
+:option:`-m` switch of the interpreter with a ``port number`` argument.
+Similar to the previous example, this serves the files relative to the
+current directory. ::
 
-     python -m SimpleHTTPServer 8000
+   python -m SimpleHTTPServer 8000
 
 .. seealso::
 
    Module :mod:`BaseHTTPServer`
-      Web サーバおよび要求ハンドラの基底クラス実装。
+      Base class implementation for Web server and request handler.
 

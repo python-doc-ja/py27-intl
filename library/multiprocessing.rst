@@ -1,5 +1,5 @@
-:mod:`multiprocessing` --- プロセスベースの "並列処理" インタフェース
-=====================================================================
+:mod:`multiprocessing` --- Process-based "threading" interface
+==============================================================
 
 .. module:: multiprocessing
    :synopsis: Process-based "threading" interface.
@@ -7,66 +7,47 @@
 .. versionadded:: 2.6
 
 
-はじめに
---------
+Introduction
+----------------------
 
-:mod:`multiprocessing` はPythonの標準ライブラリのパッケージで
-:mod:`threading` とよく似た API を使ってプロセスを生成することができます。
-:mod:`multiprocessing` パッケージを使用すると、
-ローカルとリモート両方の並列制御を行うことができます。
-また、このパッケージはスレッドの代わりにサブプロセスを使用することにより、
-グローバルインタプリタロック ( :term:`Global Interpreter Lock` )
-の問題を避ける工夫が行われています。
-このような特徴があるため :mod:`multiprocessing` モジュールを使うことで、
-マルチプロセッサマシンの性能を最大限に活用することができるでしょう。
-なお、このモジュールは Unix と Windows で動作します。
+:mod:`multiprocessing` is a package that supports spawning processes using an
+API similar to the :mod:`threading` module.  The :mod:`multiprocessing` package
+offers both local and remote concurrency, effectively side-stepping the
+:term:`Global Interpreter Lock` by using subprocesses instead of threads.  Due
+to this, the :mod:`multiprocessing` module allows the programmer to fully
+leverage multiple processors on a given machine.  It runs on both Unix and
+Windows.
 
-.. warning::
+The :mod:`multiprocessing` module also introduces APIs which do not have
+analogs in the :mod:`threading` module.  A prime example of this is the
+:class:`Pool` object which offers a convenient means of parallelizing the
+execution of a function across multiple input values, distributing the
+input data across processes (data parallelism).  The following example
+demonstrates the common practice of defining such functions in a module so
+that child processes can successfully import that module.  This basic example
+of data parallelism using :class:`Pool`, ::
 
-    このパッケージに含まれる機能には、ホストとなるオペレーティングシステム上で
-    動作している共有セマフォ (shared semaphore) を使用しているものがあります。
-    これが使用できない場合には、 :mod:`multiprocessing.synchronize` モジュールが無効になり、
-    このモジュールのインポート時に :exc:`ImportError` が発生します。
-    詳細は :issue:`3770` を参照してください。
+   from multiprocessing import Pool
 
-.. note::
+   def f(x):
+       return x*x
 
-    このパッケージに含まれる機能を使用するためには、子プロセスから
-    ``__main__`` モジュールを呼び出せる必要があります。
-    このことについては :ref:`multiprocessing-programming` で触れていますが、
-    ここであらためて強調しておきます。何故かというと、いくつかのサンプルコード、例えば
-    :class:`multiprocessing.Pool` のサンプルはインタラクティブシェル上では動作しないからです。
-    以下に例を示します。 ::
+   if __name__ == '__main__':
+       p = Pool(5)
+       print(p.map(f, [1, 2, 3]))
 
-        >>> from multiprocessing import Pool
-        >>> p = Pool(5)
-        >>> def f(x):
-        ...     return x*x
-        ...
-        >>> p.map(f, [1,2,3])
-        Process PoolWorker-1:
-        Process PoolWorker-2:
-        Process PoolWorker-3:
-        Traceback (most recent call last):
-        Traceback (most recent call last):
-        Traceback (most recent call last):
-        AttributeError: 'module' object has no attribute 'f'
-        AttributeError: 'module' object has no attribute 'f'
-        AttributeError: 'module' object has no attribute 'f'
+will print to standard output ::
 
-    (このサンプルを試すと、3つのトレースバック全てがほぼランダムに交互に重なって表示されます。
-    そうなったら、なんとかしてマスタープロセスを止めましょう。)
+   [1, 4, 9]
 
-:class:`Process` クラス
+
+The :class:`Process` class
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:mod:`multiprocessing` モジュールでは、プロセスは以下の手順によって生成されます。
-はじめに :class:`Process`  のオブジェクトを作成し、
-続いて :meth:`~Process.start` メソッドを呼び出します。
-この :class:`Process` クラスは :class:`threading.Thread` クラスと同様の API を持っています。
-まずは、簡単な例をもとにマルチプロセスを使用したプログラムについてみていきましょう。
-
-::
+In :mod:`multiprocessing`, processes are spawned by creating a :class:`Process`
+object and then calling its :meth:`~Process.start` method.  :class:`Process`
+follows the API of :class:`threading.Thread`.  A trivial example of a
+multiprocess program is ::
 
     from multiprocessing import Process
 
@@ -78,9 +59,7 @@
         p.start()
         p.join()
 
-実行された個々のプロセス ID を表示するために拡張したサンプルコードを以下に例を示します。
-
-::
+To show the individual process IDs involved, here is an expanded example::
 
     from multiprocessing import Process
     import os
@@ -88,7 +67,8 @@
     def info(title):
         print title
         print 'module name:', __name__
-        print 'parent process:', os.getppid()
+        if hasattr(os, 'getppid'):  # only available on Unix
+            print 'parent process:', os.getppid()
         print 'process id:', os.getpid()
 
     def f(name):
@@ -101,21 +81,20 @@
         p.start()
         p.join()
 
-(Windows 環境で) ``if __name__ == '__main__'`` という文が必要な理由については、
-:ref:`multiprocessing-programming` を参照してください。
+For an explanation of why (on Windows) the ``if __name__ == '__main__'`` part is
+necessary, see :ref:`multiprocessing-programming`.
 
 
+Exchanging objects between processes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-プロセス間でのオブジェクト交換
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+:mod:`multiprocessing` supports two types of communication channel between
+processes:
 
-:mod:`multiprocessing` モジュールでは、プロセス間通信の手段が2つ用意されています。
-それぞれ以下に詳細を示します。
+**Queues**
 
-**キュー (Queue)**
-
-   :class:`~multiprocessing.Queue` クラスは :class:`Queue.Queue` クラスとほとんど同じように使うことができます。
-   以下に例を示します。 ::
+   The :class:`~multiprocessing.Queue` class is a near clone of :class:`Queue.Queue`.  For
+   example::
 
       from multiprocessing import Process, Queue
 
@@ -126,16 +105,15 @@
           q = Queue()
           p = Process(target=f, args=(q,))
           p.start()
-          print q.get()    # "[42, None, 'hello']" を表示
+          print q.get()    # prints "[42, None, 'hello']"
           p.join()
 
-   キューはスレッドセーフであり、プロセスセーフです。
+   Queues are thread and process safe.
 
-**パイプ (Pipe)**
+**Pipes**
 
-   :func:`Pipe` 関数は接続用オブジェクトのペアを返します。デフォルトでは、
-   このオブジェクトを介して、親子間でパイプを使った双方向通信をおこなうことができます。
-   以下に例を示します。 ::
+   The :func:`Pipe` function returns a pair of connection objects connected by a
+   pipe which by default is duplex (two-way).  For example::
 
       from multiprocessing import Process, Pipe
 
@@ -147,26 +125,24 @@
           parent_conn, child_conn = Pipe()
           p = Process(target=f, args=(child_conn,))
           p.start()
-          print parent_conn.recv()   # "[42, None, 'hello']" を表示
+          print parent_conn.recv()   # prints "[42, None, 'hello']"
           p.join()
 
-   2つのコネクション用オブジェクトが :func:`Pipe` 関数から返され、
-   親側の入出力、子側の入出力といったように、それぞれパイプの両端となります。
-   (他プロセスと通信する方法として) 各接続用オブジェクトには、
-   :meth:`~Connection.send` メソッドと :meth:`~Connection.recv` メソッドがあります。
-   データを破壊してしまうような使い方に注意する必要があります。
-   それは、2つのプロセス (もしくはスレッド) が同時に *同じ* パイプに対して、
-   読み書きをおこなった場合に起こります。
-   もちろん、異なったパイプを使用していれば、同時に読み書きをおこなっても
-   データが破壊されてしまう危険性はありません。
+   The two connection objects returned by :func:`Pipe` represent the two ends of
+   the pipe.  Each connection object has :meth:`~Connection.send` and
+   :meth:`~Connection.recv` methods (among others).  Note that data in a pipe
+   may become corrupted if two processes (or threads) try to read from or write
+   to the *same* end of the pipe at the same time.  Of course there is no risk
+   of corruption from processes using different ends of the pipe at the same
+   time.
 
 
-プロセス間の同期
+Synchronization between processes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:mod:`multiprocessing` は :mod:`threading` モジュールと同じプロセス間同期の仕組みを
-備えています。以下の例では、ロックを使用して、一度に1つのプロセスしか
-標準出力に書き込まないようにしています。 ::
+:mod:`multiprocessing` contains equivalents of all the synchronization
+primitives from :mod:`threading`.  For instance one can use a lock to ensure
+that only one process prints to standard output at a time::
 
    from multiprocessing import Process, Lock
 
@@ -181,25 +157,24 @@
        for num in range(10):
            Process(target=f, args=(lock, num)).start()
 
-ロックを使用しないで標準出力に書き込んだ場合は、
-各プロセスからの出力がごちゃまぜになってしまいます。
+Without using the lock output from the different processes is liable to get all
+mixed up.
 
 
-プロセス間での状態の共有
-~~~~~~~~~~~~~~~~~~~~~~~~
+Sharing state between processes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-これまでの話の流れで触れたとおり、並列プログラミングをする時には、
-出来る限り状態を共有しないというのが定石です。
-複数のプロセッサを使用するときは特にそうでしょう。
+As mentioned above, when doing concurrent programming it is usually best to
+avoid using shared state as far as possible.  This is particularly true when
+using multiple processes.
 
-しかし、どうしてもプロセス間のデータ共有が必要な場合のために
-:mod:`multiprocessing` モジュールにはその方法が用意されています。
+However, if you really do need to use some shared data then
+:mod:`multiprocessing` provides a couple of ways of doing so.
 
-**共有メモリ (Shared memory)**
+**Shared memory**
 
-   データを共有メモリ上に保持するために :class:`Value` クラス、
-   もしくは :class:`Array` クラスを使用することができます。
-   以下のサンプルコードを使って、この機能についてみていきましょう。 ::
+   Data can be stored in a shared memory map using :class:`Value` or
+   :class:`Array`.  For example, the following code ::
 
       from multiprocessing import Process, Value, Array
 
@@ -219,32 +194,31 @@
           print num.value
           print arr[:]
 
-   このサンプルコードを実行すると以下のように表示されます。 ::
+   will print ::
 
       3.1415927
       [0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
 
-   ``num`` と ``arr`` を生成するときに使用されている ``'d'`` と ``'i'`` の引数は
-   :mod:`array` モジュールにより使用される種別の型コードです。
-   ここで使用されている ``'d'`` は倍精度浮動小数、 ``'i'`` は符号付整数を表します。
-   これらの共有オブジェクトは、プロセスセーフでありスレッドセーフです。
+   The ``'d'`` and ``'i'`` arguments used when creating ``num`` and ``arr`` are
+   typecodes of the kind used by the :mod:`array` module: ``'d'`` indicates a
+   double precision float and ``'i'`` indicates a signed integer.  These shared
+   objects will be process and thread-safe.
 
-   共有メモリを使用して、さらに柔軟なプログラミングを行うには
-   :mod:`multiprocessing.sharedctypes` モジュールを使用します。
-   このモジュールは共有メモリから割り当てられた任意の ctypes オブジェクトの
-   生成をサポートします。
+   For more flexibility in using shared memory one can use the
+   :mod:`multiprocessing.sharedctypes` module which supports the creation of
+   arbitrary ctypes objects allocated from shared memory.
 
-**サーバプロセス (Server process)**
+**Server process**
 
-   :func:`Manager` 関数により生成されたマネージャオブジェクトはサーバプロセスを管理します。
-   マネージャオブジェクトは Python のオブジェクトを保持して、他のプロセスが
-   プロキシ経由でその Python オブジェクトを操作することができます。
+   A manager object returned by :func:`Manager` controls a server process which
+   holds Python objects and allows other processes to manipulate them using
+   proxies.
 
-   :func:`Manager` 関数が返すマネージャは :class:`list` 、 :class:`dict` 、
-   :class:`Namespace` 、 :class:`Lock` 、 :class:`RLock` 、 :class:`Semaphore` 、
-   :class:`BoundedSemaphore` 、 :class:`Condition` 、 :class:`Event` 、
-   :class:`~multiprocessing.Queue` 、 :class:`Value` 、 :class:`Array` をサポートします。
-   以下にサンプルコードを示します。 ::
+   A manager returned by :func:`Manager` will support types :class:`list`,
+   :class:`dict`, :class:`Namespace`, :class:`Lock`, :class:`RLock`,
+   :class:`Semaphore`, :class:`BoundedSemaphore`, :class:`Condition`,
+   :class:`Event`, :class:`~multiprocessing.Queue`, :class:`Value` and :class:`Array`.  For
+   example, ::
 
       from multiprocessing import Process, Manager
 
@@ -267,25 +241,25 @@
           print d
           print l
 
-   このサンプルコードを実行すると以下のように表示されます。 ::
+   will print ::
 
        {0.25: None, 1: '1', '2': 2}
        [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 
-   サーバプロセスのマネージャオブジェクトは共有メモリのオブジェクトよりも
-   柔軟であるといえます。それは、どのような型のオブジェクトでも使えるからです。
-   また、1つのマネージャオブジェクトはネットワーク経由で他のコンピュータ上の
-   プロセスによって共有することもできます。
-   しかし、共有メモリより動作が遅いという欠点があります。
+   Server process managers are more flexible than using shared memory objects
+   because they can be made to support arbitrary object types.  Also, a single
+   manager can be shared by processes on different computers over a network.
+   They are, however, slower than using shared memory.
 
 
-ワーカープロセスのプールを使用
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using a pool of workers
+~~~~~~~~~~~~~~~~~~~~~~~
 
-:class:`~multiprocessing.pool.Pool` クラスは、ワーカープロセスをプールする機能を備えています。
-このクラスには、いくつかの方法でワーカープロセスへタスクを割り当てるメソッドがあります。
+The :class:`~multiprocessing.pool.Pool` class represents a pool of worker
+processes.  It has methods which allows tasks to be offloaded to the worker
+processes in a few different ways.
 
-以下に例を示します。 ::
+For example::
 
    from multiprocessing import Pool
 
@@ -293,151 +267,183 @@
        return x*x
 
    if __name__ == '__main__':
-       pool = Pool(processes=4)              # 4つのワーカープロセスで開始
-       result = pool.apply_async(f, [10])    # 非同期で "f(10)" を評価
-       print result.get(timeout=1)           # あなたのコンピュータが *かなり* 遅くない限りは "100" を表示
-       print pool.map(f, range(10))          # "[0, 1, 4,..., 81]" を表示
+       pool = Pool(processes=4)              # start 4 worker processes
+       result = pool.apply_async(f, [10])    # evaluate "f(10)" asynchronously
+       print result.get(timeout=1)           # prints "100" unless your computer is *very* slow
+       print pool.map(f, range(10))          # prints "[0, 1, 4,..., 81]"
+
+Note that the methods of a pool should only ever be used by the
+process which created it.
+
+.. note::
+
+   Functionality within this package requires that the ``__main__`` module be
+   importable by the children. This is covered in :ref:`multiprocessing-programming`
+   however it is worth pointing out here. This means that some examples, such
+   as the :class:`Pool` examples will not work in the interactive interpreter.
+   For example::
+
+      >>> from multiprocessing import Pool
+      >>> p = Pool(5)
+      >>> def f(x):
+      ...     return x*x
+      ...
+      >>> p.map(f, [1,2,3])
+      Process PoolWorker-1:
+      Process PoolWorker-2:
+      Process PoolWorker-3:
+      Traceback (most recent call last):
+      Traceback (most recent call last):
+      Traceback (most recent call last):
+      AttributeError: 'module' object has no attribute 'f'
+      AttributeError: 'module' object has no attribute 'f'
+      AttributeError: 'module' object has no attribute 'f'
+
+   (If you try this it will actually output three full tracebacks
+   interleaved in a semi-random fashion, and then you may have to
+   stop the master process somehow.)
 
 
-リファレンス
-------------
+Reference
+---------
 
-:mod:`multiprocessing` パッケージは :mod:`threading` モジュールの API とほとんど同じです。
+The :mod:`multiprocessing` package mostly replicates the API of the
+:mod:`threading` module.
 
-:class:`Process` クラスと例外
+
+:class:`Process` and exceptions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. class:: Process([group[, target[, name[, args[, kwargs]]]]])
+.. class:: Process(group=None, target=None, name=None, args=(), kwargs={})
 
-   Process オブジェクトは各プロセスの振る舞いを表します。
-   :class:`Process` クラスは :class:`threading.Thread` クラスの全てのメソッドと同じインタフェースを提供します。
+   Process objects represent activity that is run in a separate process. The
+   :class:`Process` class has equivalents of all the methods of
+   :class:`threading.Thread`.
 
-   コンストラクタは必ずキーワード引数で呼び出すべきです。
-   引数 *group* には必ず ``None`` を渡してください。
-   この引数は :class:`threading.Thread` クラスとの互換性のためだけに残されています。
-   引数 *target* には、呼び出し可能オブジェクト (Callable Object) を渡します。
-   このオブジェクトは :meth:`run()` メソッドから呼び出されます。
-   この引数はデフォルトで ``None`` となっており、何も呼び出されません。
-   引数 *name* にはプロセス名を渡します。
-   デフォルトでは、自動でユニークな名前が割り当てられます。
-   命名規則は、 'Process-N\ :sub:`1`:N\ :sub:`2`:...:N\ :sub:`k`' となります。
-   ここで N\ :sub:`1`,N\ :sub:`2`,...,N\ :sub:`k` は整数の数列で、
-   *作成した* プロセス数に対応します。
-   引数 *args* は target で指定された呼び出し可能オブジェクトへの引数を渡します。
-   同じく、引数 *kwargs* はキーワード引数を渡します。
-   デフォルトでは、 *target* には引数が渡されないようになっています。
+   The constructor should always be called with keyword arguments. *group*
+   should always be ``None``; it exists solely for compatibility with
+   :class:`threading.Thread`.  *target* is the callable object to be invoked by
+   the :meth:`run()` method.  It defaults to ``None``, meaning nothing is
+   called. *name* is the process name.  By default, a unique name is constructed
+   of the form 'Process-N\ :sub:`1`:N\ :sub:`2`:...:N\ :sub:`k`' where N\
+   :sub:`1`,N\ :sub:`2`,...,N\ :sub:`k` is a sequence of integers whose length
+   is determined by the *generation* of the process.  *args* is the argument
+   tuple for the target invocation.  *kwargs* is a dictionary of keyword
+   arguments for the target invocation.  By default, no arguments are passed to
+   *target*.
 
-   サブクラスがコンストラクタをオーバーライドする場合は、
-   そのプロセスに対する処理を行う前に基底クラスのコンストラクタ
-   (:meth:`Process.__init__`) を実行しなければなりません。
+   If a subclass overrides the constructor, it must make sure it invokes the
+   base class constructor (:meth:`Process.__init__`) before doing anything else
+   to the process.
 
    .. method:: run()
 
-      プロセスが実行する処理を表すメソッドです。
+      Method representing the process's activity.
 
-      このメソッドはサブクラスでオーバーライドすることができます。
-      標準の :meth:`run` メソッドは呼び出し可能オブジェクトを呼び出します。
-      この呼び出されるオブジェクトはコンストラクタの target 引数として渡されます。
-      もしコンストラクタに *args* もしくは *kwargs* 引数が渡されていれば、
-      呼び出すオブジェクトにこれらの引数を渡します。
+      You may override this method in a subclass.  The standard :meth:`run`
+      method invokes the callable object passed to the object's constructor as
+      the target argument, if any, with sequential and keyword arguments taken
+      from the *args* and *kwargs* arguments, respectively.
 
    .. method:: start()
 
-      プロセスの処理を開始するためのメソッドです。
+      Start the process's activity.
 
-      このメソッドをプロセスごとに呼び出す必要があります。
-      各プロセスの :meth:`run` メソッドを呼び出す準備が完了します。
+      This must be called at most once per process object.  It arranges for the
+      object's :meth:`run` method to be invoked in a separate process.
 
    .. method:: join([timeout])
 
-      :meth:`join` されたプロセスが terminate を呼び出すまで、もしくは
-      オプションで指定したタイムアウトが発生するまで呼び出し側のスレッドを
-      ブロックします。
+      Block the calling thread until the process whose :meth:`join` method is
+      called terminates or until the optional timeout occurs.
 
-      *timeout* が ``None`` ならタイムアウトは設定されません。
+      If *timeout* is ``None`` then there is no timeout.
 
-      1つのプロセスは何回も join することができます。
+      A process can be joined many times.
 
-      プロセスは自分自身を join することはできません。それはデッドロックを引き起こすからです。
-      プロセスが start される前に join しようとするとエラーが発生します。
+      A process cannot join itself because this would cause a deadlock.  It is
+      an error to attempt to join a process before it has been started.
 
    .. attribute:: name
 
-      プロセス名です。
+      The process's name.
 
-      この名前は文字列で、プロセスの識別にのみ使用されます。特別な命名規則はありません。
-      複数のプロセスが同じ名前を持つ場合もあります。
-      また、この名前はコンストラクタにより初期化されます。
+      The name is a string used for identification purposes only.  It has no
+      semantics.  Multiple processes may be given the same name.  The initial
+      name is set by the constructor.
 
    .. method:: is_alive
 
-      プロセスが実行中かを判別します。
+      Return whether the process is alive.
 
-      おおまかに言って、プロセスオブジェクトは :meth:`start` メソッドを呼び出してから子プロセス終了までの期間が実行中となります。
+      Roughly, a process object is alive from the moment the :meth:`start`
+      method returns until the child process terminates.
 
    .. attribute:: daemon
 
-      デーモンプロセスであるかのフラグであり、ブール値です。
-      この属性は :meth:`start` が呼び出される前に設定されている必要があります。
+      The process's daemon flag, a Boolean value.  This must be set before
+      :meth:`start` is called.
 
-      初期値は作成するプロセスから継承します。
+      The initial value is inherited from the creating process.
 
-      あるプロセスが終了するとき、そのプロセスは
-      その子プロセスであるデーモンプロセス全てを終了させようとします。
+      When a process exits, it attempts to terminate all of its daemonic child
+      processes.
 
-      デーモンプロセスは子プロセスを作成できないことに注意してください。
-      もし作成できてしまうと、そのデーモンプロセスの親プロセスが終了したときに
-      デーモンプロセスの子プロセスが孤児になってしまう場合があるからです。
-      さらに、非デーモンプロセスが終了すると
-      終了される (そして join されない) のは、
-      Unix デーモンやサービスでは **なく** 、通常のプロセスです。
+      Note that a daemonic process is not allowed to create child processes.
+      Otherwise a daemonic process would leave its children orphaned if it gets
+      terminated when its parent process exits. Additionally, these are **not**
+      Unix daemons or services, they are normal processes that will be
+      terminated (and not joined) if non-daemonic processes have exited.
 
-   :class:`Threading.Thread` クラスのAPIに加えて :class:`Process` クラスのオブジェクトには
-   以下の属性およびメソッドがあります。
+   In addition to the  :class:`threading.Thread` API, :class:`Process` objects
+   also support the following attributes and methods:
 
    .. attribute:: pid
 
-      プロセスIDを返します。プロセスの生成前は ``None`` が設定されています。
+      Return the process ID.  Before the process is spawned, this will be
+      ``None``.
 
    .. attribute:: exitcode
 
-      子プロセスの終了コードです。
-      子プロセスがまだ終了していない場合は ``None`` が返されます。
-      負の値 *-N* は子プロセスがシグナル *N* で終了したことを表します。
+      The child's exit code.  This will be ``None`` if the process has not yet
+      terminated.  A negative value *-N* indicates that the child was terminated
+      by signal *N*.
 
    .. attribute:: authkey
 
-      プロセスの認証キーです (バイト文字列です)。
+      The process's authentication key (a byte string).
 
-      :mod:`multiprocessing` モジュールがメインプロセスにより初期化される場合には、
-      :func:`os.random` 関数を使用してランダムな値が設定されます。
+      When :mod:`multiprocessing` is initialized the main process is assigned a
+      random string using :func:`os.urandom`.
 
-      :class:`Process` クラスのオブジェクトの作成時にその親プロセスから認証キーを継承します。
-      もしくは :attr:`authkey` に別のバイト文字列を設定することもできます。
+      When a :class:`Process` object is created, it will inherit the
+      authentication key of its parent process, although this may be changed by
+      setting :attr:`authkey` to another byte string.
 
-      詳細は :ref:`multiprocessing-auth-keys` を参照してください。
+      See :ref:`multiprocessing-auth-keys`.
 
    .. method:: terminate()
 
-      プロセスを終了します。Unix 環境では ``SIGTERM`` シグナルを、
-      Windows 環境では :c:func:`TerminateProcess` を使用して終了させます。
-      終了ハンドラや finally 節などは、実行されないことに注意してください。
+      Terminate the process.  On Unix this is done using the ``SIGTERM`` signal;
+      on Windows :c:func:`TerminateProcess` is used.  Note that exit handlers and
+      finally clauses, etc., will not be executed.
 
-      このメソッドにより終了するプロセスの子孫プロセスは、終了 *しません* 。
-      そういった子孫プロセスは単純に孤児になります。
+      Note that descendant processes of the process will *not* be terminated --
+      they will simply become orphaned.
 
       .. warning::
 
-         このメソッドの使用時に、関連付けられたプロセスがパイプやキューを使用している場合には、
-         使用中のパイプやキューが破損して他のプロセスから使用できなくなる可能性があります。
-         同様に、プロセスがロックやセマフォなどを取得している場合には、
-         このプロセスが終了してしまうと
-         他のプロセスのデッドロックの原因になるでしょう。
+         If this method is used when the associated process is using a pipe or
+         queue then the pipe or queue is liable to become corrupted and may
+         become unusable by other process.  Similarly, if the process has
+         acquired a lock or semaphore etc. then terminating it is liable to
+         cause other processes to deadlock.
 
-   プロセスオブジェクトが作成したプロセスのみが :meth:`start`, :meth:`join`,
-   :meth:`is_alive` と :attr:`exit_code` のメソッドを呼び出すべきです。
+   Note that the :meth:`start`, :meth:`join`, :meth:`is_alive`,
+   :meth:`terminate` and :attr:`exitcode` methods should only be called by
+   the process that created the process object.
 
-   以下の例では :class:`Process` のメソッドの使い方を示しています。
+   Example usage of some of the methods of :class:`Process`:
 
    .. doctest::
 
@@ -458,234 +464,280 @@
 
 .. exception:: BufferTooShort
 
-   この例外は :meth:`Connection.recv_bytes_into()` によって発生し、
-   バッファオブジェクトが小さすぎてメッセージが読み込めないことを示します。
+   Exception raised by :meth:`Connection.recv_bytes_into()` when the supplied
+   buffer object is too small for the message read.
 
-   ``e`` が :exc:`BufferTooShort` のインスタンスとすると、
-   ``e.args[0]`` はバイト文字列でそのメッセージを取得できます。
+   If ``e`` is an instance of :exc:`BufferTooShort` then ``e.args[0]`` will give
+   the message as a byte string.
 
 
-パイプ (Pipe) とキュー (Queue)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Pipes and Queues
+~~~~~~~~~~~~~~~~
 
-マルチプロセス環境では、
-一般的にメッセージパッシングをプロセス間通信のために使用し、
-ロックのような同期プリミティブの使用しないようにします。
+When using multiple processes, one generally uses message passing for
+communication between processes and avoids having to use any synchronization
+primitives like locks.
 
-メッセージのやりとりのために :func:`Pipe` (2つのプロセス間の通信用)、
-もしくはキュー (複数プロセスがメッセージを生成、消費する通信用) を使用することができます。
+For passing messages one can use :func:`Pipe` (for a connection between two
+processes) or a queue (which allows multiple producers and consumers).
 
-:class:`~multiprocessing.Queue`, :class:`multiprocessing.queues.SimpleQueue`,
-:class:`JoinableQueue` は複数プロセスから生成/消費を行う FIFO キューです。
-これらのキューは標準ライブラリの :class:`Queue.Queue` を模倣しています。
-:class:`~multiprocessing.Queue` には Python 2.5 の :class:`Queue.Queue` クラスで導入された
-:meth:`~Queue.Queue.task_done` と :meth:`~Queue.Queue.join` メソッドがないことが違う点です。
+The :class:`~multiprocessing.Queue`, :class:`multiprocessing.queues.SimpleQueue` and :class:`JoinableQueue` types are multi-producer,
+multi-consumer FIFO queues modelled on the :class:`Queue.Queue` class in the
+standard library.  They differ in that :class:`~multiprocessing.Queue` lacks the
+:meth:`~Queue.Queue.task_done` and :meth:`~Queue.Queue.join` methods introduced
+into Python 2.5's :class:`Queue.Queue` class.
 
-もし :class:`JoinableQueue` を使用するなら、キューから削除される各タスクのために
-:meth:`JoinableQueue.task_done` を呼び出さなければ **なりません** 。
-もしくは、ある例外を発生させてオーバーフローする可能性がある未終了タスクを
-数えるためにセマフォが使用されます。
+If you use :class:`JoinableQueue` then you **must** call
+:meth:`JoinableQueue.task_done` for each task removed from the queue or else the
+semaphore used to count the number of unfinished tasks may eventually overflow,
+raising an exception.
 
-管理オブジェクトを使用することで共有キューを作成できることも覚えておいてください。
-詳細は :ref:`multiprocessing-managers` を参照してください。
+Note that one can also create a shared queue by using a manager object -- see
+:ref:`multiprocessing-managers`.
 
 .. note::
 
-   :mod:`multiprocessing` は通常の :exc:`Queue.Empty` と、
-   タイムアウトのシグナルを送るために :exc:`Queue.Full` 例外を使用します。
-   それらは :mod:`Queue` からインポートする必要があるので :mod:`multiprocessing` の名前空間では利用できません。
+   :mod:`multiprocessing` uses the usual :exc:`Queue.Empty` and
+   :exc:`Queue.Full` exceptions to signal a timeout.  They are not available in
+   the :mod:`multiprocessing` namespace so you need to import them from
+   :mod:`Queue`.
+
+.. note::
+
+   When an object is put on a queue, the object is pickled and a
+   background thread later flushes the pickled data to an underlying
+   pipe.  This has some consequences which are a little surprising,
+   but should not cause any practical difficulties -- if they really
+   bother you then you can instead use a queue created with a
+   :ref:`manager <multiprocessing-managers>`.
+
+   (1) After putting an object on an empty queue there may be an
+       infinitesimal delay before the queue's :meth:`~Queue.empty`
+       method returns :const:`False` and :meth:`~Queue.get_nowait` can
+       return without raising :exc:`Queue.Empty`.
+
+   (2) If multiple processes are enqueuing objects, it is possible for
+       the objects to be received at the other end out-of-order.
+       However, objects enqueued by the same process will always be in
+       the expected order with respect to each other.
 
 .. warning::
 
-   :class:`~multiprocessing.Queue` を利用しようとしている最中にプロセスを
-   :meth:`Process.terminate` や :func:`os.kill` で終了させる場合、
-   キューにあるデータは破損し易くなります。
-   終了した後で他のプロセスがキューを利用しようとすると、例外を発生させる可能性があります。
+   If a process is killed using :meth:`Process.terminate` or :func:`os.kill`
+   while it is trying to use a :class:`~multiprocessing.Queue`, then the data in the queue is
+   likely to become corrupted.  This may cause any other process to get an
+   exception when it tries to use the queue later on.
 
 .. warning::
 
-   上述したように、もし子プロセスがキューへ要素を追加するなら
-   (そして :meth:`JoinableQueue.cancel_join_thread` を使用しない)
-   そのプロセスはバッファされた全ての要素がパイプへフラッシュされるまで終了しません。
+   As mentioned above, if a child process has put items on a queue (and it has
+   not used :meth:`JoinableQueue.cancel_join_thread
+   <multiprocessing.Queue.cancel_join_thread>`), then that process will
+   not terminate until all buffered items have been flushed to the pipe.
 
-   これは、そのプロセスを join しようとする場合、
-   キューに追加された全ての要素が消費されるのを確認しない限り、
-   デッドロックを発生させる可能性があることを意味します。
-   似たような現象で、子プロセスが非デーモンプロセスの場合、
-   親プロセスは終了時に非デーモンの全ての子プロセスを join しようとして
-   ハングアップする可能性があります。
+   This means that if you try joining that process you may get a deadlock unless
+   you are sure that all items which have been put on the queue have been
+   consumed.  Similarly, if the child process is non-daemonic then the parent
+   process may hang on exit when it tries to join all its non-daemonic children.
 
-   Manager を使用して作成されたキューではこの問題はありません。
-   詳細は :ref:`multiprocessing-programming` を参照してください。
+   Note that a queue created using a manager does not have this issue.  See
+   :ref:`multiprocessing-programming`.
 
-プロセス間通信におけるキューの使用方法は :ref:`multiprocessing-examples` を参照してください。
+For an example of the usage of queues for interprocess communication see
+:ref:`multiprocessing-examples`.
+
 
 .. function:: Pipe([duplex])
 
-   パイプの終端を表す :class:`Connection` オブジェクトのタプル ``(conn1, conn2)`` を返します。
+   Returns a pair ``(conn1, conn2)`` of :class:`Connection` objects representing
+   the ends of a pipe.
 
-   *duplex* が ``True`` (デフォルト) なら、双方向性パイプです。
-   *duplex* が ``False`` なら、パイプは一方向性です。
-   ``conn1`` はメッセージの受信専用に ``conn2`` はメッセージの送信専用として使用されます。
+   If *duplex* is ``True`` (the default) then the pipe is bidirectional.  If
+   *duplex* is ``False`` then the pipe is unidirectional: ``conn1`` can only be
+   used for receiving messages and ``conn2`` can only be used for sending
+   messages.
+
 
 .. class:: Queue([maxsize])
 
-   パイプや2～3個のロック/セマフォを使用して実装されたプロセス共有キューを返します。
-   あるプロセスが最初に要素をキューへ追加するとき、
-   バッファからパイプの中へオブジェクトを転送する供給スレッドが開始されます。
+   Returns a process shared queue implemented using a pipe and a few
+   locks/semaphores.  When a process first puts an item on the queue a feeder
+   thread is started which transfers objects from a buffer into the pipe.
 
-   標準ライブラリの :mod:`Queue` モジュールからの通常の :exc:`Queue.Empty` や
-   :exc:`Queue.Full` 例外はタイムアウトのシグナルを送るために発生します。
+   The usual :exc:`Queue.Empty` and :exc:`Queue.Full` exceptions from the
+   standard library's :mod:`Queue` module are raised to signal timeouts.
 
-   :class:`~multiprocessing.Queue` は :meth:`~Queue.Queue.task_done` や :meth:`~Queue.Queue.join` を除く
-   :class:`Queue.Queue` の全てのメソッドを実装します。
+   :class:`~multiprocessing.Queue` implements all the methods of :class:`Queue.Queue` except for
+   :meth:`~Queue.Queue.task_done` and :meth:`~Queue.Queue.join`.
 
    .. method:: qsize()
 
-      おおよそのキューのサイズを返します。
-      マルチスレッディング/マルチプロセスの特性上、この数値は信用できません。
+      Return the approximate size of the queue.  Because of
+      multithreading/multiprocessing semantics, this number is not reliable.
 
-      これは ``sem_getvalue()`` が実装されていない Mac OS X のような Unix プラットホーム上で
-      :exc:`NotImplementedError` を発生させる可能性があることを覚えておいてください。
+      Note that this may raise :exc:`NotImplementedError` on Unix platforms like
+      Mac OS X where ``sem_getvalue()`` is not implemented.
 
    .. method:: empty()
 
-      キューが空っぽなら ``True`` を、そうでなければ ``False`` を返します。
-      マルチスレッディング/マルチプロセスの特性上、これは信用できません。
+      Return ``True`` if the queue is empty, ``False`` otherwise.  Because of
+      multithreading/multiprocessing semantics, this is not reliable.
 
    .. method:: full()
 
-      キューがいっぱいなら ``True`` を、そうでなければ ``False`` を返します。
-      マルチスレッディング/マルチプロセスの特性上、これは信用できません。
+      Return ``True`` if the queue is full, ``False`` otherwise.  Because of
+      multithreading/multiprocessing semantics, this is not reliable.
 
-   .. method:: put(item[, block[, timeout]])
+   .. method:: put(obj[, block[, timeout]])
 
-      キューの中へ要素を追加します。オプションの引数 *block* が ``True`` (デフォルト) 且つ
-      *timeout* が ``None`` (デフォルト) なら、空きスロットが利用可能になるまで必要であればブロックします。
-      *timeout* が正の数なら、最大 *timeout* 秒ブロックして、
-      その時間内に空きスロットが利用できなかったら :exc:`Queue.Full` 例外を発生させます。
-      それ以外 ( *block* が ``False`` ) で、
-      空きスロットがすぐに利用可能な場合はキューに要素を追加します。
-      そうでなければ :exc:`Queue.Full` 例外が発生します(その場合 *timeout* は無視されます)。
+      Put obj into the queue.  If the optional argument *block* is ``True``
+      (the default) and *timeout* is ``None`` (the default), block if necessary until
+      a free slot is available.  If *timeout* is a positive number, it blocks at
+      most *timeout* seconds and raises the :exc:`Queue.Full` exception if no
+      free slot was available within that time.  Otherwise (*block* is
+      ``False``), put an item on the queue if a free slot is immediately
+      available, else raise the :exc:`Queue.Full` exception (*timeout* is
+      ignored in that case).
 
-   .. method:: put_nowait(item)
+   .. method:: put_nowait(obj)
 
-      ``put(item, False)`` と等価です。
+      Equivalent to ``put(obj, False)``.
 
    .. method:: get([block[, timeout]])
 
-      キューから要素を取り出して削除します。オプションの引数 *block* が ``True`` (デフォルト) 且つ
-      *timeout* が ``None`` (デフォルト) なら、要素が取り出せるまで必要であればブロックします。
-      *timeout* が正の数なら、最大 *timeout* 秒ブロックして、
-      その時間内に要素が取り出せなかったら :exc:`Queue.Empty` 例外を発生させます。
-      それ以外 ( *block* が ``False`` ) で、
-      要素がすぐに取り出せる場合は要素を返します。
-      そうでなければ :exc:`Queue.Empty` 例外が発生します(その場合 *timeout* は無視されます)。
+      Remove and return an item from the queue.  If optional args *block* is
+      ``True`` (the default) and *timeout* is ``None`` (the default), block if
+      necessary until an item is available.  If *timeout* is a positive number,
+      it blocks at most *timeout* seconds and raises the :exc:`Queue.Empty`
+      exception if no item was available within that time.  Otherwise (block is
+      ``False``), return an item if one is immediately available, else raise the
+      :exc:`Queue.Empty` exception (*timeout* is ignored in that case).
 
    .. method:: get_nowait()
-               get_no_wait()
 
-      ``get(False)`` と等価です。
+      Equivalent to ``get(False)``.
 
-   :class:`~multiprocessing.Queue` は :class:`Queue.Queue` にはない追加メソッドがあります。
-   これらのメソッドは通常、ほとんどのコードに必要ありません。
+   :class:`~multiprocessing.Queue` has a few additional methods not found in
+   :class:`Queue.Queue`.  These methods are usually unnecessary for most
+   code:
 
    .. method:: close()
 
-      カレントプロセスからこのキューへそれ以上データが追加されないことを表します。
-      バックグラウンドスレッドはパイプへバッファされた全てのデータをフラッシュするとすぐに終了します。
-      これはキューがガベージコレクトされるときに自動的に呼び出されます。
+      Indicate that no more data will be put on this queue by the current
+      process.  The background thread will quit once it has flushed all buffered
+      data to the pipe.  This is called automatically when the queue is garbage
+      collected.
 
    .. method:: join_thread()
 
-      バックグラウンドスレッドを join します。
-      このメソッドは :meth:`close` が呼び出された後でのみ使用されます。
-      バッファされた全てのデータがパイプへフラッシュされるのを保証した上で、
-      バックグラウンドスレッドが終了するまでブロックします。
+      Join the background thread.  This can only be used after :meth:`close` has
+      been called.  It blocks until the background thread exits, ensuring that
+      all data in the buffer has been flushed to the pipe.
 
-      デフォルトでは、あるプロセスがキューを作成していない場合、
-      終了時にキューのバックグラウンドスレッドを join しようとします。
-      そのプロセスは :meth:`join_thread` が何もしないように :meth:`cancel_join_thread` を呼び出すことができます。
+      By default if a process is not the creator of the queue then on exit it
+      will attempt to join the queue's background thread.  The process can call
+      :meth:`cancel_join_thread` to make :meth:`join_thread` do nothing.
 
    .. method:: cancel_join_thread()
 
-      :meth:`join_thread` がブロッキングするのを防ぎます。
-      特にこれはバックグラウンドスレッドがそのプロセスの終了時に
-      自動的に join されるのを防ぎます。
-      詳細は :meth:`join_thread` を参照してください。
+      Prevent :meth:`join_thread` from blocking.  In particular, this prevents
+      the background thread from being joined automatically when the process
+      exits -- see :meth:`join_thread`.
+
+      A better name for this method might be
+      ``allow_exit_without_flush()``.  It is likely to cause enqueued
+      data to lost, and you almost certainly will not need to use it.
+      It is really only there if you need the current process to exit
+      immediately without waiting to flush enqueued data to the
+      underlying pipe, and you don't care about lost data.
+
+   .. note::
+
+      This class's functionality requires a functioning shared semaphore
+      implementation on the host operating system. Without one, the
+      functionality in this class will be disabled, and attempts to
+      instantiate a :class:`Queue` will result in an :exc:`ImportError`. See
+      :issue:`3770` for additional information.  The same holds true for any
+      of the specialized queue types listed below.
+
 
 .. class:: multiprocessing.queues.SimpleQueue()
 
-   単純化された :class:`~multiprocessing.Queue` 型です。
-   ロックされた :class:`Pipe` に非常に似ています。
+   It is a simplified :class:`~multiprocessing.Queue` type, very close to a locked :class:`Pipe`.
 
    .. method:: empty()
 
-      もしキューが空ならば ``True`` を、そうでなければ ``False`` を返します。
+      Return ``True`` if the queue is empty, ``False`` otherwise.
 
    .. method:: get()
 
-      キューから要素を取り除いて返します。
+      Remove and return an item from the queue.
 
    .. method:: put(item)
 
-      *item* をキューに追加します。
+      Put *item* into the queue.
+
 
 .. class:: JoinableQueue([maxsize])
 
-   :class:`JoinableQueue` は :class:`~multiprocessing.Queue` のサブクラスであり、
-   :meth:`task_done` や :meth:`join` メソッドが追加されているキューです。
+   :class:`JoinableQueue`, a :class:`~multiprocessing.Queue` subclass, is a queue which
+   additionally has :meth:`task_done` and :meth:`join` methods.
 
    .. method:: task_done()
 
-      以前にキューへ追加されたタスクが完了したことを表します。キュー消費スレッドによって使用されます。
-      タスクをフェッチするために使用されるそれぞれの :meth:`~Queue.get` では、
-      次に :meth:`task_done` を呼び出してタスクの処理が完了したことをキューへ伝えます。
+      Indicate that a formerly enqueued task is complete. Used by queue consumer
+      threads.  For each :meth:`~Queue.get` used to fetch a task, a subsequent
+      call to :meth:`task_done` tells the queue that the processing on the task
+      is complete.
 
-      もし :meth:`~Queue.join` がブロッキング状態なら、
-      全ての要素が処理されたときに復帰します( :meth:`task_done` 呼び出しが
-      全ての要素からキュー内へ :meth:`~Queue.put` されたと受け取ったことを意味します)。
+      If a :meth:`~Queue.Queue.join` is currently blocking, it will resume when all
+      items have been processed (meaning that a :meth:`task_done` call was
+      received for every item that had been :meth:`~Queue.put` into the queue).
 
-      キューにある要素より多く呼び出された場合 :exc:`ValueError` が発生します。
+      Raises a :exc:`ValueError` if called more times than there were items
+      placed in the queue.
+
 
    .. method:: join()
 
-      キューにある全ての要素が取り出されて処理されるまでブロッキングします。
+      Block until all items in the queue have been gotten and processed.
 
-      キューに要素が追加されると未終了タスク数が増えます。
-      キューの要素が取り出されて全て処理が完了したことを表す
-      :meth:`task_done` を消費スレッドが呼び出すと数が減ります。
-      未終了タスク数がゼロになると :meth:`~Queue.join` はブロッキングを解除します。
+      The count of unfinished tasks goes up whenever an item is added to the
+      queue.  The count goes down whenever a consumer thread calls
+      :meth:`task_done` to indicate that the item was retrieved and all work on
+      it is complete.  When the count of unfinished tasks drops to zero,
+      :meth:`~Queue.Queue.join` unblocks.
 
-その他の関数(Miscellaneous)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Miscellaneous
+~~~~~~~~~~~~~
 
 .. function:: active_children()
 
-   カレントプロセスのアクティブな子プロセスの全てのリストを返します。
+   Return list of all live children of the current process.
 
-   これを呼び出すと "join" して既に終了しているプロセスには副作用があります。
+   Calling this has the side effect of "joining" any processes which have
+   already finished.
 
 .. function:: cpu_count()
 
-   システムの CPU 数を返します。
-   もしかしたら :exc:`NotImplementedError` が発生するかもしれません。
+   Return the number of CPUs in the system.  May raise
+   :exc:`NotImplementedError`.
 
 .. function:: current_process()
 
-   カレントプロセスに対応する :class:`Process` オブジェクトを返します。
+   Return the :class:`Process` object corresponding to the current process.
 
-   :func:`threading.current_thread` とよく似た関数です。
+   An analogue of :func:`threading.current_thread`.
 
 .. function:: freeze_support()
 
-   :mod:`multiprocessing` を使用するプログラムが固まったときに
-   ウィンドウを実行状態にすることをサポートします。
-   ( **py2exe** , **PyInstaller** や **cx_Freeze** でテストされています。)
+   Add support for when a program which uses :mod:`multiprocessing` has been
+   frozen to produce a Windows executable.  (Has been tested with **py2exe**,
+   **PyInstaller** and **cx_Freeze**.)
 
-   メインモジュールの ``if __name__ == '__main__'`` の後で
-   この関数を連続的に呼び出す必要があります。
-   以下に例を示します。 ::
+   One needs to call this function straight after the ``if __name__ ==
+   '__main__'`` line of the main module.  For example::
 
       from multiprocessing import Process, freeze_support
 
@@ -696,100 +748,115 @@
           freeze_support()
           Process(target=f).start()
 
-   もし ``freeze_support()`` の行がない場合、固まった実行状態で
-   実行しようとして :exc:`RuntimeError` を発生させます。
+   If the ``freeze_support()`` line is omitted then trying to run the frozen
+   executable will raise :exc:`RuntimeError`.
 
-   そのモジュールが Python インタプリタによって普通に実行されるなら
-   :func:`freeze_support` は何の影響もありません。
+   If the module is being run normally by the Python interpreter then
+   :func:`freeze_support` has no effect.
 
 .. function:: set_executable()
 
-   子プロセスを開始するときに使用する Python インタプリタのパスを設定します。
-   (デフォルトでは :data:`sys.executable` が使用されます)。
-   コードに組み込むときは、おそらく次のようにする必要があります。
-   ::
+   Sets the path of the Python interpreter to use when starting a child process.
+   (By default :data:`sys.executable` is used).  Embedders will probably need to
+   do some thing like ::
 
-      setExecutable(os.path.join(sys.exec_prefix, 'pythonw.exe'))
+      set_executable(os.path.join(sys.exec_prefix, 'pythonw.exe'))
 
-    子プロセスを生成する前に行います。 (Windows 専用)
+   before they can create child processes.  (Windows only)
+
 
 .. note::
 
-   :mod:`multiprocessing` には
+   :mod:`multiprocessing` contains no analogues of
    :func:`threading.active_count`, :func:`threading.enumerate`,
    :func:`threading.settrace`, :func:`threading.setprofile`,
-   :class:`threading.Timer` や :class:`threading.local` のような関数はありません。
+   :class:`threading.Timer`, or :class:`threading.local`.
 
-Connection オブジェクト
-~~~~~~~~~~~~~~~~~~~~~~~
 
-Connection オブジェクトは pickle でシリアライズ可能なオブジェクトか文字列を送ったり、受け取ったりします。
-そういったオブジェクトはメッセージ指向の接続ソケットと考えられます。
+Connection Objects
+~~~~~~~~~~~~~~~~~~
 
-Connection オブジェクトは通常は :func:`Pipe` を使用して作成されます。
-詳細は :ref:`multiprocessing-listeners-clients` も参照してください。
+Connection objects allow the sending and receiving of picklable objects or
+strings.  They can be thought of as message oriented connected sockets.
+
+Connection objects are usually created using :func:`Pipe` -- see also
+:ref:`multiprocessing-listeners-clients`.
 
 .. class:: Connection
 
    .. method:: send(obj)
 
-      コネクションの向こう側へ :meth:`recv` を使用して読み込むオブジェクトを送ります。
+      Send an object to the other end of the connection which should be read
+      using :meth:`recv`.
 
-      オブジェクトは pickle でシリアライズ可能でなければなりません。
-      pickle が極端に大きすぎる (OS にも依りますが、およそ 32 MB+) と、
-      ValueError 例外が送出されることがあります。
+      The object must be picklable.  Very large pickles (approximately 32 MB+,
+      though it depends on the OS) may raise a :exc:`ValueError` exception.
 
    .. method:: recv()
 
-      コネクションの向こう側から :meth:`send` を使用して送られたオブジェクトを返します。
-      何も受け取らずにコネクションの向こう側でクローズされた場合 :exc:`EOFError` が発生します。
+      Return an object sent from the other end of the connection using
+      :meth:`send`.  Blocks until there its something to receive.  Raises
+      :exc:`EOFError` if there is nothing left to receive
+      and the other end was closed.
 
    .. method:: fileno()
 
-      コネクションが使用するハンドラか、ファイルディスクリプタを返します。
+      Return the file descriptor or handle used by the connection.
 
    .. method:: close()
 
-      コネクションをクローズします。
+      Close the connection.
 
-      コネクションがガベージコレクトされるときに自動的に呼び出されます。
+      This is called automatically when the connection is garbage collected.
 
    .. method:: poll([timeout])
 
-      読み込み可能なデータがあるかどうかを返します。
+      Return whether there is any data available to be read.
 
-      *timeout* が指定されていなければすぐに返します。
-      *timeout* に数値を指定すると、最大指定した秒数をブロッキングします。
-      *timeout* に ``None`` を指定するとタイムアウトせずにずっとブロッキングします。
+      If *timeout* is not specified then it will return immediately.  If
+      *timeout* is a number then this specifies the maximum time in seconds to
+      block.  If *timeout* is ``None`` then an infinite timeout is used.
 
    .. method:: send_bytes(buffer[, offset[, size]])
 
-      バッファインタフェースをサポートするオブジェクトから完全なメッセージとしてバイトデータを送ります。
+      Send byte data from an object supporting the buffer interface as a
+      complete message.
 
-      *offset* が指定されると *buffer* のその位置からデータが読み込まれます。
-      *size* が指定されると大量データがバッファから読み込まれます。
+      If *offset* is given then data is read from that position in *buffer*.  If
+      *size* is given then that many bytes will be read from buffer.  Very large
+      buffers (approximately 32 MB+, though it depends on the OS) may raise a
+      :exc:`ValueError` exception
 
    .. method:: recv_bytes([maxlength])
 
-      文字列のようにコネクションの向こう側から送られたバイトデータの完全なメッセージを返します。
-      何も受け取らずにコネクションの向こう側でクローズされた場合 :exc:`EOFError` が発生します。
+      Return a complete message of byte data sent from the other end of the
+      connection as a string.  Blocks until there is something to receive.
+      Raises :exc:`EOFError` if there is nothing left
+      to receive and the other end has closed.
 
-      *maxlength* を指定して、且つ *maxlength* よりメッセージが長い場合、
-      :exc:`IOError` を発生させて、それ以上はコネクションから読み込めなくなります。
+      If *maxlength* is specified and the message is longer than *maxlength*
+      then :exc:`IOError` is raised and the connection will no longer be
+      readable.
 
    .. method:: recv_bytes_into(buffer[, offset])
 
-      コネクションの向こう側から送られたバイトデータを *buffer* に読み込み、メッセージのバイト数を返します。
-      何も受け取らずにコネクションの向こう側でクローズされた場合 :exc:`EOFError` が発生します。
+      Read into *buffer* a complete message of byte data sent from the other end
+      of the connection and return the number of bytes in the message.  Blocks
+      until there is something to receive.  Raises
+      :exc:`EOFError` if there is nothing left to receive and the other end was
+      closed.
 
-      *buffer* は書き込み可能なバッファインタフェースを備えたオブジェクトでなければなりません。
-      *offset* が与えられたら、その位置からバッファへメッセージが書き込まれます。
-      オフセットは *buffer* バイトよりも小さい正の数でなければなりません。
+      *buffer* must be an object satisfying the writable buffer interface.  If
+      *offset* is given then the message will be written into the buffer from
+      that position.  Offset must be a non-negative integer less than the
+      length of *buffer* (in bytes).
 
-      バッファがあまりに小さいと :exc:`BufferTooShort` 例外が発生します。
-      ``e`` が例外インスタンスとすると完全なメッセージは ``e.args[0]`` で確認できます。
+      If the buffer is too short then a :exc:`BufferTooShort` exception is
+      raised and the complete message is available as ``e.args[0]`` where ``e``
+      is the exception instance.
 
-例:
+
+For example:
 
 .. doctest::
 
@@ -813,249 +880,390 @@ Connection オブジェクトは通常は :func:`Pipe` を使用して作成さ�
 
 .. warning::
 
-    :meth:`Connection.recv` メソッドは受信したデータを自動的に unpickle 化します。
-    それはメッセージを送ったプロセスが信頼できる場合を除いてセキュリティリスクになります。
+    The :meth:`Connection.recv` method automatically unpickles the data it
+    receives, which can be a security risk unless you can trust the process
+    which sent the message.
 
-    そのため :func:`Pipe` を使用してコネクションオブジェクトを生成する場合を除いて、
-    何らかの認証処理を実行した後で :meth:`~Connection.recv` や
-    :meth:`~Connection.send` メソッドのみを使用すべきです。
-    詳細は :ref:`multiprocessing-auth-keys` を参照してください。
+    Therefore, unless the connection object was produced using :func:`Pipe` you
+    should only use the :meth:`~Connection.recv` and :meth:`~Connection.send`
+    methods after performing some sort of authentication.  See
+    :ref:`multiprocessing-auth-keys`.
 
 .. warning::
 
-    もしプロセスがパイプの読み込み又は書き込み中に kill されると、
-    メッセージの境界が正しいかどうか分からないので、
-    そのパイプのデータは破壊されたようになります。
+    If a process is killed while it is trying to read or write to a pipe then
+    the data in the pipe is likely to become corrupted, because it may become
+    impossible to be sure where the message boundaries lie.
 
 
-同期プリミティブ
-~~~~~~~~~~~~~~~~
+Synchronization primitives
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Generally synchronization primitives are not as necessary in a multiprocess
+program as they are in a multithreaded program.  See the documentation for
+:mod:`threading` module.
 
-一般的に同期プリミティブはマルチスレッドプログラムのようにマルチプロセスプログラムでは必要ありません。
-詳細は :mod:`threading` モジュールのドキュメントを参照してください。
-
-マネージャオブジェクトを使用して同期プリミティブを作成できることも覚えておいてください。
-詳細は :ref:`multiprocessing-managers` を参照してください。
+Note that one can also create synchronization primitives by using a manager
+object -- see :ref:`multiprocessing-managers`.
 
 .. class:: BoundedSemaphore([value])
 
-   束縛されたセマフォオブジェクト: :class:`threading.BoundedSemaphore` のクローンです。
+   A bounded semaphore object: a close analog of
+   :class:`threading.BoundedSemaphore`.
 
-   (Mac OS X では ``sem_getvalue()`` が実装されていないので :class:`Semaphore` と区別がつきません。)
+   A solitary difference from its close analog exists: its ``acquire`` method's
+   first argument is named *block* and it supports an optional second argument
+   *timeout*, as is consistent with :meth:`Lock.acquire`.
+
+   .. note::
+      On Mac OS X, this is indistinguishable from :class:`Semaphore` because
+      ``sem_getvalue()`` is not implemented on that platform.
 
 .. class:: Condition([lock])
 
-   状態変数: :class:`threading.Condition` のクローンです。
+   A condition variable: a clone of :class:`threading.Condition`.
 
-   *lock* を指定するなら :mod:`multiprocessing` の :class:`Lock` か :class:`RLock` オブジェクトにすべきです。
+   If *lock* is specified then it should be a :class:`Lock` or :class:`RLock`
+   object from :mod:`multiprocessing`.
 
 .. class:: Event()
 
-   :class:`threading.Event` のクローンです。
-   このメソッドは、終了時の内部セマフォの状態を返すので、タイムアウトが
-   与えられ、実際にオペレーションがタイムアウトしたのでなければ、
-   必ず ``True`` を返します。
+   A clone of :class:`threading.Event`.
+   This method returns the state of the internal semaphore on exit, so it
+   will always return ``True`` except if a timeout is given and the operation
+   times out.
 
    .. versionchanged:: 2.7
-      以前は、このメソッドは必ず ``None`` を返していました。
+      Previously, the method always returned ``None``.
+
 
 .. class:: Lock()
 
-   非再帰的なロックオブジェクト: :class:`threading.Lock` のクローンです。
+   A non-recursive lock object: a close analog of :class:`threading.Lock`.
+   Once a process or thread has acquired a lock, subsequent attempts to
+   acquire it from any process or thread will block until it is released;
+   any process or thread may release it.  The concepts and behaviors of
+   :class:`threading.Lock` as it applies to threads are replicated here in
+   :class:`multiprocessing.Lock` as it applies to either processes or threads,
+   except as noted.
+
+   Note that :class:`Lock` is actually a factory function which returns an
+   instance of ``multiprocessing.synchronize.Lock`` initialized with a
+   default context.
+
+   :class:`Lock` supports the :term:`context manager` protocol and thus may be
+   used in :keyword:`with` statements.
+
+   .. method:: acquire(block=True, timeout=None)
+
+      Acquire a lock, blocking or non-blocking.
+
+      With the *block* argument set to ``True`` (the default), the method call
+      will block until the lock is in an unlocked state, then set it to locked
+      and return ``True``.  Note that the name of this first argument differs
+      from that in :meth:`threading.Lock.acquire`.
+
+      With the *block* argument set to ``False``, the method call does not
+      block.  If the lock is currently in a locked state, return ``False``;
+      otherwise set the lock to a locked state and return ``True``.
+
+      When invoked with a positive, floating-point value for *timeout*, block
+      for at most the number of seconds specified by *timeout* as long as
+      the lock can not be acquired.  Invocations with a negative value for
+      *timeout* are equivalent to a *timeout* of zero.  Invocations with a
+      *timeout* value of ``None`` (the default) set the timeout period to
+      infinite.  The *timeout* argument has no practical implications if the
+      *block* argument is set to ``False`` and is thus ignored.  Returns
+      ``True`` if the lock has been acquired or ``False`` if the timeout period
+      has elapsed.  Note that the *timeout* argument does not exist in this
+      method's analog, :meth:`threading.Lock.acquire`.
+
+   .. method:: release()
+
+      Release a lock.  This can be called from any process or thread, not only
+      the process or thread which originally acquired the lock.
+
+      Behavior is the same as in :meth:`threading.Lock.release` except that
+      when invoked on an unlocked lock, a :exc:`ValueError` is raised.
+
 
 .. class:: RLock()
 
-   再帰的なロックオブジェクト: :class:`threading.RLock` のクローンです。
+   A recursive lock object: a close analog of :class:`threading.RLock`.  A
+   recursive lock must be released by the process or thread that acquired it.
+   Once a process or thread has acquired a recursive lock, the same process
+   or thread may acquire it again without blocking; that process or thread
+   must release it once for each time it has been acquired.
+
+   Note that :class:`RLock` is actually a factory function which returns an
+   instance of ``multiprocessing.synchronize.RLock`` initialized with a
+   default context.
+
+   :class:`RLock` supports the :term:`context manager` protocol and thus may be
+   used in :keyword:`with` statements.
+
+
+   .. method:: acquire(block=True, timeout=None)
+
+      Acquire a lock, blocking or non-blocking.
+
+      When invoked with the *block* argument set to ``True``, block until the
+      lock is in an unlocked state (not owned by any process or thread) unless
+      the lock is already owned by the current process or thread.  The current
+      process or thread then takes ownership of the lock (if it does not
+      already have ownership) and the recursion level inside the lock increments
+      by one, resulting in a return value of ``True``.  Note that there are
+      several differences in this first argument's behavior compared to the
+      implementation of :meth:`threading.RLock.acquire`, starting with the name
+      of the argument itself.
+
+      When invoked with the *block* argument set to ``False``, do not block.
+      If the lock has already been acquired (and thus is owned) by another
+      process or thread, the current process or thread does not take ownership
+      and the recursion level within the lock is not changed, resulting in
+      a return value of ``False``.  If the lock is in an unlocked state, the
+      current process or thread takes ownership and the recursion level is
+      incremented, resulting in a return value of ``True``.
+
+      Use and behaviors of the *timeout* argument are the same as in
+      :meth:`Lock.acquire`.  Note that the *timeout* argument does
+      not exist in this method's analog, :meth:`threading.RLock.acquire`.
+
+
+   .. method:: release()
+
+      Release a lock, decrementing the recursion level.  If after the
+      decrement the recursion level is zero, reset the lock to unlocked (not
+      owned by any process or thread) and if any other processes or threads
+      are blocked waiting for the lock to become unlocked, allow exactly one
+      of them to proceed.  If after the decrement the recursion level is still
+      nonzero, the lock remains locked and owned by the calling process or
+      thread.
+
+      Only call this method when the calling process or thread owns the lock.
+      An :exc:`AssertionError` is raised if this method is called by a process
+      or thread other than the owner or if the lock is in an unlocked (unowned)
+      state.  Note that the type of exception raised in this situation
+      differs from the implemented behavior in :meth:`threading.RLock.release`.
+
 
 .. class:: Semaphore([value])
 
-   セマフォオブジェクト: :class:`threading.Semaphore` のクローンです。
+   A semaphore object: a close analog of :class:`threading.Semaphore`.
+
+   A solitary difference from its close analog exists: its ``acquire`` method's
+   first argument is named *block* and it supports an optional second argument
+   *timeout*, as is consistent with :meth:`Lock.acquire`.
 
 .. note::
 
-   :class:`BoundedSemaphore`, :class:`Lock`, :class:`RLock` と :class:`Semaphore`
-   の :meth:`acquire` メソッドは :mod:`threading` ではサポートされていない
-   タイムアウトパラメータを取ります。その引数はキーワード引数で受け取れる
-   ``acquire(block=True, timeout=None)`` です。
-   *block* が ``True`` 且つ *timeout* が ``None`` ではないなら、
-   タイムアウトが秒単位で設定されます。
-   *block* が ``False`` なら *timeout* は無視されます。
+   The :meth:`acquire` method of :class:`BoundedSemaphore`, :class:`Lock`,
+   :class:`RLock` and :class:`Semaphore` has a timeout parameter not supported
+   by the equivalents in :mod:`threading`.  The signature is
+   ``acquire(block=True, timeout=None)`` with keyword parameters being
+   acceptable.  If *block* is ``True`` and *timeout* is not ``None`` then it
+   specifies a timeout in seconds.  If *block* is ``False`` then *timeout* is
+   ignored.
 
-   Mac OS X では ``sem_timedwait`` がサポートされていないので、
-   ``acquire()`` タイムアウトを与えて呼ぶと、
-   擬似的なスリーピングループ関数を実行することになります。
+   On Mac OS X, ``sem_timedwait`` is unsupported, so calling ``acquire()`` with
+   a timeout will emulate that function's behavior using a sleeping loop.
 
 .. note::
 
-   メインスレッドが :meth:`BoundedSemaphore.acquire`, :meth:`Lock.acquire`,
+   If the SIGINT signal generated by :kbd:`Ctrl-C` arrives while the main thread is
+   blocked by a call to :meth:`BoundedSemaphore.acquire`, :meth:`Lock.acquire`,
    :meth:`RLock.acquire`, :meth:`Semaphore.acquire`, :meth:`Condition.acquire`
-   又は :meth:`Condition.wait` を呼び出してブロッキング状態のときに Ctrl-C で
-   生成される SIGINT シグナルを受け取ると、その呼び出しはすぐに中断されて
-   :exc:`KeyboardInterrupt` が発生します。
+   or :meth:`Condition.wait` then the call will be immediately interrupted and
+   :exc:`KeyboardInterrupt` will be raised.
 
-   これは同等のブロッキング呼び出しが実行中のときに SIGINT が無視される
-   :mod:`threading` の振る舞いとは違っています。
+   This differs from the behaviour of :mod:`threading` where SIGINT will be
+   ignored while the equivalent blocking calls are in progress.
 
-..
-    Shared :mod:`ctypes` Objects
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. note::
 
-共有 :mod:`ctypes` オブジェクト
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   Some of this package's functionality requires a functioning shared semaphore
+   implementation on the host operating system. Without one, the
+   :mod:`multiprocessing.synchronize` module will be disabled, and attempts to
+   import it will result in an :exc:`ImportError`. See
+   :issue:`3770` for additional information.
 
-子プロセスにより継承される共有メモリを使用する共有オブジェクトを作成することができます。
+
+Shared :mod:`ctypes` Objects
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is possible to create shared objects using shared memory which can be
+inherited by child processes.
 
 .. function:: Value(typecode_or_type, *args[, lock])
 
-   共有メモリから割り当てられた :mod:`ctypes` オブジェクトを返します。
-   デフォルトでは、返り値は実際のオブジェクトの同期ラッパーです。
+   Return a :mod:`ctypes` object allocated from shared memory.  By default the
+   return value is actually a synchronized wrapper for the object.
 
-   *typecode_or_type* は返されるオブジェクトの型を決めます。
-   それは ctypes の型か :mod:`array` モジュールで使用されるような1文字の型コードかのどちらか一方です。
-   *\*args* は型のコンストラクタへ渡されます。
+   *typecode_or_type* determines the type of the returned object: it is either a
+   ctypes type or a one character typecode of the kind used by the :mod:`array`
+   module.  *\*args* is passed on to the constructor for the type.
 
-   *lock* が ``True`` (デフォルト) なら、値へ同期アクセスするために新たな
-   ロックオブジェクトが作成されます。 *lock* が :class:`Lock` か :class:`RLock`
-   なら値への同期アクセスに使用されます。 *lock* が ``False`` なら、返された
-   オブジェクトへのアクセスはロックにより自動的に保護されません。
-   そのため、必ずしも "プロセスセーフ" ではありません。
+   If *lock* is ``True`` (the default) then a new recursive lock
+   object is created to synchronize access to the value.  If *lock* is
+   a :class:`Lock` or :class:`RLock` object then that will be used to
+   synchronize access to the value.  If *lock* is ``False`` then
+   access to the returned object will not be automatically protected
+   by a lock, so it will not necessarily be "process-safe".
 
-   *lock* はキーワード引数でのみ指定することに注意してください。
+   Operations like ``+=`` which involve a read and write are not
+   atomic.  So if, for instance, you want to atomically increment a
+   shared value it is insufficient to just do ::
+
+       counter.value += 1
+
+   Assuming the associated lock is recursive (which it is by default)
+   you can instead do ::
+
+       with counter.get_lock():
+           counter.value += 1
+
+   Note that *lock* is a keyword-only argument.
 
 .. function:: Array(typecode_or_type, size_or_initializer, *, lock=True)
 
-   共有メモリから割り当てられた ctypes 配列を返します。
-   デフォルトでは、返り値は実際の配列の同期ラッパーです。
+   Return a ctypes array allocated from shared memory.  By default the return
+   value is actually a synchronized wrapper for the array.
 
-   *typecode_or_type* は返される配列の要素の型を決めます。
-   それは ctypes の型か :mod:`array` モジュールで使用されるような1文字の型コードかのどちらか一方です。
-   *size_or_initializer* が整数なら、配列の長さを決定し、その配列はゼロで初期化されます。
-   別の使用方法として *size_or_initializer* は配列の初期化に使用されるシーケンスになり、
-   そのシーケンス長が配列の長さを決定します。
+   *typecode_or_type* determines the type of the elements of the returned array:
+   it is either a ctypes type or a one character typecode of the kind used by
+   the :mod:`array` module.  If *size_or_initializer* is an integer, then it
+   determines the length of the array, and the array will be initially zeroed.
+   Otherwise, *size_or_initializer* is a sequence which is used to initialize
+   the array and whose length determines the length of the array.
 
-   *lock* が ``True`` (デフォルト) なら、値へ同期アクセスするために新たな
-   ロックオブジェクトが作成されます。 *lock* が :class:`Lock` か :class:`RLock`
-   なら値への同期アクセスに使用されます。 *lock* が ``False`` なら、返された
-   オブジェクトへのアクセスはロックにより自動的に保護されません。
-   そのため、必ずしも "プロセスセーフ" ではありません。
+   If *lock* is ``True`` (the default) then a new lock object is created to
+   synchronize access to the value.  If *lock* is a :class:`Lock` or
+   :class:`RLock` object then that will be used to synchronize access to the
+   value.  If *lock* is ``False`` then access to the returned object will not be
+   automatically protected by a lock, so it will not necessarily be
+   "process-safe".
 
-   *lock* はキーワード引数でのみ指定することに注意してください。
+   Note that *lock* is a keyword only argument.
 
-   :data:`ctypes.c_char` の配列は文字列を格納して取り出せる
-   *value* と *raw* 属性を持っていることを覚えておいてください。
+   Note that an array of :data:`ctypes.c_char` has *value* and *raw*
+   attributes which allow one to use it to store and retrieve strings.
 
-..
-    The :mod:`multiprocessing.sharedctypes` module
-    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-:mod:`multiprocessing.sharedctypes` モジュール
+The :mod:`multiprocessing.sharedctypes` module
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-..
+.. module:: multiprocessing.sharedctypes
    :synopsis: Allocate ctypes objects from shared memory.
 
-.. module:: multiprocessing.sharedctypes
-   :synopsis: 共有メモリから ctypes オブジェクトを割り当てる
-
-:mod:`multiprocessing.sharedctypes` モジュールは子プロセスに継承される共有メモリの
-:mod:`ctypes` オブジェクトを割り当てる関数を提供します。
+The :mod:`multiprocessing.sharedctypes` module provides functions for allocating
+:mod:`ctypes` objects from shared memory which can be inherited by child
+processes.
 
 .. note::
 
-   共有メモリのポインタを格納することは可能ではありますが、特定プロセスの
-   アドレス空間の位置を参照するということを覚えておいてください。
-   しかし、そのポインタは別のプロセスのコンテキストにおいて無効になる確率が高いです。
-   そして、別のプロセスからそのポインタを逆参照しようとするとクラッシュを引き起こす可能性があります。
+   Although it is possible to store a pointer in shared memory remember that
+   this will refer to a location in the address space of a specific process.
+   However, the pointer is quite likely to be invalid in the context of a second
+   process and trying to dereference the pointer from the second process may
+   cause a crash.
 
 .. function:: RawArray(typecode_or_type, size_or_initializer)
 
-   共有メモリから割り当てられた ctypes 配列を返します。
+   Return a ctypes array allocated from shared memory.
 
-   *typecode_or_type* は返される配列の要素の型を決めます。
-   それは ctypes の型か :mod:`array` モジュールで使用されるような1文字の型コードかのどちらか一方です。
-   *size_or_initializer* が整数なら、配列の長さを決定し、その配列はゼロで初期化されます。
-   別の使用方法として *size_or_initializer* は配列の初期化に使用されるシーケンスになり、
-   そのシーケンス長が配列の長さを決定します。
+   *typecode_or_type* determines the type of the elements of the returned array:
+   it is either a ctypes type or a one character typecode of the kind used by
+   the :mod:`array` module.  If *size_or_initializer* is an integer then it
+   determines the length of the array, and the array will be initially zeroed.
+   Otherwise *size_or_initializer* is a sequence which is used to initialize the
+   array and whose length determines the length of the array.
 
-   要素を取得したり設定したりすることは潜在的に非アトミックであることに注意してください。
-   ロックを使用して自動的に同期されたアクセスを保証するには :func:`Array` を使用してください。
+   Note that setting and getting an element is potentially non-atomic -- use
+   :func:`Array` instead to make sure that access is automatically synchronized
+   using a lock.
 
 .. function:: RawValue(typecode_or_type, *args)
 
-   共有メモリから割り当てられた ctypes オブジェクトを返します。
+   Return a ctypes object allocated from shared memory.
 
-   *typecode_or_type* は返される型を決めます。
-   それは ctypes の型か :mod:`array` モジュールで使用されるような1文字の型コードかのどちらか一方です。
-   *\*args* は型のコンストラクタへ渡されます。
+   *typecode_or_type* determines the type of the returned object: it is either a
+   ctypes type or a one character typecode of the kind used by the :mod:`array`
+   module.  *\*args* is passed on to the constructor for the type.
 
-   値を取得したり設定したりすることは潜在的に非アトミックであることに注意してください。
-   ロックを使用して自動的に同期されたアクセスを保証するには :func:`Value` を使用してください。
+   Note that setting and getting the value is potentially non-atomic -- use
+   :func:`Value` instead to make sure that access is automatically synchronized
+   using a lock.
 
-   :data:`ctypes.c_char` の配列は文字列を格納して取り出せる
-   *value* と *raw* 属性を持っていることを覚えておいてください。
-   詳細は :mod:`ctypes` を参照してください。
+   Note that an array of :data:`ctypes.c_char` has ``value`` and ``raw``
+   attributes which allow one to use it to store and retrieve strings -- see
+   documentation for :mod:`ctypes`.
 
 .. function:: Array(typecode_or_type, size_or_initializer, *args[, lock])
 
-   *lock* の値に依存する点を除けば :func:`RawArray` と同様です。
-   プロセスセーフな同期ラッパーが raw ctypes 配列の代わりに返されるでしょう。
+   The same as :func:`RawArray` except that depending on the value of *lock* a
+   process-safe synchronization wrapper may be returned instead of a raw ctypes
+   array.
 
-   *lock* が ``True`` (デフォルト) なら、値へ同期アクセスするために新たな
-   ロックオブジェクトが作成されます。 *lock* が :class:`Lock` か :class:`RLock`
-   なら値への同期アクセスに使用されます。 *lock* が ``False`` なら、返された
-   オブジェクトへのアクセスはロックにより自動的に保護されません。
-   そのため、必ずしも "プロセスセーフ" ではありません。
+   If *lock* is ``True`` (the default) then a new lock object is created to
+   synchronize access to the value.  If *lock* is a
+   :class:`~multiprocessing.Lock` or :class:`~multiprocessing.RLock` object
+   then that will be used to synchronize access to the
+   value.  If *lock* is ``False`` then access to the returned object will not be
+   automatically protected by a lock, so it will not necessarily be
+   "process-safe".
 
-   *lock* はキーワード引数でのみ指定することに注意してください。
+   Note that *lock* is a keyword-only argument.
 
 .. function:: Value(typecode_or_type, *args[, lock])
 
-   *lock* の値に依存する点を除けば :func:`RawValue` と同様です。
-   プロセスセーフな同期ラッパーが ctypes オブジェクトの代わりに返されるでしょう。
+   The same as :func:`RawValue` except that depending on the value of *lock* a
+   process-safe synchronization wrapper may be returned instead of a raw ctypes
+   object.
 
-   *lock* が ``True`` (デフォルト) なら、値へ同期アクセスするために新たな
-   ロックオブジェクトが作成されます。 *lock* が :class:`Lock` か :class:`RLock`
-   なら値への同期アクセスに使用されます。 *lock* が ``False`` なら、返された
-   オブジェクトへのアクセスはロックにより自動的に保護されません。
-   そのため、必ずしも "プロセスセーフ" ではありません。
+   If *lock* is ``True`` (the default) then a new lock object is created to
+   synchronize access to the value.  If *lock* is a :class:`~multiprocessing.Lock` or
+   :class:`~multiprocessing.RLock` object then that will be used to synchronize access to the
+   value.  If *lock* is ``False`` then access to the returned object will not be
+   automatically protected by a lock, so it will not necessarily be
+   "process-safe".
 
-   *lock* はキーワード引数でのみ指定することに注意してください。
+   Note that *lock* is a keyword-only argument.
 
 .. function:: copy(obj)
 
-   共有メモリから割り当てられた ctypes オブジェクト *obj* をコピーしたオブジェクトを返します。
+   Return a ctypes object allocated from shared memory which is a copy of the
+   ctypes object *obj*.
 
 .. function:: synchronized(obj[, lock])
 
-   同期アクセスに *lock* を使用する ctypes オブジェクトのためにプロセスセーフな
-   ラッパーオブジェクトを返します。 *lock* が ``None`` (デフォルト) なら、
-   :class:`multiprocessing.RLock` オブジェクトが自動的に作成されます。
+   Return a process-safe wrapper object for a ctypes object which uses *lock* to
+   synchronize access.  If *lock* is ``None`` (the default) then a
+   :class:`multiprocessing.RLock` object is created automatically.
 
-   同期ラッパーがラップするオブジェクトに加えて2つのメソッドがあります。
-   :meth:`get_obj` はラップされたオブジェクトを返します。
-   :meth:`get_lock` は同期のために使用されるロックオブジェクトを返します。
+   A synchronized wrapper will have two methods in addition to those of the
+   object it wraps: :meth:`get_obj` returns the wrapped object and
+   :meth:`get_lock` returns the lock object used for synchronization.
 
-   ラッパー経由で ctypes オブジェクトにアクセスすることは
-   raw ctypes オブジェクトへアクセスするよりずっと遅くなることに注意してください。
+   Note that accessing the ctypes object through the wrapper can be a lot slower
+   than accessing the raw ctypes object.
 
-次の表は通常の ctypes 構文で共有メモリから共有 ctypes オブジェクトを作成するための
-構文を比較します。
-( ``MyStruct`` テーブル内には :class:`ctypes.Structure` のサブクラスがあります。)
 
-==================== ============================ ================================
-ctypes               type を使用する sharedctypes typecode を使用する sharedctypes
-==================== ============================ ================================
-c_double(2.4)        RawValue(c_double, 2.4)      RawValue('d', 2.4)
+The table below compares the syntax for creating shared ctypes objects from
+shared memory with the normal ctypes syntax.  (In the table ``MyStruct`` is some
+subclass of :class:`ctypes.Structure`.)
+
+==================== ========================== ===========================
+ctypes               sharedctypes using type    sharedctypes using typecode
+==================== ========================== ===========================
+c_double(2.4)        RawValue(c_double, 2.4)    RawValue('d', 2.4)
 MyStruct(4, 6)       RawValue(MyStruct, 4, 6)
-(c_short * 7)()      RawArray(c_short, 7)         RawArray('h', 7)
-(c_int * 3)(9, 2, 8) RawArray(c_int, (9, 2, 8))   RawArray('i', (9, 2, 8))
-==================== ============================ ================================
+(c_short * 7)()      RawArray(c_short, 7)       RawArray('h', 7)
+(c_int * 3)(9, 2, 8) RawArray(c_int, (9, 2, 8)) RawArray('i', (9, 2, 8))
+==================== ========================== ===========================
 
 
-以下に子プロセスが多くの ctypes オブジェクトを変更する例を紹介します。
-
-::
+Below is an example where a number of ctypes objects are modified by a child
+process::
 
    from multiprocessing import Process, Lock
    from multiprocessing.sharedctypes import Value, Array
@@ -1092,9 +1300,7 @@ MyStruct(4, 6)       RawValue(MyStruct, 4, 6)
 
 .. highlightlang:: none
 
-結果は以下のように表示されます。
-
-::
+The results printed are ::
 
     49
     0.1111111111111111
@@ -1109,181 +1315,188 @@ MyStruct(4, 6)       RawValue(MyStruct, 4, 6)
 Managers
 ~~~~~~~~
 
-Manager は別のプロセス間で共有されるデータの作成方法を提供します。
-マネージャオブジェクトは *共有オブジェクト* を管理するサーバプロセスを制御します。
-他のプロセスはプロキシ経由で共有オブジェクトへアクセスすることができます。
+Managers provide a way to create data which can be shared between different
+processes. A manager object controls a server process which manages *shared
+objects*.  Other processes can access the shared objects by using proxies.
 
 .. function:: multiprocessing.Manager()
 
-   プロセス間で共有オブジェクトのために使用される
-   :class:`~multiprocessing.managers.SyncManager` オブジェクトを返します。
-   返されたマネージャオブジェクトは生成される子プロセスに対応して、
-   共有オブジェクトを作成するメソッドを持ち、応答プロキシを返します。
+   Returns a started :class:`~multiprocessing.managers.SyncManager` object which
+   can be used for sharing objects between processes.  The returned manager
+   object corresponds to a spawned child process and has methods which will
+   create shared objects and return corresponding proxies.
 
 .. module:: multiprocessing.managers
    :synopsis: Share data between process with shared objects.
 
-マネージャプロセスは親プロセスが終了するか、ガベージコレクトされると停止します。
-マネージャクラスは :mod:`multiprocessing.managers` モジュールで定義されています。
+Manager processes will be shutdown as soon as they are garbage collected or
+their parent process exits.  The manager classes are defined in the
+:mod:`multiprocessing.managers` module:
 
 .. class:: BaseManager([address[, authkey]])
 
-   BaseManager オブジェクトを作成します。
+   Create a BaseManager object.
 
-   作成後、マネージャオブジェクトが開始されたマネージャプロセスの参照を保証するために
-   :meth:`start` か ``get_server().serve_forever()`` を呼び出します。
+   Once created one should call :meth:`start` or ``get_server().serve_forever()`` to ensure
+   that the manager object refers to a started manager process.
 
-   *address* はマネージャプロセスが新たなコネクションを待ち受けるアドレスです。
-   *address* が ``None`` の場合、任意のアドレスが設定されます。
+   *address* is the address on which the manager process listens for new
+   connections.  If *address* is ``None`` then an arbitrary one is chosen.
 
-   *authkey* はサーバプロセスへ接続しようとするコネクションの正当性を検証するために
-   使用される認証キーです。
-   *authkey* が ``None`` の場合 ``current_process().authkey`` が使用されます。
-   *authkey* を使用する場合は文字列でなければなりません。
+   *authkey* is the authentication key which will be used to check the validity
+   of incoming connections to the server process.  If *authkey* is ``None`` then
+   ``current_process().authkey``.  Otherwise *authkey* is used and it
+   must be a string.
 
    .. method:: start([initializer[, initargs]])
 
-      マネージャを開始するためにサブプロセスを開始します。
-      *initializer* が ``None`` でなければ、サブプロセスは開始時に
-      ``initializer(*initargs)`` を呼び出します。
+      Start a subprocess to start the manager.  If *initializer* is not ``None``
+      then the subprocess will call ``initializer(*initargs)`` when it starts.
 
    .. method:: get_server()
 
-      マネージャの制御下にある実際のサーバに相当する :class:`Server` オブジェクトを返します。
-      :class:`Server` オブジェクトは :meth:`serve_forever` メソッドをサポートします。
-      
-      ::
+      Returns a :class:`Server` object which represents the actual server under
+      the control of the Manager. The :class:`Server` object supports the
+      :meth:`serve_forever` method::
 
       >>> from multiprocessing.managers import BaseManager
-      >>> manager = BaseManager(address=('', 50000), authkey='abc'))
+      >>> manager = BaseManager(address=('', 50000), authkey='abc')
       >>> server = manager.get_server()
       >>> server.serve_forever()
 
-      :class:`Server` はさらに :attr:`address` 属性も持っています。
+      :class:`Server` additionally has an :attr:`address` attribute.
 
    .. method:: connect()
 
-      ローカルからリモートのマネージャオブジェクトへ接続します。
-      
-      ::
+      Connect a local manager object to a remote manager process::
 
       >>> from multiprocessing.managers import BaseManager
-      >>> m = BaseManager(address=('127.0.0.1', 5000), authkey='abc))
+      >>> m = BaseManager(address=('127.0.0.1', 5000), authkey='abc')
       >>> m.connect()
 
    .. method:: shutdown()
 
-      マネージャが使用するプロセスを停止します。これはサーバプロセスを
-      開始するために :meth:`start` が使用された場合のみ有効です。
+      Stop the process used by the manager.  This is only available if
+      :meth:`start` has been used to start the server process.
 
-      これは複数回呼び出すことができます。
+      This can be called multiple times.
 
    .. method:: register(typeid[, callable[, proxytype[, exposed[, method_to_typeid[, create_method]]]]])
 
-      マネージャクラスで呼び出し可能オブジェクト(callable)や型を登録するために使用されるクラスメソッドです。
+      A classmethod which can be used for registering a type or callable with
+      the manager class.
 
-      *typeid* は特に共有オブジェクトの型を識別するために使用される "型識別子" です。
-      これは文字列でなければなりません。
+      *typeid* is a "type identifier" which is used to identify a particular
+      type of shared object.  This must be a string.
 
-      *callable* はこの型識別子のオブジェクトを作成するために使用される呼び出し可能オブジェクトです。
-      マネージャインスタンスが :meth:`from_address` クラスメソッドを使用して作成されるか、
-      *create_method* 引数が ``False`` の場合は ``None`` でも構いません。
+      *callable* is a callable used for creating objects for this type
+      identifier.  If a manager instance will be created using the
+      :meth:`from_address` classmethod or if the *create_method* argument is
+      ``False`` then this can be left as ``None``.
 
-      *proxytype* はこの *typeid* で共有オブジェクトのプロキシを作成するために使用される
-      :class:`BaseProxy` のサブクラスです。 ``None`` の場合、プロキシクラスは自動的に作成されます。
+      *proxytype* is a subclass of :class:`BaseProxy` which is used to create
+      proxies for shared objects with this *typeid*.  If ``None`` then a proxy
+      class is created automatically.
 
-      *exposed* は :meth:`BaseProxy._callMethod` を使用してアクセスされる
-      この typeid のプロキシになるメソッド名のシーケンスを指定するために使用されます。
-      ( *exposed* が ``None`` の場合 :attr:`proxytype._exposed_` が存在すれば、
-      それが代わりに使用されます。) exposed リストが指定されない場合は、
-      共有オブジェクトの全ての "パブリックメソッド" にアクセスされます。
-      (ここで言う "パブリックメソッド" は :meth:`__call__` メソッドを持ち、
-      ``'_'`` で始まらない名前の属性を意味します。)
+      *exposed* is used to specify a sequence of method names which proxies for
+      this typeid should be allowed to access using
+      :meth:`BaseProxy._callmethod`.  (If *exposed* is ``None`` then
+      :attr:`proxytype._exposed_` is used instead if it exists.)  In the case
+      where no exposed list is specified, all "public methods" of the shared
+      object will be accessible.  (Here a "public method" means any attribute
+      which has a :meth:`~object.__call__` method and whose name does not begin
+      with ``'_'``.)
 
-      *method_to_typeid* はプロキシが返す exposed メソッドの型を指定するために
-      使用されるマッピングです。それは typeid 文字列に対してメソッド名をマップします。
-      ( *method_to_typeid* が ``None`` の場合 :attr:`proxytype._method_to_typeid_`
-      が存在すれば、それが代わりに使用されます。) メソッド名がこのマッピングのキー
-      ではないか、マッピングが ``None`` の場合、そのメソッドによって返される
-      オブジェクトが値によってコピーされます。
+      *method_to_typeid* is a mapping used to specify the return type of those
+      exposed methods which should return a proxy.  It maps method names to
+      typeid strings.  (If *method_to_typeid* is ``None`` then
+      :attr:`proxytype._method_to_typeid_` is used instead if it exists.)  If a
+      method's name is not a key of this mapping or if the mapping is ``None``
+      then the object returned by the method will be copied by value.
 
-      *create_method* は、新たな共有オブジェクトを作成するためにサーバプロセスへ
-      伝えるのに使用されるメソッドを *typeid* の名前で作成し、そのための
-      プロキシを返すかを決定します。デフォルトでは ``True`` です。
+      *create_method* determines whether a method should be created with name
+      *typeid* which can be used to tell the server process to create a new
+      shared object and return a proxy for it.  By default it is ``True``.
 
-   :class:`BaseManager` インスタンスも読み取り専用属性を1つ持っています。
+   :class:`BaseManager` instances also have one read-only property:
 
    .. attribute:: address
 
-      マネージャが使用するアドレスです。
+      The address used by the manager.
+
 
 .. class:: SyncManager
 
-   プロセス間の同期のために使用される :class:`BaseManager` のサブクラスです。
-   :func:`multiprocessing.Manager` はこの型のオブジェクトを返します。
+   A subclass of :class:`BaseManager` which can be used for the synchronization
+   of processes.  Objects of this type are returned by
+   :func:`multiprocessing.Manager`.
 
-   また共有リストやディクショナリの作成もサポートします。
+   It also supports creation of shared lists and dictionaries.
 
    .. method:: BoundedSemaphore([value])
 
-      共有 :class:`threading.BoundedSemaphore` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared :class:`threading.BoundedSemaphore` object and return a
+      proxy for it.
 
    .. method:: Condition([lock])
 
-      共有 :class:`threading.Condition` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared :class:`threading.Condition` object and return a proxy for
+      it.
 
-      *lock* が提供される場合 :class:`threading.Lock` か
-      :class:`threading.RLock` オブジェクトのためのプロキシになります。
+      If *lock* is supplied then it should be a proxy for a
+      :class:`threading.Lock` or :class:`threading.RLock` object.
 
    .. method:: Event()
 
-      共有 :class:`threading.Event` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared :class:`threading.Event` object and return a proxy for it.
 
    .. method:: Lock()
 
-      共有 :class:`threading.Lock` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared :class:`threading.Lock` object and return a proxy for it.
 
    .. method:: Namespace()
 
-      共有 :class:`Namespace` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared :class:`Namespace` object and return a proxy for it.
 
    .. method:: Queue([maxsize])
 
-      共有 :class:`Queue.Queue` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared :class:`Queue.Queue` object and return a proxy for it.
 
    .. method:: RLock()
 
-      共有 :class:`threading.RLock` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared :class:`threading.RLock` object and return a proxy for it.
 
    .. method:: Semaphore([value])
 
-      共有 :class:`threading.Semaphore` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared :class:`threading.Semaphore` object and return a proxy for
+      it.
 
    .. method:: Array(typecode, sequence)
 
-      配列を作成して、そのプロキシを返します。
+      Create an array and return a proxy for it.
 
    .. method:: Value(typecode, value)
 
-      書き込み可能な ``value`` 属性を作成して、そのプロキシを返します。
+      Create an object with a writable ``value`` attribute and return a proxy
+      for it.
 
    .. method:: dict()
                dict(mapping)
                dict(sequence)
 
-      共有 ``dict`` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared ``dict`` object and return a proxy for it.
 
    .. method:: list()
                list(sequence)
 
-      共有 ``list`` オブジェクトを作成して、そのプロキシを返します。
+      Create a shared ``list`` object and return a proxy for it.
 
    .. note::
 
-      プロキシには、ミュータブルな値や、辞書とリストのプロキシの要素が、
-      いつ変えられたのかを知る方法がないため、これらの値や要素の変化は
-      マネージャを通して伝播しません。要素などを変化させるために、
-      コンテナプロキシに変化されたオブジェクトを再代入できます。
+      Modifications to mutable values or items in dict and list proxies will not
+      be propagated through the manager, because the proxy has no way of knowing
+      when its values or items are modified.  To modify such an item, you can
+      re-assign the modified object to the container proxy::
 
          # create a list proxy and append a mutable object (a dictionary)
          lproxy = manager.list()
@@ -1297,14 +1510,14 @@ Manager は別のプロセス間で共有されるデータの作成方法を提
          lproxy[0] = d
 
 
-Namespace オブジェクト
->>>>>>>>>>>>>>>>>>>>>>
+Namespace objects
+>>>>>>>>>>>>>>>>>
 
-Namespace オブジェクトはプライベートなメソッドを持っていますが、書き込み属性を持ちます。
-そのオブジェクト表現はその属性の値を表示します。
+A namespace object has no public methods, but does have writable attributes.
+Its representation shows the values of its attributes.
 
-しかし、Namespace オブジェクトのためにプロキシを使用するとき
-``'_'`` が先頭に付く属性はプロキシの属性になり、参照対象の属性にはなりません。
+However, when using a proxy for a namespace object, an attribute beginning with
+``'_'`` will be an attribute of the proxy and not an attribute of the referent:
 
 .. doctest::
 
@@ -1312,19 +1525,17 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
    >>> Global = manager.Namespace()
    >>> Global.x = 10
    >>> Global.y = 'hello'
-   >>> Global._z = 12.3    # これはプロキシの属性です
+   >>> Global._z = 12.3    # this is an attribute of the proxy
    >>> print Global
    Namespace(x=10, y='hello')
 
 
-カスタマイズされたマネージャ
->>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Customized managers
+>>>>>>>>>>>>>>>>>>>
 
-独自のマネージャを作成するために :class:`BaseManager` のサブクラスを作成して、
-マネージャクラスで呼び出し可能なオブジェクトか新たな型を登録するために
-:meth:`~BaseManager.register` クラスメソッドを使用します。
-
-::
+To create one's own manager, one creates a subclass of :class:`BaseManager` and
+uses the :meth:`~BaseManager.register` classmethod to register new types or
+callables with the manager class.  For example::
 
    from multiprocessing.managers import BaseManager
 
@@ -1343,21 +1554,18 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
        manager = MyManager()
        manager.start()
        maths = manager.Maths()
-       print maths.add(4, 3)         # 7 を表示
-       print maths.mul(7, 8)         # 56 を表示
+       print maths.add(4, 3)         # prints 7
+       print maths.mul(7, 8)         # prints 56
 
 
-リモートマネージャを使用する
->>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Using a remote manager
+>>>>>>>>>>>>>>>>>>>>>>
 
-あるマシン上でマネージャサーバを実行して、
-他のマシンからそのサーバを使用するクライアントを
-持つことができます(ファイアウォールを通過できることが前提)。
+It is possible to run a manager server on one machine and have clients use it
+from other machines (assuming that the firewalls involved allow it).
 
-次のコマンドを実行することでリモートクライアントからアクセスを
-受け付ける1つの共有キューのためにサーバを作成します。
-
-::
+Running the following commands creates a server for a single shared queue which
+remote clients can access::
 
    >>> from multiprocessing.managers import BaseManager
    >>> import Queue
@@ -1368,9 +1576,7 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
    >>> s = m.get_server()
    >>> s.serve_forever()
 
-あるクライアントからサーバへのアクセスは次のようになります。
-
-::
+One client can access the server as follows::
 
    >>> from multiprocessing.managers import BaseManager
    >>> class QueueManager(BaseManager): pass
@@ -1380,9 +1586,7 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
    >>> queue = m.get_queue()
    >>> queue.put('hello')
 
-別のクライアントもそれを使用することができます。
-
-::
+Another client can also use it::
 
    >>> from multiprocessing.managers import BaseManager
    >>> class QueueManager(BaseManager): pass
@@ -1393,10 +1597,8 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
    >>> queue.get()
    'hello'
 
-ローカルプロセスもそのキューへアクセスすることができます。
-クライアント上で上述のコードを使用してアクセスします。
-
-::
+Local processes can also access that queue, using the code from above on the
+client to access it remotely::
 
     >>> from multiprocessing import Process, Queue
     >>> from multiprocessing.managers import BaseManager
@@ -1417,16 +1619,17 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
     >>> s = m.get_server()
     >>> s.serve_forever()
 
-Proxy オブジェクト
-~~~~~~~~~~~~~~~~~~
+Proxy Objects
+~~~~~~~~~~~~~
 
-プロキシは別のプロセスで(おそらく)有効な共有オブジェクトを *参照する* オブジェクトです。
-共有オブジェクトはプロキシの *参照対象* になると言うことができます。
-複数のプロキシオブジェクトが同じ参照対象を持つ可能性もあります。
+A proxy is an object which *refers* to a shared object which lives (presumably)
+in a different process.  The shared object is said to be the *referent* of the
+proxy.  Multiple proxy objects may have the same referent.
 
-プロキシオブジェクトはその参照対象が持つ対応メソッドを実行するメソッドを持ちます。
-(そうは言っても、参照対象の全てのメソッドが必ずしもプロキシ経由で利用可能ではありません)
-プロキシは通常その参照対象ができることと同じ方法で使用されます。
+A proxy object has methods which invoke corresponding methods of its referent
+(although not every method of the referent will necessarily be available through
+the proxy).  A proxy can usually be used in most of the same ways that its
+referent can:
 
 .. doctest::
 
@@ -1442,19 +1645,20 @@ Proxy オブジェクト
    >>> l[2:5]
    [4, 9, 16]
 
-プロキシに :func:`str` を適用すると参照対象のオブジェクト表現を返すのに対して、
-:func:`repr` を適用するとプロキシのオブジェクト表現を返すことに注意してください。
+Notice that applying :func:`str` to a proxy will return the representation of
+the referent, whereas applying :func:`repr` will return the representation of
+the proxy.
 
-プロキシオブジェクトの重要な機能はプロセス間で受け渡し可能な pickle 化ができることです。
-しかし、プロキシが対応するマネージャプロセスに対して送信される場合、
-そのプロキシを unpickle するとその参照対象を生成することを覚えておいてください。
-例えば、これはある共有オブジェクトに別の共有オブジェクトが含められることを意味します。
+An important feature of proxy objects is that they are picklable so they can be
+passed between processes.  Note, however, that if a proxy is sent to the
+corresponding manager's process then unpickling it will produce the referent
+itself.  This means, for example, that one shared object can contain a second:
 
 .. doctest::
 
    >>> a = manager.list()
    >>> b = manager.list()
-   >>> a.append(b)         # a の参照対象に b の参照対象を含める
+   >>> a.append(b)         # referent of a now contains referent of b
    >>> print a, b
    [[]] []
    >>> b.append('hello')
@@ -1463,210 +1667,221 @@ Proxy オブジェクト
 
 .. note::
 
-   :mod:`multiprocessing` のプロキシ型は値による比較に対して何もサポートしません。
-   そのため、インスタンスでは、
+   The proxy types in :mod:`multiprocessing` do nothing to support comparisons
+   by value.  So, for instance, we have:
 
    .. doctest::
 
        >>> manager.list([1,2,3]) == [1,2,3]
        False
 
-   比較を行いたいときは参照対象のコピーを使用してください。
+   One should just use a copy of the referent instead when making comparisons.
 
 .. class:: BaseProxy
 
-   プロキシオブジェクトは :class:`BaseProxy` のサブクラスのインスタンスです。
+   Proxy objects are instances of subclasses of :class:`BaseProxy`.
 
    .. method:: _callmethod(methodname[, args[, kwds]])
 
-      プロキシの参照対象のメソッドの実行結果を返します。
+      Call and return the result of a method of the proxy's referent.
 
-      ``proxy`` がプロキシで、プロキシ内の参照対象が ``obj`` なら、
-
-      ::
+      If ``proxy`` is a proxy whose referent is ``obj`` then the expression ::
 
          proxy._callmethod(methodname, args, kwds)
 
-      は、
-
-      ::
+      will evaluate the expression ::
 
          getattr(obj, methodname)(*args, **kwds)
 
-      マネージャプロセス内のこの式を評価します。
+      in the manager's process.
 
-      返される値はその呼び出し結果のコピーか、新たな共有オブジェクトに対するプロキシになります。
-      詳細は :meth:`BaseManager.register` の *method_to_typeid* 引数のドキュメントを参照してください。
+      The returned value will be a copy of the result of the call or a proxy to
+      a new shared object -- see documentation for the *method_to_typeid*
+      argument of :meth:`BaseManager.register`.
 
-      例外がその呼び出しによって発生する場合 :meth:`_callmethod` によって再発生させます。
-      もし他の例外がマネージャプロセスで発生するなら、
-      :exc:`RemoteError` 例外に変換されて :meth:`_callmethod` によって発生させます。
+      If an exception is raised by the call, then is re-raised by
+      :meth:`_callmethod`.  If some other exception is raised in the manager's
+      process then this is converted into a :exc:`RemoteError` exception and is
+      raised by :meth:`_callmethod`.
 
-      特に *methodname* が *公開* されていない場合は例外が発生することに注意してください。
+      Note in particular that an exception will be raised if *methodname* has
+      not been *exposed*.
 
-      :meth:`_callmethod` の使用例になります。
+      An example of the usage of :meth:`_callmethod`:
 
       .. doctest::
 
          >>> l = manager.list(range(10))
          >>> l._callmethod('__len__')
          10
-         >>> l._callmethod('__getslice__', (2, 7))   # `l[2:7]` と等価
+         >>> l._callmethod('__getslice__', (2, 7))   # equiv to `l[2:7]`
          [2, 3, 4, 5, 6]
-         >>> l._callmethod('__getitem__', (20,))     # `l[20]` と等価
+         >>> l._callmethod('__getitem__', (20,))     # equiv to `l[20]`
          Traceback (most recent call last):
          ...
          IndexError: list index out of range
 
    .. method:: _getvalue()
 
-      参照対象のコピーを返します。
+      Return a copy of the referent.
 
-      参照対象が unpickle 化できるなら例外を発生します。
+      If the referent is unpicklable then this will raise an exception.
 
    .. method:: __repr__
 
-      プロキシオブジェクトのオブジェクト表現を返します。
+      Return a representation of the proxy object.
 
    .. method:: __str__
 
-      参照対象のオブジェクト表現を返します。
+      Return the representation of the referent.
 
-クリーンアップ
->>>>>>>>>>>>>>
 
-プロキシオブジェクトは弱参照(weakref)コールバックを使用します。
-プロキシオブジェクトがガベージコレクトされるときに
-その参照対象が所有するマネージャからその登録を取り消せるようにするためです。
+Cleanup
+>>>>>>>
 
-共有オブジェクトはプロキシが参照しなくなったときにマネージャプロセスから削除されます。
+A proxy object uses a weakref callback so that when it gets garbage collected it
+deregisters itself from the manager which owns its referent.
 
-プロセスプール
-~~~~~~~~~~~~~~
+A shared object gets deleted from the manager process when there are no longer
+any proxies referring to it.
+
+
+Process Pools
+~~~~~~~~~~~~~
 
 .. module:: multiprocessing.pool
    :synopsis: Create pools of processes.
 
-:class:`Pool` クラスでタスクを実行するプロセスのプールを作成することができます。
+One can create a pool of processes which will carry out tasks submitted to it
+with the :class:`Pool` class.
 
 .. class:: multiprocessing.Pool([processes[, initializer[, initargs[, maxtasksperchild]]]])
 
-   プロセスプールオブジェクトはジョブが実行されるようにワーカープロセスのプールを制御します。
-   タイムアウトやコールバックで非同期の実行をサポートして、並列 map 実装を持ちます。
+   A process pool object which controls a pool of worker processes to which jobs
+   can be submitted.  It supports asynchronous results with timeouts and
+   callbacks and has a parallel map implementation.
 
-   *processes* は使用するワーカープロセスの数です。 *processes* が ``None`` の場合
-   :func:`cpu_count` が返す数を使用します。 *initializer* が ``None`` の場合、
-   各ワーカープロセスが開始時に ``initializer(*initargs)`` を呼び出します。
+   *processes* is the number of worker processes to use.  If *processes* is
+   ``None`` then the number returned by :func:`cpu_count` is used.  If
+   *initializer* is not ``None`` then each worker process will call
+   ``initializer(*initargs)`` when it starts.
+
+   Note that the methods of the pool object should only be called by
+   the process which created the pool.
 
    .. versionadded:: 2.7
-      *maxtasksperchild* は、使われないリソースの解放のために
-      ワーカープロセスが退出して、新しい
-      ワーカープロセスで置き換えられるまでに完了できるタスクの数です。
-      デフォルトの *maxtasksperchild* は None で、ワーカープロセスが
-      プールと同じだけ残ることを意味します。
+      *maxtasksperchild* is the number of tasks a worker process can complete
+      before it will exit and be replaced with a fresh worker process, to enable
+      unused resources to be freed. The default *maxtasksperchild* is None, which
+      means worker processes will live as long as the pool.
 
    .. note::
 
-      :class:`Pool` 中のワーカープロセスは典型的に、プールのワークキューの
-      存続期間とちょうど同じだけ残ります。(Apache, mod_wsgi, 等のような)
-      他のシステムによく見られるパターンは、ワーカーが設定された量だけの
-      ワークを完了させるまでプールに置いたら退出させ、新しいプロセスが
-      産まれて古いプロセスを置き換えるものです。
-      :class:`Pool` の *maxtasksperchild* 引数は、この能力をエンドユーザに開放します。
+      Worker processes within a :class:`Pool` typically live for the complete
+      duration of the Pool's work queue. A frequent pattern found in other
+      systems (such as Apache, mod_wsgi, etc) to free resources held by
+      workers is to allow a worker within a pool to complete only a set
+      amount of work before being exiting, being cleaned up and a new
+      process spawned to replace the old one. The *maxtasksperchild*
+      argument to the :class:`Pool` exposes this ability to the end user.
 
    .. method:: apply(func[, args[, kwds]])
 
-      :func:`apply` 組み込み関数と同じです。その結果を返せるようになるまでブロックします。
-      これらのブロックが与えられる場合、 :meth:`apply_async` の方が
-      うまく並列実行を処理します。
-      さらに関数はプールの中の一つのワーカーにのみ渡されます。
+      Equivalent of the :func:`apply` built-in function.  It blocks until the
+      result is ready, so :meth:`apply_async` is better suited for performing
+      work in parallel. Additionally, *func* is only executed in one of the
+      workers of the pool.
 
    .. method:: apply_async(func[, args[, kwds[, callback]]])
 
-      :meth:`apply` メソッドの一種で結果オブジェクトを返します。
+      A variant of the :meth:`apply` method which returns a result object.
 
-      *callback* が指定された場合、1つの引数を受け取って呼び出されます。
-      その結果を返せるようになったときに *callback* が結果オブジェクトに対して
-      (その呼び出しが失敗しない限り)適用されます。
-      その結果を扱う別スレッドはブロックされるので *callback* はすぐに終了します。
+      If *callback* is specified then it should be a callable which accepts a
+      single argument.  When the result becomes ready *callback* is applied to
+      it (unless the call failed).  *callback* should complete immediately since
+      otherwise the thread which handles the results will get blocked.
 
    .. method:: map(func, iterable[, chunksize])
 
-      並列な :func:`map` 組み込み関数と同じです( *iterable* な引数を1つだけサポートします)。
-      その結果を返せるようになるまでブロックします。
+      A parallel equivalent of the :func:`map` built-in function (it supports only
+      one *iterable* argument though).  It blocks until the result is ready.
 
-      このメソッドは独立したタスクのようにプロセスプールに対して実行するチャンク数に分割します。
-      チャンク(概算)サイズは *chunksize* に正の整数を指定することで行います。
+      This method chops the iterable into a number of chunks which it submits to
+      the process pool as separate tasks.  The (approximate) size of these
+      chunks can be specified by setting *chunksize* to a positive integer.
 
    .. method:: map_async(func, iterable[, chunksize[, callback]])
 
-      :meth:`.map` メソッドの一種で結果オブジェクトを返します。
+      A variant of the :meth:`.map` method which returns a result object.
 
-      *callback* が指定された場合、1つの引数を受け取って呼び出されます。
-      その結果を返せるようになったときに *callback* が結果オブジェクトに対して
-      (その呼び出しが失敗しない限り)適用されます。
-      その結果を扱う別スレッドはブロックされるので *callback* はすぐに終了します。
+      If *callback* is specified then it should be a callable which accepts a
+      single argument.  When the result becomes ready *callback* is applied to
+      it (unless the call failed).  *callback* should complete immediately since
+      otherwise the thread which handles the results will get blocked.
 
    .. method:: imap(func, iterable[, chunksize])
 
-      :func:`itertools.imap` と同じです。
+      An equivalent of :func:`itertools.imap`.
 
-      *chunksize* 引数は :meth:`.map` メソッドで使用されるものと同じです。
-      引数 iterable がとても大きいなら *chunksize* に大きな値を指定して使用する方が
-      デフォルト値の ``1`` を使用するよりもジョブの完了が **かなり** 速くなります。
+      The *chunksize* argument is the same as the one used by the :meth:`.map`
+      method.  For very long iterables using a large value for *chunksize* can
+      make the job complete **much** faster than using the default value of
+      ``1``.
 
-      また *chunksize* が ``1`` の場合 :meth:`imap` メソッドが返すイテレータの
-      :meth:`!next` メソッドはオプションで *timeout* パラメータを持ちます。
-      ``next(timeout)`` は、その結果が *timeout* 秒以内に返されないときに
-      :exc:`multiprocessing.TimeoutError` を発生させます。
+      Also if *chunksize* is ``1`` then the :meth:`!next` method of the iterator
+      returned by the :meth:`imap` method has an optional *timeout* parameter:
+      ``next(timeout)`` will raise :exc:`multiprocessing.TimeoutError` if the
+      result cannot be returned within *timeout* seconds.
 
    .. method:: imap_unordered(func, iterable[, chunksize])
 
-      イテレータが返す結果の順番が任意の順番で良いと見なされることを除けば :meth:`imap` と同じです。
-      (ワーカープロセスが1つしかない場合のみ "正しい" 順番になることが保証されます。)
+      The same as :meth:`imap` except that the ordering of the results from the
+      returned iterator should be considered arbitrary.  (Only when there is
+      only one worker process is the order guaranteed to be "correct".)
 
    .. method:: close()
 
-      これ以上プールでタスクが実行されないようにします。
-      全てのタスクが完了した後でワーカープロセスが終了します。
+      Prevents any more tasks from being submitted to the pool.  Once all the
+      tasks have been completed the worker processes will exit.
 
    .. method:: terminate()
 
-      実行中の処理を完了させずにワーカープロセスをすぐに停止します。
-      プールオブジェクトがガベージコレクトされるときに :meth:`terminate` が呼び出されます。
+      Stops the worker processes immediately without completing outstanding
+      work.  When the pool object is garbage collected :meth:`terminate` will be
+      called immediately.
 
    .. method:: join()
 
-      ワーカープロセスが終了するのを待ちます。 :meth:`join` を使用する前に
-      :meth:`close` か :meth:`terminate` を呼び出さなければなりません。
+      Wait for the worker processes to exit.  One must call :meth:`close` or
+      :meth:`terminate` before using :meth:`join`.
+
 
 .. class:: AsyncResult
 
-   :meth:`Pool.apply_async` や :meth:`Pool.map_async` で返される結果のクラスです。
+   The class of the result returned by :meth:`Pool.apply_async` and
+   :meth:`Pool.map_async`.
 
    .. method:: get([timeout])
 
-      結果を受け取ったときに返します。 *timeout* が ``None`` ではなくて、
-      その結果が *timeout* 秒以内に受け取れない場合
-      :exc:`multiprocessing.TimeoutError` が発生します。
-      リモートの呼び出しが例外を発生させる場合、その例外は :meth:`get` が再発生させます。
+      Return the result when it arrives.  If *timeout* is not ``None`` and the
+      result does not arrive within *timeout* seconds then
+      :exc:`multiprocessing.TimeoutError` is raised.  If the remote call raised
+      an exception then that exception will be reraised by :meth:`get`.
 
    .. method:: wait([timeout])
 
-      その結果が有効になるか *timeout* 秒経つまで待ちます。
+      Wait until the result is available or until *timeout* seconds pass.
 
    .. method:: ready()
 
-      その呼び出しが完了しているかどうかを返します。
+      Return whether the call has completed.
 
    .. method:: successful()
 
-      その呼び出しが例外を発生させることなく完了したかどうかを返します。
-      その結果が返せる状態でない場合 :exc:`AssertionError` が発生します。
+      Return whether the call completed without raising an exception.  Will
+      raise :exc:`AssertionError` if the result is not ready.
 
-次の例はプールの使用例を紹介します。
-
-::
+The following example demonstrates the use of a pool::
 
    from multiprocessing import Pool
 
@@ -1674,21 +1889,21 @@ Proxy オブジェクト
        return x*x
 
    if __name__ == '__main__':
-       pool = Pool(processes=4)              # 4つのワーカープロセスで開始
+       pool = Pool(processes=4)              # start 4 worker processes
 
-       result = pool.apply_async(f, (10,))   # 非同期で "f(10)" を評価
-       print result.get(timeout=1)           # あなたのコンピュータが *かなり* 遅くない限りは "100" を表示
+       result = pool.apply_async(f, (10,))    # evaluate "f(10)" asynchronously
+       print result.get(timeout=1)           # prints "100" unless your computer is *very* slow
 
-       print pool.map(f, range(10))          # "[0, 1, 4,..., 81]" を表示
+       print pool.map(f, range(10))          # prints "[0, 1, 4,..., 81]"
 
        it = pool.imap(f, range(10))
-       print it.next()                       # "0" を表示
-       print it.next()                       # "1" を表示
-       print it.next(timeout=1)              # あなたのコンピュータが *かなり* 遅くない限りは "4" を表示
+       print it.next()                       # prints "0"
+       print it.next()                       # prints "1"
+       print it.next(timeout=1)              # prints "4" unless your computer is *very* slow
 
        import time
        result = pool.apply_async(time.sleep, (10,))
-       print result.get(timeout=1)           # TimeoutError を発生
+       print result.get(timeout=1)           # raises TimeoutError
 
 
 .. _multiprocessing-listeners-clients:
@@ -1699,114 +1914,126 @@ Listeners and Clients
 .. module:: multiprocessing.connection
    :synopsis: API for dealing with sockets.
 
-通常、プロセス間でメッセージを渡すにはキューを使用するか
-:func:`Pipe` が返す :class:`Connection` オブジェクトを使用します。
+Usually message passing between processes is done using queues or by using
+:class:`~multiprocessing.Connection` objects returned by
+:func:`~multiprocessing.Pipe`.
 
-しかし :mod:`multiprocessing.connection` モジュールはさらに柔軟な仕組みがあります。
-基本的にはソケットもしくは Windows の名前付きパイプを扱う
-高レベルのメッセージ指向 API を提供して :mod:`hmac` モジュールを
-使用して *ダイジェスト認証* もサポートします。
+However, the :mod:`multiprocessing.connection` module allows some extra
+flexibility.  It basically gives a high level message oriented API for dealing
+with sockets or Windows named pipes, and also has support for *digest
+authentication* using the :mod:`hmac` module.
+
 
 .. function:: deliver_challenge(connection, authkey)
 
-   ランダム生成したメッセージをコネクションの相手側へ送信して応答を待ちます。
+   Send a randomly generated message to the other end of the connection and wait
+   for a reply.
 
-   その応答がキーとして *authkey* を使用するメッセージのダイジェストと一致する場合、
-   コネクションの相手側へ歓迎メッセージを送信します。
-   そうでなければ :exc:`AuthenticationError` を発生させます。
+   If the reply matches the digest of the message using *authkey* as the key
+   then a welcome message is sent to the other end of the connection.  Otherwise
+   :exc:`AuthenticationError` is raised.
 
-.. function:: answerChallenge(connection, authkey)
+.. function:: answer_challenge(connection, authkey)
 
-   メッセージを受信して、そのキーとして *authkey* を使用するメッセージの
-   ダイジェストを計算し、ダイジェストを送り返します。
+   Receive a message, calculate the digest of the message using *authkey* as the
+   key, and then send the digest back.
 
-   歓迎メッセージを受け取れない場合 :exc:`AuthenticationError` が発生します。
+   If a welcome message is not received, then :exc:`AuthenticationError` is
+   raised.
 
 .. function:: Client(address[, family[, authenticate[, authkey]]])
 
-   *address* で渡したアドレスを使用するリスナーに対してコネクションを
-   確立しようとして :class:`~multiprocessing.Connection` を返します。
+   Attempt to set up a connection to the listener which is using address
+   *address*, returning a :class:`~multiprocessing.Connection`.
 
-   コネクション種別は *family* 引数で決定しますが、一般的には *address* の
-   フォーマットから推測できるので、これは指定されません。
-   ( :ref:`multiprocessing-address-formats` を参照してください)
+   The type of the connection is determined by *family* argument, but this can
+   generally be omitted since it can usually be inferred from the format of
+   *address*. (See :ref:`multiprocessing-address-formats`)
 
-   *authenticate* が ``True`` か *authkey* が文字列の場合、
-   ダイジェスト認証が使用されます。認証に使用されるキーは *authkey* 、
-   又は *authkey* が ``None`` の場合は ``current_process().authkey`` のどちらかです。
-   認証が失敗した場合 :exc:`AuthenticationError` が発生します。
-   :ref:`multiprocessing-auth-keys` を参照してください。
+   If *authenticate* is ``True`` or *authkey* is a string then digest
+   authentication is used.  The key used for authentication will be either
+   *authkey* or ``current_process().authkey)`` if *authkey* is ``None``.
+   If authentication fails then :exc:`AuthenticationError` is raised.  See
+   :ref:`multiprocessing-auth-keys`.
 
 .. class:: Listener([address[, family[, backlog[, authenticate[, authkey]]]]])
 
-   コネクションを '待ち受ける' 束縛されたソケットか Windows の名前付きパイプのラッパです。
+   A wrapper for a bound socket or Windows named pipe which is 'listening' for
+   connections.
 
-   *address* はリスナーオブジェクトの束縛されたソケットか名前付きパイプが使用するアドレスです。
+   *address* is the address to be used by the bound socket or named pipe of the
+   listener object.
 
    .. note::
 
-      '0.0.0.0' のアドレスを使用する場合、Windows 上の終点へ接続することができません。
-      終点へ接続したい場合は '127.0.0.1' を使用すべきです。
+      If an address of '0.0.0.0' is used, the address will not be a connectable
+      end point on Windows. If you require a connectable end-point,
+      you should use '127.0.0.1'.
 
-   *family* は使用するソケット(名前付きパイプ)の種別です。
-   これは ``'AF_INET'`` (TCP ソケット), ``'AF_UNIX'`` (Unix ドメインソケット)
-   又は ``'AF_PIPE'`` (Windows 名前付きパイプ) という文字列のどれか1つになります。
-   これらのうち ``'AF_INET'`` のみが利用可能であることが保証されています。
-   *family* が ``None`` の場合 *address* のフォーマットから推測されたものが使用されます。
-   *address* も ``None`` の場合はデフォルトが選択されます。
-   詳細は :ref:`multiprocessing-address-formats` を参照してください。
-   *family* が ``'AF_UNIX'`` で *address* が ``None`` の場合 :func:`tempfile.mkstemp` を
-   使用して作成されたプライベートな一時ディレクトリにソケットが作成されます。
+   *family* is the type of socket (or named pipe) to use.  This can be one of
+   the strings ``'AF_INET'`` (for a TCP socket), ``'AF_UNIX'`` (for a Unix
+   domain socket) or ``'AF_PIPE'`` (for a Windows named pipe).  Of these only
+   the first is guaranteed to be available.  If *family* is ``None`` then the
+   family is inferred from the format of *address*.  If *address* is also
+   ``None`` then a default is chosen.  This default is the family which is
+   assumed to be the fastest available.  See
+   :ref:`multiprocessing-address-formats`.  Note that if *family* is
+   ``'AF_UNIX'`` and address is ``None`` then the socket will be created in a
+   private temporary directory created using :func:`tempfile.mkstemp`.
 
-   リスナーオブジェクトがソケットを使用する場合、ソケットに束縛されるときに
-   *backlog* (デフォルトでは1つ) がソケットの :meth:`listen` メソッドに対して渡されます。
+   If the listener object uses a socket then *backlog* (1 by default) is passed
+   to the :meth:`~socket.socket.listen` method of the socket once it has been
+   bound.
 
-   *authenticate* が ``True``  (デフォルトでは ``False`` ) か
-   *authkey* が ``None`` ではない場合、ダイジェスト認証が使用されます。
+   If *authenticate* is ``True`` (``False`` by default) or *authkey* is not
+   ``None`` then digest authentication is used.
 
-   *authkey* が文字列の場合、認証キーとして使用されます。そうでない場合は *None* でなければいけません。
+   If *authkey* is a string then it will be used as the authentication key;
+   otherwise it must be *None*.
 
-   *authkey* が ``None`` 且つ *authenticate* が ``True`` の場合
-   ``current_process().authkey`` が認証キーとして使用されます。
-   *authkey* が ``None`` 且つ *authentication* が ``False`` の場合、認証は行われません。
-   もし認証が失敗した場合 :exc:`AuthenticationError` が発生します。
-   詳細 :ref:`multiprocessing-auth-keys` を参照してください。
+   If *authkey* is ``None`` and *authenticate* is ``True`` then
+   ``current_process().authkey`` is used as the authentication key.  If
+   *authkey* is ``None`` and *authenticate* is ``False`` then no
+   authentication is done.  If authentication fails then
+   :exc:`AuthenticationError` is raised.  See :ref:`multiprocessing-auth-keys`.
 
    .. method:: accept()
 
-      リスナーオブジェクトの名前付きパイプか束縛されたソケット上でコネクションを
-      受け付けて :class:`Connection` オブジェクトを返します。
-      認証が失敗した場合 :exc:`AuthenticationError` が発生します。
+      Accept a connection on the bound socket or named pipe of the listener
+      object and return a :class:`~multiprocessing.Connection` object.  If
+      authentication is attempted and fails, then
+      :exc:`~multiprocessing.AuthenticationError` is raised.
 
    .. method:: close()
 
-      リスナーオブジェクトの名前付きパイプか束縛されたソケットをクローズします。
-      これはリスナーがガベージコレクトされるときに自動的に呼ばれます。
-      そうは言っても、明示的に close() を呼び出す方が望ましいです。
+      Close the bound socket or named pipe of the listener object.  This is
+      called automatically when the listener is garbage collected.  However it
+      is advisable to call it explicitly.
 
-   リスナーオブジェクトは次の読み取り専用属性を持っています。
+   Listener objects have the following read-only properties:
 
    .. attribute:: address
 
-      リスナーオブジェクトが使用中のアドレスです。
+      The address which is being used by the Listener object.
 
    .. attribute:: last_accepted
 
-      最後にコネクションを受け付けたアドレスです。
-      有効なアドレスがない場合は ``None`` になります。
+      The address from which the last accepted connection came.  If this is
+      unavailable then it is ``None``.
 
-このモジュールは2つの例外を定義します。
+
+The module defines two exceptions:
 
 .. exception:: AuthenticationError
 
-   認証エラーが起こったときに例外が発生します。
+   Exception raised when there is an authentication error.
 
-**例**
 
-次のサーバコードは認証キーとして ``'secret password'`` を使用するリスナーを作成します。
-このサーバはコネクションを待ってクライアントへデータを送信します。
+**Examples**
 
-::
+The following server code creates a listener which uses ``'secret password'`` as
+an authentication key.  It then waits for a connection and sends some data to
+the client::
 
    from multiprocessing.connection import Listener
    from array import array
@@ -1826,9 +2053,8 @@ Listeners and Clients
    conn.close()
    listener.close()
 
-次のコードはサーバへ接続して、サーバからデータを受信します。
-
-::
+The following code connects to the server and receives some data from the
+server::
 
    from multiprocessing.connection import Client
    from array import array
@@ -1849,78 +2075,81 @@ Listeners and Clients
 
 .. _multiprocessing-address-formats:
 
-アドレスフォーマット
->>>>>>>>>>>>>>>>>>>>
+Address Formats
+>>>>>>>>>>>>>>>
 
-* ``'AF_INET'`` アドレスは ``(hostname, port)`` のタプルになります。
-  *hostname* は文字列で *port* は整数です。
+* An ``'AF_INET'`` address is a tuple of the form ``(hostname, port)`` where
+  *hostname* is a string and *port* is an integer.
 
-* ``'AF_UNIX'`` アドレスはファイルシステム上のファイル名の文字列です。
+* An ``'AF_UNIX'`` address is a string representing a filename on the
+  filesystem.
 
-* ``'AF_PIPE'`` アドレスは :samp:`r'\\\\.\\pipe\\{PipeName}'` の文字列です。
-  *ServerName* というリモートコンピュータ上の名前付きパイプに接続するために
-  :func:`Client` を使用するには、代わりに
-  :samp:`r'\\\\{ServerName}\\pipe\\{PipeName}'` のアドレスを使用すべきです。
+* An ``'AF_PIPE'`` address is a string of the form
+   :samp:`r'\\\\.\\pipe\\{PipeName}'`.  To use :func:`Client` to connect to a named
+   pipe on a remote computer called *ServerName* one should use an address of the
+   form :samp:`r'\\\\{ServerName}\\pipe\\{PipeName}'` instead.
 
-デフォルトでは、2つのバックスラッシュで始まる文字列は ``'AF_UNIX'`` よりも
-``'AF_PIPE'`` として推測されることに注意してください。
+Note that any string beginning with two backslashes is assumed by default to be
+an ``'AF_PIPE'`` address rather than an ``'AF_UNIX'`` address.
+
 
 .. _multiprocessing-auth-keys:
 
-認証キー
-~~~~~~~~
+Authentication keys
+~~~~~~~~~~~~~~~~~~~
 
-:meth:`Connection.recv` を使用するとき、データは自動的に unpickle されて受信します。
-信頼できない接続元からのデータを unpickle することはセキュリティリスクがあります。
-そのため :class:`Listener` や :func:`Client` はダイジェスト認証を提供するために
-:mod:`hmac` モジュールを使用します。
+When one uses :meth:`Connection.recv <multiprocessing.Connection.recv>`, the
+data received is automatically
+unpickled.  Unfortunately unpickling data from an untrusted source is a security
+risk.  Therefore :class:`Listener` and :func:`Client` use the :mod:`hmac` module
+to provide digest authentication.
 
-認証キーはパスワードとして見なされる文字列です。
-コネクションが確立すると、双方の終点で正しい接続先であることを証明するために
-知っているお互いの認証キーを要求します。
-(双方の終点が同じキーを使用して通信しようとしても、
-コネクション上でそのキーを送信することは **できません** 。)
+An authentication key is a string which can be thought of as a password: once a
+connection is established both ends will demand proof that the other knows the
+authentication key.  (Demonstrating that both ends are using the same key does
+**not** involve sending the key over the connection.)
 
-認証が要求されて認証キーが指定されている場合
-``current_process().authkey`` の返す値が使用されます。
-(詳細は :class:`~multiprocessing.Process` を参照してください。)
-この値はカレントプロセスを作成する :class:`~multiprocessing.Process`
-オブジェクトによって自動的に継承されます。
-これは(デフォルトでは)複数プロセスのプログラムの全プロセスが相互にコネクションを
-確立するときに使用される1つの認証キーを共有することを意味します。
+If authentication is requested but do authentication key is specified then the
+return value of ``current_process().authkey`` is used (see
+:class:`~multiprocessing.Process`).  This value will automatically inherited by
+any :class:`~multiprocessing.Process` object that the current process creates.
+This means that (by default) all processes of a multi-process program will share
+a single authentication key which can be used when setting up connections
+between themselves.
 
-適当な認証キーを :func:`os.urandom` を使用して生成することもできます。
+Suitable authentication keys can also be generated by using :func:`os.urandom`.
 
-ロギング
-~~~~~~~~
 
-ロギングのために幾つかの機能が利用可能です。しかし :mod:`logging` パッケージは、
-(ハンドラ種別に依存して)違うプロセスからのメッセージがごちゃ混ぜになるので、
-プロセスの共有ロックを使用しないことに注意してください。
+Logging
+~~~~~~~
+
+Some support for logging is available.  Note, however, that the :mod:`logging`
+package does not use process shared locks so it is possible (depending on the
+handler type) for messages from different processes to get mixed up.
 
 .. currentmodule:: multiprocessing
 .. function:: get_logger()
 
-   :mod:`multiprocessing` が使用するロガーを返します。必要に応じて新たなロガーを作成します。
+   Returns the logger used by :mod:`multiprocessing`.  If necessary, a new one
+   will be created.
 
-   最初に作成するとき、ロガーはレベルに :data:`logging.NOTSET` が設定されていて
-   デフォルトハンドラがありません。
-   このロガーへ送られるメッセージはデフォルトではルートロガーへ伝播されません。
+   When first created the logger has level :data:`logging.NOTSET` and no
+   default handler. Messages sent to this logger will not by default propagate
+   to the root logger.
 
-   Windows 上では子プロセスが親プロセスのロガーレベルを継承しないことに注意してください。
-   さらにその他のロガーのカスタマイズ内容も全て継承されません。
+   Note that on Windows child processes will only inherit the level of the
+   parent process's logger -- any other customization of the logger will not be
+   inherited.
 
 .. currentmodule:: multiprocessing
 .. function:: log_to_stderr()
 
-   この関数は :func:`get_logger` に対する呼び出しを実行しますが、
-   get_logger によって作成されるロガーを返すことに加えて、
-   ``'[%(levelname)s/%(processName)s] %(message)s'`` のフォーマットを使用して
-   :data:`sys.stderr` へ出力を送るハンドラを追加します。
+   This function performs a call to :func:`get_logger` but in addition to
+   returning the logger created by get_logger, it adds a handler which sends
+   output to :data:`sys.stderr` using format
+   ``'[%(levelname)s/%(processName)s] %(message)s'``.
 
-以下にロギングを有効にした例を紹介します。
-
-::
+Below is an example session with logging turned on::
 
     >>> import multiprocessing, logging
     >>> logger = multiprocessing.log_to_stderr()
@@ -1935,10 +2164,10 @@ Listeners and Clients
     [INFO/MainProcess] sending shutdown message to manager
     [INFO/SyncManager-...] manager exiting with exitcode 0
 
-これらの2つのロギング関数があることに加えて、
-multiprocessing モジュールも2つの追加ロギングレベル属性を提供します。
-それは :const:`SUBWARNING` と :const:`SUBDEBUG` です。
-次の表は通常のレベル階層にうまく適合していることを表します。
+In addition to having these two logging functions, the multiprocessing also
+exposes two additional logging level attributes. These are  :const:`SUBWARNING`
+and :const:`SUBDEBUG`. The table below illustrates where theses fit in the
+normal level hierarchy.
 
 +----------------+----------------+
 | Level          | Numeric value  |
@@ -1948,13 +2177,11 @@ multiprocessing モジュールも2つの追加ロギングレベル属性を提
 | ``SUBDEBUG``   | 5              |
 +----------------+----------------+
 
-完全なロギングレベルの表については :mod:`logging` モジュールを参照してください。
+For a full table of logging levels, see the :mod:`logging` module.
 
-こういった追加のロギングレベルは主に multiprocessing モジュールの
-信頼できるデバッグメッセージのために使用されます。
-以下に上述の例に :const:`SUBDEBUG` を有効にしたものを紹介します。
-
-::
+These additional logging levels are used primarily for certain debug messages
+within the multiprocessing module. Below is the same example as above, except
+with :const:`SUBDEBUG` enabled::
 
     >>> import multiprocessing, logging
     >>> logger = multiprocessing.log_to_stderr()
@@ -1964,98 +2191,103 @@ multiprocessing モジュールも2つの追加ロギングレベル属性を提
     >>> m = multiprocessing.Manager()
     [INFO/SyncManager-...] child process calling self.run()
     [INFO/SyncManager-...] created temp directory /.../pymp-...
-    [INFO/SyncManager-...] manager serving at '/.../pymp-.../listener-...'
+    [INFO/SyncManager-...] manager serving at '/.../pymp-djGBXN/listener-...'
     >>> del m
     [SUBDEBUG/MainProcess] finalizer calling ...
     [INFO/MainProcess] sending shutdown message to manager
-    [DEBUG/SyncManager-1] manager received shutdown message
+    [DEBUG/SyncManager-...] manager received shutdown message
     [SUBDEBUG/SyncManager-...] calling <Finalize object, callback=unlink, ...
     [SUBDEBUG/SyncManager-...] finalizer calling <built-in function unlink> ...
     [SUBDEBUG/SyncManager-...] calling <Finalize object, dead>
     [SUBDEBUG/SyncManager-...] finalizer calling <function rmtree at 0x5aa730> ...
     [INFO/SyncManager-...] manager exiting with exitcode 0
 
-:mod:`multiprocessing.dummy` モジュール
+The :mod:`multiprocessing.dummy` module
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. module:: multiprocessing.dummy
    :synopsis: Dumb wrapper around threading.
 
-:mod:`multiprocessing.dummy` は :mod:`multiprocessing` の API を複製しますが
-:mod:`threading` モジュールのラッパーでしかありません。
+:mod:`multiprocessing.dummy` replicates the API of :mod:`multiprocessing` but is
+no more than a wrapper around the :mod:`threading` module.
+
 
 .. _multiprocessing-programming:
 
-プログラミングガイドライン
---------------------------
+Programming guidelines
+----------------------
 
-:mod:`multiprocessing` を使用するときに守るべき一定のガイドラインと
-イディオムを挙げます。
+There are certain guidelines and idioms which should be adhered to when using
+:mod:`multiprocessing`.
 
-全てのプラットホーム
-~~~~~~~~~~~~~~~~~~~~
 
-共有状態を避ける
+All platforms
+~~~~~~~~~~~~~
 
-    できるだけ、巨大なデータをプロセス間で移動することは避けましょう。
+Avoid shared state
 
-    プロセス間の通信には、 :mod:`threading` モジュールの低レベルな
-    同期プリミティブを使うのではなく、
-    キューやパイプを使うのが良いでしょう。
+    As far as possible one should try to avoid shifting large amounts of data
+    between processes.
 
-pickle 化可能性
+    It is probably best to stick to using queues or pipes for communication
+    between processes rather than using the lower level synchronization
+    primitives from the :mod:`threading` module.
 
-    プロキシのメソッドへの引数は、 pickle 化できるものにしてください。
+Picklability
 
-プロキシのスレッドセーフ性
+    Ensure that the arguments to the methods of proxies are picklable.
 
-    1 つのプロキシオブジェクトは、ロックで保護しない限り、
-    2 つ以上のスレッドから使用してはいけません。
+Thread safety of proxies
 
-    (異なるプロセスで *同じ* プロキシを使用することは問題ではありません。)
+    Do not use a proxy object from more than one thread unless you protect it
+    with a lock.
 
-ゾンビプロセスを join する
+    (There is never a problem with different processes using the *same* proxy.)
 
-    Unix 上では、プロセスが完了したときに join されないと、そのプロセスはゾンビになります。
-    新たなプロセスが開始する (又は :func:`active_children` が呼ばれる) ごとに、
-    join されていない全ての完了プロセスが join されるので、
-    ゾンビプロセスはあまり多くならないはずです。また、完了したプロセスの
-    :meth:`Process.is_alive` を呼び出すとそのプロセスは join されます。
-    そうは言っても、自分で開始した全てのプロセスを明示的に join することは
-    おそらく良いプラクティスです。
+Joining zombie processes
 
-pickle/unpickle より継承する方が良い
+    On Unix when a process finishes but has not been joined it becomes a zombie.
+    There should never be very many because each time a new process starts (or
+    :func:`~multiprocessing.active_children` is called) all completed processes
+    which have not yet been joined will be joined.  Also calling a finished
+    process's :meth:`Process.is_alive <multiprocessing.Process.is_alive>` will
+    join the process.  Even so it is probably good
+    practice to explicitly join all the processes that you start.
 
-    Windows 上では :mod:`multiprocessing` の多くの型を子プロセスが使用するために
-    pickle 化する必要があります。しかし、パイプやキューを使用する他のプロセスへ
-    共有オブジェクトを送ることは一般的に避けるべきです。その代わり、どこかに
-    作成された共有リソースへアクセスが必要なプロセスは他のプロセスから
-    継承できるようにそのプログラムを修正すべきです。
+Better to inherit than pickle/unpickle
 
-プロセスの強制終了を避ける
+    On Windows many types from :mod:`multiprocessing` need to be picklable so
+    that child processes can use them.  However, one should generally avoid
+    sending shared objects to other processes using pipes or queues.  Instead
+    you should arrange the program so that a process which needs access to a
+    shared resource created elsewhere can inherit it from an ancestor process.
 
-    あるプロセスを停止するために :meth:`Process.terminate` メソッドを使用すると、
-    そのプロセスが現在使用されている(ロック、セマフォ、パイプやキューのような)共有リソースを
-    破壊したり他のプロセスから利用できない状態を引き起こし易いです。
+Avoid terminating processes
 
-    そのため、 :meth:`Process.terminate` は共有リソースを使用しないプロセスでのみ 
-    使うようにしましょう。
+    Using the :meth:`Process.terminate <multiprocessing.Process.terminate>`
+    method to stop a process is liable to
+    cause any shared resources (such as locks, semaphores, pipes and queues)
+    currently being used by the process to become broken or unavailable to other
+    processes.
 
-キューを使用するプロセスを join する
+    Therefore it is probably best to only consider using
+    :meth:`Process.terminate <multiprocessing.Process.terminate>` on processes
+    which never use any shared resources.
 
-    キューに要素を追加するプロセスは、全てのバッファされた要素が "feeder" スレッドによって
-    下位層のパイプに対してフィードされるまで終了を待つということを覚えておいてください。
-    (子プロセスはこの動作を避けるためにキューの :meth:`~multiprocessing.Queue.cancel_join_thread`
-    メソッドを呼ぶことができます。)
+Joining processes that use queues
 
-    これはキューを使用するときに、キューに追加された全ての要素が最終的に
-    そのプロセスが join される前に削除されていることを確認する必要があることを意味します。
-    そうしないと、そのキューに要素が追加したプロセスの終了を保証できません。
-    デーモンではないプロセスは自動的に join されることも覚えておいてください。
+    Bear in mind that a process that has put items in a queue will wait before
+    terminating until all the buffered items are fed by the "feeder" thread to
+    the underlying pipe.  (The child process can call the
+    :meth:`~multiprocessing.Queue.cancel_join_thread` method of the queue to avoid this behaviour.)
 
-    次の例はデッドロックを引き起こします。
+    This means that whenever you use a queue you need to make sure that all
+    items which have been put on the queue will eventually be removed before the
+    process is joined.  Otherwise you cannot be sure that processes which have
+    put items on the queue will terminate.  Remember also that non-daemonic
+    processes will be joined automatically.
 
-    ::
+    An example which will deadlock is the following::
 
         from multiprocessing import Process, Queue
 
@@ -2066,25 +2298,25 @@ pickle/unpickle より継承する方が良い
             queue = Queue()
             p = Process(target=f, args=(queue,))
             p.start()
-            p.join()                    # これはデッドロックします
+            p.join()                    # this deadlocks
             obj = queue.get()
 
-    修正するには最後の2行を入れ替えます(または単純に ``p.join()`` の行を削除します)。
+    A fix here would be to swap the last two lines (or simply remove the
+    ``p.join()`` line).
 
-明示的に子プロセスへリソースを渡す
+Explicitly pass resources to child processes
 
-    Unix 上では子プロセスはグローバルなリソースを使用する親プロセスが作成した
-    共有リソースを使用することができます。しかし、引数としてそのオブジェクトを
-    子プロセスのコンストラクタへ渡す方が良いです。
+    On Unix a child process can make use of a shared resource created in a
+    parent process using a global resource.  However, it is better to pass the
+    object as an argument to the constructor for the child process.
 
-    これにより、コードが (潜在的に) Windows 互換になるだけでなく、
-    子プロセスが生き続ける限り、そのオブジェクトは親プロセスでガベージコレクト
-    されないことも保証されます。これは親プロセスでそのオブジェクトがガベージコレクト
-    されるときにリソースが解放される場合に重要になるでしょう。
+    Apart from making the code (potentially) compatible with Windows this also
+    ensures that as long as the child process is still alive the object will not
+    be garbage collected in the parent process.  This might be important if some
+    resource is freed when the object is garbage collected in the parent
+    process.
 
-    そのため、例えば、
-
-    ::
+    So for instance ::
 
         from multiprocessing import Process, Lock
 
@@ -2096,9 +2328,7 @@ pickle/unpickle より継承する方が良い
            for i in range(10):
                 Process(target=f).start()
 
-    は、次のように書き直すべきです。
-
-    ::
+    should be rewritten as ::
 
         from multiprocessing import Process, Lock
 
@@ -2110,76 +2340,73 @@ pickle/unpickle より継承する方が良い
            for i in range(10):
                 Process(target=f, args=(lock,)).start()
 
-:data:`sys.stdin` を "ファイル形式のオブジェクト" へ置き換えることに注意してください
+Beware of replacing :data:`sys.stdin` with a "file like object"
 
-    :mod:`muliprocessing` は元々 :meth:`muliprocessing.Process.__bootstrap` の
-    中で無条件に
-
-    ::
+    :mod:`multiprocessing` originally unconditionally called::
 
         os.close(sys.stdin.fileno())
 
-    を呼び出していました --- これはプロセス間で問題が起こしてしまいます。
-    そこで、これは以下のように変更されました。
-    
-    ::
+    in the :meth:`multiprocessing.Process._bootstrap` method --- this resulted
+    in issues with processes-in-processes. This has been changed to::
 
         sys.stdin.close()
         sys.stdin = open(os.devnull)
 
-    これによってプロセス間同士が衝突して bad file descripter エラーを起こすという
-    基本的な問題は解決しました、しかし、アプリケーションの出力バッファーを
-    :func:`sys.stdin` からファイル形式のオブジェクトに置き換えるという潜在的危険を
-    持ち込みます。
-    複数のプロセスがファイル形式オブジェクトの :func:`close()` を呼び出した場合、
-    オブジェクトに同じデータが何度もフラッシュされ、衝突が起きる危険があります。
+    Which solves the fundamental issue of processes colliding with each other
+    resulting in a bad file descriptor error, but introduces a potential danger
+    to applications which replace :func:`sys.stdin` with a "file-like object"
+    with output buffering.  This danger is that if multiple processes call
+    :meth:`~io.IOBase.close()` on this file-like object, it could result in the same
+    data being flushed to the object multiple times, resulting in corruption.
 
-    もし、ファイル形式オブジェクトを書いて、独自のキャッシュ実装する場合、
-    キャッシュする時に常に pid を記録しておく、
-    pid が変わったらキュッシュを捨てることでフォークセーフにできます。
-    例::
+    If you write a file-like object and implement your own caching, you can
+    make it fork-safe by storing the pid whenever you append to the cache,
+    and discarding the cache when the pid changes. For example::
 
-        @property
-        def cache(self):
-            pid = os.getpid()
-            if pid != self._pid:
-                self._pid = pid
-                self._cache = []
-            return self._cache
+       @property
+       def cache(self):
+           pid = os.getpid()
+           if pid != self._pid:
+               self._pid = pid
+               self._cache = []
+           return self._cache
 
-    より詳しい情報は :issue:`5155` 、 :issue:`5351` 、 :issue:`5331` を見てください。
+    For more information, see :issue:`5155`, :issue:`5313` and :issue:`5331`
 
 Windows
 ~~~~~~~
 
-Windows には :func:`os.fork` がないのでいくつか追加制限があります。
+Since Windows lacks :func:`os.fork` it has a few extra restrictions:
 
-さらなる pickle 化可能性
-    :meth:`Process.__init__` へ渡す全ての引数は、pickle化できるものにしてください。
-    これはとりわけ、Windows 上で、束縛メソッドや非束縛メソッドを
-    直接 ``target`` 引数として使ってはならない、ということを意味します。
-    メソッドではなく、関数を使うしかないです。
+More picklability
 
-    :class:`Process` のサブクラスを作るとしても同様に、引数のインスタンスは
-    :meth:`Process.start` が呼ばれる時点で pickle 化可能なものでなければなりません。
+    Ensure that all arguments to :meth:`Process.__init__` are picklable.  This
+    means, in particular, that bound or unbound methods cannot be used directly
+    as the ``target`` argument on Windows --- just define a function and use
+    that instead.
 
-グローバル変数
+    Also, if you subclass :class:`~multiprocessing.Process` then make sure that
+    instances will be picklable when the :meth:`Process.start
+    <multiprocessing.Process.start>` method is called.
 
-    子プロセスで実行されるコードがグローバル変数にアクセスしようとする場合、
-    子プロセスが見るその値は :meth:`Process.start` が呼ばれたときの親プロセスの
-    その値と同じではない可能性があります。
+Global variables
 
-    しかし、単にモジュールレベルの定数であるグローバル変数なら問題にはなりません。
+    Bear in mind that if code run in a child process tries to access a global
+    variable, then the value it sees (if any) may not be the same as the value
+    in the parent process at the time that :meth:`Process.start
+    <multiprocessing.Process.start>` was called.
 
-メインモジュールの安全なインポート
+    However, global variables which are just module level constants cause no
+    problems.
 
-    新たな Python インタプリタによるメインモジュールのインポートが、
-    意図しない副作用 (新たなプロセスを開始する等) を起こさずできるように
-    してください。
+Safe importing of main module
 
-    例えば Windows で次のモジュールを実行しようとすると :exc:`RuntimeError` で失敗します。
+    Make sure that the main module can be safely imported by a new Python
+    interpreter without causing unintended side effects (such a starting a new
+    process).
 
-    ::
+    For example, under Windows running the following module would fail with a
+    :exc:`RuntimeError`::
 
         from multiprocessing import Process
 
@@ -2189,10 +2416,8 @@ Windows には :func:`os.fork` がないのでいくつか追加制限があり�
         p = Process(target=foo)
         p.start()
 
-    代わりに、次のように ``if __name__ == '__main__':`` を使用して
-    プログラムの "エントリポイント" を保護すべきです。
-
-    ::
+    Instead one should protect the "entry point" of the program by using ``if
+    __name__ == '__main__':`` as follows::
 
        from multiprocessing import Process, freeze_support
 
@@ -2204,47 +2429,50 @@ Windows には :func:`os.fork` がないのでいくつか追加制限があり�
            p = Process(target=foo)
            p.start()
 
-    ( ``freeze_support()`` 行はプログラムが固まらずに実行されるなら通常は取り除かれます。)
+    (The ``freeze_support()`` line can be omitted if the program will be run
+    normally instead of frozen.)
 
-    これは新たに生成された Python インタプリタがそのモジュールを安全にインポートして、
-    モジュールの ``foo()`` 関数を実行します。
+    This allows the newly spawned Python interpreter to safely import the module
+    and then run the module's ``foo()`` function.
 
-    プール又はマネージャがメインモジュールで作成される場合に似たような制限が適用されます。
+    Similar restrictions apply if a pool or manager is created in the main
+    module.
+
 
 .. _multiprocessing-examples:
 
-例
---
+Examples
+--------
 
-カスタマイズされたマネージャやプロキシの作成方法と使用方法を紹介します。
+Demonstration of how to create and use customized managers and proxies:
 
 .. literalinclude:: ../includes/mp_newtype.py
 
 
-:class:`Pool` の使用例を紹介します。
+Using :class:`~multiprocessing.pool.Pool`:
 
 .. literalinclude:: ../includes/mp_pool.py
 
 
-ロック、コンディションやキューのような同期の例を紹介します。
+Synchronization types like locks, conditions and queues:
 
 .. literalinclude:: ../includes/mp_synchronize.py
 
 
-ワーカープロセスのコレクションに対するタスクをフィードするキューの使用方法と
-その結果をまとめる方法の例をを紹介します。
+An example showing how to use queues to feed tasks to a collection of worker
+processes and collect the results:
 
 .. literalinclude:: ../includes/mp_workers.py
 
 
-ワーカープロセスのプールが1つのソケットを共有して
-それぞれの :class:`SimpleHTTPServer.HttpServer` インスタンスを
-実行する方法の例を紹介します。
+An example of how a pool of worker processes can each run a
+:class:`SimpleHTTPServer.HttpServer` instance while sharing a single listening
+socket.
 
 .. literalinclude:: ../includes/mp_webserver.py
 
 
-:mod:`multiprocessing` と :mod:`threading` を比較した簡単なベンチマークです。
+Some simple benchmarks comparing :mod:`multiprocessing` with :mod:`threading`:
 
 .. literalinclude:: ../includes/mp_benchmarks.py
 

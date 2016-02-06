@@ -1,11 +1,12 @@
 
 .. _sunos:
 
-********************
-SunOS 固有のサービス
-********************
+***********************
+SunOS Specific Services
+***********************
 
-この章では、SunOSオペレーティングシステムバージョン5(Solarisバージョン2)に固有の機能を解説します。
+The modules described in this chapter provide interfaces to features that are
+unique to SunOS 5 (also known as Solaris version 2).
 
 
 .. toctree::

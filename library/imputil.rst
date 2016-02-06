@@ -1,114 +1,114 @@
 
-:mod:`imputil` --- Import ユーティリティ
+:mod:`imputil` --- Import utilities
 =====================================================
 
 .. module:: imputil
-   :synopsis: import 処理の管理と増強
+   :synopsis: Manage and augment the import process.
    :deprecated:
 
 .. deprecated:: 2.6
-   :mod:`imputil` モジュールは Python 3.0 で削除されました。
+   The :mod:`imputil` module has been removed in Python 3.
 
 
 .. index:: statement: import
 
-このモジュールは手軽で役に立つ :keyword:`import` フックを改造する機構を提供します。
-古い :mod:`ihooks` と比較すると、 :mod:`imputil` は
-:keyword:`import` 関数を改造するのに劇的に単純で直截なアプローチをとります。
+This module provides a very handy and useful mechanism for custom
+:keyword:`import` hooks. Compared to the older :mod:`ihooks` module,
+:mod:`imputil` takes a dramatically simpler and more straight-forward
+approach to custom :keyword:`import` functions.
 
 
 .. class:: ImportManager([fs_imp])
 
-   import 処理を管理します。
+   Manage the import process.
 
    .. method:: ImportManager.install([namespace])
 
-      この ImportManager を指定された名前空間にインストールします。
+      Install this ImportManager into the specified namespace.
 
    .. method:: ImportManager.uninstall()
 
-      以前の import 機構に戻します。
+      Restore the previous import mechanism.
 
    .. method:: ImportManager.add_suffix(suffix, importFunc)
 
-      内緒です。
+      Undocumented.
 
 
 .. class:: Importer()
 
-   標準 import 関数を置き換える基底クラス。
+   Base class for replacing standard import functions.
 
    .. method:: Importer.import_top(name)
 
-      トップレベルのモジュールを import します。
+      Import a top-level module.
 
    .. method:: Importer.get_code(parent, modname, fqname)
 
-      与えられたモジュールに対するコードを見つけて取ってきます。
+      Find and retrieve the code for the given module.
 
-      *parent* は import するコンテキストを定義する親モジュールを指定します。
-      ``None`` でも構いません。その場合探すべきコンテキストは特にないことを意味します。
+      *parent* specifies a parent module to define a context for importing.
+      It may be ``None``, indicating no particular context for the search.
 
-      *modname* は親の内部の (ドットの付かない) 単独のモジュールを指定します。
+      *modname* specifies a single module (not dotted) within the parent.
 
-      *fqname* 完全修飾(fully-qualified)モジュール名を指定します。
-      これは (潜在的に) ドット付けられたモジュール名前空間の "root"
-      から modname までの名前です。
+      *fqname* specifies the fully-qualified module name. This is a
+      (potentially) dotted name from the "root" of the module namespace
+      down to the modname.
 
-      parent が無ければ、modname==fqname です。
+      If there is no parent, then modname==fqname.
 
-      このメソッドは ``None`` または3要素タプルを返します。
+      This method should return ``None``, or a 3-tuple.
 
-        * モジュールが見つからなければ ``None`` が返されます。
+        * If the module was not found, then ``None`` should be returned.
 
-        * 2または3要素のタプルの最初の要素は整数の 0 か 1 で、
-          見つかったモジュールがパッケージかそうでないかを指定します。
+        * The first item of the 2- or 3-tuple should be the integer 0 or 1,
+          specifying whether the module that was found is a package or not.
 
-        * 2番目の要素はモジュールのコードオブジェクトです
-          (このコードは新しいモジュールの名前空間の中で実行されます)。
-          この要素はまた完全に読み込まれたモジュールオブジェクト
-          (たとえば共有ライブラリから読み込まれてものなど) でもありえます。
+        * The second item is the code object for the module (it will be
+          executed within the new module's namespace). This item can also
+          be a fully-loaded module object (e.g. loaded from a shared lib).
 
-        * 3番目の要素はコードオブジェクトが実行される前に新しいモジュールに挿入する\
-          名前/値ペアの辞書です。この要素はモジュールのコードが特定の値
-          (たとえばどこでモジュールが見つかったかといった)
-          を予期している場合に供給されます。
-          2番目の要素がモジュールオブジェクトであるときは、
-          これらの名前/値はモジュールが読み込まれ/初期化された *後で* 挿入されます。
+        * The third item is a dictionary of name/value pairs that will be
+          inserted into new module before the code object is executed. This
+          is provided in case the module's code expects certain values (such
+          as where the module was found). When the second item is a module
+          object, then these names/values will be inserted *after* the module
+          has been loaded/initialized.
 
 
 .. class:: BuiltinImporter()
 
-   ビルトインおよび凍結されたモジュール用の import 機構をエミュレートします。
-   :class:`Importer` クラスのサブクラスです。
+   Emulate the import mechanism for built-in and frozen modules.  This is a
+   sub-class of the :class:`Importer` class.
 
    .. method:: BuiltinImporter.get_code(parent, modname, fqname)
 
-      内緒です。
+      Undocumented.
 
 .. function:: py_suffix_importer(filename, finfo, fqname)
 
-   内緒です。
+   Undocumented.
 
 .. class:: DynLoadSuffixImporter([desc])
 
-   内緒です。
+   Undocumented.
 
    .. method:: DynLoadSuffixImporter.import_file(filename, finfo, fqname)
 
-      内緒です。
+      Undocumented.
 
 .. _examples-imputil:
 
 Examples
 --------
 
-これは階層的モジュール import の再実装です。
+This is a re-implementation of hierarchical module import.
 
-このコードは読むためのもので、実行するためのものではありません。
-しかしながら、まあ動きます -- 必要なのは "import knee" することだけです。
+This code is intended to be read, not executed.  However, it does work
+-- all you need to do to enable it is "import knee".
 
-(名前はこのモジュールの不格好な前身 "ni" との語呂合わせです)
+(The name is a pun on the clunkier predecessor of this module, "ni".)
 
 ::
 
@@ -232,6 +232,7 @@ Examples
 .. index::
    module: knee
 
-:mod:`importers` モジュール (Python の配布されているソースの
-:file:`Demo/imputil/` の中にあります) ももう一つの例として参照して下さい。
+Also see the :mod:`importers` module (which can be found
+in :file:`Demo/imputil/` in the Python source distribution) for additional
+examples.
 

@@ -1,5 +1,4 @@
-
-:mod:`pickle` --- Python オブジェクトの整列化
+:mod:`pickle` --- Python object serialization
 =============================================
 
 .. index::
@@ -11,627 +10,582 @@
    pair: pickling; objects
 
 .. module:: pickle
-   :synopsis: Python オブジェクトからバイトストリームへの変換、およびその逆。
-
+   :synopsis: Convert Python objects to streams of bytes and back.
 .. sectionauthor:: Jim Kerr <jbkerr@sr.hp.com>.
 .. sectionauthor:: Barry Warsaw <barry@zope.com>
 
-:mod:`pickle` モジュールでは、Python オブジェクトデータ構造を直列化
-(serialize) したり非直列化 (de-serialize)するための基礎的ですが強力な
-アルゴリズムを実装しています。 "Pickle 化 (Pickling)" は Python のオブ
-ジェクト階層をバイトストリームに変換する過程を指します。"非 Pickle 化
-(unpickling)" はその逆の操作で、バイトストリームをオブジェクト階層に戻
-すように変換します。Pickle 化 (及び非 Pickle 化) は、別名 "直列化
-(serialization)" や "整列化 (marshalling)" [#]_ 、 "平坦化
-(flattening)" として知られていますが、ここでは混乱を避けるため、用語
-として "Pickle 化" および  "非Pickle 化" を使います。
+The :mod:`pickle` module implements a fundamental, but powerful algorithm for
+serializing and de-serializing a Python object structure.  "Pickling" is the
+process whereby a Python object hierarchy is converted into a byte stream, and
+"unpickling" is the inverse operation, whereby a byte stream is converted back
+into an object hierarchy.  Pickling (and unpickling) is alternatively known as
+"serialization", "marshalling," [#]_ or "flattening", however, to avoid
+confusion, the terms used here are "pickling" and "unpickling".
 
-このドキュメントでは :mod:`pickle` モジュールおよび :mod:`cPickle` モ
-ジュールの両方について記述します。
+This documentation describes both the :mod:`pickle` module and the
+:mod:`cPickle` module.
 
 .. warning::
 
-   :mod:`pickle` モジュールはエラーや不正に生成されたデータに対するセキュリティを
-   考慮していません。信頼できない、あるいは認証されていないソースから受信したデータを
-   unpickle してはいけません。
+   The :mod:`pickle` module is not secure against erroneous or maliciously
+   constructed data.  Never unpickle data received from an untrusted or
+   unauthenticated source.
 
 
-他の Python モジュールとの関係
-------------------------------
+Relationship to other Python modules
+------------------------------------
 
-:mod:`pickle` モジュールには :mod:`cPickle` と呼ばれる最適化のなされ
-た親類モジュールがあります。名前が示すように、 :mod:`cPickle` は C で書
-かれており、このため :mod:`pickle` より 1000 倍くらいまで高速になる可
-能性があります。しかしながら :mod:`cPickle` では :func:`Pickler` およ
-び  :func:`Unpickler` クラスのサブクラス化をサポートしていません。
-これは :mod:`cPickle` では、これらは関数であってクラスではないからで
-す。ほとんどのアプリケーションではこの機能は不要であり、 :mod:`cPickle`
-の持つ高いパフォーマンスの恩恵を受けることができます。その他の点では、
-二つのモジュールにおけるインタフェースはほとんど同じです; このマニュア
-ルでは共通のインタフェースを記述しており、必要に応じてモジュール間の
-相違について指摘します。以下の議論では、 :mod:`pickle`  と
-:mod:`cPickle` の総称として "pickle" という用語を使うことにします。
+The :mod:`pickle` module has an optimized cousin called the :mod:`cPickle`
+module.  As its name implies, :mod:`cPickle` is written in C, so it can be up to
+1000 times faster than :mod:`pickle`.  However it does not support subclassing
+of the :func:`Pickler` and :func:`Unpickler` classes, because in :mod:`cPickle`
+these are functions, not classes.  Most applications have no need for this
+functionality, and can benefit from the improved performance of :mod:`cPickle`.
+Other than that, the interfaces of the two modules are nearly identical; the
+common interface is described in this manual and differences are pointed out
+where necessary.  In the following discussions, we use the term "pickle" to
+collectively describe the :mod:`pickle` and :mod:`cPickle` modules.
 
-これら二つのモジュールが生成するデータストリームは相互交換できることが
-保証されています。
+The data streams the two modules produce are guaranteed to be interchangeable.
 
-Python には :mod:`marshal` と呼ばれるより原始的な直列化モジュールがあ
-りますが、一般的に Python オブジェクトを直列化する方法としては
-:mod:`pickle` を選ぶべきです。 :mod:`marshal` は基本的に :file:`.pyc`
-ファイルをサポートするために存在しています。
+Python has a more primitive serialization module called :mod:`marshal`, but in
+general :mod:`pickle` should always be the preferred way to serialize Python
+objects.  :mod:`marshal` exists primarily to support Python's :file:`.pyc`
+files.
 
-:mod:`pickle` モジュールはいくつかの点で :mod:`marshal` と明確に異なります:
+The :mod:`pickle` module differs from :mod:`marshal` in several significant ways:
 
-* :mod:`pickle` モジュールでは、同じオブジェクトが再度直列化されること
-  のないよう、すでに直列化されたオブジェクトについて追跡情報を保持しま
-  す。 :mod:`marshal` はこれを行いません。
+* The :mod:`pickle` module keeps track of the objects it has already serialized,
+  so that later references to the same object won't be serialized again.
+  :mod:`marshal` doesn't do this.
 
-  この機能は再帰的オブジェクトと共有オブジェクトの両方に重要な関わり
-  をもっています。再帰的オブジェクトとは自分自身に対する参照を持ってい
-  るオブジェクトです。再帰的オブジェクトは marshal で扱うことができず、
-  実際、再帰的オブジェクトを marshal 化しようとすると Python インタプ
-  リタをクラッシュさせてしまいます。共有オブジェクトは、直列化しよう
-  とするオブジェクト階層の異なる複数の場所で同じオブジェクトに対する参
-  照が存在する場合に生じます。共有オブジェクトを共有のままにしておく
-  ことは、変更可能なオブジェクトの場合には非常に重要です。
+  This has implications both for recursive objects and object sharing.  Recursive
+  objects are objects that contain references to themselves.  These are not
+  handled by marshal, and in fact, attempting to marshal recursive objects will
+  crash your Python interpreter.  Object sharing happens when there are multiple
+  references to the same object in different places in the object hierarchy being
+  serialized.  :mod:`pickle` stores such objects only once, and ensures that all
+  other references point to the master copy.  Shared objects remain shared, which
+  can be very important for mutable objects.
 
-* :mod:`marshal` はユーザ定義クラスやそのインスタンスを直列化するため
-  に使うことができません。 :mod:`pickle` はクラスインスタンスを透過的に
-  保存したり復元したりすることができますが、クラス定義をインポートす
-  ることが可能で、かつオブジェクトが保存された際と同じモジュールで定義
-  されていなければなりません。
+* :mod:`marshal` cannot be used to serialize user-defined classes and their
+  instances.  :mod:`pickle` can save and restore class instances transparently,
+  however the class definition must be importable and live in the same module as
+  when the object was stored.
 
-* :mod:`marshal` の直列化フォーマットは Python の異なるバージョンで可
-  搬性があることを保証していません。 :mod:`marshal` の本来の仕事は
-  :file:`.pyc` ファイルのサポートなので、Python  を実装する人々には、
-  必要に応じて直列化フォーマットを以前のバージョンと互換性のないものに
-  変更する権限が残されています。 :mod:`pickle` 直列化フォーマットには、
-  全ての Python リリース間で以前のバージョンとの互換性が保証されていま
-  す。
+* The :mod:`marshal` serialization format is not guaranteed to be portable
+  across Python versions.  Because its primary job in life is to support
+  :file:`.pyc` files, the Python implementers reserve the right to change the
+  serialization format in non-backwards compatible ways should the need arise.
+  The :mod:`pickle` serialization format is guaranteed to be backwards compatible
+  across Python releases.
 
-直列化は永続化 (persisitence) よりも原始的な概念です; :mod:`pickle` は
-ファイルオブジェクトを読み書きしますが、永続化されたオブジェクトの名前
-付け問題や、(より複雑な) オブジェクトに対する競合アクセスの問題を扱い
-ません。 :mod:`pickle` モジュールは複雑なオブジェクトをバイトストリーム
-に変換することができ、バイトストリームを変換前と同じ内部構造をオブジェ
-クトに変換することができます。このバイトストリームの最も明白な用途は
-ファイルへの書き込みですが、その他にもネットワークを介して送信したり、
-データベースに記録したりすることができます。モジュール :mod:`shelve`
-はオブジェクトを DBM 形式のデータベースファイル上で pickle 化したり
-unpickle 化したりするための単純なインタフェースを提供しています。
+Note that serialization is a more primitive notion than persistence; although
+:mod:`pickle` reads and writes file objects, it does not handle the issue of
+naming persistent objects, nor the (even more complicated) issue of concurrent
+access to persistent objects.  The :mod:`pickle` module can transform a complex
+object into a byte stream and it can transform the byte stream into an object
+with the same internal structure.  Perhaps the most obvious thing to do with
+these byte streams is to write them onto a file, but it is also conceivable to
+send them across a network or store them in a database.  The module
+:mod:`shelve` provides a simple interface to pickle and unpickle objects on
+DBM-style database files.
 
 
-データストリームの形式
-----------------------
+Data stream format
+------------------
 
 .. index::
    single: XDR
    single: External Data Representation
 
-:mod:`pickle` が使うデータ形式は Python 特有です。そうすることで、XDR
-のような外部の標準が持つ制限 (例えば  XDR ではポインタの共有を表現で
-きません) を課せられることがないという利点があります; しかしこれは
-Python で書かれていないプログラムが pickle 化された Python オブジェク
-トを再構築できない可能性があることを意味します。
+The data format used by :mod:`pickle` is Python-specific.  This has the
+advantage that there are no restrictions imposed by external standards such as
+XDR (which can't represent pointer sharing); however it means that non-Python
+programs may not be able to reconstruct pickled Python objects.
 
-標準では、 :mod:`pickle` データ形式では印字可能な ASCII 表現を使います。
-これはバイナリ表現よりも少しかさばるデータになります。印字可能な ASCII
-の利用 (とその他の :mod:`pickle` 表現形式が持つ特徴) の大きな利点は、
-デバッグやリカバリを目的とした場合に、 pickle 化されたファイルを標準的
-なテキストエディタで読めるということです。
+By default, the :mod:`pickle` data format uses a printable ASCII representation.
+This is slightly more voluminous than a binary representation.  The big
+advantage of using printable ASCII (and of some other characteristics of
+:mod:`pickle`'s representation) is that for debugging or recovery purposes it is
+possible for a human to read the pickled file with a standard text editor.
 
-現在、pickle化に使われるプロトコルは、以下の 3 種類です。
+There are currently 3 different protocols which can be used for pickling.
 
-* バージョン 0 のプロトコルは、最初の ASCII プロトコルで、以前のバージョ
-  ンのPython と後方互換です。
+* Protocol version 0 is the original ASCII protocol and is backwards compatible
+  with earlier versions of Python.
 
-* バージョン 1 のプロトコルは、古いバイナリ形式で、以前のバージョンの
-  Python と後方互換です。
+* Protocol version 1 is the old binary format which is also compatible with
+  earlier versions of Python.
 
-* バージョン 2 のプロトコルは、Python 2.3 で導入されました。
-  :term:`new-style class` を、より効率よく piclke 化します。
+* Protocol version 2 was introduced in Python 2.3.  It provides much more
+  efficient pickling of :term:`new-style class`\es.
 
-詳細は :pep:`307` を参照してください。
+Refer to :pep:`307` for more information.
 
-*protocol* を指定しない場合、プロトコル 0 が使われます。 *protocol* に
-負値か :const:`HIGHEST_PROTOCOL` を指定すると、有効なプロトコルの内、
-もっとも高いバージョンのものが使われます。
+If a *protocol* is not specified, protocol 0 is used. If *protocol* is specified
+as a negative value or :const:`HIGHEST_PROTOCOL`, the highest protocol version
+available will be used.
 
 .. versionchanged:: 2.3
-   *protocol* パラメータが導入されました。
+   Introduced the *protocol* parameter.
 
-*protocol* version >= 1 を指定することで、少しだけ効率の高いバイナリ
-形式を選ぶことができます。
+A binary format, which is slightly more efficient, can be chosen by specifying a
+*protocol* version >= 1.
 
 
-使用法
-------
+Usage
+-----
 
-オブジェクト階層を直列化するには、まず pickler を生成し、続いてpickler
-の :meth:`dump` メソッドを呼び出します。データストリームから非直列化
-するには、まず unpickler を生成し、続いて unpicklerの :meth:`load` メ
-ソッドを呼び出します。 :mod:`pickle` モジュールでは以下の定数を提供して
-います:
+To serialize an object hierarchy, you first create a pickler, then you call the
+pickler's :meth:`dump` method.  To de-serialize a data stream, you first create
+an unpickler, then you call the unpickler's :meth:`load` method.  The
+:mod:`pickle` module provides the following constant:
 
 
 .. data:: HIGHEST_PROTOCOL
 
-   有効なプロトコルのうち、最も大きいバージョン。この値は、 *protocol*
-   として渡せます。
+   The highest protocol version available.  This value can be passed as a
+   *protocol* value.
 
    .. versionadded:: 2.3
 
 .. note::
 
-   protocols >= 1 で作られた pickle ファイルは、常にバイナリモードで
-   オープンするようにしてください。古い ASCII ベースの pickle プロトコ
-   ル 0 では、矛盾しない限りにおいてテキストモードとバイナリモードの
-   いずれも利用することができます。
+   Be sure to always open pickle files created with protocols >= 1 in binary mode.
+   For the old ASCII-based pickle protocol 0 you can use either text mode or binary
+   mode as long as you stay consistent.
 
-   プロトコル 0 で書かれたバイナリの pickle ファイルは、行ターミネータ
-   として単独の改行(LF)を含んでいて、ですのでこの形式をサポートしない、
-   Notepad や他のエディタで見たときに「おかしく」見えるかもしれません。
+   A pickle file written with protocol 0 in binary mode will contain lone linefeeds
+   as line terminators and therefore will look "funny" when viewed in Notepad or
+   other editors which do not support this format.
 
-この pickle 化の手続きを便利にするために、 :mod:`pickle` モジュールでは
-以下の関数を提供しています:
+The :mod:`pickle` module provides the following functions to make the pickling
+process more convenient:
 
 
 .. function:: dump(obj, file[, protocol])
 
-   すでに開かれているファイルオブジェクト *file* に、 *obj* を pickle
-   化したものを表現する文字列を書き込みます。
-   ``Pickler(file, protocol).dump(obj)`` と同じです。
+   Write a pickled representation of *obj* to the open file object *file*.  This is
+   equivalent to ``Pickler(file, protocol).dump(obj)``.
 
-   *protocol* を指定しない場合、プロトコル 0 が使われます。 *protocol*
-    に負値か :const:`HIGHEST_PROTOCOL` を指定すると、有効なプロトコル
-    の内、もっとも高いバージョンのものが使われます。
+   If the *protocol* parameter is omitted, protocol 0 is used. If *protocol* is
+   specified as a negative value or :const:`HIGHEST_PROTOCOL`, the highest protocol
+   version will be used.
 
    .. versionchanged:: 2.3
-      *protocol* パラメータが導入されました。
+      Introduced the *protocol* parameter.
 
-   *file* は、単一の文字列引数を受理する :meth:`write` メソッドを持た
-    なければなりません。従って、 *file* としては、書き込みのために開か
-    れたファイルオブジェクト、 :mod:`StringIO` オブジェクト、その他前
-    述のインタフェースに適合する他のカスタムオブジェクトをとることがで
-    きます。
+   *file* must have a :meth:`write` method that accepts a single string argument.
+   It can thus be a file object opened for writing, a :mod:`StringIO` object, or
+   any other custom object that meets this interface.
 
 
 .. function:: load(file)
 
-   すでに開かれているファイルオブジェクト *file* から文字列を読み出し、
-   読み出された文字列を pickle 化されたデータ列として解釈して、もとの
-   オブジェクト階層を再構築して返します。 ``Unpickler(file).load()`` と
-   同じです。
+   Read a string from the open file object *file* and interpret it as a pickle data
+   stream, reconstructing and returning the original object hierarchy.  This is
+   equivalent to ``Unpickler(file).load()``.
 
-   *file* は、整数引数をとる :meth:`read` メソッドと、引数の必要ない
-   :meth:`readline` メソッドを持たなければなりません。これらのメソッ
-   ドは両方とも文字列を返さなければなりません。従って、 *file* とし
-   ては、読み出しのために開かれたファイルオブジェクト、
-   :mod:`StringIO` オブジェクト、その他前述のインタフェースに適合す
-   る他のカスタムオブジェクトをとることができます。
+   *file* must have two methods, a :meth:`read` method that takes an integer
+   argument, and a :meth:`readline` method that requires no arguments.  Both
+   methods should return a string.  Thus *file* can be a file object opened for
+   reading, a :mod:`StringIO` object, or any other custom object that meets this
+   interface.
 
-   この関数はデータ列の書き込まれているモードがバイナリかそうでないか
-   を自動的に判断します。
+   This function automatically determines whether the data stream was written in
+   binary mode or not.
 
 
 .. function:: dumps(obj[, protocol])
 
-   *obj* の pickle 化された表現を、ファイルに書き込む代わりに文字列で
-   返します。
+   Return the pickled representation of the object as a string, instead of writing
+   it to a file.
 
-   *protocol* を指定しない場合、プロトコル 0 が使われます。 *protocol*
-   に負値か :const:`HIGHEST_PROTOCOL` を指定すると、有効なプロトコル
-   の内、もっとも高いバージョンのものが使われます。
+   If the *protocol* parameter is omitted, protocol 0 is used. If *protocol* is
+   specified as a negative value or :const:`HIGHEST_PROTOCOL`, the highest protocol
+   version will be used.
 
    .. versionchanged:: 2.3
-      *protocol* パラメータが追加されました。
+      The *protocol* parameter was added.
 
 
 .. function:: loads(string)
 
-   pickle 化されたオブジェクト階層を文字列から読み出します。文字列中
-   で pickle 化されたオブジェクト表現よりも後に続く文字列は無視されま
-   す。
+   Read a pickled object hierarchy from a string.  Characters in the string past
+   the pickled object's representation are ignored.
 
-:mod:`pickle` モジュールでは、以下の 3 つの例外も定義しています:
+The :mod:`pickle` module also defines three exceptions:
 
 
 .. exception:: PickleError
 
-   下で定義されている他の例外で共通の基底クラスです。 :exc:`Exception`
-   を継承しています。
+   A common base class for the other exceptions defined below.  This inherits from
+   :exc:`Exception`.
 
 
 .. exception:: PicklingError
 
-   この例外は unpickle 不可能なオブジェクトが :meth:`dump` メソッドに
-   渡された場合に送出されます。
+   This exception is raised when an unpicklable object is passed to the
+   :meth:`dump` method.
 
 
 .. exception:: UnpicklingError
 
-   この例外は、オブジェクトを unpickle 化する際に問題が発生した場合に
-   送出されます。 unpickle 化中には :exc:`AttributeError` 、
-   :exc:`EOFError` 、 :exc:`ImportError` 、および :exc:`IndexError` と
-   いった他の例外 (これだけとは限りません) も発生する可能性があるので
-   注意してください。
+   This exception is raised when there is a problem unpickling an object. Note that
+   other exceptions may also be raised during unpickling, including (but not
+   necessarily limited to) :exc:`AttributeError`, :exc:`EOFError`,
+   :exc:`ImportError`, and :exc:`IndexError`.
 
-:mod:`pickle` モジュールでは、2 つの呼び出し可能オブジェクト  [#]_ と
-して、 :class:`Pickler` および :class:`Unpickler` を提供しています:
+The :mod:`pickle` module also exports two callables [#]_, :class:`Pickler` and
+:class:`Unpickler`:
 
 
 .. class:: Pickler(file[, protocol])
 
-   pickle 化されたオブジェクトのデータ列を書き込むためのファイル類似の
-   オブジェクトを引数にとります。
+   This takes a file-like object to which it will write a pickle data stream.
 
-   *protocol* を指定しない場合、プロトコル 0 が使われます。 *protocol*
-   に負値か :const:`HIGHEST_PROTOCOL` を指定すると、有効なプロトコル
-   の内、もっとも高いバージョンのものが使われます。
+   If the *protocol* parameter is omitted, protocol 0 is used. If *protocol* is
+   specified as a negative value or :const:`HIGHEST_PROTOCOL`, the highest
+   protocol version will be used.
 
    .. versionchanged:: 2.3
-      *protocol* パラメータが導入されました。
+      Introduced the *protocol* parameter.
 
-   *file* は単一の文字列引数を受理する :meth:`write` メソッドを持たな
-   ければなりません。従って、 *file* としては、書き込みのために開かれ
-   たファイルオブジェクト、 :mod:`StringIO` オブジェクト、その他前述
-   のインタフェースに適合する他のカスタムオブジェクトをとることができ
-   ます。
+   *file* must have a :meth:`write` method that accepts a single string argument.
+   It can thus be an open file object, a :mod:`StringIO` object, or any other
+   custom object that meets this interface.
 
-   :class:`Pickler` オブジェクトでは、一つ (または二つ) の public なメソッドを定義しています:
+   :class:`Pickler` objects define one (or two) public methods:
 
 
    .. method:: dump(obj)
 
-   コンストラクタで与えられた、すでに開かれているファイルオブジェクト
-   に *obj* の pickle 化された表現を書き込みます。コンストラクタに渡さ
-   れた *protocol* 引数の値に応じて、バイナリおよびASCII 形式が使われ
-   ます。
+      Write a pickled representation of *obj* to the open file object given in the
+      constructor.  Either the binary or ASCII format will be used, depending on the
+      value of the *protocol* argument passed to the constructor.
 
 
    .. method:: clear_memo()
 
-   picller の "メモ" を消去します。メモとは、共有オブジェクトまたは再
-   帰的なオブジェクトが値ではなく参照で記憶されるようにするために、
-   pickler がこれまでどのオブジェクトに遭遇してきたかを記憶するデータ
-   構造です。このメソッドは pickler を再利用する際に便利です。
+      Clears the pickler's "memo".  The memo is the data structure that remembers
+      which objects the pickler has already seen, so that shared or recursive objects
+      pickled by reference and not by value.  This method is useful when re-using
+      picklers.
 
-   .. note::
+      .. note::
 
-      Python 2.3 以前では、 :meth:`clear_memo` は :mod:`cPickle` で生
-      成された pickler でのみ利用可能でした。 :mod:`pickle` モジュール
-      では、pickler は :attr:`memo` と呼ばれる Python 辞書型のインスタ
-      ンス変数を持ちます。従って、 :mod:`pickler` モジュールにおける
-      pickler のメモを消去は、以下のようにしてできます::
+         Prior to Python 2.3, :meth:`clear_memo` was only available on the picklers
+         created by :mod:`cPickle`.  In the :mod:`pickle` module, picklers have an
+         instance variable called :attr:`memo` which is a Python dictionary.  So to clear
+         the memo for a :mod:`pickle` module pickler, you could do the following::
 
-         mypickler.memo.clear()
+            mypickler.memo.clear()
 
-      以前のバージョンの Python での動作をサポートする必要のないコード
-      では、単に :meth:`clear_memo` を使ってください。
+         Code that does not need to support older versions of Python should simply use
+         :meth:`clear_memo`.
 
-同じ :class:`Pickler` のインスタンスに対し、 :meth:`dump` メソッドを
-複数回呼び出すことは可能です。この呼び出しは、対応する
-:class:`Unpickler` インスタンスで同じ回数だけ :meth:`load` を呼び出す
-操作に対応します。同じオブジェクトが :meth:`dump` を複数回呼び出して
-pickle 化された場合、 :meth:`load` は全て同じオブジェクトに対して参照
-を行います  [#]_ 。
+It is possible to make multiple calls to the :meth:`dump` method of the same
+:class:`Pickler` instance.  These must then be matched to the same number of
+calls to the :meth:`load` method of the corresponding :class:`Unpickler`
+instance.  If the same object is pickled by multiple :meth:`dump` calls, the
+:meth:`load` will all yield references to the same object. [#]_
 
-
-:class:`Unpickler` オブジェクトは以下のように定義されています:
+:class:`Unpickler` objects are defined as:
 
 
 .. class:: Unpickler(file)
 
-   pickle データ列を読み出すためのファイル類似のオブジェクトを引数に
-   取ります。このクラスはデータ列がバイナリモードかどうかを自動的に判
-   別します。従って、 :class:`Pickler` のファクトリメソッドのような
-   フラグを必要としません。
+   This takes a file-like object from which it will read a pickle data stream.
+   This class automatically determines whether the data stream was written in
+   binary mode or not, so it does not need a flag as in the :class:`Pickler`
+   factory.
 
-   *file* は、整数引数を取る :meth:`read` メソッド、および引数を持た
-   ない :meth:`readline` メソッドの、 2 つのメソッドを持ちます。両方
-   のメソッドとも文字列を返します。従って、 *file* としては、読み出
-   しのために開かれたファイルオブジェクト、 :mod:`StringIO`  オブジェ
-   クト、その他前述のインタフェースに適合する他のカスタムオブジェク
-   トをとることができます。
+   *file* must have two methods, a :meth:`read` method that takes an integer
+   argument, and a :meth:`readline` method that requires no arguments.  Both
+   methods should return a string.  Thus *file* can be a file object opened for
+   reading, a :mod:`StringIO` object, or any other custom object that meets this
+   interface.
 
-   :class:`Unpickler` オブジェクトは 1 つ (または 2 つ) の public なメソッ
-   ドを持っています:
+   :class:`Unpickler` objects have one (or two) public methods:
 
 
    .. method:: load()
 
-      コンストラクタで渡されたファイルオブジェクトからオブジェクトの
-      pickle 化表現を読み出し、中に収められている再構築されたオブジェ
-      クト階層を返します。
+      Read a pickled object representation from the open file object given in
+      the constructor, and return the reconstituted object hierarchy specified
+      therein.
 
-      このメソッドは自動的にデータストリームがバイナリモードで書き出さ
-      れているかどうかを判別します。
+      This method automatically determines whether the data stream was written
+      in binary mode or not.
 
 
    .. method:: noload()
 
-      :meth:`load` に似ていますが、実際には何もオブジェクトを生成しな
-      いという点が違います。この関数は第一に pickle 化データ列中で参照
-      されている、"永続化 id" と呼ばれている値を検索する上で便利です。
-      詳細は以下の  :ref:`pickle-protocol` を参照してください。
+      This is just like :meth:`load` except that it doesn't actually create any
+      objects.  This is useful primarily for finding what's called "persistent
+      ids" that may be referenced in a pickle data stream.  See section
+      :ref:`pickle-protocol` below for more details.
 
-      **注意:** :meth:`noload` メソッドは現在 :mod:`cPickle` モジュー
-      ルで生成された :class:`Unpickler` オブジェクトのみで利用可能
-      です。 :mod:`pickle` モジュールの :class:`Unpickler`  には、
-      :meth:`noload` メソッドがありません。
+      **Note:** the :meth:`noload` method is currently only available on
+      :class:`Unpickler` objects created with the :mod:`cPickle` module.
+      :mod:`pickle` module :class:`Unpickler`\ s do not have the :meth:`noload`
+      method.
 
 
-何を pickle 化したり unpickle 化できるのか?
--------------------------------------------
+What can be pickled and unpickled?
+----------------------------------
 
-以下の型は pickle 化できます:
+The following types can be pickled:
 
-* ``None`` 、 ``True`` 、および ``False``
+* ``None``, ``True``, and ``False``
 
-* 整数、長整数、浮動小数点数、複素数
+* integers, long integers, floating point numbers, complex numbers
 
-* 通常文字列および Unicode 文字列
+* normal and Unicode strings
 
-* pickle 化可能なオブジェクトからなるタプル、リスト、集合および辞書
+* tuples, lists, sets, and dictionaries containing only picklable objects
 
-* モジュールのトップレベルで定義されている関数
+* functions defined at the top level of a module
 
-* モジュールのトップレベルで定義されている組込み関数
+* built-in functions defined at the top level of a module
 
-* モジュールのトップレベルで定義されているクラス
+* classes that are defined at the top level of a module
 
-* :attr:`__dict__` または :meth:`__setstate__` を pickle 化できる上記
-  クラスのインスタンス (詳細は :ref:`pickle-protocol` 節を参照してく
-  ださい)
+* instances of such classes whose :attr:`~object.__dict__` or the result of
+  calling :meth:`__getstate__` is picklable  (see section :ref:`pickle-protocol`
+  for details).
 
-pickle 化できないオブジェクトを pickle 化しようとすると、
-:exc:`PicklingError` 例外が送出されます; この例外が起きた場合、背後の
-ファイルには未知の長さのバイト列が書き込まれてしまいます。極端に再帰
-的なデータ構造を pickle 化しようとした場合には再帰の深さ制限を越えてし
-まうかもしれず、この場合には :exc:`RuntimeError` が送出されます。この
-制限は、 :func:`sys.setrecursionlimit` で慎重に上げていくことは可能で
-す。
+Attempts to pickle unpicklable objects will raise the :exc:`PicklingError`
+exception; when this happens, an unspecified number of bytes may have already
+been written to the underlying file. Trying to pickle a highly recursive data
+structure may exceed the maximum recursion depth, a :exc:`RuntimeError` will be
+raised in this case. You can carefully raise this limit with
+:func:`sys.setrecursionlimit`.
 
-(組み込みおよびユーザ定義の) 関数は、値ではなく "完全記述された" 参照
-名として pickle 化されるので注意してください。これは、関数の定義されて
-いるモジュールの名前と一緒と併せ、関数名だけが pickle 化されることを
-意味します。関数のコードや関数の属性は何も pickle化されません。従っ
-て、定義しているモジュールは unpickle 化環境で import 可能でなければな
-らず、そのモジュールには指定されたオブジェクトが含まれていなければな
-りません。そうでない場合、例外が送出されます  [#]_ 。
+Note that functions (built-in and user-defined) are pickled by "fully qualified"
+name reference, not by value.  This means that only the function name is
+pickled, along with the name of the module the function is defined in.  Neither
+the function's code, nor any of its function attributes are pickled.  Thus the
+defining module must be importable in the unpickling environment, and the module
+must contain the named object, otherwise an exception will be raised. [#]_
 
-クラスも同様に名前参照で pickle 化されるので、unpickle 化環境には同じ
-制限が課せられます。クラス中のコードやデータは何も pickle 化されないの
-で、以下の例ではクラス属性 ``attr`` が unpickle 化環境で復元されない
-ことに注意してください ::
+Similarly, classes are pickled by named reference, so the same restrictions in
+the unpickling environment apply.  Note that none of the class's code or data is
+pickled, so in the following example the class attribute ``attr`` is not
+restored in the unpickling environment::
 
    class Foo:
        attr = 'a class attr'
 
    picklestring = pickle.dumps(Foo)
 
-pickle 化可能な関数やクラスがモジュールのトップレベルで定義されていな
-ければならないのはこれらの制限のためです。
+These restrictions are why picklable functions and classes must be defined in
+the top level of a module.
 
-同様に、クラスのインスタンスが pickle 化された際、そのクラスのコード
-およびデータはオブジェクトと一緒に pickle 化されることはありません。イ
-ンスタンスのデータのみが pickle 化されます。この仕様は、クラス内のバ
-グを修正したりメソッドを追加した後でも、そのクラスの以前のバージョンで
-作られたオブジェクトを読み出せるように意図的に行われています。あるク
-ラスの多くのバージョンで使われるような長命なオブジェクトを作ろうと計画
-しているなら、そのクラスの :meth:`__setstate__` メソッドによって適切
-な変換が行われるようにオブジェクトのバージョン番号を入れておくとよいか
-もしれません。
+Similarly, when class instances are pickled, their class's code and data are not
+pickled along with them.  Only the instance data are pickled.  This is done on
+purpose, so you can fix bugs in a class or add methods to the class and still
+load objects that were created with an earlier version of the class.  If you
+plan to have long-lived objects that will see many versions of a class, it may
+be worthwhile to put a version number in the objects so that suitable
+conversions can be made by the class's :meth:`__setstate__` method.
 
 
 .. _pickle-protocol:
 
-pickle 化プロトコル
+The pickle protocol
 -------------------
 
 .. currentmodule:: None
 
-この節では pickler/unpickler と直列化対象のオブジェクトとの間のインタ
-フェースを定義する "pickle 化プロトコル"について記述します。このプロ
-トコルは自分のオブジェクトがどのように直列化されたり非直列化されたり
-するかを定義し、カスタマイズし、制御するための標準的な方法を提供します。
-この節での記述は、unpickle 化環境を不信な pickle 化データに対して安全
-にするために使う特殊なカスタマイズ化についてはカバーしていません; 詳細
-は :ref:`pickle-sub` を参照してください。
+This section describes the "pickling protocol" that defines the interface
+between the pickler/unpickler and the objects that are being serialized.  This
+protocol provides a standard way for you to define, customize, and control how
+your objects are serialized and de-serialized.  The description in this section
+doesn't cover specific customizations that you can employ to make the unpickling
+environment slightly safer from untrusted pickle data streams; see section
+:ref:`pickle-sub` for more details.
 
 
 .. _pickle-inst:
 
-通常のクラスインスタンスの pickle 化および unpickle 化
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Pickling and unpickling normal class instances
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. method:: object.__getinitargs__()
 
-   pickle 化されたクラスインスタンスが unpickle 化されたとき、
-   :meth:`__init__` メソッドは通常呼び出され *ません* 。 unpickle 化の
-   際に :meth:`__init__` が呼び出される方が望ましい場合、旧スタイルク
-   ラスではメソッド :meth:`__getinitargs__` を定義することができます。
-   このメソッドはクラスコンストラクタ (例えば :meth:`__init__`) に渡さ
-   れるべき *タプルを* 返さなければなりません。
-   :meth:`__getinitargs__` メソッドは pickle 時に呼び出されます;
-   この関数が返すタプルはインスタンスの pickle 化データに組み込まれます。
+   When a pickled class instance is unpickled, its :meth:`__init__` method is
+   normally *not* invoked.  If it is desirable that the :meth:`__init__` method
+   be called on unpickling, an old-style class can define a method
+   :meth:`__getinitargs__`, which should return a *tuple* containing the
+   arguments to be passed to the class constructor (:meth:`__init__` for
+   example).  The :meth:`__getinitargs__` method is called at pickle time; the
+   tuple it returns is incorporated in the pickle for the instance.
 
 .. method:: object.__getnewargs__()
 
-   新スタイルクラスでは、プロトコル 2 で呼び出される
-   :meth:`__getnewargs__` を定義する事ができます。インスタンス生成時に
-   内部的な不変条件が成立する必要があったり、（タプルや文字列のように）
-   型の :meth:`__new__` メソッドに指定する引数によってメモリの割り当てを
-   変更する必要がある場合には :meth:`__getnewargs__` を定義してください。
-   新スタイルクラス :class:`C` のインスタンスは、次のように生成されます。::
+   New-style types can provide a :meth:`__getnewargs__` method that is used for
+   protocol 2.  Implementing this method is needed if the type establishes some
+   internal invariants when the instance is created, or if the memory allocation
+   is affected by the values passed to the :meth:`__new__` method for the type
+   (as it is for tuples and strings).  Instances of a :term:`new-style class`
+   ``C`` are created using ::
 
       obj = C.__new__(C, *args)
 
-   ここで *args* は元のオブジェクトの :meth:`__getnewargs__` メソッドを呼
-   び出した時の戻り値となります。 :meth:`__getnewargs__` を定義していな
-   い場合、 *args* は空のタプルとなります。
+   where *args* is the result of calling :meth:`__getnewargs__` on the original
+   object; if there is no :meth:`__getnewargs__`, an empty tuple is assumed.
 
 .. method:: object.__getstate__()
 
-   クラスは、インスタンスの pickle 化方法にさらに影響を与えることがで
-   きます; クラスが :meth:`__getstate__` メソッドを定義している場合、
-   このメソッドが呼び出され、返された状態値はインスタンスの内容として、
-   インスタンスの辞書の代わりに pickle 化されます。
-   :meth:`__getstate__` メソッドが定義されていない場合、インスタンス
-   の :attr:`__dict__` の内容が pickle 化されます。
+   Classes can further influence how their instances are pickled; if the class
+   defines the method :meth:`__getstate__`, it is called and the return state is
+   pickled as the contents for the instance, instead of the contents of the
+   instance's dictionary.  If there is no :meth:`__getstate__` method, the
+   instance's :attr:`~object.__dict__` is pickled.
 
 .. method:: object.__setstate__(state)
 
-   unpickle 化では、クラスが :meth:`__setstate__` も定義していた場合、
-   unpickle 化された状態値とともに呼び出されます。 [#]_
-   :meth:`__setstate__` メソッドが定義されていない場合、pickle 化され
-   た状態は辞書型でなければならず、その要素は新たなインスタンスの辞書
-   に代入されます。クラスが :meth:`__getstate__` と
-   :meth:`__setstate__` の両方を定義している場合、状態値オブジェクトは
-   辞書である必要はなく、これらのメソッドは期待通りの動作を行います。 [#]_
+   Upon unpickling, if the class also defines the method :meth:`__setstate__`,
+   it is called with the unpickled state. [#]_ If there is no
+   :meth:`__setstate__` method, the pickled state must be a dictionary and its
+   items are assigned to the new instance's dictionary.  If a class defines both
+   :meth:`__getstate__` and :meth:`__setstate__`, the state object needn't be a
+   dictionary and these methods can do what they want. [#]_
 
    .. note::
 
-      新しいスタイルのクラスにおいて :meth:`__getstate__` が偽値を返す
-      場合、 :meth:`__setstate__` メソッドは呼ばれません。
+      For :term:`new-style class`\es, if :meth:`__getstate__` returns a false
+      value, the :meth:`__setstate__` method will not be called.
 
 .. note::
 
-   unpickleするとき、 :meth:`__getattr__`, :meth:`__getattribute__`,
-   :meth:`__setattr__` といったメソッドがインスタンスに対して呼ばれます。
-   これらのメソッドが何か内部の不変条件に依存しているのであれば、
-   その型は :meth:`__getinitargs__` か :meth:`__getnewargs__` のどちらかを
-   実装してその不変条件を満たせるようにするべきです。
-   それ以外の場合、 :meth:`__new__` も :meth:`__init__` も呼ばれません。
+   At unpickling time, some methods like :meth:`__getattr__`,
+   :meth:`__getattribute__`, or :meth:`__setattr__` may be called upon the
+   instance.  In case those methods rely on some internal invariant being
+   true, the type should implement either :meth:`__getinitargs__` or
+   :meth:`__getnewargs__` to establish such an invariant; otherwise, neither
+   :meth:`__new__` nor :meth:`__init__` will be called.
 
-拡張型の pickle 化および unpickle 化
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Pickling and unpickling extension types
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. method:: object.__reduce__()
 
-   :class:`Pickler` が全く未知の型の --- 拡張型のような --- オブジェク
-   トに遭遇した場合、pickle 化方法のヒントとして 2 個所を探します。
-   第一は :meth:`__reduce__` メソッドを実装しているかどうかです。もし
-   実装されていれば、pickle 化時に :meth:`__reduce__` メソッドが引数
-   なしで呼び出されます。メソッドはこの呼び出しに対して文字列またはタ
-   プルのどちらかを返さねばなりません。
+   When the :class:`Pickler` encounters an object of a type it knows nothing
+   about --- such as an extension type --- it looks in two places for a hint of
+   how to pickle it.  One alternative is for the object to implement a
+   :meth:`__reduce__` method.  If provided, at pickling time :meth:`__reduce__`
+   will be called with no arguments, and it must return either a string or a
+   tuple.
 
-   文字列を返す場合、その文字列は通常通りに pickle 化されるグローバル
-   変数の名前を指しています。 :meth:`__reduce__` の返す文字列は、モジュー
-   ルにからみてオブジェクトのローカルな名前でなければなりません;
-   pickle モジュールはモジュールの名前空間を検索して、オブジェクトの属
-   するモジュールを決定します。
+   If a string is returned, it names a global variable whose contents are
+   pickled as normal.  The string returned by :meth:`__reduce__` should be the
+   object's local name relative to its module; the pickle module searches the
+   module namespace to determine the object's module.
 
-   タプルを返す場合、タプルの要素数は 2 から 5 でなければなりません。
-   オプションの要素は省略したり ``None`` を指定したりできます。各要素
-   の意味づけは以下の通りです:
+   When a tuple is returned, it must be between two and five elements long.
+   Optional elements can either be omitted, or ``None`` can be provided as their
+   value.  The contents of this tuple are pickled as normal and used to
+   reconstruct the object at unpickling time.  The semantics of each element
+   are:
 
-   * オブジェクトの初期バージョンを生成するために呼び出される呼び出し
-     可能オブジェクトです。この呼び出し可能オブジェクトへの引数
-     はタプルの次の要素で与えられます。それ以降の要素では pickle 化さ
-     れたデータを完全に再構築するために使われる付加的な状態情報が与え
-     られます。
+   * A callable object that will be called to create the initial version of the
+     object.  The next element of the tuple will provide arguments for this
+     callable, and later elements provide additional state information that will
+     subsequently be used to fully reconstruct the pickled data.
 
-     逆 pickle 化の環境下では、このオブジェクトはクラスか、 "安全なコ
-     ンストラクタ (safe constructor, 下記参照)" として登録
-     されていたり属性 :attr:`__safe_for_unpickling__` の値が真であるよ
-     うな呼び出し可能オブジェクトでなければなりません。
-     そうでない場合、逆 pickle 化を行う環境で :exc:`UnpicklingError` が
-     送出されます。通常通り、 callable は名前だけで
-     pickle 化されるので注意してください。
+     In the unpickling environment this object must be either a class, a
+     callable registered as a "safe constructor" (see below), or it must have an
+     attribute :attr:`__safe_for_unpickling__` with a true value. Otherwise, an
+     :exc:`UnpicklingError` will be raised in the unpickling environment.  Note
+     that as usual, the callable itself is pickled by name.
 
-
-   * 呼び出し可能なオブジェクトのための引数からなるタプル
+   * A tuple of arguments for the callable object.
 
      .. versionchanged:: 2.5
-        以前は、この引数には ``None`` もあり得ました。
+        Formerly, this argument could also be ``None``.
 
-   * オプションとして、 :ref:`pickle-inst` 節で記述されているようにオ
-     ブジェクトの :meth:`__setstate__` メソッドに渡される、オブジェクト
-     の状態。オブジェクトが :meth:`__setstate__` メソッドを持たない場
-     合、上記のように、この値は辞書でなくてはならず、オブジェクトの
-     :attr:`__dict__` に追加されます。
+   * Optionally, the object's state, which will be passed to the object's
+     :meth:`__setstate__` method as described in section :ref:`pickle-inst`.  If
+     the object has no :meth:`__setstate__` method, then, as above, the value
+     must be a dictionary and it will be added to the object's
+     :attr:`~object.__dict__`.
 
-   * オプションとして、リスト中の連続する要素を返すイテレータ (シーケ
-     ンスではありません)。このリストの要素は pickle 化され、
-     ``obj.append(item)`` または ``obj.extend(list_of_items)`` のいず
-     れかを使って追加されます。主にリストのサブクラスで用いられていま
-     すが、他のクラスでも、適切なシグネチャの :meth:`append` や
-     :meth:`extend` を備えている限り利用できます。 (:meth:`append` と
-     :meth:`extend` のいずれを使うかは、どのバージョンの pickle プロト
-     コルを使っているか、そして追加する要素の数で決まります。従って両
-     方のメソッドをサポートしていなければなりません。)
+   * Optionally, an iterator (and not a sequence) yielding successive list
+     items.  These list items will be pickled, and appended to the object using
+     either ``obj.append(item)`` or ``obj.extend(list_of_items)``.  This is
+     primarily used for list subclasses, but may be used by other classes as
+     long as they have :meth:`append` and :meth:`extend` methods with the
+     appropriate signature.  (Whether :meth:`append` or :meth:`extend` is used
+     depends on which pickle protocol version is used as well as the number of
+     items to append, so both must be supported.)
 
-   * オプションとして、辞書中の連続する要素を返すイテレータ (シーケン
-     スではありません)。このリストの要素は ``(key, value)`` という形式
-     でなければなりません。要素は pickle 化され、 ``obj[key] = value``
-     を使ってオブジェクトに格納されます。主に辞書のサブクラスで用いら
-     れていますが、他のクラスでも、 :meth:`__setitem__` を備えている限
-     り利用できます。
+   * Optionally, an iterator (not a sequence) yielding successive dictionary
+     items, which should be tuples of the form ``(key, value)``.  These items
+     will be pickled and stored to the object using ``obj[key] = value``. This
+     is primarily used for dictionary subclasses, but may be used by other
+     classes as long as they implement :meth:`__setitem__`.
 
 .. method:: object.__reduce_ex__(protocol)
 
-   :meth:`__reduce__` を実装する場合、プロトコルのバージョンを知って
-   おくと便利なことがあります。これは :meth:`__reduce__` の代わり
-   に :meth:`__reduce_ex__` を使って実現できます。
-   :meth:`__reduce_ex__` が定義されている場合、 :meth:`__reduce__` よ
-   りも優先して呼び出されます (以前のバージョンとの互換性のために
-   :meth:`__reduce__` を残しておいてもかまいません)。
-   :meth:`__reduce_ex__` はプロトコルのバージョンを表す整数の引数を一
-   つ伴って呼び出されます。
+   It is sometimes useful to know the protocol version when implementing
+   :meth:`__reduce__`.  This can be done by implementing a method named
+   :meth:`__reduce_ex__` instead of :meth:`__reduce__`. :meth:`__reduce_ex__`,
+   when it exists, is called in preference over :meth:`__reduce__` (you may
+   still provide :meth:`__reduce__` for backwards compatibility).  The
+   :meth:`__reduce_ex__` method will be called with a single integer argument,
+   the protocol version.
 
-   :class:`object` クラスでは :meth:`__reduce__` と
-   :meth:`__reduce_ex__` の両方を定義しています。とはいえ、サブクラス
-   で :meth:`__reduce__` をオーバライドしており、
-   :meth:`__reduce_ex__` をオーバライドしていない場合には、
-   :meth:`__reduce_ex__` の実装がそれを検出して :meth:`__reduce__` を
-   呼び出すようになっています。
+   The :class:`object` class implements both :meth:`__reduce__` and
+   :meth:`__reduce_ex__`; however, if a subclass overrides :meth:`__reduce__`
+   but not :meth:`__reduce_ex__`, the :meth:`__reduce_ex__` implementation
+   detects this and calls :meth:`__reduce__`.
 
-pickle 化するオブジェクト上で :meth:`__reduce__` メソッドを実装する代
-わりに、 :mod:`copy_reg` モジュールを使って呼び出し可能オブジェクトを登
-録する方法もあります。このモジュールはプログラムに "縮小化関数
-(reduction function)" とユーザ定義型のためのコンストラクタを登録する方
-法を提供します。縮小化関数は、単一の引数として pickle 化するオブジェ
-クトをとることを除き、上で述べた :meth:`__reduce__` メソッドと同じ意味
-とインタフェースを持ちます。
+An alternative to implementing a :meth:`__reduce__` method on the object to be
+pickled, is to register the callable with the :mod:`copy_reg` module.  This
+module provides a way for programs to register "reduction functions" and
+constructors for user-defined types.   Reduction functions have the same
+semantics and interface as the :meth:`__reduce__` method described above, except
+that they are called with a single argument, the object to be pickled.
 
-登録されたコンストラクタは上で述べたような unpickle 化については "安全
-なコンストラクタ" であると考えられます。
+The registered constructor is deemed a "safe constructor" for purposes of
+unpickling as described above.
 
 
-外部オブジェクトの pickle 化および unpickle 化
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Pickling and unpickling external objects
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. index::
    single: persistent_id (pickle protocol)
    single: persistent_load (pickle protocol)
 
+For the benefit of object persistence, the :mod:`pickle` module supports the
+notion of a reference to an object outside the pickled data stream.  Such
+objects are referenced by a "persistent id", which is just an arbitrary string
+of printable ASCII characters. The resolution of such names is not defined by
+the :mod:`pickle` module; it will delegate this resolution to user defined
+functions on the pickler and unpickler. [#]_
 
-オブジェクトの永続化を便利にするために、 :mod:`pickle` は pickle 化され
-たデータ列上にないオブジェクトに対して参照を行うという概念をサポートし
-ています。これらのオブジェクトは "永続化 id (persistent id)" で参照さ
-れており、この id は単に印字可能なASCII 文字からなる任意の文字列です。
-これらの名前の解決方法は :mod:`pickle` モジュールでは定義されていませ
-ん;
+To define external persistent id resolution, you need to set the
+:attr:`~Pickler.persistent_id` attribute of the pickler object and the
+:attr:`~Unpickler.persistent_load` attribute of the unpickler object.
 
-オブジェクトはこの名前解決を pickler および unpickler 上のユーザ定義関
-数にゆだねます  [#]_ 。外部永続化 id の解決を定義するには、pickler オ
-ブジェクトの :attr:`persistent_id` 属性と、 unpickler オブジェクトの
-:attr:`persistent_load` 属性を設定する必要があります。
+To pickle objects that have an external persistent id, the pickler must have a
+custom :func:`~Pickler.persistent_id` method that takes an object as an
+argument and returns either ``None`` or the persistent id for that object.
+When ``None`` is returned, the pickler simply pickles the object as normal.
+When a persistent id string is returned, the pickler will pickle that string,
+along with a marker so that the unpickler will recognize the string as a
+persistent id.
 
-外部永続化 id を持つオブジェクトを pickle 化するには、pickler は自作の
-:func:`persistent_id` メソッドを持たなければなりません。このメソッドは
-一つの引数をとり、 ``None`` とオブジェクトの永続化 id のうちどちらかを
-返さなければなりません。 ``None`` が返された場合、 pickler は単にオブジェ
-クトを通常のように pickle 化するだけです。永続化 id 文字列が返された
-場合、 piclkler はその文字列に対して、、unpickler がこの文字列を永続
-化 id として認識できるように、マーカと共にpickle 化します。
+To unpickle external objects, the unpickler must have a custom
+:func:`~Unpickler.persistent_load` function that takes a persistent id string
+and returns the referenced object.
 
-外部オブジェクトを unpickle 化するには、unpickler は自作の
-:func:`persistent_load` 関数を持たなければなりません。この関数は永続化
-id 文字列を引数にとり、参照されているオブジェクトを返します。
-
-*多分* より理解できるようになるようなちょっとした例を以下に示します::
+Here's a silly example that *might* shed more light::
 
    import pickle
    from cStringIO import StringIO
@@ -679,75 +633,70 @@ id 文字列を引数にとり、参照されているオブジェクトを返�
    j = up.load()
    print j
 
-:mod:`cPickle` モジュール内では、 unpickler の :attr:`persistent_load`
-属性は Pythonリスト型として設定することができます。この場合、
-unpickler が永続化 id に遭遇しても、永続化 id 文字列は単にリストに追加
-されるだけです。この仕様は、pickle データ中の全てのオブジェクトを実際
-にインスタンス化しなくても、 pickle データ列中でオブジェクトに対する参
-照を "嗅ぎ回る" ことができるようにするために存在しています  [#]_ 。リ
-ストに :attr:`persistent_load` を設定するやり方は、よく Unpickler クラ
-スの :meth:`noload` メソッドと共に使われます。
+In the :mod:`cPickle` module, the unpickler's :attr:`~Unpickler.persistent_load`
+attribute can also be set to a Python list, in which case, when the unpickler
+reaches a persistent id, the persistent id string will simply be appended to
+this list.  This functionality exists so that a pickle data stream can be
+"sniffed" for object references without actually instantiating all the objects
+in a pickle.
+[#]_  Setting :attr:`~Unpickler.persistent_load` to a list is usually used in
+conjunction with the :meth:`~Unpickler.noload` method on the Unpickler.
 
-.. BAW: pickle 化と cPickle 化は、共に inst_persistent_id() をサポート
-   します。
-   それは永続化 id を2度目に生成するとき、未知の型を返します。
-   Jim Fulton は、なぜ、それが追加され、なんのためのものか思い出せなかっ
-   たため、ドキュメント化はません。
+.. BAW: Both pickle and cPickle support something called inst_persistent_id()
+   which appears to give unknown types a second shot at producing a persistent
+   id.  Since Jim Fulton can't remember why it was added or what it's for, I'm
+   leaving it undocumented.
+
 
 .. _pickle-sub:
 
-Unpickler をサブクラス化する
-----------------------------
+Subclassing Unpicklers
+----------------------
 
 .. index::
    single: load_global() (pickle protocol)
    single: find_global() (pickle protocol)
 
-デフォルトでは、逆 pickle 化は pickle 化されたデータ中に見つかったク
-ラスを import することになります。自前の unpickler をカスタマイズす
-ることで、何が unpickle 化されて、どのメソッドが呼び出されるかを厳密
-に制御することはできます。しかし不運なことに、厳密になにを行うべきか
-は :mod:`pickle`  と :mod:`cPickle` のどちらを使うかで異なります  [#]_ 。
+By default, unpickling will import any class that it finds in the pickle data.
+You can control exactly what gets unpickled and what gets called by customizing
+your unpickler.  Unfortunately, exactly how you do this is different depending
+on whether you're using :mod:`pickle` or :mod:`cPickle`. [#]_
 
+In the :mod:`pickle` module, you need to derive a subclass from
+:class:`Unpickler`, overriding the :meth:`load_global` method.
+:meth:`load_global` should read two lines from the pickle data stream where the
+first line will the name of the module containing the class and the second line
+will be the name of the instance's class.  It then looks up the class, possibly
+importing the module and digging out the attribute, then it appends what it
+finds to the unpickler's stack.  Later on, this class will be assigned to the
+:attr:`__class__` attribute of an empty class, as a way of magically creating an
+instance without calling its class's :meth:`__init__`. Your job (should you
+choose to accept it), would be to have :meth:`load_global` push onto the
+unpickler's stack, a known safe version of any class you deem safe to unpickle.
+It is up to you to produce such a class.  Or you could raise an error if you
+want to disallow all unpickling of instances.  If this sounds like a hack,
+you're right.  Refer to the source code to make this work.
 
-:mod:`pickle` モジュールでは、 :class:`Unpickler` からサブクラスを派生
-し、 :meth:`load_global` メソッドを上書きする必要があります。
-:meth:`load_global` は pickle データ列から最初の 2 行を読まなければな
-らず、ここで最初の行はそのクラスを含むモジュールの名前、2 行目はその
-インスタンスのクラス名になるはずです。次にこのメソッドは、例えばモジュー
-ルをインポートして属性を掘り起こすなどしてクラスを探し、発見されたも
-のを unpickler のスタックに置きます。その後、このクラスは空のクラスの
-:attr:`__class__` 属性に代入する方法で、クラスの :meth:`__init__` を
-使わずにインスタンスを魔法のように生成します。あなたの作業は (もしそ
-の作業を受け入れるなら)、unpickler のスタックの上に push された
-:meth:`load_global` を、unpickle しても安全だと考えられる何らかのク
-ラスの既知の安全なバージョンにすることです。あるいは全てのインスタンス
-に対して unpickling を許可したくないならエラーを送出してください。こ
-のからくりがハックのように思えるなら、あなたは間違っていません。このか
-らくりを動かすには、ソースコードを参照してください。
+Things are a little cleaner with :mod:`cPickle`, but not by much. To control
+what gets unpickled, you can set the unpickler's :attr:`~Unpickler.find_global`
+attribute to a function or ``None``.  If it is ``None`` then any attempts to
+unpickle instances will raise an :exc:`UnpicklingError`.  If it is a function,
+then it should accept a module name and a class name, and return the
+corresponding class object.  It is responsible for looking up the class and
+performing any necessary imports, and it may raise an error to prevent
+instances of the class from being unpickled.
 
-:mod:`cPickle` では事情は多少すっきりしていますが、十分というわけでは
-ありません。何を unpickle 化するかを制御するには、 unpickler の
-:attr:`find_global` 属性を関数か ``None`` に設定します。属性が
-``None`` の場合、インスタンスを unpickle  しようとする試みは全て
-:exc:`UnpicklingError` を送出します。属性が関数の場合、この関数はモジュー
-ル名またはクラス名を受理し、対応するクラスオブジェクトを返さなくては
-なりません。このクラスが行わなくてはならないのは、クラスの探索、必要な
-import のやり直しです。そしてそのクラスのインスタンスが unpickle 化さ
-れるのを防ぐためにエラーを送出することもできます。
-
-以上の話から言えることは、アプリケーションが unpickle 化する文字列の
-発信元については非常に高い注意をはらわなくてはならないということです。
+The moral of the story is that you should be really careful about the source of
+the strings your application unpickles.
 
 
 .. _pickle-example:
 
-例
---
+Example
+-------
 
-いちばん単純には、 :func:`dump` と :func:`load` を使用してください。自
-己参照リストが正しく pickle 化およびリストアされることに注目してくださ
-い。 ::
+For the simplest code, use the :func:`dump` and :func:`load` functions.  Note
+that a self-referencing list is pickled and restored correctly. ::
 
    import pickle
 
@@ -768,10 +717,9 @@ import のやり直しです。そしてそのクラスのインスタンスが 
 
    output.close()
 
-以下の例は pickle 化された結果のデータを読み込みます。 pickle を含むデー
-タを読み込む場合、ファイルはバイナリモードでオープンしなければいけませ
-ん。これは ASCII 形式とバイナリ形式のどちらが使われているかは分からな
-いからです。 ::
+The following example reads the resulting pickled data.  When reading a
+pickle-containing file, you should open the file in binary mode because you
+can't be sure if the ASCII or binary format was used. ::
 
    import pprint, pickle
 
@@ -785,14 +733,13 @@ import のやり直しです。そしてそのクラスのインスタンスが 
 
    pkl_file.close()
 
-より大きな例で、クラスを pickle 化する挙動を変更するやり方を示します。
-:class:`TextReader` クラスはテキストファイルを開き、 :meth:`readline`
-メソッドが呼ばれるたびに行番号と行の内容を返します。 :class:`TextReader`
-インスタンスが pickle 化された場合、ファイルオブジェクト *以外の* 全
-ての属性が保存されます。インスタンスが unpickle 化された際、ファイル
-は再度開かれ、以前のファイル位置から読み出しを再開します。上記の動作を
-実装するために、 :meth:`__setstate__` および :meth:`__getstate__`  メソッ
-ドが使われています。 ::
+Here's a larger example that shows how to modify pickling behavior for a class.
+The :class:`TextReader` class opens a text file, and returns the line number and
+line contents each time its :meth:`!readline` method is called. If a
+:class:`TextReader` instance is pickled, all attributes *except* the file object
+member are saved. When the instance is unpickled, the file is reopened, and
+reading resumes from the last location. The :meth:`__setstate__` and
+:meth:`__getstate__` methods are used to implement this behavior. ::
 
    #!/usr/local/bin/python
 
@@ -826,7 +773,7 @@ import のやり直しです。そしてそのクラスのインスタンスが 
            self.__dict__.update(dict)   # update attributes
            self.fh = fh                 # save the file object
 
-使用例は以下のようになるでしょう::
+A sample usage might be something like this::
 
    >>> import TextReader
    >>> obj = TextReader.TextReader("TextReader.py")
@@ -839,9 +786,9 @@ import のやり直しです。そしてそのクラスのインスタンスが 
    >>> import pickle
    >>> pickle.dump(obj, open('save.p', 'wb'))
 
-:mod:`pickle` が Python プロセス間でうまく働くことを見たいなら、先に
-進む前に他の Python セッションを開始してください。以下の振る舞いは同じ
-プロセスでも新たなプロセスでも起こります。 ::
+If you want to see that :mod:`pickle` works across Python processes, start
+another Python session, before continuing.  What follows can happen from either
+the same process or a new process. ::
 
    >>> import pickle
    >>> reader = pickle.load(open('save.p', 'rb'))
@@ -849,103 +796,97 @@ import のやり直しです。そしてそのクラスのインスタンスが 
    '4:     """Print and number lines in a text file."""'
 
 
-
 .. seealso::
 
    Module :mod:`copy_reg`
-      拡張型を登録するための Pickle インタフェース構成機構。
+      Pickle interface constructor registration for extension types.
 
    Module :mod:`shelve`
-      オブジェクトのインデクス付きデータベース; :mod:`pickle` を使います。
+      Indexed databases of objects; uses :mod:`pickle`.
 
    Module :mod:`copy`
-      オブジェクトの浅いコピーおよび深いコピー。
+      Shallow and deep object copying.
 
    Module :mod:`marshal`
-      高いパフォーマンスを持つ組み込み型整列化機構。
+      High-performance serialization of built-in types.
 
 
-:mod:`cPickle` --- より高速な :mod:`pickle`
-===========================================
+:mod:`cPickle` --- A faster :mod:`pickle`
+=========================================
 
 .. module:: cPickle
-   :synopsis: pickle の高速バージョンですが、サブクラスはできません。
-.. moduleauthor:: Jim Fulton <jfulton@zope.com>
+   :synopsis: Faster version of pickle, but not subclassable.
+.. moduleauthor:: Jim Fulton <jim@zope.com>
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
 .. index:: module: pickle
 
-:mod:`cPickle` モジュールは Python オブジェクトの直列化および非直列化
-をサポートし、 :mod:`pickle` モジュールとほとんど同じインタフェースと機
-能を提供します。いくつか相違点がありますが、最も重要な違いはパフォー
-マンスとサブクラス化が可能かどうかです。
+The :mod:`cPickle` module supports serialization and de-serialization of Python
+objects, providing an interface and functionality nearly identical to the
+:mod:`pickle` module.  There are several differences, the most important being
+performance and subclassability.
 
-第一に、 :mod:`cPickle` は C で実装されているため、 :mod:`pickle`  より
-も最大で 1000 倍高速です。第二に、 :mod:`cPickle` モジュール内では、呼
-び出し可能オブジェクト :func:`Pickler` および :func:`Unpickler` は関数
-で、クラスではありません。つまり、pickle 化や unpickle 化を行うカスタ
-ムのサブクラスを派生することができないということです。多くのアプリケー
-ションではこの機能は不要なので、 :mod:`cPickle` モジュールによる大きな
-パフォーマンス向上の恩恵を受けられるはずです。 :mod:`pickle` と
-:mod:`cPickle` で作られた pickle データ列は同じなので、既存の pickle
-データに対して :mod:`pickle` と :mod:`cPickle` を互換に使用することが
-できます。 [#]_
+First, :mod:`cPickle` can be up to 1000 times faster than :mod:`pickle` because
+the former is implemented in C.  Second, in the :mod:`cPickle` module the
+callables :func:`Pickler` and :func:`Unpickler` are functions, not classes.
+This means that you cannot use them to derive custom pickling and unpickling
+subclasses.  Most applications have no need for this functionality and should
+benefit from the greatly improved performance of the :mod:`cPickle` module.
 
-:mod:`cPickle` と :mod:`pickle` の API 間には他にも些細な相違がありま
-すが、ほとんどのアプリケーションで互換性があります。より詳細なドキュメ
-ンテーションは :mod:`pickle` のドキュメントにあり、そこでドキュメント
-化されている相違点について挙げています。
+The pickle data stream produced by :mod:`pickle` and :mod:`cPickle` are
+identical, so it is possible to use :mod:`pickle` and :mod:`cPickle`
+interchangeably with existing pickles. [#]_
 
-.. rubric:: 注記
+There are additional minor differences in API between :mod:`cPickle` and
+:mod:`pickle`, however for most applications, they are interchangeable.  More
+documentation is provided in the :mod:`pickle` module documentation, which
+includes a list of the documented differences.
 
-.. [#] :mod:`marshal` モジュールと間違えないように注意してください。
+.. rubric:: Footnotes
 
-.. [#] :mod:`pickle` では、これらの呼び出し可能オブジェクトはクラスで
-   あり、サブクラス化してその動作をカスタマイズすることができます。し
-   かし、 :mod:`cPickle` モジュールでは、これらの呼び出し可能オブジェ
-   クトはファクトリ関数であり、サブクラス化することができません。サブ
-   クラスを作成する共通の理由の一つは、どのオブジェクトを実際に
-   unpickle するかを制御することです。詳細については :ref:`pickle-sub`
-   を参照してください。
+.. [#] Don't confuse this with the :mod:`marshal` module
 
-.. [#] *警告*: これは、複数のオブジェクトを pickle 化する際に、オブジェ
-   クトやそれらの一部に対する変更を妨げないようにするための仕様です。
-   あるオブジェクトに変更を加えて、その後同じ :class:`Pickler` を使っ
-   て再度 pickle 化しようとしても、そのオブジェクトは pickle 化しなお
-   されません --- そのオブジェクトに対する参照が pickle 化さ
-   れ、 :class:`Unpickler` は変更された値ではなく、元の値を返します。こ
-   れには 2 つの問題点 : (1) 変更の検出、そして (2) 最小限の変更を整列
-   化すること、があります。ガーベジコレクションもまた問題になります。
+.. [#] In the :mod:`pickle` module these callables are classes, which you could
+   subclass to customize the behavior.  However, in the :mod:`cPickle` module these
+   callables are factory functions and so cannot be subclassed.  One common reason
+   to subclass is to control what objects can actually be unpickled.  See section
+   :ref:`pickle-sub` for more details.
 
-.. [#] 送出される例外は :exc:`ImportError` や :exc:`AttributeError` に
-   なるはずですが、他の例外も起こりえます。
+.. [#] *Warning*: this is intended for pickling multiple objects without intervening
+   modifications to the objects or their parts.  If you modify an object and then
+   pickle it again using the same :class:`Pickler` instance, the object is not
+   pickled again --- a reference to it is pickled and the :class:`Unpickler` will
+   return the old value, not the modified one. There are two problems here: (1)
+   detecting changes, and (2) marshalling a minimal set of changes.  Garbage
+   Collection may also become a problem here.
 
-.. [#] これらのメソッドはクラスインスタンスのコピーを実装する際にも用
-   いられます。
+.. [#] The exception raised will likely be an :exc:`ImportError` or an
+   :exc:`AttributeError` but it could be something else.
 
-.. [#] このプロトコルはまた、 :mod:`copy` で定義されている浅いコピーや
-   深いコピー操作でも用いられます。
+.. [#] These methods can also be used to implement copying class instances.
 
-.. [#] ユーザ定義関数に関連付けを行うための実際のメカニズムは、
-   :mod:`pickle` および :mod:`cPickle` では少し異なります。
-   :mod:`pickle` のユーザは、サブクラス化を行い、
-   :meth:`persistend_id` および :meth:`persistent_load` メソッドを上書
-   きすることで同じ効果を得ることができます。
+.. [#] This protocol is also used by the shallow and deep copying operations defined in
+   the :mod:`copy` module.
 
-.. [#] Guide と Jim が居間に座り込んでピクルス (pickles) を嗅いでいる
-   光景を想像してください。
+.. [#] The actual mechanism for associating these user defined functions is slightly
+   different for :mod:`pickle` and :mod:`cPickle`.  The description given here
+   works the same for both implementations.  Users of the :mod:`pickle` module
+   could also use subclassing to effect the same results, overriding the
+   :meth:`persistent_id` and :meth:`persistent_load` methods in the derived
+   classes.
 
-.. [#] 注意してください: ここで記述されている機構は内部の属性とメソッ
-   ドを使っており、これらはPython の将来のバージョンで変更される対象
-   になっています。われわれは将来、この挙動を制御するための、
-   :mod:`pickle` および :mod:`cPickle` の両方で動作する、共通のインタ
-   フェースを提供するつもりです。
+.. [#] We'll leave you with the image of Guido and Jim sitting around sniffing pickles
+   in their living rooms.
 
-.. [#] pickle データ形式は実際には小規模なスタック指向のプログラム言
-   語であり、またあるオブジェクトをエンコードする際に多少の自由度があ
-   るため、二つのモジュールが同じ入力オブジェクトに対して異なるデータ
-   列を生成することもあります。しかし、常に互いに他のデータ列を読み出
-   せることが保証されています。
+.. [#] A word of caution: the mechanisms described here use internal attributes and
+   methods, which are subject to change in future versions of Python.  We intend to
+   someday provide a common interface for controlling this behavior, which will
+   work in either :mod:`pickle` or :mod:`cPickle`.
 
+.. [#] Since the pickle data format is actually a tiny stack-oriented programming
+   language, and some freedom is taken in the encodings of certain objects, it is
+   possible that the two modules produce different data streams for the same input
+   objects.  However it is guaranteed that they will always be able to read each
+   other's data streams.
 

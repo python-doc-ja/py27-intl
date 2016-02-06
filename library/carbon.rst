@@ -1,35 +1,33 @@
 
 .. _toolbox:
 
-*******************************
-Mac OS ツールボックスモジュール
-*******************************
+**********************
+Mac OS Toolbox Modules
+**********************
 
-各種の Mac OS ツールボックスへのインターフェースを与えるモジュール群が\
-あります。対応するモジュールがあるなら、そのモジュールではツールボックス\
-で宣言された各種の構造体の Python オブジェクトが定義され、操作は定義され\
-たオブジェクトのメソッドとして実装されています。その他の操作はモジュー\
-ルの関数として実装されています。 C で可能な操作がすべて Python で可能な\
-わけではありませんし(コールバックはよく問題になります)、パラメータが\
-Python だと違ってしまうことはよくあります(特に入力バッファや出力バッファ)。
-全てのメソッドと関数は :attr:`__doc__` 文字列があるので、引数と返り値\
-の説明を得る事ができます。他の情報源としては、 `Inside Macintosh
-<http://developer.apple.com/documentation/macos8/mac8.html>`_
-などを参照してください。
+These are a set of modules that provide interfaces to various legacy Mac OS toolboxes.
+If applicable the module will define a number of Python objects for the various
+structures declared by the toolbox, and operations will be implemented as
+methods of the object.  Other operations will be implemented as functions in the
+module.  Not all operations possible in C will also be possible in Python
+(callbacks are often a problem), and parameters will occasionally be different
+in Python (input and output buffers, especially).  All methods and functions
+have a :attr:`__doc__` string describing their arguments and return values, and
+for additional description you are referred to `Inside Macintosh
+<http://developer.apple.com/legacy/mac/library/#documentation/macos8/mac8.html>`_ or similar works.
 
-これらのモジュールは全て :mod:`Carbon` パッケージに含まれています。
-この名前にもかかわらずそれら全てが Carbon フレームワークの一部なわけで\
-はありません。CF は、CoreFoundation フレームワークの中に実際はあります\
-し、Qt は QuickTime フレームワークにあります。ツールボックスモジュール\
-は普通以下のようにして利用します。
-
-::
+These modules all live in a package called :mod:`Carbon`. Despite that name they
+are not all part of the Carbon framework: CF is really in the CoreFoundation
+framework and Qt is in the QuickTime framework. The normal use pattern is ::
 
    from Carbon import AE
 
 .. note::
 
-   Carbon モジュール群は Python 3.0 で削除されました。
+   Most of the OS X APIs that these modules use are deprecated or removed
+   in recent versions of OS X.  Many are not available when Python is
+   executing in 64-bit mode.  The Carbon modules have been removed in
+   Python 3.  You should avoid using them in Python 2.
 
 
 :mod:`Carbon.AE` --- Apple Events
@@ -37,34 +35,37 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.AE
    :platform: Mac
-   :synopsis: Apple Eventツールボックスへのインタフェース
+   :synopsis: Interface to the Apple Events toolbox.
    :deprecated:
 
 
-:mod:`Carbon.AH` --- Apple ヘルプ
-=================================
+
+:mod:`Carbon.AH` --- Apple Help
+===============================
 
 .. module:: Carbon.AH
    :platform: Mac
-   :synopsis: Apple ヘルプマネージャへのインタフェース
+   :synopsis: Interface to the Apple Help manager.
    :deprecated:
 
 
-:mod:`Carbon.App` --- アピアランスマネージャ
-============================================
+
+:mod:`Carbon.App` --- Appearance Manager
+========================================
 
 .. module:: Carbon.App
    :platform: Mac
-   :synopsis: アピアランスマネージャへのインタフェース
+   :synopsis: Interface to the Appearance Manager.
    :deprecated:
 
-:mod:`Carbon.Appearance` --- Appearance Manager 定数
+:mod:`Carbon.Appearance` --- Appearance Manager constants
 =========================================================
 
 .. module:: Carbon.Appearance
    :platform: Mac
-   :synopsis: Appearance Manager のインタフェースのための定数
+   :synopsis: Constant definitions for the interface to the Appearance Manager.
    :deprecated:
+
 
 
 :mod:`Carbon.CF` --- Core Foundation
@@ -72,11 +73,12 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.CF
    :platform: Mac
-   :synopsis: Core Foundationへのインタフェース
+   :synopsis: Interface to the Core Foundation.
    :deprecated:
 
-``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` と
-``CFURL`` オブジェクトがいくらか部分的にサポートされています。
+
+The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
+``CFURL`` objects are supported, some only partially.
 
 
 :mod:`Carbon.CG` --- Core Graphics
@@ -84,25 +86,27 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.CG
    :platform: Mac
-   :synopsis: コア・グラフィックスへのインタフェース
+   :synopsis: Interface to Core Graphics.
    :deprecated:
+
 
 
 :mod:`Carbon.CarbonEvt` --- Carbon Event Manager
 ================================================
 
-.. module:: Carbon.CaronEvt
+.. module:: Carbon.CarbonEvt
    :platform: Mac
-   :synopsis: Carbon Event Managerへのインタフェース
+   :synopsis: Interface to the Carbon Event Manager.
    :deprecated:
 
-:mod:`Carbon.CarbonEvents` --- Carbon Event Manager 定数
+:mod:`Carbon.CarbonEvents` --- Carbon Event Manager constants
 =============================================================
 
 .. module:: Carbon.CarbonEvents
    :platform: Mac
-   :synopsis: Carbon Event Manager のための定数
+   :synopsis: Constants for the interface to the Carbon Event Manager.
    :deprecated:
+
 
 
 :mod:`Carbon.Cm` --- Component Manager
@@ -110,7 +114,7 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.Cm
    :platform: Mac
-   :synopsis: Component Managerへのインタフェース
+   :synopsis: Interface to the Component Manager.
    :deprecated:
 
 :mod:`Carbon.Components` --- Component Manager constants
@@ -159,7 +163,7 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.Ctl
    :platform: Mac
-   :synopsis: Control Managerへのインタフェース
+   :synopsis: Interface to the Control Manager.
    :deprecated:
 
 :mod:`Carbon.Dialogs` --- Dialog Manager constants
@@ -175,7 +179,7 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.Dlg
    :platform: Mac
-   :synopsis: Dialog Managerへのインタフェース
+   :synopsis: Interface to the Dialog Manager.
    :deprecated:
 
 :mod:`Carbon.Drag` --- Drag and Drop Manager
@@ -207,7 +211,7 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.Evt
    :platform: Mac
-   :synopsis: Event Managerへのインタフェース
+   :synopsis: Interface to the classic Event Manager.
    :deprecated:
 
 :mod:`Carbon.File` --- File Manager
@@ -226,13 +230,15 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
    :synopsis: Constants for the interface to the File Manager.
    :deprecated:
 
+
 :mod:`Carbon.Fm` --- Font Manager
 =================================
 
 .. module:: Carbon.Fm
    :platform: Mac
-   :synopsis: Font Managerへのインタフェース
+   :synopsis: Interface to the Font Manager.
    :deprecated:
+
 
 
 :mod:`Carbon.Folder` --- Folder Manager
@@ -240,7 +246,7 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.Folder
    :platform: Mac
-   :synopsis: Folder Managerへのインタフェース
+   :synopsis: Interface to the Folder Manager.
    :deprecated:
 
 :mod:`Carbon.Folders` --- Folder Manager constants
@@ -261,12 +267,13 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
    :deprecated:
 
 
+
 :mod:`Carbon.Help` --- Help Manager
 ===================================
 
 .. module:: Carbon.Help
    :platform: Mac
-   :synopsis: Carbon Help Managerへのインタフェース
+   :synopsis: Interface to the Carbon Help Manager.
    :deprecated:
 
 :mod:`Carbon.IBCarbon` --- Carbon InterfaceBuilder
@@ -317,13 +324,15 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
    :synopsis: Constants for the interface to the Carbon Launch Services.
    :deprecated:
 
+
 :mod:`Carbon.List` --- List Manager
 ===================================
 
 .. module:: Carbon.List
    :platform: Mac
-   :synopsis: List Managerへのインタフェース
+   :synopsis: Interface to the List Manager.
    :deprecated:
+
 
 
 :mod:`Carbon.Lists` --- List Manager constants
@@ -356,7 +365,7 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.Menu
    :platform: Mac
-   :synopsis: Menu Managerへのインタフェース
+   :synopsis: Interface to the Menu Manager.
    :deprecated:
 
 :mod:`Carbon.Menus` --- Menu Manager constants
@@ -367,12 +376,13 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
    :synopsis: Constants for the interface to the Menu Manager.
    :deprecated:
 
+
 :mod:`Carbon.Mlte` --- MultiLingual Text Editor
 ===============================================
 
 .. module:: Carbon.Mlte
    :platform: Mac
-   :synopsis: MultiLingual Text Editorへのインタフェース
+   :synopsis: Interface to the MultiLingual Text Editor.
    :deprecated:
 
 :mod:`Carbon.OSA` --- Carbon OSA Interface
@@ -399,13 +409,15 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
    :synopsis: Constants for the interface to the QuickDraw Offscreen APIs.
    :deprecated:
 
+
 :mod:`Carbon.Qd` --- QuickDraw
 ==============================
 
 .. module:: Carbon.Qd
    :platform: Mac
-   :synopsis: QuickDrawツールボックスへのインタフェース
+   :synopsis: Interface to the QuickDraw toolbox.
    :deprecated:
+
 
 
 :mod:`Carbon.Qdoffs` --- QuickDraw Offscreen
@@ -413,8 +425,9 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.Qdoffs
    :platform: Mac
-   :synopsis: QuickDrawオフスクリーン APIへのインタフェース
+   :synopsis: Interface to the QuickDraw Offscreen APIs.
    :deprecated:
+
 
 
 :mod:`Carbon.Qt` --- QuickTime
@@ -422,7 +435,7 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
 .. module:: Carbon.Qt
    :platform: Mac
-   :synopsis: QuickTime ツールボックスへのインタフェース
+   :synopsis: Interface to the QuickTime toolbox.
    :deprecated:
 
 :mod:`Carbon.QuickDraw` --- QuickDraw constants
@@ -441,12 +454,13 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
    :synopsis: Constants for the interface to the QuickTime toolbox.
    :deprecated:
 
+
 :mod:`Carbon.Res` --- Resource Manager and Handles
 ==================================================
 
 .. module:: Carbon.Res
    :platform: Mac
-   :synopsis: Resource Managerとハンドルへのインタフェース
+   :synopsis: Interface to the Resource Manager and Handles.
    :deprecated:
 
 :mod:`Carbon.Resources` --- Resource Manager and Handles constants
@@ -457,59 +471,56 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
    :synopsis: Constants for the interface to the Resource Manager and Handles.
    :deprecated:
 
-:mod:`Carbon.Scrap` --- スクラップマネージャ
-============================================
+
+:mod:`Carbon.Scrap` --- Scrap Manager
+=====================================
 
 .. module:: Carbon.Scrap
    :platform: Mac
-   :synopsis: スクラップマネージャはカット & ペーストとクリップボードの操作の基本的\
-              なサービスを提供します。
+   :synopsis: The Scrap Manager provides basic services for implementing cut & paste and
+              clipboard operations.
    :deprecated:
 
 
-このモジュールは Mac OS 9 とそれ以前の OS 上の Classic PPC MacPython
-で完全に利用可能です。
-Carbon 版の MacPython ではほんの限られた機能だけが利用可能です。
+This module is only fully available on Mac OS 9 and earlier under classic PPC
+MacPython.  Very limited functionality is available under Carbon MacPython.
 
 .. index:: single: Scrap Manager
 
-スクラップマネージャは Macintosh 上でのカット & ペースト操作の最も\
-シンプルな形式をサポートします。
-アプリケーション間とアプリケーション内での両方のクリップボード操作が可能\
-です。
+The Scrap Manager supports the simplest form of cut & paste operations on the
+Macintosh.  It can be use for both inter- and intra-application clipboard
+operations.
 
-:mod:`Scrap` モジュールはスクラップマネージャの関数へのローレベルでのア\
-クセスを提供します。
-以下の関数が定義されています：
+The :mod:`Scrap` module provides low-level access to the functions of the Scrap
+Manager.  It contains the following functions:
 
 
 .. function:: InfoScrap()
 
-   スクラップについて現在の情報を返します。
-   この情報は ``(size, handle, count, state, path)``
-   を含むタプルでエンコードされます。
+   Return current information about the scrap.  The information is encoded as a
+   tuple containing the fields ``(size, handle, count, state, path)``.
 
-   +----------+------------------------------------------------------------------+
-   | Field    | Meaning                                                          |
-   +==========+==================================================================+
-   | *size*   | スクラップのサイズをバイト数で示したもの。                       |
-   +----------+------------------------------------------------------------------+
-   | *handle* | スクラップを表現するリソースオブジェクト。                       |
-   +----------+------------------------------------------------------------------+
-   | *count*  | スクラップの内容のシリアルナンバー。                             |
-   +----------+------------------------------------------------------------------+
-   | *state*  | 整数。メモリー内にあるなら正、ディスク上にあるなら ``0`` 、      |
-   |          | 初期化されていないなら負。                                       |
-   +----------+------------------------------------------------------------------+
-   | *path*   | ディスク上に保存されているなら、そのスクラップのファイルネーム。 |
-   +----------+------------------------------------------------------------------+
+   +----------+---------------------------------------------+
+   | Field    | Meaning                                     |
+   +==========+=============================================+
+   | *size*   | Size of the scrap in bytes.                 |
+   +----------+---------------------------------------------+
+   | *handle* | Resource object representing the scrap.     |
+   +----------+---------------------------------------------+
+   | *count*  | Serial number of the scrap contents.        |
+   +----------+---------------------------------------------+
+   | *state*  | Integer; positive if in memory, ``0`` if on |
+   |          | disk, negative if uninitialized.            |
+   +----------+---------------------------------------------+
+   | *path*   | Filename of the scrap when stored on disk.  |
+   +----------+---------------------------------------------+
 
 
 .. seealso::
 
-   `Scrap Manager <http://developer.apple.com/documentation/mac/MoreToolbox/MoreToolbox-109.html>`_
-      Appleのスクラップマネージャに関する文書には、アプリケーションでスクラッ\
-      プマネージャを使用する上での便利な情報がたくさんあります。
+   `Scrap Manager <http://developer.apple.com/legacy/mac/library/documentation/mac/MoreToolbox/MoreToolbox-109.html>`_
+      Apple's documentation for the Scrap Manager gives a lot of useful information
+      about using the Scrap Manager in applications.
 
 
 
@@ -518,7 +529,7 @@ Carbon 版の MacPython ではほんの限られた機能だけが利用可能�
 
 .. module:: Carbon.Snd
    :platform: Mac
-   :synopsis: Sound Managerへのインタフェース
+   :synopsis: Interface to the Sound Manager.
    :deprecated:
 
 :mod:`Carbon.Sound` --- Sound Manager constants
@@ -529,12 +540,13 @@ Carbon 版の MacPython ではほんの限られた機能だけが利用可能�
    :synopsis: Constants for the interface to the Sound Manager.
    :deprecated:
 
+
 :mod:`Carbon.TE` --- TextEdit
 =============================
 
 .. module:: Carbon.TE
    :platform: Mac
-   :synopsis: TextEditへのインタフェース
+   :synopsis: Interface to TextEdit.
    :deprecated:
 
 :mod:`Carbon.TextEdit` --- TextEdit constants
@@ -546,12 +558,13 @@ Carbon 版の MacPython ではほんの限られた機能だけが利用可能�
    :deprecated:
 
 
+
 :mod:`Carbon.Win` --- Window Manager
 ====================================
 
 .. module:: Carbon.Win
    :platform: Mac
-   :synopsis: Window Managerへのインタフェース
+   :synopsis: Interface to the Window Manager.
    :deprecated:
 
 :mod:`Carbon.Windows` --- Window Manager constants

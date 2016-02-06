@@ -1,157 +1,217 @@
-
-:mod:`UserDict` --- 辞書オブジェクトのためのクラスラッパー
-==========================================================
+:mod:`UserDict` --- Class wrapper for dictionary objects
+========================================================
 
 .. module:: UserDict
-   :synopsis: 辞書オブジェクトのためのクラスラッパー。
+   :synopsis: Class wrapper for dictionary objects.
 
 
-このモジュールは最小限のマッピングインターフェイスをすでに持っているクラスのために、
-すべての辞書メソッドを定義しているmixin、 :class:`DictMixin` を定義しています。これによって、shelveモジュールのような辞書の代わりをする必要があるクラスを書くことが非常に簡単になります。
+**Source code:** :source:`Lib/UserDict.py`
 
-このモジュールでは :class:`UserDict` クラスを定義しています。これは辞書オブジェクトのラッパーとして
-動作します。これは :class:`dict` \ (Python 2.2から利用可能な機能です)によって置き換えられています。
-:class:`dict` の導入以前に、 :class:`UserDict` クラスは辞書風のサブクラスをオーバライドや新メソッドの
-定義によって作成するために使われていました。
+--------------
 
-.. seealso::
+The module defines a mixin,  :class:`DictMixin`, defining all dictionary methods
+for classes that already have a minimum mapping interface.  This greatly
+simplifies writing classes that need to be substitutable for dictionaries (such
+as the shelve module).
 
-   最新バージョンの `UserDict Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/UserDict.py?view=markup>`_
+This module also defines a class, :class:`UserDict`, that acts as a wrapper
+around dictionary objects.  The need for this class has been largely supplanted
+by the ability to subclass directly from :class:`dict` (a feature that became
+available starting with Python version 2.2).  Prior to the introduction of
+:class:`dict`, the :class:`UserDict` class was used to create dictionary-like
+sub-classes that obtained new behaviors by overriding existing methods or adding
+new ones.
 
-:mod:`UserDict` モジュールは :class:`UserDict` クラスと :class:`DictMixin` を定義しています:
+The :mod:`UserDict` module defines the :class:`UserDict` class and
+:class:`DictMixin`:
 
 
 .. class:: UserDict([initialdata])
 
-   辞書をシミュレートするクラス。インスタンスの内容は通常の辞書に保存され、 :class:`UserDict` インスタンスの :attr:`data` 属性を通してアクセスできます。 *initialdata* が与えられれば、 :attr:`data` はその内容で初期化されます。他の目的のために使えるように、 *initialdata* への参照が保存されないことがあるということに注意してください。
+   Class that simulates a dictionary.  The instance's contents are kept in a
+   regular dictionary, which is accessible via the :attr:`data` attribute of
+   :class:`UserDict` instances.  If *initialdata* is provided, :attr:`data` is
+   initialized with its contents; note that a reference to *initialdata* will not
+   be kept, allowing it be used for other purposes.
 
    .. note::
 
-      後方互換性のために、 :class:`UserDict` のインスタンスはイテレート可能ではありません。
+      For backward compatibility, instances of :class:`UserDict` are not iterable.
 
 
 .. class:: IterableUserDict([initialdata])
 
-   :class:`UserDict` のイテレーションをサポートするサブクラス (使用例: ``for key in myDict``).
+   Subclass of :class:`UserDict` that supports direct iteration (e.g.  ``for key in
+   myDict``).
 
-マッピングのメソッドと演算(節 :ref:`typesmapping` を参照)に加えて、 :class:`UserDict` 、 :class:`IterableUserDict` インスタンスは次の属性を提供します:
+In addition to supporting the methods and operations of mappings (see section
+:ref:`typesmapping`), :class:`UserDict` and :class:`IterableUserDict` instances
+provide the following attribute:
 
 
 .. attribute:: IterableUserDict.data
 
-   :class:`UserDict` クラスの内容を保存するために使われる実際の辞書。
+   A real dictionary used to store the contents of the :class:`UserDict` class.
 
 
 .. class:: DictMixin()
 
-   :meth:`__getitem__` 、 :meth:`__setitem__` 、 :meth:`__delitem__` および :meth:`keys`
-   といった最小の辞書インタフェースを既に持っているクラスのために、全ての辞書メソッドを定義する mixin です。
+   Mixin defining all dictionary methods for classes that already have a minimum
+   dictionary interface including :meth:`__getitem__`, :meth:`__setitem__`,
+   :meth:`__delitem__`, and :meth:`keys`.
 
-   このmixinはスーパークラスとして使われるべきです。上のそれぞれのメソッドを追加することで、より多くの機能がだんだん追加されます。
-   例えば、 :meth:`__delitem__` 以外の全てのメソッドを定義すると、使えないのは :meth:`pop` と :meth:`popitem`
-   だけになります。
+   This mixin should be used as a superclass.  Adding each of the above methods
+   adds progressively more functionality.  For instance, defining all but
+   :meth:`__delitem__` will preclude only :meth:`pop` and :meth:`popitem` from the
+   full interface.
 
-   4 つの基底メソッドに加えて、 :meth:`__contains__` 、 :meth:`__iter__`
-   および :meth:`iteritems` を定義すれば、順次効率化を果たすことができます。
+   In addition to the four base methods, progressively more efficiency comes with
+   defining :meth:`__contains__`, :meth:`__iter__`, and :meth:`iteritems`.
 
-   mixin はサブクラスのコンストラクタについて何も知らないので、 :meth:`__init__` や :meth:`copy` は定義していません。
+   Since the mixin has no knowledge of the subclass constructor, it does not define
+   :meth:`__init__` or :meth:`copy`.
 
-   ..
-      Starting with Python version 2.6, it is recommended to use
-      :class:`collections.MutableMapping` instead of :class:`DictMixin`.
+   Starting with Python version 2.6, it is recommended to use
+   :class:`collections.MutableMapping` instead of :class:`DictMixin`.
 
-   Python 2.6 からは、 :class:`DictMixin` の代わりに、 :class:`collections.MutableMapping`
-   を利用することが推奨されています。
-
-
-:mod:`UserList` --- リストオブジェクトのためのクラスラッパー
-============================================================
+:mod:`UserList` --- Class wrapper for list objects
+==================================================
 
 .. module:: UserList
-   :synopsis: リストオブジェクトのためのクラスラッパー。
+   :synopsis: Class wrapper for list objects.
 
 
 .. note::
 
-   このモジュールは後方互換性のためだけに残されています。Python
-   2.2より前のバージョンのPythonで動作する必要のないコードを書いているのならば、組み込み :class:`list` 型から直接サブクラス化することを検討してください。
+   When Python 2.2 was released, many of the use cases for this class were
+   subsumed by the ability to subclass :class:`list` directly.  However, a
+   handful of use cases remain.
 
-このモジュールはリストオブジェクトのラッパーとして働くクラスを定義します。独自のリストに似たクラスのために役に立つ基底クラスで、これを継承し既存のメソッドをオーバーライドしたり、あるいは、新しいものを追加したりすることができます。このような方法で、リストに新しい振る舞いを追加できます。
+   This module provides a list-interface around an underlying data store.  By
+   default, that data store is a :class:`list`; however, it can be used to wrap
+   a list-like interface around other objects (such as persistent storage).
 
-:mod:`UserList` モジュールは :class:`UserList` クラスを定義しています:
+   In addition, this class can be mixed-in with built-in classes using multiple
+   inheritance.  This can sometimes be useful.  For example, you can inherit
+   from :class:`UserList` and :class:`str` at the same time.  That would not be
+   possible with both a real :class:`list` and a real :class:`str`.
+
+This module defines a class that acts as a wrapper around list objects.  It is a
+useful base class for your own list-like classes, which can inherit from them
+and override existing methods or add new ones.  In this way one can add new
+behaviors to lists.
+
+The :mod:`UserList` module defines the :class:`UserList` class:
 
 
 .. class:: UserList([list])
 
-   リストをシミュレートするクラス。インスタンスの内容は通常のリストに保存され、
-   :class:`UserList` インスタンスの :attr:`data` 属性を通してアクセスできます。
-   インスタンスの内容は最初に *list* のコピーに設定されますが、デフォルトでは空リスト ``[]`` です。
-   *list* は何かイテレートできるオブジェクトで、例えば、通常のPythonリストや、
-   :class:`UserList` (またはサブクラス)のインスタンスなどを利用できます。
+   Class that simulates a list.  The instance's contents are kept in a regular
+   list, which is accessible via the :attr:`data` attribute of :class:`UserList`
+   instances.  The instance's contents are initially set to a copy of *list*,
+   defaulting to the empty list ``[]``.  *list* can be any iterable, e.g. a
+   real Python list or a :class:`UserList` object.
 
    .. note::
-      .. The :class:`UserList` class has been moved to the :mod:`collections`
-         module in Python 3.0. The :term:`2to3` tool will automatically adapt
-         imports when converting your sources to 3.0.
+      The :class:`UserList` class has been moved to the :mod:`collections`
+      module in Python 3. The :term:`2to3` tool will automatically adapt
+      imports when converting your sources to Python 3.
 
-      :class:`UserList` クラスは Python 3.0 では :mod:`collections` モジュールに移動されました。
-      :term:`2to3` ツールが自動的にソースコードの import 文を修正します。
 
-変更可能シーケンスのメソッドと演算(節 :ref:`typesseq` を参照)に加えて、 :class:`UserList` インスタンスは次の属性を提供します:
+In addition to supporting the methods and operations of mutable sequences (see
+section :ref:`typesseq`), :class:`UserList` instances provide the following
+attribute:
 
 
 .. attribute:: UserList.data
 
-   :class:`UserList` クラスの内容を保存するために使われる実際のPythonリストオブジェクト。
+   A real Python list object used to store the contents of the :class:`UserList`
+   class.
 
-**サブクラス化の要件:**
-:class:`UserList` のサブクラスは引数なしか、あるいは一つの引数のどちらかとともに呼び出せるコンストラクタを提供することが期待されます。新しいシーケンスを返すリスト演算は現在の実装クラスのインスタンスを作成しようとします。そのために、データ元として使われるシーケンスオブジェクトである一つのパラメータとともにコンストラクタを呼び出せると想定しています。
+**Subclassing requirements:** Subclasses of :class:`UserList` are expected to
+offer a constructor which can be called with either no arguments or one
+argument.  List operations which return a new sequence attempt to create an
+instance of the actual implementation class.  To do so, it assumes that the
+constructor can be called with a single parameter, which is a sequence object
+used as a data source.
 
-派生クラスがこの要求に従いたくないならば、このクラスがサポートしているすべての特殊メソッドはオーバーライドされる必要があります。その場合に提供される必要のあるメソッドについての情報は、ソースを参考にしてください。
+If a derived class does not wish to comply with this requirement, all of the
+special methods supported by this class will need to be overridden; please
+consult the sources for information about the methods which need to be provided
+in that case.
 
 .. versionchanged:: 2.0
-   Pythonバージョン1.5.2と1.6では、コンストラクタが引数なしで呼び出し可能であることと変更可能な :attr:`data` 属性を提供するということも要求されます。Pythonの初期のバージョンでは、派生クラスのインスタンスを作成しようとはしません。
+   Python versions 1.5.2 and 1.6 also required that the constructor be callable
+   with no parameters, and offer a mutable :attr:`data` attribute.  Earlier
+   versions of Python did not attempt to create instances of the derived class.
 
 
-:mod:`UserString` --- 文字列オブジェクトのためのクラスラッパー
-==============================================================
+:mod:`UserString` --- Class wrapper for string objects
+======================================================
 
 .. module:: UserString
-   :synopsis: 文字列オブジェクトのためのクラスラッパー。
+   :synopsis: Class wrapper for string objects.
 .. moduleauthor:: Peter Funk <pf@artcom-gmbh.de>
 .. sectionauthor:: Peter Funk <pf@artcom-gmbh.de>
 
 
 .. note::
 
-   このモジュールの :class:`UserString` クラスは後方互換性のためだけに残されています。Python
-   2.2より前のバージョンのPythonで動作する必要のないコードを書いているのならば、 :class:`UserString` を使う代わりに組み込み :class:`str` 型から直接サブクラス化することを検討してください(組み込みの :class:`MutableString` と等価なものはありません)。
+   This :class:`UserString` class from this module is available for backward
+   compatibility only.  If you are writing code that does not need to work with
+   versions of Python earlier than Python 2.2, please consider subclassing directly
+   from the built-in :class:`str` type instead of using :class:`UserString` (there
+   is no built-in equivalent to :class:`MutableString`).
 
-このモジュールは文字列オブジェクトのラッパーとして働くクラスを定義します。独自の文字列に似たクラスのために役に立つ基底クラスで、これを継承し既存のメソッドをオーバーライドしたり、あるいは、新しいものを追加したりすることができます。このような方法で、文字列に新しい振る舞いを追加できます。
+This module defines a class that acts as a wrapper around string objects.  It is
+a useful base class for your own string-like classes, which can inherit from
+them and override existing methods or add new ones.  In this way one can add new
+behaviors to strings.
 
-これらのクラスは実際のクラスやユニコードオブジェクトに比べてとても効率が悪いということに注意した方がよいでしょう。これは特に :class:`MutableString` に対して当てはまります。
+It should be noted that these classes are highly inefficient compared to real
+string or Unicode objects; this is especially the case for
+:class:`MutableString`.
 
-:mod:`UserString` モジュールは次のクラスを定義しています:
+The :mod:`UserString` module defines the following classes:
 
 
 .. class:: UserString([sequence])
 
-   文字列またはユニコード文字列オブジェクトをシミュレートするクラス。インスタンスの内容は通常の文字列またはユニコード文字列オブジェクトに保存され、 :class:`UserString` インスタンスの :attr:`data` 属性を通してアクセスできます。インスタンスの内容は最初に *sequence* のコピーに設定されます。 *sequence* は通常のPython文字列またはユニコード文字列、 :class:`UserString` \
-   (またはサブクラス)のインスタンス、あるいは組み込み :func:`str` 関数を使って文字列に変換できる任意のシーケンスのいずれかです。
+   Class that simulates a string or a Unicode string object.  The instance's
+   content is kept in a regular string or Unicode string object, which is
+   accessible via the :attr:`data` attribute of :class:`UserString` instances.  The
+   instance's contents are initially set to a copy of *sequence*.  *sequence* can
+   be either a regular Python string or Unicode string, an instance of
+   :class:`UserString` (or a subclass) or an arbitrary sequence which can be
+   converted into a string using the built-in :func:`str` function.
+
+   .. note::
+      The :class:`UserString` class has been moved to the :mod:`collections`
+      module in Python 3. The :term:`2to3` tool will automatically adapt
+      imports when converting your sources to Python 3.
+
 
 
 .. class:: MutableString([sequence])
 
-   このクラスは上の :class:`UserString` から派生し、 *変更可能に* なるように文字列を再定義します。変更可能な文字列は辞書のキーとして使うことができません。なぜなら、辞書はキーとして *変更不能な* オブジェクトを要求するからです。このクラスの主な目的は、辞書のキーとして変更可能なオブジェクトを使うという試みを捕捉するために、継承と :meth:`__hash__` メソッドを取り除く(オーバーライドする)必要があることを示す教育的な例を提供することです。そうしなければ、非常にエラーになりやすく、突き止めることが困難でしょう。
+   This class is derived from the :class:`UserString` above and redefines strings
+   to be *mutable*.  Mutable strings can't be used as dictionary keys, because
+   dictionaries require *immutable* objects as keys.  The main intention of this
+   class is to serve as an educational example for inheritance and necessity to
+   remove (override) the :meth:`__hash__` method in order to trap attempts to use a
+   mutable object as dictionary key, which would be otherwise very error prone and
+   hard to track down.
 
    .. deprecated:: 2.6
-      :class:`MutableString` クラスは Python 3.0 では削除されます。
+      The :class:`MutableString` class has been removed in Python 3.
 
-文字列とユニコードオブジェクトのメソッドと演算(節 :ref:`string-methods` を参照)に加えて、 :class:`UserString` インスタンスは次の属性を提供します:
+In addition to supporting the methods and operations of string and Unicode
+objects (see section :ref:`string-methods`), :class:`UserString` instances
+provide the following attribute:
 
 
 .. attribute:: MutableString.data
 
-   :class:`UserString` クラスの内容を保存するために使われる実際のPython文字列またはユニコードオブジェクト。
+   A real Python string or Unicode object used to store the content of the
+   :class:`UserString` class.
 

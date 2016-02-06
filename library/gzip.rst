@@ -1,155 +1,122 @@
-
-:mod:`gzip` --- :program:`gzip` ファイルのサポート
-==================================================
+:mod:`gzip` --- Support for :program:`gzip` files
+=================================================
 
 .. module:: gzip
-   :synopsis: ファイルオブジェクトを用いた gzip  圧縮および解凍のためのインタフェース
+   :synopsis: Interfaces for gzip compression and decompression using file objects.
 
-.. This module provides a simple interface to compress and decompress files just
-.. like the GNU programs :program:`gzip` and :program:`gunzip` would.
+**Source code:** :source:`Lib/gzip.py`
 
-このモジュールは、ファイルをGNUの :program:`gzip`, :program:`gunzip`
-のように圧縮、伸長するシンプルなインタフェースを提供しています。
+--------------
 
-.. The data compression is provided by the :mod:`zlib` module.
+This module provides a simple interface to compress and decompress files just
+like the GNU programs :program:`gzip` and :program:`gunzip` would.
 
-データ圧縮は :mod:`zlib` モジュールで提供されています。
+The data compression is provided by the :mod:`zlib` module.
 
-.. The :mod:`gzip` module provides the :class:`GzipFile` class which is modeled
-.. after Python's File Object. The :class:`GzipFile` class reads and writes
-.. :program:`gzip`\ -format files, automatically compressing or decompressing the
-.. data so that it looks like an ordinary file object.
+The :mod:`gzip` module provides the :class:`GzipFile` class which is modeled
+after Python's File Object. The :class:`GzipFile` class reads and writes
+:program:`gzip`\ -format files, automatically compressing or decompressing the
+data so that it looks like an ordinary file object.
 
-:mod:`gzip` モジュールは、Pythonのファイルオブジェクトに似た
-:class:`GzipFile` クラスを提供しています。
-:class:`GzipFile` クラスは :program:`gzip` フォーマットのファイルを読み書きします。
-自動的にデータを圧縮・伸張するので、外からは通常のファイルオブジェクトのように見えます。
+Note that additional file formats which can be decompressed by the
+:program:`gzip` and :program:`gunzip` programs, such  as those produced by
+:program:`compress` and :program:`pack`, are not supported by this module.
 
-.. Note that additional file formats which can be decompressed by the
-.. :program:`gzip` and :program:`gunzip` programs, such  as those produced by
-.. :program:`compress` and :program:`pack`, are not supported by this module.
+The module defines the following items:
 
-:program:`compress` や :program:`pack` 等によって作られる、 :program:`gzip` や
-:program:`gunzip` が伸長できる他のファイルフォーマットについては、
-このモジュールは対応していないので注意してください。
-
-.. For other archive formats, see the :mod:`bz2`, :mod:`zipfile`, and
-.. :mod:`tarfile` modules.
-
-他のアーカイブフォーマットについては、 :mod:`bz2`, :mod:`zipfile`, :mod:`tarfile`
-モジュールを参照してください。
-
-
-このモジュールでは以下の項目を定義しています:
 
 .. class:: GzipFile([filename[, mode[, compresslevel[, fileobj[, mtime]]]]])
 
-   :class:`GzipFile` クラスのコンストラクタです。
-   :class:`GzipFile` オブジェクトは :meth:`readinto` と
-   :meth:`truncate` メソッドを除くほとんどのファイルオブジェクトの
-   メソッドをシミュレートします。
-   少なくとも *fileobj* および *filename* は有効な値でなければなりません。
+   Constructor for the :class:`GzipFile` class, which simulates most of the methods
+   of a file object, with the exception of the :meth:`readinto` and
+   :meth:`truncate` methods.  At least one of *fileobj* and *filename* must be
+   given a non-trivial value.
 
-   クラスの新しいインスタンスは、 *fileobj* に基づいて作成されます。
-   *fileobj* は通常のファイル、 :class:`StringIO` オブジェクト、
-   そしてその他ファイルをシミュレートできるオブジェクトでかまいません。
-   値はデフォルトでは None で、ファイルオブジェクトを生成するために
-   *filename* を開きます。
+   The new class instance is based on *fileobj*, which can be a regular file, a
+   :class:`~StringIO.StringIO` object, or any other object which simulates a file.  It
+   defaults to ``None``, in which case *filename* is opened to provide a file
+   object.
 
-   :program:`gzip` ファイルヘッダ中には、
-   ファイルが解凍されたときの元のファイル名を収めることができますが、 *fileobj* が
-   ``None``  でない場合、引数 *filename* がファイル名として認識できる文字列であれば、
-   *filename* はファイルヘッダに収めるためだけに使われます。
-   そうでない場合（この値はデフォルトでは空文字列です）、
-   元のファイル名はヘッダに収められません。
+   When *fileobj* is not ``None``, the *filename* argument is only used to be
+   included in the :program:`gzip` file header, which may include the original
+   filename of the uncompressed file.  It defaults to the filename of *fileobj*, if
+   discernible; otherwise, it defaults to the empty string, and in this case the
+   original filename is not included in the header.
 
-   *mode* 引数は、ファイルを読み出すのか、書き込むのかによって、
-   ``'r'``, ``'rb'``, ``'a'``, ``'ab'``, ``'w'``,  そして ``'wb'``
-   のいずれかになります。
-   *fileobj* のファイルモードが認識可能な場合、 *mode* はデフォルトで
-   *fileobj* のモードと同じになります。
-   そうでない場合、デフォルトのモードは ``'rb'`` です。
-   'b' フラグがついていなくても、ファイルがバイナリモードで開かれることを保証するために
-   'b' フラグが追加されます。これはプラットフォーム間での移植性のためです。
+   The *mode* argument can be any of ``'r'``, ``'rb'``, ``'a'``, ``'ab'``, ``'w'``,
+   or ``'wb'``, depending on whether the file will be read or written.  The default
+   is the mode of *fileobj* if discernible; otherwise, the default is ``'rb'``. If
+   not given, the 'b' flag will be added to the mode to ensure the file is opened
+   in binary mode for cross-platform portability.
 
-   *compresslevel* 引数は ``1`` から ``9`` までの整数で、圧縮のレベルを制御します。
-   ``1`` は最も高速で最小限の圧縮しか行いません。
-   ``9`` は最も低速ですが、最大限の圧縮を行います。デフォルトの値は ``9`` です。
+   The *compresslevel* argument is an integer from ``0`` to ``9`` controlling
+   the level of compression; ``1`` is fastest and produces the least
+   compression, and ``9`` is slowest and produces the most compression. ``0``
+   is no compression. The default is ``9``.
 
-   *mtime* 引数はオプションで、圧縮時にストリームに書かれる数値型のタイムスタンプです。
-   :program:`gzip` で圧縮された全てのストリームはタイムスタンプを必要とします。
-   省略された場合や ``None`` が渡された場合は、現在の時刻が利用されます。
-   このモジュールは伸長時にはタイムスタンプを無視しますが、 :program:`gunzip`
-   などのいくつかのプログラムはタイムスタンプを利用します。
-   タイムスタンプのフォーマットは ``time.time()`` の戻り値や、 ``os.stat()``
-   の戻り値となるオブジェクトの ``st_mtime`` メンバと同じです。
+   The *mtime* argument is an optional numeric timestamp to be written to
+   the stream when compressing.  All :program:`gzip` compressed streams are
+   required to contain a timestamp.  If omitted or ``None``, the current
+   time is used.  This module ignores the timestamp when decompressing;
+   however, some programs, such as :program:`gunzip`\ , make use of it.
+   The format of the timestamp is the same as that of the return value of
+   ``time.time()`` and of the ``st_mtime`` attribute of the object returned
+   by ``os.stat()``.
 
-   圧縮したデータの後ろにさらに何か追記したい場合もあるので、
-   :class:`GzipFile` オブジェクトの :meth:`close` メソッド呼び出しは
-   *fileobj* をクローズしません。
-   この機能によって、書き込みのためにオープンした :class:`StringIO` オブジェクトを
-   *fileobj* として渡し、(:class:`GzipFile` を :meth:`close` した後に)
-   :class:`StringIO` オブジェクトの :meth:`getvalue` メソッドを使って
-   書き込んだデータの入っているメモリバッファを取得することができます。
+   Calling a :class:`GzipFile` object's :meth:`close` method does not close
+   *fileobj*, since you might wish to append more material after the compressed
+   data.  This also allows you to pass a :class:`~StringIO.StringIO` object opened for
+   writing as *fileobj*, and retrieve the resulting memory buffer using the
+   :class:`StringIO` object's :meth:`~StringIO.StringIO.getvalue` method.
 
-   :class:`GzipFile` はイテレーションと :keyword:`with` 文をサポートします。
+   :class:`GzipFile` supports iteration and the :keyword:`with` statement.
 
    .. versionchanged:: 2.7
-      :keyword:`with` 構文のサポートが追加されました。
+      Support for the :keyword:`with` statement was added.
 
    .. versionchanged:: 2.7
-      zero-pad されたファイルのサポートが追加されました。
+      Support for zero-padded files was added.
+
+   .. versionadded:: 2.7
+      The *mtime* argument.
 
 
 .. function:: open(filename[, mode[, compresslevel]])
 
-   ``GzipFile(filename,`` ``mode,`` ``compresslevel)`` の短縮形です。
-   引数 *filename* は必須です。
-   デフォルトで *mode* は ``'rb'`` に、 *compresslevel* は ``9`` に設定されています。
+   This is a shorthand for ``GzipFile(filename,`` ``mode,`` ``compresslevel)``.
+   The *filename* argument is required; *mode* defaults to ``'rb'`` and
+   *compresslevel* defaults to ``9``.
 
 
 .. _gzip-usage-examples:
 
-.. Examples of usage
-
-使い方の例
+Examples of usage
 -----------------
 
-..
-   Example of how to read a compressed file::
-
-圧縮されたファイルを読み込む例::
+Example of how to read a compressed file::
 
    import gzip
-   f = gzip.open('/home/joe/file.txt.gz', 'rb')
-   file_content = f.read()
-   f.close()
+   with gzip.open('file.txt.gz', 'rb') as f:
+       file_content = f.read()
 
-..
-   Example of how to create a compressed GZIP file::
-
-GZIP圧縮されたファイルを作成する例::
+Example of how to create a compressed GZIP file::
 
    import gzip
    content = "Lots of content here"
-   f = gzip.open('/home/joe/file.txt.gz', 'wb')
-   f.write(content)
-   f.close()
+   with gzip.open('file.txt.gz', 'wb') as f:
+       f.write(content)
 
-..
-   Example of how to GZIP compress an existing file::
-
-既存のファイルをGZIP圧縮する例::
+Example of how to GZIP compress an existing file::
 
    import gzip
-   f_in = open('/home/joe/file.txt', 'rb')
-   f_out = gzip.open('/home/joe/file.txt.gz', 'wb')
-   f_out.writelines(f_in)
-   f_out.close()
-   f_in.close()
+   import shutil
+   with open('file.txt', 'rb') as f_in, gzip.open('file.txt.gz', 'wb') as f_out:
+       shutil.copyfileobj(f_in, f_out)
+
 
 .. seealso::
 
    Module :mod:`zlib`
-      :program:`gzip` ファイル形式のサポートを行うために必要な基本ライブラリモジュール。
+      The basic data compression module needed to support the :program:`gzip` file
+      format.
 

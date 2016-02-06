@@ -1,77 +1,83 @@
-
-:mod:`atexit` --- 終了ハンドラ
-==============================
+:mod:`atexit` --- Exit handlers
+===============================
 
 .. module:: atexit
-   :synopsis: 後始末関数の登録と実行。
+   :synopsis: Register and execute cleanup functions.
 .. moduleauthor:: Skip Montanaro <skip@pobox.com>
 .. sectionauthor:: Skip Montanaro <skip@pobox.com>
 
 
 .. versionadded:: 2.0
 
-:mod:`atexit` モジュールでは、後始末関数を登録するための関数を一つだけ定義しています。この関数を使って登録した後始末関数は、インタプリタが
-終了するときに自動的に実行されます。
+**Source code:** :source:`Lib/atexit.py`
 
-.. seealso::
+--------------
 
-   最新バージョンの `atexit Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/atexit.py?view=markup>`_
+The :mod:`atexit` module defines a single function to register cleanup
+functions.  Functions thus registered are automatically executed upon normal
+interpreter termination.  :mod:`atexit` runs these functions in the *reverse*
+order in which they were registered; if you register ``A``, ``B``, and ``C``,
+at interpreter termination time they will be run in the order ``C``, ``B``,
+``A``.
 
-.. note::
-
-   プログラムが Python で処理されないシグナルで停止させられたとき、Python の致命的な内部エラーが
-   検出されたとき、あるいは :func:`os._exit` が呼び出されたときには、このモジュールを通して
-   登録した関数は呼び出されません。
+**Note:** The functions registered via this module are not called when the
+program is killed by a signal not handled by Python, when a Python fatal
+internal error is detected, or when :func:`os._exit` is called.
 
 .. index:: single: exitfunc (in sys)
 
-このモジュールは、 ``sys.exitfunc`` 変数の提供している機能の代用となるインタフェースです。
+This is an alternate interface to the functionality provided by the
+:func:`sys.exitfunc` variable.
 
-.. note::
-
-   ``sys.exitfunc`` を設定する他のコードとともに使用した場合には、このモジュールは正しく動作しないでしょう。特に、他のコア Python
-   モジュールでは、プログラマの意図を知らなくても :mod:`atexit` を自由に使えます。 ``sys.exitfunc`` を使っている人は、代わりに
-   :mod:`atexit` を使うコードに変換してください。 ``sys.exitfunc`` を設定するコードを変換するには、 :mod:`atexit` を
-   import し、 ``sys.exitfunc`` へ束縛されていた関数を登録するのが最も簡単です。
+Note: This module is unlikely to work correctly when used with other code that
+sets ``sys.exitfunc``.  In particular, other core Python modules are free to use
+:mod:`atexit` without the programmer's knowledge.  Authors who use
+``sys.exitfunc`` should convert their code to use :mod:`atexit` instead.  The
+simplest way to convert code that sets ``sys.exitfunc`` is to import
+:mod:`atexit` and register the function that had been bound to ``sys.exitfunc``.
 
 
 .. function:: register(func[, *args[, **kargs]])
 
-   終了時に実行される関数として *func* を登録します。すべての *func* へ渡すオプションの引数を、
-   :func:`register` へ引数としてわたさなければなりません。
+   Register *func* as a function to be executed at termination.  Any optional
+   arguments that are to be passed to *func* must be passed as arguments to
+   :func:`register`.  It is possible to register the same function and arguments
+   more than once.
 
-   通常のプログラムの終了時、例えば :func:`sys.exit` が呼び出されるとき、あるいは、メインモジュールの実行が完了したときに、登録された全ての
-   関数を、最後に登録されたものから順に呼び出します。通常、より低レベルのモジュールはより高レベルのモジュールより前に import されるので、
-   後で後始末が行われるという仮定に基づいています。
+   At normal program termination (for instance, if :func:`sys.exit` is called or
+   the main module's execution completes), all functions registered are called in
+   last in, first out order.  The assumption is that lower level modules will
+   normally be imported before higher level modules and thus must be cleaned up
+   later.
 
-   終了ハンドラの実行中に例外が発生すると、(:exc:`SystemExit` 以外の場合は)トレースバックを表示して、例外の情報を保存します。
-   全ての終了ハンドラに動作するチャンスを与えた後に、最後に送出された例外を再送出します。
+   If an exception is raised during execution of the exit handlers, a traceback is
+   printed (unless :exc:`SystemExit` is raised) and the exception information is
+   saved.  After all exit handlers have had a chance to run the last exception to
+   be raised is re-raised.
 
    .. versionchanged:: 2.6
-      この関数をデコレータとして利用できるように、 *func* を返すようになりました。
-      以前は ``None`` を返していたので、デコレータとして利用しようとすると、関数名の変数に
-      ``None`` が代入されてしまっていました。
+      This function now returns *func*, which makes it possible to use it as a
+      decorator.
 
-      .. This function now returns *func* which makes it possible to use it as a
-         decorator without binding the original name to ``None``.
 
 .. seealso::
 
    Module :mod:`readline`
-      :mod:`readline` ヒストリファイルを読み書きするための :mod:`atexit` の有用な例です。
+      Useful example of :mod:`atexit` to read and write :mod:`readline` history files.
 
 
 .. _atexit-example:
 
-:mod:`atexit` の例
--------------------
+:mod:`atexit` Example
+---------------------
 
-次の簡単な例では、あるモジュールを import した時にカウンタを初期化しておき、プログラムが終了するときにアプリケーションがこのモジュールを明
-示的に呼び出さなくてもカウンタが更新されるようにする方法を示しています。 ::
+The following simple example demonstrates how a module can initialize a counter
+from a file when it is imported and save the counter's updated value
+automatically when the program terminates without relying on the application
+making an explicit call into this module at termination. ::
 
    try:
-       _count = int(open("/tmp/counter").read())
+       _count = int(open("counter").read())
    except IOError:
        _count = 0
 
@@ -80,12 +86,13 @@
        _count = _count + n
 
    def savecounter():
-       open("/tmp/counter", "w").write("%d" % _count)
+       open("counter", "w").write("%d" % _count)
 
    import atexit
    atexit.register(savecounter)
 
-:func:`register` に指定した固定引数とキーワードパラメタは登録した関数を呼び出す際に渡されます。 ::
+Positional and keyword arguments may also be passed to :func:`register` to be
+passed along to the registered function when it is called::
 
    def goodbye(name, adjective):
        print 'Goodbye, %s, it was %s to meet you.' % (name, adjective)
@@ -96,9 +103,7 @@
    # or:
    atexit.register(goodbye, adjective='nice', name='Donny')
 
-.. Usage as a :term:`decorator`
-
-デコレータ(:term:`decorator`)として利用する例::
+Usage as a :term:`decorator`::
 
    import atexit
 
@@ -106,6 +111,4 @@
    def goodbye():
        print "You are now leaving the Python sector."
 
-.. This obviously only works with functions that don't take arguments.
-
-もちろん、デコレータとして利用できるのは、その関数が引数を受け取らない場合に限られます。
+This only works with functions that can be called without arguments.

@@ -1,38 +1,40 @@
 .. XXX: reference/datamodel and this have quite a few overlaps!
 
+
 .. _bltin-types:
 
-**********
-組み込み型
-**********
+**************
+Built-in Types
+**************
 
-以下のセクションでは、インタプリタに組み込まれている標準の型について記述します。
+The following sections describe the standard types that are built into the
+interpreter.
 
 .. note::
 
-   これまでの (リリース 2.2 までの) Python の歴史では、組み込み型はオ
-   ブジェクト指向における継承を行う際に雛型にできないという点で、ユー
-   ザ定義型とは異なっていました。いまではこのような制限はなくなってい
-   ます。
+   Historically (until release 2.2), Python's built-in types have differed from
+   user-defined types because it was not possible to use the built-in types as the
+   basis for object-oriented inheritance. This limitation no longer
+   exists.
 
 .. index:: pair: built-in; types
 
-主要な組み込み型は数値型、シーケンス型、マッピング型、ファイル、クラス、
-インスタンス型、および例外です。
+The principal built-in types are numerics, sequences, mappings, files, classes,
+instances and exceptions.
 
 .. index:: statement: print
 
-演算によっては、複数の型でサポートされているものがあります; 特に、ほぼ
-全てのオブジェクトについて、比較、真理値テスト、 (:func:`repr` 関数や、
-わずかに異なる :func:`str` 関数による) 文字列への変換を行うことができ
-ます。オブジェクトが :func:`print` 関数によって書かれていると、後の方の
-文字列への変換が暗黙に行われます。
+Some operations are supported by several object types; in particular,
+practically all objects can be compared, tested for truth value, and converted
+to a string (with the :ref:`repr() <func-repr>` function or the slightly different
+:func:`str` function).  The latter function is implicitly used when an object is
+written by the :func:`print` function.
 
 
 .. _truth:
 
-真理値テスト
-============
+Truth Value Testing
+===================
 
 .. index::
    statement: if
@@ -41,9 +43,9 @@
    pair: Boolean; operations
    single: false
 
-どのオブジェクトも :keyword:`if` または :keyword:`while` 条件文の中や、
-以下のブール演算における被演算子として真理値テストを行うことができます。
-以下の値は偽であると見なされます:
+Any object can be tested for truth value, for use in an :keyword:`if` or
+:keyword:`while` condition or as operand of the Boolean operations below. The
+following values are considered false:
 
   .. index:: single: None (Built-in object)
 
@@ -53,21 +55,20 @@
 
 * ``False``
 
-* 数値型におけるゼロ。例えば ``0``, ``0L``, ``0.0``, ``0j`` 。
+* zero of any numeric type, for example, ``0``, ``0L``, ``0.0``, ``0j``.
 
-* 空のシーケンス型。例えば ``''``, ``()``, ``[]`` 。
+* any empty sequence, for example, ``''``, ``()``, ``[]``.
 
-* 空のマッピング型。例えば ``{}`` 。
+* any empty mapping, for example, ``{}``.
 
-* :meth:`__nonzero__` または :meth:`__len__` メソッドが定義されている
-  ようなユーザ定義クラスのインスタンスで、それらのメソッドが整数値ゼ
-  ロまたは :class:`bool` 値の ``False`` を返すとき。
-  [#]_
+* instances of user-defined classes, if the class defines a :meth:`__nonzero__`
+  or :meth:`__len__` method, when that method returns the integer zero or
+  :class:`bool` value ``False``. [1]_
 
 .. index:: single: true
 
-それ以外の値は全て真であると見なされます --- 従って、ほとんどの型のオ
-ブジェクトは常に真です。
+All other values are considered true --- so objects of many types are always
+true.
 
 .. index::
    operator: or
@@ -75,61 +76,62 @@
    single: False
    single: True
 
-ブール値の結果を返す演算および組み込み関数は、特に注釈のない限り常に
-偽値として ``0`` または ``False`` を返し、真値として ``1``  または
-``True`` を返します (重要な例外: ブール演算 ``or`` および ``and`` は常
-に被演算子の中の一つを返します)。
+Operations and built-in functions that have a Boolean result always return ``0``
+or ``False`` for false and ``1`` or ``True`` for true, unless otherwise stated.
+(Important exception: the Boolean operations ``or`` and ``and`` always return
+one of their operands.)
 
 
 .. _boolean:
 
-ブール演算 --- :keyword:`and`, :keyword:`or`, :keyword:`not`
-============================================================
+Boolean Operations --- :keyword:`and`, :keyword:`or`, :keyword:`not`
+====================================================================
 
 .. index:: pair: Boolean; operations
 
-以下にブール演算子を示します。優先度の低いものから順に並んでいます。:
+These are the Boolean operations, ordered by ascending priority:
 
-+-------------+----------------------------------------+------+
-| 演算        | 結果                                   | 注釈 |
-+=============+========================================+======+
-| ``x or y``  | *x* が偽なら *y*, そうでなければ *x*   | \(1) |
-+-------------+----------------------------------------+------+
-| ``x and y`` | *x* が偽なら *x*, そうでなければ *y*   | \(2) |
-+-------------+----------------------------------------+------+
-| ``not x``   | *x* が偽なら ``True``, そうでなければ  | \(3) |
-|             | ``False``                              |      |
-+-------------+----------------------------------------+------+
++-------------+---------------------------------+-------+
+| Operation   | Result                          | Notes |
++=============+=================================+=======+
+| ``x or y``  | if *x* is false, then *y*, else | \(1)  |
+|             | *x*                             |       |
++-------------+---------------------------------+-------+
+| ``x and y`` | if *x* is false, then *x*, else | \(2)  |
+|             | *y*                             |       |
++-------------+---------------------------------+-------+
+| ``not x``   | if *x* is false, then ``True``, | \(3)  |
+|             | else ``False``                  |       |
++-------------+---------------------------------+-------+
 
 .. index::
    operator: and
    operator: or
    operator: not
 
-注釈:
+Notes:
 
 (1)
-   これは、短絡的な演算子であり、一つめの引数が :const:`False` のとき
-   にのみ、二つめの引数を評価します。
-
+   This is a short-circuit operator, so it only evaluates the second
+   argument if the first one is :const:`False`.
 
 (2)
-   これは、短絡的な演算子であり、一つめの引数が :const:`True` のとき
-   にのみ、二つめの引数を評価します。
+   This is a short-circuit operator, so it only evaluates the second
+   argument if the first one is :const:`True`.
 
 (3)
-   ``not`` は非ブール演算子よりも低い演算優先度なので、 ``not a == b``
-   は ``not (a == b)`` と評価され、 ``a == not b`` は構文エラーとなり
-   ます。
+   ``not`` has a lower priority than non-Boolean operators, so ``not a == b`` is
+   interpreted as ``not (a == b)``, and ``a == not b`` is a syntax error.
 
 
 .. _stdcomparisons:
 
-比較
-====
+Comparisons
+===========
 
 .. index::
    pair: chaining; comparisons
+   pair: operator; comparison
    operator: ==
    operator: <
    operator: <=
@@ -139,75 +141,89 @@
    operator: is
    operator: is not
 
-比較演算は全てのオブジェクトでサポートされています。比較演算子は全て
-同じ演算優先度を持っています (ブール演算より高い演算優先度です)。
-比較は任意の形で連鎖させることができます; 例えば、 ``x < y <= z`` は
-``x < y and y <= z`` と等価で、違うのは *y* が一度だけしか評価され
-ないということです (どちらの場合でも、 ``x < y`` が偽となった場合には
-*z* は評価されません)。
+Comparison operations are supported by all objects.  They all have the same
+priority (which is higher than that of the Boolean operations). Comparisons can
+be chained arbitrarily; for example, ``x < y <= z`` is equivalent to ``x < y and
+y <= z``, except that *y* is evaluated only once (but in both cases *z* is not
+evaluated at all when ``x < y`` is found to be false).
 
-以下のテーブルに比較演算をまとめます:
+This table summarizes the comparison operations:
 
-+------------+--------------------------+
-| 演算       | 意味                     |
-+============+==========================+
-| ``<``      | より小さい               |
-+------------+--------------------------+
-| ``<=``     | 以下                     |
-+------------+--------------------------+
-| ``>``      | より大きい               |
-+------------+--------------------------+
-| ``>=``     | 以上                     |
-+------------+--------------------------+
-| ``==``     | 等しい                   |
-+------------+--------------------------+
-| ``!=``     | 等しくない               |
-+------------+--------------------------+
-| ``is``     | 同一のオブジェクトである |
-+------------+--------------------------+
-| ``is not`` | 同一のオブジェクトでない |
-+------------+--------------------------+
++------------+-------------------------+-------+
+| Operation  | Meaning                 | Notes |
++============+=========================+=======+
+| ``<``      | strictly less than      |       |
++------------+-------------------------+-------+
+| ``<=``     | less than or equal      |       |
++------------+-------------------------+-------+
+| ``>``      | strictly greater than   |       |
++------------+-------------------------+-------+
+| ``>=``     | greater than or equal   |       |
++------------+-------------------------+-------+
+| ``==``     | equal                   |       |
++------------+-------------------------+-------+
+| ``!=``     | not equal               | \(1)  |
++------------+-------------------------+-------+
+| ``is``     | object identity         |       |
++------------+-------------------------+-------+
+| ``is not`` | negated object identity |       |
++------------+-------------------------+-------+
+
+Notes:
+
+(1)
+    ``!=`` can also be written ``<>``, but this is an obsolete usage
+    kept for backwards compatibility only. New code should always use
+    ``!=``.
 
 .. index::
    pair: object; numeric
    pair: objects; comparing
 
-数値型間の比較か文字列間の比較でないかぎり、異なる型のオブジェクトを比
-較しても等価になることはありません; これらのオブジェクトの順番付けは一
-貫してはいますが任意のものです (従って要素の型が一様でないシーケンスを
-ソートした結果は一貫したものになります)。
-さらに、 (例えばファイルオブジェクトのように) 型によっては、その型の
-2 つのオブジェクトの不等性だけの、縮退した比較の概念しかサポートしない
-ものもあります。繰り返しますが、そのようなオブジェクトも任意の順番付け
-をされていますが、それは一貫したものです。被演算子が複素数の場合、演算
-子 ``<``, ``<=``, ``>`` および ``>=`` は例外 :exc:`TypeError` を送
-出します。
+Objects of different types, except different numeric types and different string
+types, never compare equal; such objects are ordered consistently but
+arbitrarily (so that sorting a heterogeneous array yields a consistent result).
+Furthermore, some types (for example, file objects) support only a degenerate
+notion of comparison where any two objects of that type are unequal.  Again,
+such objects are ordered arbitrarily but consistently. The ``<``, ``<=``, ``>``
+and ``>=`` operators will raise a :exc:`TypeError` exception when any operand is
+a complex number.
 
-.. index:: single: __cmp__() (instance method)
+.. index::
+   single: __cmp__() (instance method)
+   single: __eq__() (instance method)
+   single: __ne__() (instance method)
+   single: __lt__() (instance method)
+   single: __le__() (instance method)
+   single: __gt__() (instance method)
+   single: __ge__() (instance method)
 
-あるクラスのインスタンス間の比較は、そのクラスで :meth:`__cmp__` メソッ
-ドが定義されていない限り等しくなりません。
-このメソッドを使ってオブジェクトの比較方法に影響を及ぼすための情報につ
-いては :ref:`customization` を参照してください。
+Non-identical instances of a class normally compare as non-equal unless the
+class defines the :meth:`__eq__` method or the :meth:`__cmp__` method.
+
+Instances of a class cannot be ordered with respect to other instances of the
+same class, or other types of object, unless the class defines either enough of
+the rich comparison methods (:meth:`__lt__`, :meth:`__le__`, :meth:`__gt__`, and
+:meth:`__ge__`) or the :meth:`__cmp__` method.
 
 .. impl-detail::
 
-   数値型を除き、異なる型のオブジェクトは型の名前で
-   順番付けされます; 適当な比較をサポートしていないある型のオブジェクトは
-   アドレスによって順番付けされます。
+   Objects of different types except numbers are ordered by their type names;
+   objects of the same types that don't support proper comparison are ordered by
+   their address.
 
 .. index::
    operator: in
    operator: not in
 
-同じ優先度を持つ演算子としてさらに 2 つ、シーケンス型でのみ ``in`` お
-よび ``not in`` がサポートされています (以下を参照)。
+Two more operations with the same syntactic priority, ``in`` and ``not in``, are
+supported only by sequence types (below).
 
 
 .. _typesnumeric:
 
-数値型 :class:`int`, :class:`float`, :class:`long`, :class:`complex`
-====================================================================
+Numeric Types --- :class:`int`, :class:`float`, :class:`long`, :class:`complex`
+===============================================================================
 
 .. index::
    object: numeric
@@ -218,22 +234,21 @@
    object: complex number
    pair: C; language
 
-4 つの異なる数値型があります: :dfn:`通常の整数型`, :dfn:`長整数型`,
-:dfn:`浮動小数点型`, :dfn:`複素数型` です。
-さらに、真偽値(Boolean)型も通常の整数型のサブタイプです。通常の整数 (単に
-:dfn:`整数型` とも呼ばれます) は C言語の :c:type:`long` 型を使って実装され
-ており、少なくとも 32 ビットの精度があります (``sys.maxint`` は常に通
-常の整数の各プラットフォームにおける最大値にセットされており、最小値は
-``-sys.maxint - 1`` になります)。
-長整数型には精度の制限がありません。
-浮動小数点型はたいていは C の :c:type:`double` を使って実装されています;
-あなたのプログラムが動作するマシンでの浮動小数点型の精度と内部表現は、
-:data:`sys.float_info` から利用できます。
-複素数型は実部と虚部を持ち、それぞれ浮動小数点数です。
-複素数 *z* から実部および虚部を取り出すには、
-``z.real`` および ``z.imag`` を使ってください。
-(標準ライブラリには、追加の数値型、分数を保持する :mod:`fractions` や、
-ユーザ定義の精度の浮動小数点数を保持する :mod:`decimal` があります。)
+There are four distinct numeric types: :dfn:`plain integers`, :dfn:`long
+integers`, :dfn:`floating point numbers`, and :dfn:`complex numbers`. In
+addition, Booleans are a subtype of plain integers. Plain integers (also just
+called :dfn:`integers`) are implemented using :c:type:`long` in C, which gives
+them at least 32 bits of precision (``sys.maxint`` is always set to the maximum
+plain integer value for the current platform, the minimum value is
+``-sys.maxint - 1``).  Long integers have unlimited precision.  Floating point
+numbers are usually implemented using :c:type:`double` in C; information about
+the precision and internal representation of floating point numbers for the
+machine on which your program is running is available in
+:data:`sys.float_info`.  Complex numbers have a real and imaginary part, which
+are each a floating point number.  To extract these parts from a complex number
+*z*, use ``z.real`` and ``z.imag``. (The standard library includes additional
+numeric types, :mod:`fractions` that hold rationals, and :mod:`decimal` that
+hold floating-point numbers with user-definable precision.)
 
 .. index::
    pair: numeric; literals
@@ -244,15 +259,16 @@
    pair: hexadecimal; literals
    pair: octal; literals
 
-数値は、数値リテラルや組み込み関数や演算子の戻り値として生成されます。
-修飾のない整数リテラル ( 2 進表現や、 16 進表現や 8 進表現の値も含みま
-す) は、通常の整数値を表します。値が通常の整数で表すには大きすぎる場合、
-``'L'`` または ``'l'`` が末尾につく整数リテラルは長整数型を表します
-(``'L'`` が望ましいです。というのは ``1l`` は 11 と非常に紛らわしいか
-らです!) 小数点または指数表記のある数値リテラルは浮動小数点数を表しま
-す。数値リテラルに ``'j'`` または ``'J'`` をつけると実数部がゼロの複素
-数を表します。
-複素数の数値リテラルは実数部と虚数部を足したものです。
+Numbers are created by numeric literals or as the result of built-in functions
+and operators.  Unadorned integer literals (including binary, hex, and octal
+numbers) yield plain integers unless the value they denote is too large to be
+represented as a plain integer, in which case they yield a long integer.
+Integer literals with an ``'L'`` or ``'l'`` suffix yield long integers (``'L'``
+is preferred because ``1l`` looks too much like eleven!).  Numeric literals
+containing a decimal point or an exponent sign yield floating point numbers.
+Appending ``'j'`` or ``'J'`` to a numeric literal yields a complex number with a
+zero real part. A complex numeric literal is the sum of a real and an imaginary
+part.
 
 .. index::
    single: arithmetic
@@ -268,73 +284,75 @@
    operator: %
    operator: **
 
-Python は型混合の演算を完全にサポートします: ある 2 項演算子が互いに異
-なる数値型の被演算子を持つ場合、より "制限された" 型の被演算子は他方の
-型に合わせて広げられます。ここで通常の整数は長整数より制限されており、
-長整数は浮動小数点数より制限されており、浮動小数点は複素数より制限され
-ています。型混合の数値間での比較も同じ規則に従います。 [#]_ コンストラ
-クタ :func:`int`, :func:`long`, :func:`float`, および
-:func:`complex` を使って、特定の型の数を生成することができます。
+Python fully supports mixed arithmetic: when a binary arithmetic operator has
+operands of different numeric types, the operand with the "narrower" type is
+widened to that of the other, where plain integer is narrower than long integer
+is narrower than floating point is narrower than complex. Comparisons between
+numbers of mixed type use the same rule. [2]_ The constructors :func:`int`,
+:func:`long`, :func:`float`, and :func:`complex` can be used to produce numbers
+of a specific type.
 
-全ての組み込み数値型は以下の演算をサポートします。
-演算子の優先度については、 :ref:`power`,および、あとのセクションを参
-照下さい。
+All built-in numeric types support the following operations. See
+:ref:`power` and later sections for the operators' priorities.
 
-+--------------------+-------------------------------------------+--------+
-| 演算               | 結果                                      |  注釈  |
-+====================+===========================================+========+
-| ``x + y``          | *x* と *y* の和                           |        |
-+--------------------+-------------------------------------------+--------+
-| ``x - y``          | *x* と *y* の差                           |        |
-+--------------------+-------------------------------------------+--------+
-| ``x * y``          | *x* と *y* の積                           |        |
-+--------------------+-------------------------------------------+--------+
-| ``x / y``          | *x* と *y* の商                           |  \(1)  |
-+--------------------+-------------------------------------------+--------+
-| ``x // y``         | *x* と *y* の商(を切り下げたもの)         | (4)(5) |
-+--------------------+-------------------------------------------+--------+
-| ``x % y``          | ``x / y`` の剰余                          |  \(4)  |
-+--------------------+-------------------------------------------+--------+
-| ``-x``             | *x* の符号反転                            |        |
-+--------------------+-------------------------------------------+--------+
-| ``+x``             | *x* の符号不変                            |        |
-+--------------------+-------------------------------------------+--------+
-| ``abs(x)``         | *x* の絶対値または大きさ                  |  \(3)  |
-+--------------------+-------------------------------------------+--------+
-| ``int(x)``         | *x* の通常整数への変換                    |  \(2)  |
-+--------------------+-------------------------------------------+--------+
-| ``long(x)``        | *x* の長整数への変換                      |  \(2)  |
-+--------------------+-------------------------------------------+--------+
-| ``float(x)``       | *x* の浮動小数点数への変換                |  \(6)  |
-+--------------------+-------------------------------------------+--------+
-| ``complex(re,im)`` | 実数部 *re*, 虚数部 *im* の複素数。 *im*  |        |
-|                    | のデフォルト値はゼロ。                    |        |
-+--------------------+-------------------------------------------+--------+
-| ``c.conjugate()``  | 複素数 *c* の共役複素数(実数部に依存する) |        |
-+--------------------+-------------------------------------------+--------+
-| ``divmod(x, y)``   | ``(x // y, x % y)`` からなるペア          |  \(3)  |
-+--------------------+-------------------------------------------+--------+
-| ``pow(x, y)``      | *x* の *y* 乗                             | (3)(7) |
-+--------------------+-------------------------------------------+--------+
-| ``x ** y``         | *x* の *y* 乗                             |  \(7)  |
-+--------------------+-------------------------------------------+--------+
++--------------------+---------------------------------+--------+
+| Operation          | Result                          | Notes  |
++====================+=================================+========+
+| ``x + y``          | sum of *x* and *y*              |        |
++--------------------+---------------------------------+--------+
+| ``x - y``          | difference of *x* and *y*       |        |
++--------------------+---------------------------------+--------+
+| ``x * y``          | product of *x* and *y*          |        |
++--------------------+---------------------------------+--------+
+| ``x / y``          | quotient of *x* and *y*         | \(1)   |
++--------------------+---------------------------------+--------+
+| ``x // y``         | (floored) quotient of *x* and   | (4)(5) |
+|                    | *y*                             |        |
++--------------------+---------------------------------+--------+
+| ``x % y``          | remainder of ``x / y``          | \(4)   |
++--------------------+---------------------------------+--------+
+| ``-x``             | *x* negated                     |        |
++--------------------+---------------------------------+--------+
+| ``+x``             | *x* unchanged                   |        |
++--------------------+---------------------------------+--------+
+| ``abs(x)``         | absolute value or magnitude of  | \(3)   |
+|                    | *x*                             |        |
++--------------------+---------------------------------+--------+
+| ``int(x)``         | *x* converted to integer        | \(2)   |
++--------------------+---------------------------------+--------+
+| ``long(x)``        | *x* converted to long integer   | \(2)   |
++--------------------+---------------------------------+--------+
+| ``float(x)``       | *x* converted to floating point | \(6)   |
++--------------------+---------------------------------+--------+
+| ``complex(re,im)`` | a complex number with real part |        |
+|                    | *re*, imaginary part *im*.      |        |
+|                    | *im* defaults to zero.          |        |
++--------------------+---------------------------------+--------+
+| ``c.conjugate()``  | conjugate of the complex number |        |
+|                    | *c*. (Identity on real numbers) |        |
++--------------------+---------------------------------+--------+
+| ``divmod(x, y)``   | the pair ``(x // y, x % y)``    | (3)(4) |
++--------------------+---------------------------------+--------+
+| ``pow(x, y)``      | *x* to the power *y*            | (3)(7) |
++--------------------+---------------------------------+--------+
+| ``x ** y``         | *x* to the power *y*            | \(7)   |
++--------------------+---------------------------------+--------+
 
 .. index::
    triple: operations on; numeric; types
    single: conjugate() (complex number method)
 
-注釈:
+Notes:
 
 (1)
    .. index::
       pair: integer; division
       triple: long; integer; division
 
-   (通常および長) 整数の割り算では、結果は整数になります。この場合値は
-   常にマイナス無限大の方向に丸められます: つまり、1/2 は 0、 (-1)/2
-   は -1、1/(-1) は -1、そして (-1)/(-2) は 0 になります。被演算子の両
-   方が長整数の場合、計算値に関わらず結果は長整数で返されるので注意し
-   てください。
+   For (plain or long) integer division, the result is an integer. The result is
+   always rounded towards minus infinity: 1/2 is 0, (-1)/2 is -1, 1/(-2) is -1, and
+   (-1)/(-2) is 0.  Note that the result is a long integer if either operand is a
+   long integer, regardless of the numeric value.
 
 (2)
    .. index::
@@ -344,65 +362,62 @@ Python は型混合の演算を完全にサポートします: ある 2 項演�
       single: trunc() (in module math)
       pair: numeric; conversions
 
-   浮動小数点数から :func:`int`,または、 :func:`long` を使った変換で
-   は、関連する関数、 :func:`math.trunc` のようにゼロ方向へ丸められま
-   す。下方向への丸めには :func:`math.floor` を使い、上方向への丸めに
-   は :func:`math.ceil` を使って下さい。
+   Conversion from floats using :func:`int` or :func:`long` truncates toward
+   zero like the related function, :func:`math.trunc`.  Use the function
+   :func:`math.floor` to round downward and :func:`math.ceil` to round
+   upward.
 
 (3)
-   完全な記述については、 :ref:`built-in-funcs`,を参照してください。
+   See :ref:`built-in-funcs` for a full description.
 
 (4)
-   複素数の切り詰め除算演算子、モジュロ演算子、および :func:`divmod` 。
-
    .. deprecated:: 2.3
-      複素数の切り詰め除算演算子、モジュロ演算子、および :func:`divmod`
-      関数は、複素数には定義されなくなりました。
-      複素数型には使えません。適切なら代わりに :func:`abs` で浮動小数点型に
-      変換してください。
+      The floor division operator, the modulo operator, and the :func:`divmod`
+      function are no longer defined for complex numbers.  Instead, convert to
+      a floating point number using the :func:`abs` function if appropriate.
 
 (5)
-   整数の除算とも呼ばれます。結果の値は整数ですが、整数型(int)とは限りません。
+   Also referred to as integer division.  The resultant value is a whole integer,
+   though the result's type is not necessarily int.
 
 (6)
-   浮動小数点数は、文字列、オプションの接頭辞 "+" または "-" と共に
-   "nan" と "inf" を、非数 (Not a Number (NaN)) や正、負の無限大として
-   受け付けます。
+   float also accepts the strings "nan" and "inf" with an optional prefix "+"
+   or "-" for Not a Number (NaN) and positive or negative infinity.
 
    .. versionadded:: 2.6
 
 (7)
-   Python はプログラム言語一般でそうであるように、 ``pow(0, 0)``,お
-   よび、 ``0 ** 0`` を ``1`` と定義します。
+   Python defines ``pow(0, 0)`` and ``0 ** 0`` to be ``1``, as is common for
+   programming languages.
 
-全ての :class:`numbers.Real` 型 (:class:`int`, :class:`long`,およ
-び、 :class:`float`) は以下の演算を含みます。 :
+All :class:`numbers.Real` types (:class:`int`, :class:`long`, and
+:class:`float`) also include the following operations:
 
-+--------------------+------------------------------------------------+--------+
-| 演算               | 結果                                           | 備考   |
-+====================+================================================+========+
-| ``math.trunc(x)``  | *x* を整数に切り捨てます。                     |        |
-+--------------------+------------------------------------------------+--------+
-| ``round(x[, n])``  | *x* を n 桁に丸めます。                        |        |
-|                    | 丸め方は偶数丸めです。                         |        |
-|                    | n が省略されれば 0 がデフォルトとなります。    |        |
-+--------------------+------------------------------------------------+--------+
-| ``math.floor(x)``  | *x* 以下の最大の整数を浮動小数点数で返します。 |        |
-+--------------------+------------------------------------------------+--------+
-| ``math.ceil(x)``   | *x* 以上の最小の整数を浮動小数点数で返します。 |        |
-+--------------------+------------------------------------------------+--------+
++--------------------+------------------------------------+--------+
+| Operation          | Result                             | Notes  |
++====================+====================================+========+
+| ``math.trunc(x)``  | *x* truncated to Integral          |        |
++--------------------+------------------------------------+--------+
+| ``round(x[, n])``  | *x* rounded to n digits,           |        |
+|                    | rounding ties away from zero. If n |        |
+|                    | is omitted, it defaults to 0.      |        |
++--------------------+------------------------------------+--------+
+| ``math.floor(x)``  | the greatest integral float <= *x* |        |
++--------------------+------------------------------------+--------+
+| ``math.ceil(x)``   | the least integral float >= *x*    |        |
++--------------------+------------------------------------+--------+
 
 .. XXXJH exceptions: overflow (when? what operations?) zerodivision
 
 
 .. _bitstring-ops:
 
-整数型におけるビット列演算
---------------------------
+Bitwise Operations on Integer Types
+--------------------------------------
 
 .. index::
    triple: operations on; integer; types
-   pair: bit-string; operations
+   pair: bitwise; operations
    pair: shifting; operations
    pair: masking; operations
    operator: ^
@@ -410,58 +425,59 @@ Python は型混合の演算を完全にサポートします: ある 2 項演�
    operator: <<
    operator: >>
 
-通常および長整数型ではさらに、ビット列に対してのみ意味のある演算をサポー
-トしています。負の数はその値の 2 の補数の値として扱われます (長整数の
-場合、演算操作中にオーバフローが起こらないように十分なビット数があるも
-のと仮定します) 。
+Bitwise operations only make sense for integers.  Negative numbers are treated
+as their 2's complement value (this assumes a sufficiently large number of bits
+that no overflow occurs during the operation).
 
-2 進のビット単位演算は全て、数値演算よりも低く、比較演算子よりも高い優
-先度です; 単項演算 ``~`` は他の単項数値演算 (``+`` および ``-``) と同じ
-優先度です。
+The priorities of the binary bitwise operations are all lower than the numeric
+operations and higher than the comparisons; the unary operation ``~`` has the
+same priority as the other unary numeric operations (``+`` and ``-``).
 
-以下のテーブルでは、ビット列演算を優先度の低いものから順に並べています。 :
+This table lists the bitwise operations sorted in ascending priority:
 
-+------------+------------------------------------------+----------+
-| 演算       | 結果                                     | 注釈     |
-+============+==========================================+==========+
-| ``x | y``  | ビット単位の *x* と *y* の :dfn:`論理和` |          |
-+------------+------------------------------------------+----------+
-| ``x ^ y``  | ビット単位の *x* と *y* の               |          |
-|            | :dfn:`排他的論理和`                      |          |
-+------------+------------------------------------------+----------+
-| ``x & y``  | ビット単位の *x* と *y* の :dfn:`論理積` |          |
-+------------+------------------------------------------+----------+
-| ``x << n`` | *x* の *n* ビット左シフト                | (1)(2)   |
-+------------+------------------------------------------+----------+
-| ``x >> n`` | *x* の *n* ビット右シフト                | (1)(3)   |
-+------------+------------------------------------------+----------+
-| ``~x``     | *x* のビット反転                         |          |
-+------------+------------------------------------------+----------+
++------------+--------------------------------+----------+
+| Operation  | Result                         | Notes    |
++============+================================+==========+
+| ``x | y``  | bitwise :dfn:`or` of *x* and   |          |
+|            | *y*                            |          |
++------------+--------------------------------+----------+
+| ``x ^ y``  | bitwise :dfn:`exclusive or` of |          |
+|            | *x* and *y*                    |          |
++------------+--------------------------------+----------+
+| ``x & y``  | bitwise :dfn:`and` of *x* and  |          |
+|            | *y*                            |          |
++------------+--------------------------------+----------+
+| ``x << n`` | *x* shifted left by *n* bits   | (1)(2)   |
++------------+--------------------------------+----------+
+| ``x >> n`` | *x* shifted right by *n* bits  | (1)(3)   |
++------------+--------------------------------+----------+
+| ``~x``     | the bits of *x* inverted       |          |
++------------+--------------------------------+----------+
 
-注釈:
+Notes:
 
 (1)
-   負値のシフト数は不正であり、 :exc:`ValueError` が送出されます。
+   Negative shift counts are illegal and cause a :exc:`ValueError` to be raised.
 
 (2)
-   *n* ビットの左シフトは、 ``pow(2, n)`` による乗算と等価です。結果が
-   通常の整数の範囲を越えるときには、長整数が返されます。
+   A left shift by *n* bits is equivalent to multiplication by ``pow(2, n)``.  A
+   long integer is returned if the result exceeds the range of plain integers.
 
 (3)
-   *n* ビットの右シフトは、 ``pow(2, n)`` による除算と等価です。
+   A right shift by *n* bits is equivalent to division by ``pow(2, n)``.
 
 
-整数型に対する追加のメソッド
-----------------------------
+Additional Methods on Integer Types
+-----------------------------------
 
-整数型は :class:`numbers.Integral`  :term:`abstract base class` を実装します。
-さらに、追加のメソッドを一つ提供します。
+The integer types implement the :class:`numbers.Integral` :term:`abstract base
+class`. In addition, they provide one more method:
 
 .. method:: int.bit_length()
 .. method:: long.bit_length()
 
-    整数を、符号と先頭の 0 は除いて二進法で表すために
-    必要なビットの数を返します::
+    Return the number of bits necessary to represent an integer in binary,
+    excluding the sign and leading zeros::
 
         >>> n = -37
         >>> bin(n)
@@ -469,13 +485,13 @@ Python は型混合の演算を完全にサポートします: ある 2 項演�
         >>> n.bit_length()
         6
 
-    正確には、 ``x`` が非 0 なら、 ``x.bit_length()`` は
-    ``2**(k-1) <= abs(x) < 2**k`` を満たす唯一の正の整数 ``k`` です。
-    同様に、 ``abs(x)`` が十分小さくて対数を適切に丸められるとき、
-    ``k = 1 + int(log(abs(x), 2))`` です。
-    ``x`` が 0 なら、 ``x.bit_length()`` は ``0`` を返します。
+    More precisely, if ``x`` is nonzero, then ``x.bit_length()`` is the
+    unique positive integer ``k`` such that ``2**(k-1) <= abs(x) < 2**k``.
+    Equivalently, when ``abs(x)`` is small enough to have a correctly
+    rounded logarithm, then ``k = 1 + int(log(abs(x), 2))``.
+    If ``x`` is zero, then ``x.bit_length()`` returns ``0``.
 
-    以下と等価です::
+    Equivalent to::
 
         def bit_length(self):
             s = bin(self)       # binary representation:  bin(-37) --> '-0b100101'
@@ -485,25 +501,25 @@ Python は型混合の演算を完全にサポートします: ある 2 項演�
     .. versionadded:: 2.7
 
 
-浮動小数点数に対する追加のメソッド
-----------------------------------
+Additional Methods on Float
+---------------------------
 
-浮動小数点数型は、 :class:`numbers.Real` 抽象基底クラス
-(:term:`abstract base class`)
-を実装しています。浮動小数点型はまた、以下の追加のメソッドを持ちます。
+The float type implements the :class:`numbers.Real` :term:`abstract base
+class`. float also has the following additional methods.
 
 .. method:: float.as_integer_ratio()
 
-   比が元の浮動小数点数とちょうど同じで分母が正である、一対の整数を返します。
-   無限大に対しては、 :exc:`OverflowError` を、非
-   数 (NaN) に対しては :exc:`ValueError` を送出します。
+   Return a pair of integers whose ratio is exactly equal to the
+   original float and with a positive denominator.  Raises
+   :exc:`OverflowError` on infinities and a :exc:`ValueError` on
+   NaNs.
 
    .. versionadded:: 2.6
 
 .. method:: float.is_integer()
 
-   浮動小数点数インスタンスが有限の整数値なら ``True`` を、
-   そうでなければ ``False`` を返します::
+   Return ``True`` if the float instance is finite with integral
+   value, and ``False`` otherwise::
 
       >>> (-2.0).is_integer()
       True
@@ -512,57 +528,66 @@ Python は型混合の演算を完全にサポートします: ある 2 項演�
 
    .. versionadded:: 2.6
 
-16 進表記の文字列へ、または、 16 進表記からの変換をサポートするメ
-ソッドは二つあります。 Python の浮動小数点数は内部的には2進数で保持さ
-れ、若干の丸め誤差を持って *10進数* へ、または、 *10進数* から変換され
-ます。それに対し、 16 進表記では浮動小数点数を、正確に表現することがで
-きます。これはデバッグのときや、数学的な用途に便利でしょう。
+Two methods support conversion to
+and from hexadecimal strings.  Since Python's floats are stored
+internally as binary numbers, converting a float to or from a
+*decimal* string usually involves a small rounding error.  In
+contrast, hexadecimal strings allow exact representation and
+specification of floating-point numbers.  This can be useful when
+debugging, and in numerical work.
 
 
 .. method:: float.hex()
 
-   浮動小数点数の 16 進文字列表現を返します。有限の浮動小数点数に対し、
-   この表現は常に ``0x`` で始まり ``p`` と指数が続きます。
+   Return a representation of a floating-point number as a hexadecimal
+   string.  For finite floating-point numbers, this representation
+   will always include a leading ``0x`` and a trailing ``p`` and
+   exponent.
 
    .. versionadded:: 2.6
 
 
 .. method:: float.fromhex(s)
 
-   16 進文字列表現 *s* で表される、浮動小数点数を返すクラスメソッドで
-   す。文字列 *s* は、前や後にホワイトスペースを含んでいても構いません。
+   Class method to return the float represented by a hexadecimal
+   string *s*.  The string *s* may have leading and trailing
+   whitespace.
 
    .. versionadded:: 2.6
 
 
-:meth:`float.fromhex` はクラスメソッドですが、 :meth:`float.hex` はイ
-ンスタンスメソッドであることに注意して下さい。
+Note that :meth:`float.hex` is an instance method, while
+:meth:`float.fromhex` is a class method.
 
-16 進文字列表現は以下の書式となります::
+A hexadecimal string takes the form::
 
-   [符号] ['0x'] 整数部 ['.' 小数部] ['p' 指数部]
+   [sign] ['0x'] integer ['.' fraction] ['p' exponent]
 
-``符号`` はオプションで、 ``+`` と ``-`` のどちらでも構いません。
-``整数部`` と ``小数部`` は 16 進数の文字列で、 ``指数部`` はオプ
-ションで符号がつけられる 10 進数です。大文字・小文字は区別されず、最低
-でも 1 つの 16 進数文字を整数部もしくは小数部に含む必要があります。こ
-の制限は C99 規格のセクション 6.4.4.2 で規定されます。また、 Java 1.5
-以降で使われます。特に、 :meth:`float.hex` は C や Java コード中で、浮
-動小数点数の 16 進表記として役に立つでしょう。また、 C の ``%a`` 書式
-や、 Java の ``Double.toHexString`` で書きだされた文字列は
-:meth:`float.fromhex` で受け取ることができます。
+where the optional ``sign`` may by either ``+`` or ``-``, ``integer``
+and ``fraction`` are strings of hexadecimal digits, and ``exponent``
+is a decimal integer with an optional leading sign.  Case is not
+significant, and there must be at least one hexadecimal digit in
+either the integer or the fraction.  This syntax is similar to the
+syntax specified in section 6.4.4.2 of the C99 standard, and also to
+the syntax used in Java 1.5 onwards.  In particular, the output of
+:meth:`float.hex` is usable as a hexadecimal floating-point literal in
+C or Java code, and hexadecimal strings produced by C's ``%a`` format
+character or Java's ``Double.toHexString`` are accepted by
+:meth:`float.fromhex`.
 
 
-指数部が 16 進数ではなく、 10 進数で書かれ、 2 の累乗となることに注意
-して下さい。例えば、 16 進文字列表現 ``0x3.a7p10`` は浮動小数点数
-``(3 + 10./16 + 7./16**2) * 2.0**10`` もしくは ``3740.0`` を表します。::
+Note that the exponent is written in decimal rather than hexadecimal,
+and that it gives the power of 2 by which to multiply the coefficient.
+For example, the hexadecimal string ``0x3.a7p10`` represents the
+floating-point number ``(3 + 10./16 + 7./16**2) * 2.0**10``, or
+``3740.0``::
 
    >>> float.fromhex('0x3.a7p10')
    3740.0
 
 
-逆変換を ``3740.0`` に適用すると、元とは異なる 16 進文字列表現を返しま
-す。::
+Applying the reverse conversion to ``3740.0`` gives a different
+hexadecimal string representing the same number::
 
    >>> float.hex(3740.0)
    '0x1.d380000000000p+11'
@@ -570,8 +595,8 @@ Python は型混合の演算を完全にサポートします: ある 2 項演�
 
 .. _typeiter:
 
-イテレータ型
-============
+Iterator Types
+==============
 
 .. versionadded:: 2.2
 
@@ -581,84 +606,82 @@ Python は型混合の演算を完全にサポートします: ある 2 項演�
    single: sequence; iteration
    single: container; iteration over
 
-Python はコンテナの内容にわたって反復処理を行う概念をサポートしていま
-す。この概念は 2 つの別々のメソッドを使って実装されています;
-これらのメソッドはユーザ定義のクラスで反復を行えるようにするために使わ
-れます。後に詳しく述べるシーケンス型はすべて反復処理メソッドをサポート
-しています。
+Python supports a concept of iteration over containers.  This is implemented
+using two distinct methods; these are used to allow user-defined classes to
+support iteration.  Sequences, described below in more detail, always support
+the iteration methods.
 
-以下はコンテナオブジェクトに反復処理をサポートさせるために定義しなけれ
-ばならないメソッドです:
+One method needs to be defined for container objects to provide iteration
+support:
 
 .. XXX duplicated in reference/datamodel!
 
 .. method:: container.__iter__()
 
-   イテレータオブジェクトを返します。イテレータオブジェクトは以下で述
-   べるイテレータプロトコルをサポートする必要があります。あるコンテナ
-   が異なる形式の反復処理をサポートする場合、それらの反復処理形式のイ
-   テレータを特定的に要求するようなメソッドを追加することができます
-   (複数の形式での反復処理をサポートするようなオブジェクトとして木構造
-   の例があります。木構造は幅優先走査と深さ優先走査の両方をサポートし
-   ます)。
-   このメソッドは Python/C API において Python オブジェクトを表す型構
-   造体の :attr:`tp_iter` スロットに対応します。
+   Return an iterator object.  The object is required to support the iterator
+   protocol described below.  If a container supports different types of
+   iteration, additional methods can be provided to specifically request
+   iterators for those iteration types.  (An example of an object supporting
+   multiple forms of iteration would be a tree structure which supports both
+   breadth-first and depth-first traversal.)  This method corresponds to the
+   :c:member:`~PyTypeObject.tp_iter` slot of the type structure for Python objects in the Python/C
+   API.
 
-イテレータオブジェクト自体は以下の 2 のメソッドをサポートする必要があ
-ります。これらのメソッドは 2 つ合わせて :dfn:`イテレータプロトコル` を
-成します:
+The iterator objects themselves are required to support the following two
+methods, which together form the :dfn:`iterator protocol`:
 
 
 .. method:: iterator.__iter__()
 
-   イテレータオブジェクト自体を返します。このメソッドはコンテナとイテ
-   レータの両方を :keyword:`for` および :keyword:`in` 文で使えるように
-   するために必要です。このメソッドは Python/C API において Python オ
-   ブジェクトを表す型構造体の :attr:`tp_iter` スロットに対応します。
+   Return the iterator object itself.  This is required to allow both containers
+   and iterators to be used with the :keyword:`for` and :keyword:`in` statements.
+   This method corresponds to the :c:member:`~PyTypeObject.tp_iter` slot of the type structure for
+   Python objects in the Python/C API.
 
 
 .. method:: iterator.next()
 
-   コンテナ内の次の要素を返します。もう要素が残っていない場合、例外
-   :exc:`StopIteration` を送出します。このメソッドは Python/C API にお
-   いて Python オブジェクトを表す型構造体の :attr:`tp_iternext` スロッ
-   トに対応します。
+   Return the next item from the container.  If there are no further items, raise
+   the :exc:`StopIteration` exception.  This method corresponds to the
+   :c:member:`~PyTypeObject.tp_iternext` slot of the type structure for Python objects in the
+   Python/C API.
 
-Python では、いくつかのイテレータオブジェクトを定義しています。これら
-は一般的および特殊化されたシーケンス型、辞書型、そして他のさらに特殊化
-された形式をサポートします。特殊型であることはイテレータプロトコルの実
-装が特殊になること以外は重要なことではありません。
+Python defines several iterator objects to support iteration over general and
+specific sequence types, dictionaries, and other more specialized forms.  The
+specific types are not important beyond their implementation of the iterator
+protocol.
 
-このプロトコルの趣旨は、一度イテレータの :meth:`next` メソッドが
-:exc:`StopIteration` 例外を送出した場合、以降の呼び出しでもずっと例外
-を送出しつづけるところにあります。この特性に従わないような実装は変則で
-あるとみなされます (この制限は Python 2.3 で追加されました; Python 2.2
-では、この規則に従うと多くのイテレータが変則となります)。
+The intention of the protocol is that once an iterator's :meth:`~iterator.next` method
+raises :exc:`StopIteration`, it will continue to do so on subsequent calls.
+Implementations that do not obey this property are deemed broken.  (This
+constraint was added in Python 2.3; in Python 2.2, various iterators are broken
+according to this rule.)
+
 
 .. _generator-types:
 
-ジェネレータ型
---------------
+Generator Types
+---------------
 
-Python における :term:`generator` (ジェネレータ) は、イテレータプロト
-コルを実装する簡便な方法を提供します。コンテナオブジェクトの
-:meth:`__iter__` メソッドがジェネレータとして実装されていれば、メソッ
-ドは :meth:`__iter__` および :meth:`next` メソッドを提供するイテレータ
-オブジェクト (技術的にはジェネレータオブジェクト) を自動的に返します。
-:ref:`yield 式についてのドキュメント <yieldexpr>` に
-より多くの情報があります。
+Python's :term:`generator`\s provide a convenient way to implement the iterator
+protocol.  If a container object's :meth:`__iter__` method is implemented as a
+generator, it will automatically return an iterator object (technically, a
+generator object) supplying the :meth:`~iterator.__iter__` and
+:meth:`~iterator.next` methods.  More information about generators can be found
+in :ref:`the documentation for the yield expression <yieldexpr>`.
+
 
 .. _typesseq:
 
-シーケンス型 --- :class:`str`, :class:`unicode`, :class:`list`, :class:`tuple`, :class:`bytearray`, :class:`buffer`, :class:`xrange`
-====================================================================================================================================
+Sequence Types --- :class:`str`, :class:`unicode`, :class:`list`, :class:`tuple`, :class:`bytearray`, :class:`buffer`, :class:`xrange`
+======================================================================================================================================
 
-シーケンス型には 7 つあります: 文字列、Unicode 文字列、リスト、タプル、
-、バイト配列 (bytearray)、バッファ、
-そして xrange オブジェクトです。
+There are seven sequence types: strings, Unicode strings, lists, tuples,
+bytearrays, buffers, and xrange objects.
 
-他のコンテナ型については、組み込みクラスの :class:`dict` および
-:class:`set` を参照下さい。
+For other containers see the built in :class:`dict` and :class:`set` classes,
+and the :mod:`collections` module.
+
 
 .. index::
    object: sequence
@@ -670,74 +693,78 @@ Python における :term:`generator` (ジェネレータ) は、イテレータ
    object: buffer
    object: xrange
 
-文字列リテラルは ``'xyzzy'`` , ``"frobozz"`` といったように、単引用符
-または二重引用符の中に書かれます。
-文字列リテラルについての詳細は、 :ref:`strings` を参照下さい。
-Unicode 文字列はほとんど文字列と同じですが、 ``u'abc'`` , ``u"def"``
-といったように先頭に文字 ``'u'`` を付けて指定します。リストは ``[a, b,
-c]`` のように要素をコンマで区切り角括弧で囲って生成します。
-タプルは ``a, b, c`` のようにコンマ演算子で区切って生成します (角括弧
-の中には入れません)。丸括弧で囲っても囲わなくてもかまいませんが、空の
-タプルは  ``()`` のように丸括弧で囲わなければなりません。要素が一つの
-タプルでは、例えば ``(d,)`` のように、要素の後ろにコンマをつけなけれ
-ばなりません。
+String literals are written in single or double quotes: ``'xyzzy'``,
+``"frobozz"``.  See :ref:`strings` for more about string literals.
+Unicode strings are much like strings, but are specified in the syntax
+using a preceding ``'u'`` character: ``u'abc'``, ``u"def"``. In addition
+to the functionality described here, there are also string-specific
+methods described in the :ref:`string-methods` section. Lists are
+constructed with square brackets, separating items with commas: ``[a, b, c]``.
+Tuples are constructed by the comma operator (not within square
+brackets), with or without enclosing parentheses, but an empty tuple
+must have the enclosing parentheses, such as ``a, b, c`` or ``()``.  A
+single item tuple must have a trailing comma, such as ``(d,)``.
 
-バイト配列は、組み込み関数 :func:`bytearray` で構成されます。
+Bytearray objects are created with the built-in function :func:`bytearray`.
 
-バッファオブジェクトは Python の構文上では直接サポートされていませんが、
-組み込み関数 :func:`buffer` で生成することができます。バッファオブジェ
-クトは結合や反復をサポートしていません。
+Buffer objects are not directly supported by Python syntax, but can be created
+by calling the built-in function :func:`buffer`.  They don't support
+concatenation or repetition.
 
-xrange オブジェクトは、オブジェクトを生成するための特殊な構文がない点
-でバッファに似ていて、関数 :func:`xrange` で生成します。
-xrange オブジェクトはスライス、結合、反復をサポートせず、 ``in`` ,
-``not in`` , :func:`min` または :func:`max` は効率的ではありません。
+Objects of type xrange are similar to buffers in that there is no specific syntax to
+create them, but they are created using the :func:`xrange` function.  They don't
+support slicing, concatenation or repetition, and using ``in``, ``not in``,
+:func:`min` or :func:`max` on them is inefficient.
 
-ほとんどのシーケンス型は以下の演算操作をサポートします。 ``in`` および
-``not in`` は比較演算とおなじ優先度を持っています。 ``+`` および ``*``
-は対応する数値演算とおなじ優先度です。
-[#]_ :ref:`typesseq-mutable` で追加のメソッドが提供されています。
+Most sequence types support the following operations.  The ``in`` and ``not in``
+operations have the same priorities as the comparison operations.  The ``+`` and
+``*`` operations have the same priority as the corresponding numeric operations.
+[3]_ Additional methods are provided for :ref:`typesseq-mutable`.
 
+This table lists the sequence operations sorted in ascending priority.
+In the table, *s* and *t* are sequences of the same type; *n*, *i* and *j* are integers:
 
-以下のテーブルはシーケンス型の演算を優先度の低いものから順に挙げたもの
-です (同じボックス内の演算は同じ優先度です)。テーブル内の *s* および
-*t* は同じ型のシーケンスです; *n* , *i* および *j* は整数です:
++------------------+--------------------------------+----------+
+| Operation        | Result                         | Notes    |
++==================+================================+==========+
+| ``x in s``       | ``True`` if an item of *s* is  | \(1)     |
+|                  | equal to *x*, else ``False``   |          |
++------------------+--------------------------------+----------+
+| ``x not in s``   | ``False`` if an item of *s* is | \(1)     |
+|                  | equal to *x*, else ``True``    |          |
++------------------+--------------------------------+----------+
+| ``s + t``        | the concatenation of *s* and   | \(6)     |
+|                  | *t*                            |          |
++------------------+--------------------------------+----------+
+| ``s * n, n * s`` | equivalent to adding *s* to    | \(2)     |
+|                  | itself *n* times               |          |
++------------------+--------------------------------+----------+
+| ``s[i]``         | *i*\ th item of *s*, origin 0  | \(3)     |
++------------------+--------------------------------+----------+
+| ``s[i:j]``       | slice of *s* from *i* to *j*   | (3)(4)   |
++------------------+--------------------------------+----------+
+| ``s[i:j:k]``     | slice of *s* from *i* to *j*   | (3)(5)   |
+|                  | with step *k*                  |          |
++------------------+--------------------------------+----------+
+| ``len(s)``       | length of *s*                  |          |
++------------------+--------------------------------+----------+
+| ``min(s)``       | smallest item of *s*           |          |
++------------------+--------------------------------+----------+
+| ``max(s)``       | largest item of *s*            |          |
++------------------+--------------------------------+----------+
+| ``s.index(x)``   | index of the first occurrence  |          |
+|                  | of *x* in *s*                  |          |
++------------------+--------------------------------+----------+
+| ``s.count(x)``   | total number of occurrences of |          |
+|                  | *x* in *s*                     |          |
++------------------+--------------------------------+----------+
 
-+------------------+---------------------------------------------+----------+
-| 演算             | 結果                                        | 注釈     |
-+==================+=============================================+==========+
-| ``x in s``       | *s* のある要素 *x* と等しい場合 ``True``    | \(1)     |
-|                  | , そうでない場合 ``False``                  |          |
-+------------------+---------------------------------------------+----------+
-| ``x not in s``   | *s* のある要素が *x* と等しい場合           | \(1)     |
-|                  | ``False``,  そうでない場合 ``True``         |          |
-+------------------+---------------------------------------------+----------+
-| ``s + t``        | *s* および *t* の結合                       | \(6)     |
-+------------------+---------------------------------------------+----------+
-| ``s * n, n * s`` | *s* の浅いコピー *n* 個からなる結合         | \(2)     |
-+------------------+---------------------------------------------+----------+
-| ``s[i]``         | *s* の 0 から数えて *i* 番目の要素          | \(3)     |
-+------------------+---------------------------------------------+----------+
-| ``s[i:j]``       | *s* の *i* 番目から *j* 番目までのスライス  | (3)(4)   |
-+------------------+---------------------------------------------+----------+
-| ``s[i:j:k]``     | *s* の *i* 番目から *j*  番目まで、 *k*     | (3)(5)   |
-|                  | 毎のスライス                                |          |
-+------------------+---------------------------------------------+----------+
-| ``len(s)``       | *s* の長さ                                  |          |
-+------------------+---------------------------------------------+----------+
-| ``min(s)``       | *s* の最小の要素                            |          |
-+------------------+---------------------------------------------+----------+
-| ``max(s)``       | *s* の最大の要素                            |          |
-+------------------+---------------------------------------------+----------+
-| ``s.index(i)``   | *s* 中で最初に *i* が現れる場所のインデクス |          |
-+------------------+---------------------------------------------+----------+
-| ``s.count(i)``   | *s* 中に *i* が現れる数                     |          |
-+------------------+---------------------------------------------+----------+
-
-シーケンス型は比較演算子もサポートします。特にタプルとリストは相当する
-要素による辞書編集方式的に比較されます。つまり、等しいということは、ふ
-たつのシーケンスの長さ、型が同じであり、全ての要素が等しいということで
-す (詳細は言語リファレンスの :ref:`comparisons` を参照下さい) 。
+Sequence types also support comparisons. In particular, tuples and lists
+are compared lexicographically by comparing corresponding
+elements. This means that to compare equal, every element must compare
+equal and the two sequences must be of the same type and have the same
+length. (For full details see :ref:`comparisons` in the language
+reference.)
 
 .. index::
    triple: operations on; sequence; types
@@ -752,20 +779,19 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
    operator: in
    operator: not in
 
-注釈:
+Notes:
 
 (1)
-   *s* が文字列または Unicode 文字列の場合、演算操作 ``in`` および
-   ``not in`` は部分文字列の一致テストと同じように動作します。バージョ
-   ン 2.3 以前の Python では、 *x* は長さ 1 の文字列でした。 Python
-   2.3 以降では、 *x* はどの長さでもかまいません。
+   When *s* is a string or Unicode string object the ``in`` and ``not in``
+   operations act like a substring test.  In Python versions before 2.3, *x* had to
+   be a string of length 1. In Python 2.3 and beyond, *x* may be a string of any
+   length.
 
 (2)
-   *n* が ``0`` 以下の値の場合、 ``0`` として扱われます (これは *s* と
-   同じ型の空のシーケンスを表します)。コピーは浅いコピーなので注意して
-   ください; 入れ子になったデータ構造はコピーされません。これは Python
-   に慣れていないプログラマをよく悩ませます。例えば以下のコードを考え
-   ます:
+   Values of *n* less than ``0`` are treated as ``0`` (which yields an empty
+   sequence of the same type as *s*).  Note that items in the sequence *s*
+   are not copied; they are referenced multiple times.  This often haunts
+   new Python programmers; consider:
 
       >>> lists = [[]] * 3
       >>> lists
@@ -774,16 +800,10 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
       >>> lists
       [[3], [3], [3]]
 
-   上のコードでは、 ``lists`` はリスト ``[[]]`` (空のリストを唯一の要
-   素として含んでいるリスト) の3つのコピーを要素とするリストです。
-   しかし、リスト内の要素に含まれているリストは各コピー間で共有されて
-   います。以下のようにすると、異なるリストを要素とするリストを生成で
-   きます:
-   上のコードで、 ``[[]]`` は空のリストを要素として含んでいるリストで
-   すから、 ``[[]] * 3`` の3つの要素の全てが、空のリスト（への参照）に
-   なります。 ``lists`` のいずれかの要素を修正することでこの単一のリス
-   トが変更されます。以下のようにすると、異なる個別のリストを生成でき
-   ます:
+   What has happened is that ``[[]]`` is a one-element list containing an empty
+   list, so all three elements of ``[[]] * 3`` are references to this single empty
+   list.  Modifying any of the elements of ``lists`` modifies this single list.
+   You can create a list of different lists this way:
 
       >>> lists = [[] for i in range(3)]
       >>> lists[0].append(3)
@@ -792,276 +812,287 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
       >>> lists
       [[3], [5], [7]]
 
+   Further explanation is available in the FAQ entry
+   :ref:`faq-multidimensional-list`.
+
 (3)
-   *i* または *j* が負の数の場合、インデクスは文字列の末端からの相対イ
-   ンデクスになります: ``len(s) + i``  または ``len(s) + j`` が代入さ
-   れます。しかし ``-0`` は ``0`` のままなので注意してください。
+   If *i* or *j* is negative, the index is relative to the end of the string:
+   ``len(s) + i`` or ``len(s) + j`` is substituted.  But note that ``-0`` is still
+   ``0``.
 
 (4)
-   *s* の *i* から *j* へのスライスは ``i <= k < j`` となるようなイン
-   デクス *k* を持つ要素からなるシーケンスとして定義されます。 *i* ま
-   たは *j* が ``len(s)`` よりも大きい場合、 ``len(s)`` を使います。
-   *i* が省略されるか ``None`` だった場合、 ``0`` を使います。 *j* が
-   省略されるか ``None`` だった場合、 ``len(s)`` を使います。
-   *i* が *j* 以上の場合、スライスは空のシーケンスになります。
+   The slice of *s* from *i* to *j* is defined as the sequence of items with index
+   *k* such that ``i <= k < j``.  If *i* or *j* is greater than ``len(s)``, use
+   ``len(s)``.  If *i* is omitted or ``None``, use ``0``.  If *j* is omitted or
+   ``None``, use ``len(s)``.  If *i* is greater than or equal to *j*, the slice is
+   empty.
 
 (5)
-   *s* の *i* 番目から *j* 番目まで  *k* 毎のスライスは、 ``0 <= n <
-   (j-i)/k`` となるような、インデクス ``x = i + n*k`` を持つ要素からな
-   るシーケンスとして定義されます。言い換えるとインデクスは ``i``,
-   ``i+k``, ``i+2*k``, ``i+3*k`` などであり、 *j* に達したところ
-   (しかし *j* は含みません)でストップします。 *i* または *j* が
-   ``len(s)`` より大きい場合、 ``len(s)`` を使います。 *i* または *j*
-   を省略するか ``None`` だった場合、"最後" (*k* の符号に依存) を示す
-   値を使います。 *k* はゼロにできないので注意してください。 *k* が
-   ``None`` だった場合、 ``1`` として扱われます。
+   The slice of *s* from *i* to *j* with step *k* is defined as the sequence of
+   items with index  ``x = i + n*k`` such that ``0 <= n < (j-i)/k``.  In other words,
+   the indices are ``i``, ``i+k``, ``i+2*k``, ``i+3*k`` and so on, stopping when
+   *j* is reached (but never including *j*).  If *i* or *j* is greater than
+   ``len(s)``, use ``len(s)``.  If *i* or *j* are omitted or ``None``, they become
+   "end" values (which end depends on the sign of *k*).  Note, *k* cannot be zero.
+   If *k* is ``None``, it is treated like ``1``.
 
 (6)
    .. impl-detail::
 
-      *s* と *t* の両者が文字列であるとき、
-      CPython のような実装では、 ``s=s+t`` や ``s+=t`` という書式で
-      代入をするのに in-place optimization が働きます。
-      このような時、最適化は二乗の実行時間の低減をもたらします。
-      この最適化はバージョンや実装に依存します。
-      実行効率が必要なコードでは、バージョンと実装が変わっても、
-      直線的な連結の実行効率を保証する :meth:`str.join` を使うのが
-      より望ましいでしょう。
+      If *s* and *t* are both strings, some Python implementations such as
+      CPython can usually perform an in-place optimization for assignments of
+      the form ``s = s + t`` or ``s += t``.  When applicable, this optimization
+      makes quadratic run-time much less likely.  This optimization is both
+      version and implementation dependent.  For performance sensitive code, it
+      is preferable to use the :meth:`str.join` method which assures consistent
+      linear concatenation performance across versions and implementations.
 
    .. versionchanged:: 2.4
-      以前、文字列の連結はin-placeで再帰されませんでした.
+      Formerly, string concatenation never occurred in-place.
 
 
 .. _string-methods:
 
-文字列メソッド
+String Methods
 --------------
 
 .. index:: pair: string; methods
 
-8-bit 文字列と Unicode オブジェクトは、どちらも以下に挙げるメソッドに
-対応しています。この中には、 :class:`bytearray` オブジェクトで使えるものも
-あります。
+Below are listed the string methods which both 8-bit strings and
+Unicode objects support.  Some of them are also available on :class:`bytearray`
+objects.
 
-さらに、 Python の文字列は :ref:`typesseq` に記載されるシーケンス型の
-メソッドもサポートします。
-書式指定して文字列を出力するためには、テンプレート文字列を使うか、
-:ref:`string-formatting` に記載される ``%`` 演算子を使います。
-正規表現に基づく文字列操作関数については、 :mod:`re` モジュールを参照
-下さい。
+In addition, Python's strings support the sequence type methods
+described in the :ref:`typesseq` section. To output formatted strings
+use template strings or the ``%`` operator described in the
+:ref:`string-formatting` section. Also, see the :mod:`re` module for
+string functions based on regular expressions.
 
 .. method:: str.capitalize()
 
-   最初の文字のみを大文字にした文字列のコピーを返します。
+   Return a copy of the string with its first character capitalized and the
+   rest lowercased.
 
-   8ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.center(width[, fillchar])
 
-   *width* の長さをもつ中央寄せされた文字列を返します。パディングには
-   *fillchar* で指定された値 (デフォルトではスペース) が使われます。
+   Return centered in a string of length *width*. Padding is done using the
+   specified *fillchar* (default is a space).
 
    .. versionchanged:: 2.4
-      引数 *fillchar* に対応.
+      Support for the *fillchar* argument.
 
 
 .. method:: str.count(sub[, start[, end]])
 
-   [*start*, *end*] の範囲に、部分文字列 *sub* が出現する回数を返しま
-   す。オプション引数 *start* および *end* はスライス表記と同じように
-   解釈されます。
+   Return the number of non-overlapping occurrences of substring *sub* in the
+   range [*start*, *end*].  Optional arguments *start* and *end* are
+   interpreted as in slice notation.
 
 
 .. method:: str.decode([encoding[, errors]])
 
-   codec に登録された文字コード系 *encoding* を使って文字列をデコード
-   します。 *encoding* は標準でデフォルトの文字列エンコーディングにな
-   ります。標準とは異なるエラー処理を行うために *errors* を与えること
-   ができます。標準のエラー処理は ``'strict'`` で、エンコードに関する
-   エラーは :exc:`UnicodeError` を送出します。他に利用できる値は
-   ``'ignore'``, ``'replace'`` および関数
-   :func:`codecs.register_error` によって登録された名前です。これにつ
-   いてはセクション :ref:`codec-base-classes` 節を参照してください。
+   Decodes the string using the codec registered for *encoding*. *encoding*
+   defaults to the default string encoding.  *errors* may be given to set a
+   different error handling scheme.  The default is ``'strict'``, meaning that
+   encoding errors raise :exc:`UnicodeError`.  Other possible values are
+   ``'ignore'``, ``'replace'`` and any other name registered via
+   :func:`codecs.register_error`, see section :ref:`codec-base-classes`.
 
    .. versionadded:: 2.2
 
    .. versionchanged:: 2.3
-      その他のエラーハンドリングスキーマがサポートされました.
+      Support for other error handling schemes added.
 
    .. versionchanged:: 2.7
-      キーワード引数のサポートが追加されました。
+      Support for keyword arguments added.
 
 .. method:: str.encode([encoding[,errors]])
 
-   文字列のエンコードされたバージョンを返します。標準のエンコーディン
-   グは現在のデフォルト文字列エンコーディングです。標準とは異なるエラー
-   処理を行うために *errors* を与えることができます。標準のエラー処理
-   は ``'strict'`` で、エンコードに関するエラーは :exc:`UnicodeError`
-   を送出します。他に利用できる値は ``'ignore'``, ``'replace'``,
-   ``'xmlcharrefreplace'``, ``'backslashreplace'`` および関数
-   :func:`codecs.register_error` によって登録された名前です。これにつ
-   いてはセクション :ref:`codec-base-classes` を参照してください。利用
-   可能なエンコーディングの一覧は、セクション
-   :ref:`standard-encodings` を参照してください。
+   Return an encoded version of the string.  Default encoding is the current
+   default string encoding.  *errors* may be given to set a different error
+   handling scheme.  The default for *errors* is ``'strict'``, meaning that
+   encoding errors raise a :exc:`UnicodeError`.  Other possible values are
+   ``'ignore'``, ``'replace'``, ``'xmlcharrefreplace'``, ``'backslashreplace'`` and
+   any other name registered via :func:`codecs.register_error`, see section
+   :ref:`codec-base-classes`. For a list of possible encodings, see section
+   :ref:`standard-encodings`.
 
    .. versionadded:: 2.0
 
    .. versionchanged:: 2.3
-      ``'xmlcharrefreplace'``, ``'backslashreplace'``
-      およびその他のエラーハンドリングスキーマがサポートされました.
+      Support for ``'xmlcharrefreplace'`` and ``'backslashreplace'`` and other error
+      handling schemes added.
 
+   .. versionchanged:: 2.7
+      Support for keyword arguments added.
 
 .. method:: str.endswith(suffix[, start[, end]])
 
-   文字列の一部が *suffix* で終わるときに ``True`` を返します。そうで
-   ない場合 ``False`` を返します。 *suffix* は見つけたい複数の接尾語の
-   タプルでも構いません。オプション引数 *start* がある場合、文字列の
-   *start* から比較を始めます。 *end* がある場合、文字列の *end* で比
-   較を終えます。
+   Return ``True`` if the string ends with the specified *suffix*, otherwise return
+   ``False``.  *suffix* can also be a tuple of suffixes to look for.  With optional
+   *start*, test beginning at that position.  With optional *end*, stop comparing
+   at that position.
 
    .. versionchanged:: 2.5
-      *suffix* でタプルを受け付けるようになりました.
+      Accept tuples as *suffix*.
 
 
 .. method:: str.expandtabs([tabsize])
 
-   カラム数と与えられるタブサイズに依存し、全てのタブ文字をひとつ以上の
-   空白で置換して文字列のコピーを返します。カラム数は文字列中に改行文
-   字が現れる度に 0 にリセットされます。他の非表示文字や制御文字は解釈
-   しません。
+   Return a copy of the string where all tab characters are replaced by one or
+   more spaces, depending on the current column and the given tab size.  Tab
+   positions occur every *tabsize* characters (default is 8, giving tab
+   positions at columns 0, 8, 16 and so on).  To expand the string, the current
+   column is set to zero and the string is examined character by character.  If
+   the character is a tab (``\t``), one or more space characters are inserted
+   in the result until the current column is equal to the next tab position.
+   (The tab character itself is not copied.)  If the character is a newline
+   (``\n``) or return (``\r``), it is copied and the current column is reset to
+   zero.  Any other character is copied unchanged and the current column is
+   incremented by one regardless of how the character is represented when
+   printed.
+
+      >>> '01\t012\t0123\t01234'.expandtabs()
+      '01      012     0123    01234'
+      >>> '01\t012\t0123\t01234'.expandtabs(4)
+      '01  012 0123    01234'
 
 
 .. method:: str.find(sub[, start[, end]])
 
-   文字列のスライス ``s[start, end]`` に *sub* が含まれる場合、その最小の
-   インデクスを返します。オプション引数 *start* および *end* はスライ
-   ス表記と同様に解釈されます。 *sub* が見つからなかった場合 ``-1``
-   を返します。
+   Return the lowest index in the string where substring *sub* is found, such
+   that *sub* is contained in the slice ``s[start:end]``.  Optional arguments
+   *start* and *end* are interpreted as in slice notation.  Return ``-1`` if
+   *sub* is not found.
 
    .. note::
 
-      :meth:`~str.find` メソッドは、 *sub* の位置を知りたいときにのみ
-      使うべきです。 *sub* が部分文字列であるかどうかのみを調べるには、
-      :keyword:`in` 演算子を使ってください::
+      The :meth:`~str.find` method should be used only if you need to know the
+      position of *sub*.  To check if *sub* is a substring or not, use the
+      :keyword:`in` operator::
 
          >>> 'Py' in 'Python'
          True
 
+
 .. method:: str.format(*args, **kwargs)
 
-   文字列の書式操作を行います。このメソッドを呼び出す文字列は通常の文字、
-   または、 ``{}`` で区切られた置換フィールドを含みます。
-   それぞれの置換フィールドは位置引数のインデックスナンバー、
-   または、キーワード引数の名前を含みます。
-   返り値は、引数に応じて置換されたあとの文字列のコピーです。
+   Perform a string formatting operation.  The string on which this method is
+   called can contain literal text or replacement fields delimited by braces
+   ``{}``.  Each replacement field contains either the numeric index of a
+   positional argument, or the name of a keyword argument.  Returns a copy of
+   the string where each replacement field is replaced with the string value of
+   the corresponding argument.
 
       >>> "The sum of 1 + 2 is {0}".format(1+2)
       'The sum of 1 + 2 is 3'
 
-   書式指定のオプションについては、書式指定文字列を規定する
-   :ref:`formatstrings` を参照下さい。
+   See :ref:`formatstrings` for a description of the various formatting options
+   that can be specified in format strings.
 
-   この文字列書式指定のメソッドは Python 3.0 での新しい標準であり、
-   新しいコードでは、 :ref:`string-formatting` で規定される ``%`` を使っ
-   た書式指定より好ましい書き方です。
+   This method of string formatting is the new standard in Python 3, and
+   should be preferred to the ``%`` formatting described in
+   :ref:`string-formatting` in new code.
 
    .. versionadded:: 2.6
 
 
 .. method:: str.index(sub[, start[, end]])
 
-   :meth:`find` と同様ですが、 *sub* が見つからなかった場合
-   :exc:`ValueError` を送出します。
+   Like :meth:`find`, but raise :exc:`ValueError` when the substring is not found.
 
 
 .. method:: str.isalnum()
 
-   文字列中の全ての文字が英数文字で、かつ 1 文字以上ある場合には真を返
-   し、そうでない場合は偽を返します。
+   Return true if all characters in the string are alphanumeric and there is at
+   least one character, false otherwise.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.isalpha()
 
-   文字列中の全ての文字が英文字で、かつ 1 文字以上ある場合には真を返し、
-   そうでない場合は偽を返します。
+   Return true if all characters in the string are alphabetic and there is at least
+   one character, false otherwise.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.isdigit()
 
-   文字列中に数字しかない場合には真を返し、その他の場合は偽を返します。
+   Return true if all characters in the string are digits and there is at least one
+   character, false otherwise.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.islower()
 
-   文字列中の大小文字の区別のある文字全てが小文字で、かつ 1 文字以上あ
-   る場合には真を返し、そうでない場合は偽を返します。
+   Return true if all cased characters [4]_ in the string are lowercase and there is at
+   least one cased character, false otherwise.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.isspace()
 
-   文字列が空白文字だけからなり、かつ 1 文字以上ある場合には真を返し、
-   そうでない場合は偽を返します。
+   Return true if there are only whitespace characters in the string and there is
+   at least one character, false otherwise.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.istitle()
 
-   文字列がタイトルケース文字列であり、かつ 1 文字以上ある場合、例えば
-   大文字は大小文字の区別のない文字の後にのみ続き、小文字は大小文字の
-   区別のある文字の後ろにのみ続く場合には真を返します。そうでない場合
-   は偽を返します。
+   Return true if the string is a titlecased string and there is at least one
+   character, for example uppercase characters may only follow uncased characters
+   and lowercase characters only cased ones.  Return false otherwise.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.isupper()
 
-   文字列中の大小文字の区別のある文字全てが大文字で、かつ 1 文字以上あ
-   る場合には真を返し、そうでない場合は偽を返します。
+   Return true if all cased characters [4]_ in the string are uppercase and there is at
+   least one cased character, false otherwise.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.join(iterable)
 
-   :term:`iterable` *iterable* 中の文字列を結合した文字列を返します。文字列を結合
-   するときの区切り文字は、このメソッドを適用する対象の文字列になりま
-   す。
+   Return a string which is the concatenation of the strings in the
+   :term:`iterable` *iterable*.  The separator between elements is the string
+   providing this method.
 
 
 .. method:: str.ljust(width[, fillchar])
 
-   *width* の長さをもつ左寄せした文字列を返します。パディングには
-   *fillchar* で指定された文字(デフォルトではスペース)が使われます。
-   *width* が ``len(s)`` よりも小さい場合、元の文字列が返されます。
+   Return the string left justified in a string of length *width*. Padding is done
+   using the specified *fillchar* (default is a space).  The original string is
+   returned if *width* is less than or equal to ``len(s)``.
 
    .. versionchanged:: 2.4
-      引数 *fillchar* が追加されました.
+      Support for the *fillchar* argument.
 
 
 .. method:: str.lower()
 
-   文字列をコピーし、小文字に変換して返します。
+   Return a copy of the string with all the cased characters [4]_ converted to
+   lowercase.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.lstrip([chars])
 
-   文字列の先頭部分を除去したコピーを返します。引数 *chars* は除去され
-   る文字集合を指定する文字列です。 *chars* が省略されるか ``None`` の
-   場合、空白文字が除去されます。 *chars* 文字列は接頭語ではなく、そこ
-   に含まれる文字の組み合わせ全てがはぎ取られます。:
+   Return a copy of the string with leading characters removed.  The *chars*
+   argument is a string specifying the set of characters to be removed.  If omitted
+   or ``None``, the *chars* argument defaults to removing whitespace.  The *chars*
+   argument is not a prefix; rather, all combinations of its values are stripped:
 
       >>> '   spacious   '.lstrip()
       'spacious   '
@@ -1069,78 +1100,76 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
       'example.com'
 
    .. versionchanged:: 2.2.2
-      引数 *chars* をサポートしました.
+      Support for the *chars* argument.
 
 
 .. method:: str.partition(sep)
 
-   文字列を *sep* の最初の出現位置で区切り、 3 要素のタプルを返します。
-   タプルの内容は、区切りの前の部分、区切り文字列そのもの、そして区切
-   りの後ろの部分です。もし区切れなければ、タプルには元の文字列そのも
-   のとその後ろに二つの空文字列が入ります。
+   Split the string at the first occurrence of *sep*, and return a 3-tuple
+   containing the part before the separator, the separator itself, and the part
+   after the separator.  If the separator is not found, return a 3-tuple containing
+   the string itself, followed by two empty strings.
 
    .. versionadded:: 2.5
 
 
 .. method:: str.replace(old, new[, count])
 
-   文字列をコピーし、部分文字列 *old* のある部分全てを *new* に置換し
-   て返します。オプション引数 *count* が与えられている場合、先頭から
-   *count* 個の *old* だけを置換します。
+   Return a copy of the string with all occurrences of substring *old* replaced by
+   *new*.  If the optional argument *count* is given, only the first *count*
+   occurrences are replaced.
 
 
 .. method:: str.rfind(sub [,start [,end]])
 
-   文字列中の領域 ``s[start, end]`` に *sub* が含まれる場合、
-   その最大のインデクスを返します。
-   オプション引数 *start* および *end* はスライス表記と同様に解釈されます。
-   *sub* が見つからなかった場合 ``-1``  を返します。
+   Return the highest index in the string where substring *sub* is found, such
+   that *sub* is contained within ``s[start:end]``.  Optional arguments *start*
+   and *end* are interpreted as in slice notation.  Return ``-1`` on failure.
 
 
 .. method:: str.rindex(sub[, start[, end]])
 
-   :meth:`rfind` と同様ですが、 *sub* が見つからなかった場合
-   :exc:`ValueError` を送出します。
+   Like :meth:`rfind` but raises :exc:`ValueError` when the substring *sub* is not
+   found.
 
 
 .. method:: str.rjust(width[, fillchar])
 
-   *width* の長さをもつ右寄せした文字列を返します。パディングには
-   *fillchar* で指定された文字(デフォルトではスペース)が使われます。
-   *width* が ``len(s)`` よりも小さい場合、元の文字列が返されます。
+   Return the string right justified in a string of length *width*. Padding is done
+   using the specified *fillchar* (default is a space). The original string is
+   returned if *width* is less than or equal to ``len(s)``.
 
    .. versionchanged:: 2.4
-      引数 *fillchar* が追加されました.
+      Support for the *fillchar* argument.
 
 
 .. method:: str.rpartition(sep)
 
-   文字列を *sep* の最後の出現位置で区切り、 3 要素のタプルを返します。
-   タプルの内容は、区切りの前の部分、区切り文字列そのもの、そして区切
-   りの後ろの部分です。もし区切れなければ、タプルには二つの空文字列と
-   その後ろに元の文字列そのものが入ります。
+   Split the string at the last occurrence of *sep*, and return a 3-tuple
+   containing the part before the separator, the separator itself, and the part
+   after the separator.  If the separator is not found, return a 3-tuple containing
+   two empty strings, followed by the string itself.
 
    .. versionadded:: 2.5
 
 
 .. method:: str.rsplit([sep [,maxsplit]])
 
-   *sep* を区切り文字とした、文字列中の単語のリストを返します。
-   *maxsplit* が与えられた場合、最大で *maxsplit* 個になるように分割が
-   行なわれます、 *最も右側* (の単語)は 1 つになります。 *sep* が指定
-   されていない、あるいは ``None`` のとき、全ての空白文字が区切り文字
-   となります。右から分割していくことを除けば、 :meth:`rsplit` は後ほ
-   ど詳しく述べる :meth:`split` と同様に振る舞います。
+   Return a list of the words in the string, using *sep* as the delimiter string.
+   If *maxsplit* is given, at most *maxsplit* splits are done, the *rightmost*
+   ones.  If *sep* is not specified or ``None``, any whitespace string is a
+   separator.  Except for splitting from the right, :meth:`rsplit` behaves like
+   :meth:`split` which is described in detail below.
 
    .. versionadded:: 2.4
 
 
 .. method:: str.rstrip([chars])
 
-   文字列の末尾部分を除去したコピーを返します。引数 *chars* は除去され
-   る文字集合を指定する文字列です。 *chars* が省略されるか ``None`` の
-   場合、空白文字が除去されます。 *chars* 文字列は接尾語ではなく、そこ
-   に含まれる文字の組み合わせ全てがはぎ取られます。:
+   Return a copy of the string with trailing characters removed.  The *chars*
+   argument is a string specifying the set of characters to be removed.  If omitted
+   or ``None``, the *chars* argument defaults to removing whitespace.  The *chars*
+   argument is not a suffix; rather, all combinations of its values are stripped:
 
       >>> '   spacious   '.rstrip()
       '   spacious'
@@ -1148,63 +1177,71 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
       'mississ'
 
    .. versionchanged:: 2.2.2
-      引数 *chars* をサポートしました.
+      Support for the *chars* argument.
 
 
-.. method:: str.split([sep [,maxsplit]])
+.. method:: str.split([sep[, maxsplit]])
 
-   *sep* を単語の境界として文字列を単語に分割し、分割された単語からな
-   るリストを返します。 *maxsplit* が与えられた場合、最大で *maxsplit*
-   回の分割が行われます (したがって返されるリストは ``maxsplit+1`` の要
-   素を持ちます) 。
-   *maxsplit* が指定されない場合、無制限に分割が行なわれます(全ての可
-   能な分割が行なわれる)。
+   Return a list of the words in the string, using *sep* as the delimiter
+   string.  If *maxsplit* is given, at most *maxsplit* splits are done (thus,
+   the list will have at most ``maxsplit+1`` elements).  If *maxsplit* is not
+   specified or ``-1``, then there is no limit on the number of splits
+   (all possible splits are made).
 
-   *sep* が与えられた場合、連続した区切り文字はグループ化されず、空の
-   文字列を区切っていると判断されます(例えば ``'1,,2'.split(',')`` は
-   ``['1', '', '2']`` を返します)。引数 *sep* は複数の文字にもできます
-   (例えば ``'1<>2<>3'.split('<>')`` は ``['1', '2', '3']`` を返します)。
-   区切り文字を指定して空の文字列を分割すると、 ``['']`` を返します。
+   If *sep* is given, consecutive delimiters are not grouped together and are
+   deemed to delimit empty strings (for example, ``'1,,2'.split(',')`` returns
+   ``['1', '', '2']``).  The *sep* argument may consist of multiple characters
+   (for example, ``'1<>2<>3'.split('<>')`` returns ``['1', '2', '3']``).
+   Splitting an empty string with a specified separator returns ``['']``.
 
-   *sep* が指定されていないか ``None`` が指定されている場合、異なる分割
-   アルゴリズムが適用されます。:
-   連続する空白文字はひとつの分割子とみなされます。そして、分割対象の
-   文字列の先頭、または、末尾に空白文字があっても、分割結果の最初、ま
-   たは、最後に空文字列を含みません。空文字列や、空白文字だけからなる
-   文字列を ``None`` 分割子で分割すると ``[]`` が返されます。
+   If *sep* is not specified or is ``None``, a different splitting algorithm is
+   applied: runs of consecutive whitespace are regarded as a single separator,
+   and the result will contain no empty strings at the start or end if the
+   string has leading or trailing whitespace.  Consequently, splitting an empty
+   string or a string consisting of just whitespace with a ``None`` separator
+   returns ``[]``.
 
-   例えば、 ``' 1  2   3  '.split()`` は ``['1', '2', '3']`` を返し、
-   ``'  1  2   3  '.split(None, 1)`` は ``['1', '2   3  ']`` を返しま
-   す。
+   For example, ``' 1  2   3  '.split()`` returns ``['1', '2', '3']``, and
+   ``'  1  2   3  '.split(None, 1)`` returns ``['1', '2   3  ']``.
 
+
+.. index::
+   single: universal newlines; str.splitlines method
 
 .. method:: str.splitlines([keepends])
 
-   文字列を改行部分で分解し、各行からなるリストを返します。 *keepends*
-   が与えられていて、かつその値が真でない限り、返されるリストには改行
-   文字は含まれません。
+   Return a list of the lines in the string, breaking at line boundaries.
+   This method uses the :term:`universal newlines` approach to splitting lines.
+   Line breaks are not included in the resulting list unless *keepends* is
+   given and true.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For example, ``'ab c\n\nde fg\rkl\r\n'.splitlines()`` returns
+   ``['ab c', '', 'de fg', 'kl']``, while the same call with ``splitlines(True)``
+   returns ``['ab c\n', '\n', 'de fg\r', 'kl\r\n']``.
+
+   Unlike :meth:`~str.split` when a delimiter string *sep* is given, this
+   method returns an empty list for the empty string, and a terminal line
+   break does not result in an extra line.
 
 
 .. method:: str.startswith(prefix[, start[, end]])
 
-   文字列の一部が *prefix* で始まるときに ``True`` を返します。そうで
-   ない場合 ``False`` を返します。 *prefix* は複数の接頭語のタプルにし
-   ても構いません。オプション引数 *start* がある場合、文字列の *start*
-   から比較を始めます。 *end* がある場合、文字列の *end* で比較を終え
-   ます。
+   Return ``True`` if string starts with the *prefix*, otherwise return ``False``.
+   *prefix* can also be a tuple of prefixes to look for.  With optional *start*,
+   test string beginning at that position.  With optional *end*, stop comparing
+   string at that position.
 
    .. versionchanged:: 2.5
-      *prefix* でタプルを受け付けるようになりました.
+      Accept tuples as *prefix*.
 
 
 .. method:: str.strip([chars])
 
-   文字列の先頭および末尾部分を除去したコピーを返します。引数 *chars*
-   は除去される文字集合を指定する文字列です。 *chars* が省略されるか
-   ``None`` の場合、空白文字が除去されます。 *chars* 文字列は接頭語で
-   も接尾語でもなく、そこに含まれる文字の組み合わせ全てがはぎ取られます。:
+   Return a copy of the string with the leading and trailing characters removed.
+   The *chars* argument is a string specifying the set of characters to be removed.
+   If omitted or ``None``, the *chars* argument defaults to removing whitespace.
+   The *chars* argument is not a prefix or suffix; rather, all combinations of its
+   values are stripped:
 
       >>> '   spacious   '.strip()
       'spacious'
@@ -1212,114 +1249,112 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
       'example'
 
    .. versionchanged:: 2.2.2
-      引数 *chars* をサポートしました.
+      Support for the *chars* argument.
 
 
 .. method:: str.swapcase()
 
-   文字列をコピーし、大文字は小文字に、小文字は大文字に変換して返します。
+   Return a copy of the string with uppercase characters converted to lowercase and
+   vice versa.
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.title()
 
-   文字列を、単語ごとに大文字から始まり、
-   残りの文字のうち大小文字の区別があるものは全て小文字にする、
-   タイトルケースにして返します。
+   Return a titlecased version of the string where words start with an uppercase
+   character and the remaining characters are lowercase.
 
-   このアルゴリズムは単語の定義として連続した文字列の集まり
-   という単純な言語によってはうまくいかない定義を使います。
-   この定義は多くの状況ではうまく機能しますが、
-   短縮形や所有格のアポストロフィは単語の境界を形成してしまうため、
-   望みの結果を得られない場合があります。
+   The algorithm uses a simple language-independent definition of a word as
+   groups of consecutive letters.  The definition works in many contexts but
+   it means that apostrophes in contractions and possessives form word
+   boundaries, which may not be the desired result::
 
         >>> "they're bill's friends from the UK".title()
         "They'Re Bill'S Friends From The Uk"
 
-   正規表現を使うことでアポストロフィに対応することができます。
+   A workaround for apostrophes can be constructed using regular expressions::
 
         >>> import re
         >>> def titlecase(s):
-                return re.sub(r"[A-Za-z]+('[A-Za-z]+)?",
-                              lambda mo: mo.group(0)[0].upper() +
-                                         mo.group(0)[1:].lower(),
-                              s)
-
+        ...     return re.sub(r"[A-Za-z]+('[A-Za-z]+)?",
+        ...                   lambda mo: mo.group(0)[0].upper() +
+        ...                              mo.group(0)[1:].lower(),
+        ...                   s)
+        ...
         >>> titlecase("they're bill's friends.")
         "They're Bill's Friends."
 
-   8 ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.translate(table[, deletechars])
 
-   文字列をコピーし、オプション引数の文字列 *deletechars* の中に含まれ
-   る文字を全て除去します。その後、残った文字を変換テーブル *table* に
-   従ってマップして返します。変換テーブルは長さ 256 の文字列でなければ
-   なりません。
+   Return a copy of the string where all characters occurring in the optional
+   argument *deletechars* are removed, and the remaining characters have been
+   mapped through the given translation table, which must be a string of length
+   256.
 
-   トランスレーションテーブル作成のために、 :mod:`string` モジュールの
-   :func:`~string.maketrans` 補助関数を使うこともできます。
-   文字列型オブジェクトに対しては、 *table* 引数に ``None`` を与えるこ
-   とで、文字の削除だけを実施します。:
+   You can use the :func:`~string.maketrans` helper function in the :mod:`string`
+   module to create a translation table. For string objects, set the *table*
+   argument to ``None`` for translations that only delete characters:
 
       >>> 'read this short text'.translate(None, 'aeiou')
       'rd ths shrt txt'
 
    .. versionadded:: 2.6
-      ``None`` の *table* 引数をサポートしました。
+      Support for a ``None`` *table* argument.
 
-   Unicode オブジェクトの場合、 :meth:`translate` メソッドはオプション
-   の *deletechars* 引数を受理しません。その代わり、メソッドはすべての
-   文字が与えられた変換テーブルで対応付けされている *s* のコピーを返し
-   ます。この変換テーブルは Unicode 順 (ordinal) から Unicode 順、
-   Unicode 文字列、または ``None`` への対応付けでなくてはなりません。
-   対応付けされていない文字は何もせず放置されます。 ``None`` に対応付
-   けられた文字は削除されます。ちなみに、より柔軟性のあるアプローチは、
-   自作の文字対応付けを行う codec を :mod:`codecs` モジュールを使って
-   作成することです  (例えば :mod:`encodings.cp1251` を参照してください。)
+   For Unicode objects, the :meth:`translate` method does not accept the optional
+   *deletechars* argument.  Instead, it returns a copy of the *s* where all
+   characters have been mapped through the given translation table which must be a
+   mapping of Unicode ordinals to Unicode ordinals, Unicode strings or ``None``.
+   Unmapped characters are left untouched. Characters mapped to ``None`` are
+   deleted.  Note, a more flexible approach is to create a custom character mapping
+   codec using the :mod:`codecs` module (see :mod:`encodings.cp1251` for an
+   example).
 
 
 .. method:: str.upper()
 
-   文字列をコピーし、大文字に変換して返します。
+   Return a copy of the string with all the cased characters [4]_ converted to
+   uppercase.  Note that ``str.upper().isupper()`` might be ``False`` if ``s``
+   contains uncased characters or if the Unicode category of the resulting
+   character(s) is not "Lu" (Letter, uppercase), but e.g. "Lt" (Letter, titlecase).
 
-   8ビット文字列では、メソッドはロケール依存になります。
+   For 8-bit strings, this method is locale-dependent.
 
 
 .. method:: str.zfill(width)
 
-   数値文字列の左側をゼロ詰めし、幅 *width* にして返します。符号接頭辞
-   も正しく扱われます。 *width* が ``len(s)`` よりも短い場合もとの文字
-   列自体が返されます。
+   Return the numeric string left filled with zeros in a string of length
+   *width*.  A sign prefix is handled correctly.  The original string is
+   returned if *width* is less than or equal to ``len(s)``.
+
 
    .. versionadded:: 2.2.2
 
-
-以下のメソッドは、 Unicode オブジェクトにのみ実装されます:
+The following methods are present only on unicode objects:
 
 .. method:: unicode.isnumeric()
 
-   数字を表す文字のみで構成される場合、 ``True`` を返します。それ以外
-   の場合は ``False`` を返します。
-   数字を表す文字には、 0 から 9 までの数字と、 Unicode の数字プロパティ
-   を持つ全ての文字が含まれます。 (e.g. U+2155, VULGAR FRACTION ONE
-   FIFTH)
-
+   Return ``True`` if there are only numeric characters in S, ``False``
+   otherwise. Numeric characters include digit characters, and all characters
+   that have the Unicode numeric value property, e.g. U+2155,
+   VULGAR FRACTION ONE FIFTH.
 
 .. method:: unicode.isdecimal()
 
-   10 進数文字のみで構成される場合、 ``True`` を返します。それ以外の場
-   合は、 ``False`` を返します。 10 進数文字には 0 から 9 までの数字と、
-   10 進基数表記に使われる全ての文字が含まれます。 (e.g. U+0660,
-   ARABIC-INDIC DIGIT ZERO)
+   Return ``True`` if there are only decimal characters in S, ``False``
+   otherwise. Decimal characters include digit characters, and all characters
+   that can be used to form decimal-radix numbers, e.g. U+0660,
+   ARABIC-INDIC DIGIT ZERO.
 
 
 .. _string-formatting:
 
-文字列フォーマット操作
-----------------------
+String Formatting Operations
+----------------------------
 
 .. index::
    single: formatting, string (%)
@@ -1331,211 +1366,214 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
    single: % formatting
    single: % interpolation
 
-文字列および Unicode オブジェクトには固有の操作: ``%`` 演算子 (モジュ
-ロ) があります。この演算子は文字列 *フォーマット化* または *補間* 演算
-としても知られています。 ``format % values`` (*format* は文字列または
-Unicode オブジェクト) とすると、 *format* 中の ``%`` 変換指定は
-*values* 中のゼロ個またはそれ以上の要素で置換されます。この動作は C
-言語における :c:func:`sprintf` に似ています。 *format* が Unicode オブ
-ジェクトであるか、または ``%s``  変換を使って Unicode オブジェクトが変
-換される場合、その結果も Unicode オブジェクトになります。
+String and Unicode objects have one unique built-in operation: the ``%``
+operator (modulo).  This is also known as the string *formatting* or
+*interpolation* operator.  Given ``format % values`` (where *format* is a string
+or Unicode object), ``%`` conversion specifications in *format* are replaced
+with zero or more elements of *values*.  The effect is similar to the using
+:c:func:`sprintf` in the C language.  If *format* is a Unicode object, or if any
+of the objects being converted using the ``%s`` conversion are Unicode objects,
+the result will also be a Unicode object.
 
-*format* が単一の引数しか要求しない場合、 *values* はタプルでない単一
-のオブジェクトでもかまいません。 [#]_
-それ以外の場合、 *values* はフォーマット文字列中で指定された項目と正確
-に同じ数の要素からなるタプルか、単一のマップオブジェクトでなければなり
-ません。
+If *format* requires a single argument, *values* may be a single non-tuple
+object. [5]_  Otherwise, *values* must be a tuple with exactly the number of
+items specified by the format string, or a single mapping object (for example, a
+dictionary).
 
-一つの変換指定子は 2 またはそれ以上の文字を含み、その構成要素は以下か
-らなりますが、示した順に出現しなければなりません:
+A conversion specifier contains two or more characters and has the following
+components, which must occur in this order:
 
-#. 変換指定子が開始することを示す文字 ``'%'`` 。
+#. The ``'%'`` character, which marks the start of the specifier.
 
-#. マップキー (オプション)。丸括弧で囲った文字列からなります (例えば
-   ``(someone)``) 。
+#. Mapping key (optional), consisting of a parenthesised sequence of characters
+   (for example, ``(somename)``).
 
-#. 変換フラグ (オプション)。一部の変換型の結果に影響します。
+#. Conversion flags (optional), which affect the result of some conversion
+   types.
 
-#. 最小のフィールド幅 (オプション)。 ``'*'`` (アスタリスク) を指定した
-   場合、実際の文字列幅が *values* タプルの次の要素から読み出されます。
-   タプルには最小フィールド幅やオプションの精度指定の後に変換したいオブ
-   ジェクトがくるようにします。
+#. Minimum field width (optional).  If specified as an ``'*'`` (asterisk), the
+   actual width is read from the next element of the tuple in *values*, and the
+   object to convert comes after the minimum field width and optional precision.
 
-#. 精度 (オプション)。 ``'.'`` (ドット) とその後に続く精度で与えられま
-   す。 ``'*'`` (アスタリスク) を指定した場合、精度の桁数はタプルの次
-   の要素から読み出されます。タプルには精度指定の後に変換したい値がく
-   るようにします。
+#. Precision (optional), given as a ``'.'`` (dot) followed by the precision.  If
+   specified as ``'*'`` (an asterisk), the actual width is read from the next
+   element of the tuple in *values*, and the value to convert comes after the
+   precision.
 
-#. 精度長変換子 (オプション)。
+#. Length modifier (optional).
 
-#. 変換型。
+#. Conversion type.
 
-``%`` 演算子の右側の引数が辞書の場合 (またはその他のマップ型の場合),
-文字列中のフォーマットには、辞書に挿入されているキーを丸括弧で囲い、文
-字 ``'%'`` の直後にくるようにしたものが含まれていなければ *なりません*
-。マップキーはフォーマット化したい値をマップから選び出します。例えば:
+When the right argument is a dictionary (or other mapping type), then the
+formats in the string *must* include a parenthesised mapping key into that
+dictionary inserted immediately after the ``'%'`` character. The mapping key
+selects the value to be formatted from the mapping.  For example:
 
    >>> print '%(language)s has %(number)03d quote types.' % \
    ...       {"language": "Python", "number": 2}
    Python has 002 quote types.
 
-この場合、 ``*`` 指定子をフォーマットに含めてはいけません (``*`` 指定
-子は順番付けされたパラメタのリストが必要だからです。)
+In this case no ``*`` specifiers may occur in a format (since they require a
+sequential parameter list).
 
-変換フラグ文字を以下に示します:
+The conversion flag characters are:
 
 +---------+---------------------------------------------------------------------+
-| フラグ  | 意味                                                                |
+| Flag    | Meaning                                                             |
 +=========+=====================================================================+
-| ``'#'`` | 値の変換に (下で定義されている) "別の形式" を使います。             |
+| ``'#'`` | The value conversion will use the "alternate form" (where defined   |
+|         | below).                                                             |
 +---------+---------------------------------------------------------------------+
-| ``'0'`` | 数値型に対してゼロによるパディングを行います。                      |
+| ``'0'`` | The conversion will be zero padded for numeric values.              |
 +---------+---------------------------------------------------------------------+
-| ``'-'`` | 変換された値を左寄せにします (``'0'`` と同時に与えた場合、 ``'0'``  |
-|         | を上書きします) 。                                                  |
+| ``'-'`` | The converted value is left adjusted (overrides the ``'0'``         |
+|         | conversion if both are given).                                      |
 +---------+---------------------------------------------------------------------+
-| ``' '`` | (スペース) 符号付きの変換で正の数の場合、前に一つスペースを空けます |
-|         | (そうでない場合は空文字になります)  。                              |
+| ``' '`` | (a space) A blank should be left before a positive number (or empty |
+|         | string) produced by a signed conversion.                            |
 +---------+---------------------------------------------------------------------+
-| ``'+'`` | 変換の先頭に符号文字 (``'+'`` または ``'-'``) を付けます("スペース" |
-|         | フラグを上書きします) 。                                            |
+| ``'+'`` | A sign character (``'+'`` or ``'-'``) will precede the conversion   |
+|         | (overrides a "space" flag).                                         |
 +---------+---------------------------------------------------------------------+
 
-精度長変換子(``h``, ``l``,または ``L``) を使うことができますが、
-Python では必要ないため無視されます。 -- つまり、例えば ``%ld`` は
-``%d`` と等価です。
+A length modifier (``h``, ``l``, or ``L``) may be present, but is ignored as it
+is not necessary for Python -- so e.g. ``%ld`` is identical to ``%d``.
 
-変換型を以下に示します:
+The conversion types are:
 
-+---------+-----------------------------------------------------------+------+
-| 変換    | 意味                                                      | 注釈 |
-+=========+===========================================================+======+
-| ``'d'`` | 符号付き 10 進整数。                                      |      |
-+---------+-----------------------------------------------------------+------+
-| ``'i'`` | 符号付き 10 進整数。                                      |      |
-+---------+-----------------------------------------------------------+------+
-| ``'o'`` | 符号なし 8 進数。                                         | \(1) |
-+---------+-----------------------------------------------------------+------+
-| ``'u'`` | 符号なし 10 進数。                                        |      |
-+---------+-----------------------------------------------------------+------+
-| ``'x'`` | 符号なし 16 進数 (小文字)。                               | \(2) |
-+---------+-----------------------------------------------------------+------+
-| ``'X'`` | 符号なし 16 進数 (大文字)。                               | \(2) |
-+---------+-----------------------------------------------------------+------+
-| ``'e'`` | 指数表記の浮動小数点数 (小文字)。                         | \(3) |
-+---------+-----------------------------------------------------------+------+
-| ``'E'`` | 指数表記の浮動小数点数 (大文字)。                         | \(3) |
-+---------+-----------------------------------------------------------+------+
-| ``'f'`` | 10 進浮動小数点数。                                       | \(3) |
-+---------+-----------------------------------------------------------+------+
-| ``'F'`` | 10 進浮動小数点数。                                       | \(3) |
-+---------+-----------------------------------------------------------+------+
-| ``'g'`` | 浮動小数点数。指数部が -4 以上または精度以下の場合には    | \(4) |
-|         | 指数表記、それ以外の場合には10進表記。                    |      |
-+---------+-----------------------------------------------------------+------+
-| ``'G'`` | 浮動小数点数。指数部が -4 以上または精度以下の場合には    | \(4) |
-|         | 指数表記、それ以外の場合には10進表記。                    |      |
-+---------+-----------------------------------------------------------+------+
-| ``'c'`` | 文字一文字 (整数または一文字からなる文字列を受理します)。 |      |
-+---------+-----------------------------------------------------------+------+
-| ``'r'`` | 文字列 (Python オブジェクトを                             | \(5) |
-|         | :func:`repr` で変換します)。                              |      |
-+---------+-----------------------------------------------------------+------+
-| ``'s'`` | 文字列 (Python オブジェクトを :func:`str`                 | \(6) |
-|         | で変換します)。                                           |      |
-+---------+-----------------------------------------------------------+------+
-| ``'%'`` | 引数を変換せず、返される文字列中では文字 ``'%'``          |      |
-|         | になります。                                              |      |
-+---------+-----------------------------------------------------------+------+
++------------+-----------------------------------------------------+-------+
+| Conversion | Meaning                                             | Notes |
++============+=====================================================+=======+
+| ``'d'``    | Signed integer decimal.                             |       |
++------------+-----------------------------------------------------+-------+
+| ``'i'``    | Signed integer decimal.                             |       |
++------------+-----------------------------------------------------+-------+
+| ``'o'``    | Signed octal value.                                 | \(1)  |
++------------+-----------------------------------------------------+-------+
+| ``'u'``    | Obsolete type -- it is identical to ``'d'``.        | \(7)  |
++------------+-----------------------------------------------------+-------+
+| ``'x'``    | Signed hexadecimal (lowercase).                     | \(2)  |
++------------+-----------------------------------------------------+-------+
+| ``'X'``    | Signed hexadecimal (uppercase).                     | \(2)  |
++------------+-----------------------------------------------------+-------+
+| ``'e'``    | Floating point exponential format (lowercase).      | \(3)  |
++------------+-----------------------------------------------------+-------+
+| ``'E'``    | Floating point exponential format (uppercase).      | \(3)  |
++------------+-----------------------------------------------------+-------+
+| ``'f'``    | Floating point decimal format.                      | \(3)  |
++------------+-----------------------------------------------------+-------+
+| ``'F'``    | Floating point decimal format.                      | \(3)  |
++------------+-----------------------------------------------------+-------+
+| ``'g'``    | Floating point format. Uses lowercase exponential   | \(4)  |
+|            | format if exponent is less than -4 or not less than |       |
+|            | precision, decimal format otherwise.                |       |
++------------+-----------------------------------------------------+-------+
+| ``'G'``    | Floating point format. Uses uppercase exponential   | \(4)  |
+|            | format if exponent is less than -4 or not less than |       |
+|            | precision, decimal format otherwise.                |       |
++------------+-----------------------------------------------------+-------+
+| ``'c'``    | Single character (accepts integer or single         |       |
+|            | character string).                                  |       |
++------------+-----------------------------------------------------+-------+
+| ``'r'``    | String (converts any Python object using            | \(5)  |
+|            | :ref:`repr() <func-repr>`).                         |       |
++------------+-----------------------------------------------------+-------+
+| ``'s'``    | String (converts any Python object using            | \(6)  |
+|            | :func:`str`).                                       |       |
++------------+-----------------------------------------------------+-------+
+| ``'%'``    | No argument is converted, results in a ``'%'``      |       |
+|            | character in the result.                            |       |
++------------+-----------------------------------------------------+-------+
 
-注釈:
+Notes:
 
 (1)
-   この形式の出力にした場合、変換結果の先頭の数字がゼロ (``'0'``)  で
-   ないときには、数字の先頭と左側のパディングとの間にゼロを挿入します。
+   The alternate form causes a leading zero (``'0'``) to be inserted between
+   left-hand padding and the formatting of the number if the leading character
+   of the result is not already a zero.
 
 (2)
-   この形式にした場合、変換結果の先頭の数字がゼロでないときには、数字
-   の先頭と左側のパディングとの間に ``'0x'`` または ``'0X'``
-   (フォーマット文字が ``'x'`` か ``'X'`` かに依存します) が挿入されます。
+   The alternate form causes a leading ``'0x'`` or ``'0X'`` (depending on whether
+   the ``'x'`` or ``'X'`` format was used) to be inserted between left-hand padding
+   and the formatting of the number if the leading character of the result is not
+   already a zero.
 
 (3)
-   この形式にした場合、変換結果には常に小数点が含まれ、それはその後ろ
-   に数字が続かない場合にも適用されます。
+   The alternate form causes the result to always contain a decimal point, even if
+   no digits follow it.
 
-   指定精度は小数点の後の桁数を決定し、そのデフォルトは 6 です。
+   The precision determines the number of digits after the decimal point and
+   defaults to 6.
 
 (4)
-   この形式にした場合、変換結果には常に小数点が含まれ他の形式とは違っ
-   て末尾の 0 は取り除かれません。
+   The alternate form causes the result to always contain a decimal point, and
+   trailing zeroes are not removed as they would otherwise be.
 
-   指定精度は小数点の前後の有効桁数を決定し、そのデフォルトは 6 です。
+   The precision determines the number of significant digits before and after the
+   decimal point and defaults to 6.
 
 (5)
-   ``%r`` 変換は Python 2.0 で追加されました。
+   The ``%r`` conversion was added in Python 2.0.
 
-   指定精度は最大文字数を決定します。
+   The precision determines the maximal number of characters used.
 
 (6)
-   オブジェクトや与えられた書式が :class:`unicode` 文字列の場合、変換
-   後の文字列も :class:`unicode` になります。
+   If the object or format provided is a :class:`unicode` string, the resulting
+   string will also be :class:`unicode`.
 
-   指定精度は最大文字数を決定します。
+   The precision determines the maximal number of characters used.
 
 (7)
-   :pep:`237` を参照してください。
+   See :pep:`237`.
 
-   Python 文字列には明示的な長さ情報があるので、 ``%s`` 変換において
-   ``'\0'`` を文字列の末端と仮定したりはしません。
+Since Python strings have an explicit length, ``%s`` conversions do not assume
+that ``'\0'`` is the end of the string.
 
 .. XXX Examples?
 
 .. versionchanged:: 2.7
-   絶対値が 1e50 を超える数の ``%f`` 変換は、 ``%g`` による変換に
-   置き換えられなくなりました。
+   ``%f`` conversions for numbers whose absolute value is over 1e50 are no
+   longer replaced by ``%g`` conversions.
 
 .. index::
    module: string
    module: re
 
-その他の文字列操作は標準モジュール :mod:`string`  および :mod:`re` で
-定義されています。
+Additional string operations are defined in standard modules :mod:`string` and
+:mod:`re`.
 
 
 .. _typesseq-xrange:
 
-XRange 型
----------
+XRange Type
+-----------
 
 .. index:: object: xrange
 
-:class:`xrange` 型は値の変更不能なシーケンスで、広範なループ処理に使わ
-れています。 :class:`xrange` 型の利点は、 :class:`xrange` オブジェクト
-は表現する値域の大きさにかかわらず常に同じ量のメモリしか占めないという
-ことです。
-はっきりしたパフォーマンス上の利点はありません。
+The :class:`xrange` type is an immutable sequence which is commonly used for
+looping.  The advantage of the :class:`xrange` type is that an :class:`xrange`
+object will always take the same amount of memory, no matter the size of the
+range it represents.  There are no consistent performance advantages.
 
-XRange オブジェクトは非常に限られた振る舞い、すなわち、インデクス検索、
-反復、 :func:`len` 関数のみをサポートしています。
+XRange objects have very little behavior: they only support indexing, iteration,
+and the :func:`len` function.
 
 
 .. _typesseq-mutable:
 
-変更可能なシーケンス型
+Mutable Sequence Types
 ----------------------
 
 .. index::
    triple: mutable; sequence; types
    object: list
 
-リストとバイト配列 (:class:`bytearray`) オブジェクトは、
-オブジェクトをインプレースに変更できるように
-する追加の操作をサポートします。他のミュータブルなシーケンス型
-(を言語に追加するとき) も、それらの操作をサポートするべきです。
-文字列およびタプルはイミュータブルなシーケンス型です:
-これらのオブジェクトは一度生成されたら変更できません。
-ミュータブルなシーケンス型では以下の操作が定義されています
-(ここで *x* は任意のオブジェクトとします)。
+List and :class:`bytearray` objects support additional operations that allow
+in-place modification of the object. Other mutable sequence types (when added
+to the language) should also support these operations. Strings and tuples
+are immutable sequence types: such objects cannot be modified once created.
+The following operations are defined on mutable sequence types (where *x* is
+an arbitrary object):
 
 .. index::
    triple: operations on; sequence; types
@@ -1554,374 +1592,375 @@ XRange オブジェクトは非常に限られた振る舞い、すなわち、�
    single: reverse() (list method)
    single: sort() (list method)
 
-+------------------------------+--------------------------------------------+---------------------+
-| 操作                         | 結果                                       | 注釈                |
-+==============================+============================================+=====================+
-| ``s[i] = x``                 | *s* の要素 *s* を *x* と入れ替えます       |                     |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s[i:j] = t``               | *s* の *i* から *j* 番目までのスライスを   |                     |
-|                              | イテラブル *t* の内容に入れ替えます        |                     |
-+------------------------------+--------------------------------------------+---------------------+
-| ``del s[i:j]``               | ``s[i:j] = []`` と同じです                 |                     |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s[i:j:k] = t``             | ``s[i:j:k]`` の要素を *t* と入れ替えます   | \(1)                |
-+------------------------------+--------------------------------------------+---------------------+
-| ``del s[i:j:k]``             | リストから ``s[i:j:k]`` の要素を削除します |                     |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s.append(x)``              | ``s[len(s):len(s)] = [x]``                 | \(2)                |
-|                              | と同じです                                 |                     |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s.extend(x)``              | ``s[len(s):len(s)] = x`` と同じです        | \(3)                |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s.count(x)``               | ``s[i] == x`` となる *i* の個数を返します  |                     |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s.index(x[, i[, j]])``     | ``s[k] == x`` かつ ``i <= k < j``          | \(4)                |
-|                              | となる最小の *k* を返します。              |                     |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s.insert(i, x)``           | ``i >= 0`` の場合の ``s[i:i] =             | \(5)                |
-|                              | [x]`` と同じです                           |                     |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s.pop([i])``               | ``x = s[i]; del s[i]; return               | \(6)                |
-|                              | x`` と同じです                             |                     |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s.remove(x)``              | ``del s[s.index(x)]`` と同じです           | \(4)                |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s.reverse()``              | *s* の値の並びを反転します                 | \(7)                |
-+------------------------------+--------------------------------------------+---------------------+
-| ``s.sort([cmp[, key[,        | *s* の要素を並べ替えます                   | (7), (8), (9), (10) |
-| reverse]]])``                |                                            |                     |
-+------------------------------+--------------------------------------------+---------------------+
++------------------------------+--------------------------------+---------------------+
+| Operation                    | Result                         | Notes               |
++==============================+================================+=====================+
+| ``s[i] = x``                 | item *i* of *s* is replaced by |                     |
+|                              | *x*                            |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s[i:j] = t``               | slice of *s* from *i* to *j*   |                     |
+|                              | is replaced by the contents of |                     |
+|                              | the iterable *t*               |                     |
++------------------------------+--------------------------------+---------------------+
+| ``del s[i:j]``               | same as ``s[i:j] = []``        |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s[i:j:k] = t``             | the elements of ``s[i:j:k]``   | \(1)                |
+|                              | are replaced by those of *t*   |                     |
++------------------------------+--------------------------------+---------------------+
+| ``del s[i:j:k]``             | removes the elements of        |                     |
+|                              | ``s[i:j:k]`` from the list     |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s.append(x)``              | same as ``s[len(s):len(s)] =   | \(2)                |
+|                              | [x]``                          |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s.extend(x)`` or           | for the most part the same as  | \(3)                |
+| ``s += t``                   | ``s[len(s):len(s)] = x``       |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s *= n``                   | updates *s* with its contents  | \(11)               |
+|                              | repeated *n* times             |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s.count(x)``               | return number of *i*'s for     |                     |
+|                              | which ``s[i] == x``            |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s.index(x[, i[, j]])``     | return smallest *k* such that  | \(4)                |
+|                              | ``s[k] == x`` and ``i <= k <   |                     |
+|                              | j``                            |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s.insert(i, x)``           | same as ``s[i:i] = [x]``       | \(5)                |
++------------------------------+--------------------------------+---------------------+
+| ``s.pop([i])``               | same as ``x = s[i]; del s[i];  | \(6)                |
+|                              | return x``                     |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s.remove(x)``              | same as ``del s[s.index(x)]``  | \(4)                |
++------------------------------+--------------------------------+---------------------+
+| ``s.reverse()``              | reverses the items of *s* in   | \(7)                |
+|                              | place                          |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s.sort([cmp[, key[,        | sort the items of *s* in place | (7)(8)(9)(10)       |
+| reverse]]])``                |                                |                     |
++------------------------------+--------------------------------+---------------------+
 
 Notes:
 
 (1)
-   *t* は入れ替えるスライスと同じ長さでなければいけません。
+   *t* must have the same length as the slice it is  replacing.
 
 (2)
-   かつての Python の C 実装では、複数パラメタを受理し、非明示的にそれ
-   らをタプルに結合していました。この間違った機能は Python 1.4 で廃用
-   され、 Python 2.0 の導入とともにエラーにするようになりました。
+   The C implementation of Python has historically accepted multiple parameters and
+   implicitly joined them into a tuple; this no longer works in Python 2.0.  Use of
+   this misfeature has been deprecated since Python 1.4.
 
 (3)
-   *x* は任意のイテラブル (繰り返し可能オブジェクト) にできます。
+   *x* can be any iterable object.
 
 (4)
-   *x* が *s* 中に見つからなかった場合 :exc:`ValueError` を送出します。
-   負のインデクスが二番目または三番目のパラメタとして :meth:`index` メ
-   ソッドに渡されると、これらの値にはスライスのインデクスと同様にリス
-   トの長さが加算されます。加算後もまだ負の場合、その値はスライスのイ
-   ンデクスと同様にゼロに切り詰められます。
+   Raises :exc:`ValueError` when *x* is not found in *s*. When a negative index is
+   passed as the second or third parameter to the :meth:`index` method, the list
+   length is added, as for slice indices.  If it is still negative, it is truncated
+   to zero, as for slice indices.
 
    .. versionchanged:: 2.3
-      以前は、 :meth:`index` は開始位置や終了位置を指定するのに負の数
-      を使うことができませんでした。
+      Previously, :meth:`index` didn't have arguments for specifying start and stop
+      positions.
 
 (5)
-   :meth:`insert`
-   の最初のパラメタとして負のインデクスが渡された場合、スライスのイン
-   デクスと同じく、リストの長さが加算されます。それでも負の値を取る場
-   合、スライスのインデクスと同じく、 0 に丸められます。
+   When a negative index is passed as the first parameter to the :meth:`insert`
+   method, the list length is added, as for slice indices.  If it is still
+   negative, it is truncated to zero, as for slice indices.
 
    .. versionchanged:: 2.3
-      以前は、すべての負値は 0 に丸められていました。
+      Previously, all negative indices were truncated to zero.
 
 (6)
-   :meth:`pop` メソッドはリストおよびアレイ型のみでサポートされていま
-   す。オプションの引数 *i* は標準で ``-1`` なので、標準では最後の要素
-   をリストから除去して返します。
+   The :meth:`pop` method's optional argument *i* defaults to ``-1``, so that
+   by default the last item is removed and returned.
 
 (7)
-   :meth:`sort` および :meth:`reverse` メソッドは大きなリストを並べ替
-   えたり反転したりする際、容量の節約のためにリストを直接変更します。
-   副作用があることをユーザに思い出させるために、これらの操作は並べ替
-   えまたは反転されたリストを返しません。
+   The :meth:`sort` and :meth:`reverse` methods modify the list in place for
+   economy of space when sorting or reversing a large list.  To remind you that
+   they operate by side effect, they don't return the sorted or reversed list.
 
 (8)
-   :meth:`sort` メソッドは、比較を制御するためにオプションの引数をとり
-   ます。
+   The :meth:`sort` method takes optional arguments for controlling the
+   comparisons.
 
-   *cmp* は2つの引数 (list items) からなるカスタムの比較関数を指定しま
-   す。これは始めの引数が 2 つ目の引数に比べて小さい、等しい、大きいか
-   に応じて負数、ゼロ、正数を返します。 ``cmp=lambda x,y:
-   cmp(x.lower(), y.lower())`` 。デフォルト値は ``None`` です。
+   *cmp* specifies a custom comparison function of two arguments (list items) which
+   should return a negative, zero or positive number depending on whether the first
+   argument is considered smaller than, equal to, or larger than the second
+   argument: ``cmp=lambda x,y: cmp(x.lower(), y.lower())``.  The default value
+   is ``None``.
 
-   *key* は1つの引数からなる関数を指定します。これは個々のリストの要素
-   から比較のキーを取り出すのに使われます。 ``key=str.lower`` 。デフォ
-   ルト値は ``None`` です。
+   *key* specifies a function of one argument that is used to extract a comparison
+   key from each list element: ``key=str.lower``.  The default value is ``None``.
 
-   *reverse* は真偽値です。 ``True`` がセットされた場合、リストの要素
-   は個々の比較が反転したものとして並び替えられます。
+   *reverse* is a boolean value.  If set to ``True``, then the list elements are
+   sorted as if each comparison were reversed.
 
-   一般的に、 *key* および *reverse* の変換プロセスは同等の *cmp* 関数
-   を指定するより早く動作します。これは *key* および *reverse* がそれ
-   ぞれの要素に一度だけ触れる間に、 *cmp* はリストのそれぞれの要素に対
-   して複数回呼ばれることによるものです。
-   旧式の *cmp* 関数を *key* 関数に変換するには :func:`functools.cmp_to_key` 
-   を使用してください。
+   In general, the *key* and *reverse* conversion processes are much faster than
+   specifying an equivalent *cmp* function.  This is because *cmp* is called
+   multiple times for each list element while *key* and *reverse* touch each
+   element only once.  Use :func:`functools.cmp_to_key` to convert an
+   old-style *cmp* function to a *key* function.
 
    .. versionchanged:: 2.3
-      ``None`` を渡すのと、 *cmp* を省略した場合とで、同等に扱うサポートを追加.
+      Support for ``None`` as an equivalent to omitting *cmp* was added.
 
    .. versionchanged:: 2.4
-      *key* および *reverse* のサポートを追加.
+      Support for *key* and *reverse* was added.
 
 (9)
-   Python2.3 以降、 :meth:`sort` メソッドは安定していることが保証され
-   ています。
-   ソートは等しいとされた要素の相対オーダーが変更されないことが保証さ
-   れれば、安定しています --- これは複合的なパス（例えば部署ごとにソー
-   トして、それを給与の等級）でソートを行なうのに役立ちます。
+   Starting with Python 2.3, the :meth:`sort` method is guaranteed to be stable.  A
+   sort is stable if it guarantees not to change the relative order of elements
+   that compare equal --- this is helpful for sorting in multiple passes (for
+   example, sort by department, then by salary grade).
 
 (10)
    .. impl-detail::
 
-      リストが並べ替えられている間は、リストの変更はもとより、その値の閲
-      覧すらその結果は未定義です。 Python 2.3 以降の C 実装では、この間
-      リストは空に見えるようになり、並べ替え中にリストが変更されたことが
-      検出されると :exc:`ValueError` が送出されます。
+      While a list is being sorted, the effect of attempting to mutate, or even
+      inspect, the list is undefined.  The C implementation of Python 2.3 and
+      newer makes the list appear empty for the duration, and raises
+      :exc:`ValueError` if it can detect that the list has been mutated during a
+      sort.
+
+(11)
+   The value *n* is an integer, or an object implementing
+   :meth:`~object.__index__`.  Zero and negative values of *n* clear
+   the sequence.  Items in the sequence are not copied; they are referenced
+   multiple times, as explained for ``s * n`` under :ref:`typesseq`.
 
 
 .. _types-set:
 
-set（集合）型 --- :class:`set`, :class:`frozenset`
-==================================================
+Set Types --- :class:`set`, :class:`frozenset`
+==============================================
 
 .. index:: object: set
 
-:dfn:`set` オブジェクトは順序付けされていない :term:`hashable` (ハッシュ
-可能な) オブジェクトのコレクションです。よくある使い方には、メンバーシッ
-プのテスト、数列から重複を削除する、そして論理積、論理和、差集合、対称
-差など数学的演算の計算が含まれます。
-(他のコンテナ型については、組み込みクラスの :class:`dict`,
-:class:`list`, :class:`tuple`,および、モジュール :mod:`collections`
-を参照下さい)
+A :dfn:`set` object is an unordered collection of distinct :term:`hashable` objects.
+Common uses include membership testing, removing duplicates from a sequence, and
+computing mathematical operations such as intersection, union, difference, and
+symmetric difference.
+(For other containers see the built in :class:`dict`, :class:`list`,
+and :class:`tuple` classes, and the :mod:`collections` module.)
 
 
 .. versionadded:: 2.4
 
-他のコレクションと同様、 sets は ``x in set``, ``len(set)`` および
-``for x in set`` をサポートします。順序を持たないコレクションとして、
-sets は要素の位置と (要素の) 挿入位置を保持しません。したがって、 sets
-はインデックス、スライス、その他のシーケンス的な振る舞いをサポートしま
-せん。
+Like other collections, sets support ``x in set``, ``len(set)``, and ``for x in
+set``.  Being an unordered collection, sets do not record element position or
+order of insertion.  Accordingly, sets do not support indexing, slicing, or
+other sequence-like behavior.
 
-:class:`set` および :class:`frozenset` という、2つの組み込みset型があ
-ります。 :class:`set` は変更可能な --- :meth:`add` や :meth:`remove`
-のようなメソッドを使って内容を変更できます。変更可能なため、ハッシュ値
-を持たず、また辞書のキーや他のsetの要素として用いることができません。
-:class:`frozenset` 型はイミュータブルで、ハッシュ化可能
-(:term:`hashable`) です --- 作成後に内容を改変できません。
-そのため、辞書のキーや他の集合の要素として使えます。
+There are currently two built-in set types, :class:`set` and :class:`frozenset`.
+The :class:`set` type is mutable --- the contents can be changed using methods
+like :meth:`~set.add` and :meth:`~set.remove`.  Since it is mutable, it has no
+hash value and cannot be used as either a dictionary key or as an element of
+another set.  The :class:`frozenset` type is immutable and :term:`hashable` ---
+its contents cannot be altered after it is created; it can therefore be used as
+a dictionary key or as an element of another set.
 
-Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set`
-コンストラクタに加え、要素を波カッコ中にカンマで区切って
-列挙することでも生成できます。例: ``{'jack', 'sjoerd'}``.
+As of Python 2.7, non-empty sets (not frozensets) can be created by placing a
+comma-separated list of elements within braces, for example: ``{'jack',
+'sjoerd'}``, in addition to the :class:`set` constructor.
 
-両方のクラスのコンストラクタの働きは同じです:
+The constructors for both classes work the same:
 
 .. class:: set([iterable])
            frozenset([iterable])
 
-   *iterable* から要素と取り込んだ、新しい set もしくは frozenset オブジェ
-   クトを返します。 set の要素はハッシュ可能なものでなくてはなりません。
-   set の set, つまり内部 set は :class:`frozenset` オブジェクトでなく
-   てはなりません。もし、 *iterable* が指定されないならば、新しい空の set
-   が返されます。
+   Return a new set or frozenset object whose elements are taken from
+   *iterable*.  The elements of a set must be :term:`hashable`.  To
+   represent sets of sets, the inner sets must be :class:`frozenset`
+   objects.  If *iterable* is not specified, a new empty set is
+   returned.
 
-   :class:`set` および :class:`frozenset` のインスタンスは以下の操作を
-   提供します:
+   Instances of :class:`set` and :class:`frozenset` provide the following
+   operations:
 
    .. describe:: len(s)
 
-      set *s* の要素数を返します。
+      Return the cardinality of set *s*.
 
    .. describe:: x in s
 
-      *x* が *s* のメンバーに含まれるか確認します。
+      Test *x* for membership in *s*.
 
    .. describe:: x not in s
 
-      *x* が *s* のメンバーに含まれていないことを確認します。
+      Test *x* for non-membership in *s*.
 
    .. method:: isdisjoint(other)
 
-      set が *other* と共通の要素を持たないとき、 True を返します。
-      set はそれらの積集合が空集合となるときのみ、互いに素となります。
+      Return ``True`` if the set has no elements in common with *other*.  Sets are
+      disjoint if and only if their intersection is the empty set.
 
       .. versionadded:: 2.6
 
    .. method:: issubset(other)
                set <= other
 
-      set の全ての要素が、 *other* に含まれるか確認します。
+      Test whether every element in the set is in *other*.
 
    .. method:: set < other
 
-      set が *other* の真部分集合であるかを確認します。つまり、
-      ``set <= other and set != other`` と等価です。
+      Test whether the set is a proper subset of *other*, that is,
+      ``set <= other and set != other``.
 
    .. method:: issuperset(other)
                set >= other
 
-      *other* の全ての要素が、 set に含まれるか確認します。
+      Test whether every element in *other* is in the set.
 
    .. method:: set > other
 
-      set が *other* の真上位集合であるかを確認します。つまり、 ``set
-      >= other and set != other`` と等価です。
+      Test whether the set is a proper superset of *other*, that is, ``set >=
+      other and set != other``.
 
    .. method:: union(other, ...)
                set | other | ...
 
-      set と全ての other の要素からなる新しい set を返します。
+      Return a new set with elements from the set and all others.
 
       .. versionchanged:: 2.6
-         複数のイテラブルからの入力を受け入れるようになりました。
+         Accepts multiple input iterables.
 
    .. method:: intersection(other, ...)
                set & other & ...
 
-      set と全ての other に共通する要素を持つ、新しい set を返します。
+      Return a new set with elements common to the set and all others.
 
       .. versionchanged:: 2.6
-         複数のイテラブルからの入力を受け入れるようになりました。
+         Accepts multiple input iterables.
 
    .. method:: difference(other, ...)
                set - other - ...
 
-      set に含まれて、かつ、全ての other に含まれない要素を持つ、新し
-      い set を返します。
+      Return a new set with elements in the set that are not in the others.
 
       .. versionchanged:: 2.6
-         複数のイテラブルからの入力を受け入れるようになりました。
+         Accepts multiple input iterables.
 
    .. method:: symmetric_difference(other)
                set ^ other
 
-      set もしくは *other* のいずれか一方だけに含まれる要素を持つ新し
-      い set を返します。
+      Return a new set with elements in either the set or *other* but not both.
 
    .. method:: copy()
 
-      *s* の浅いコピーを新しい set として返します。
+      Return a new set with a shallow copy of *s*.
 
 
-   演算子でないバージョンの :meth:`union`, :meth:`intersection`,
-   :meth:`difference`, :meth:`symmetric_difference`, :meth:`issubset`,
-   :meth:`issuperset` メソッドはいかなるイテラブルをも引数としてとるこ
-   とに注意して下さい。それとは対照的に、それらの演算子版では set であ
-   ることを要求します。これは、より読みやすい
-   ``set('abc').intersection('cbs')`` のような書き方を支持し、
-   ``set('abc') & 'cbs'`` のような、間違った構文を予防します。
+   Note, the non-operator versions of :meth:`union`, :meth:`intersection`,
+   :meth:`difference`, and :meth:`symmetric_difference`, :meth:`issubset`, and
+   :meth:`issuperset` methods will accept any iterable as an argument.  In
+   contrast, their operator based counterparts require their arguments to be
+   sets.  This precludes error-prone constructions like ``set('abc') & 'cbs'``
+   in favor of the more readable ``set('abc').intersection('cbs')``.
 
-   :class:`set` と :class:`frozenset` の両方とも、 set と set の比較
-   をサポートします。二つの set は、それぞれの set の要素が互いに等し
-   い場合にのみ等しくなります (互いに、他方の部分集合になっている場
-   合です) 。
-   一つめの set が二つめの set の真部分集合になっているときのみ、一つ
-   め set は二つめの set より小さくなります (つまり、部分集合であり、
-   かつ、等しくない場合です) 。
+   Both :class:`set` and :class:`frozenset` support set to set comparisons. Two
+   sets are equal if and only if every element of each set is contained in the
+   other (each is a subset of the other). A set is less than another set if and
+   only if the first set is a proper subset of the second set (is a subset, but
+   is not equal). A set is greater than another set if and only if the first set
+   is a proper superset of the second set (is a superset, but is not equal).
 
-   :class:`set` のインスタンスは、 :class:`frozenset` のインスタンス
-   との比較は、それぞれの要素に基づいて行われます。例えば、
-   ``set('abc') == frozenset('abc')`` や ``set('abc') in
-   set([frozenset('abc')])`` は ``True`` を返します。
+   Instances of :class:`set` are compared to instances of :class:`frozenset`
+   based on their members.  For example, ``set('abc') == frozenset('abc')``
+   returns ``True`` and so does ``set('abc') in set([frozenset('abc')])``.
 
-   部分集合と等価性の比較は順序関数には拡張されません。例えば、互いに
-   素 (等しくなく、互いに部分集合でもない) である集合は、以下の全てに、
-   ``False`` を返します : ``a<b``, ``a==b``, および ``a>b`` 。そのため、
-   set は :meth:`__cmp__` メソッドを実装しません。
+   The subset and equality comparisons do not generalize to a total ordering
+   function.  For example, any two non-empty disjoint sets are not equal and are not
+   subsets of each other, so *all* of the following return ``False``: ``a<b``,
+   ``a==b``, or ``a>b``. Accordingly, sets do not implement the :meth:`__cmp__`
+   method.
 
-   set は不完全な順序の定義(部分集合の関係)しか持たないため、
-   :meth:`list.sort` メソッドの出力は set のリストに対して定義されませ
-   ん。
+   Since sets only define partial ordering (subset relationships), the output of
+   the :meth:`list.sort` method is undefined for lists of sets.
 
-   set の要素は、辞書のキーのように、 :term:`hashable` (ハッシュ可能)
-   でなければなりません。
+   Set elements, like dictionary keys, must be :term:`hashable`.
 
-   :class:`set` インスタンスと :class:`frozenset` インスタンスを取り混
-   ぜてのバイナリ演算は、ひとつめの演算対象の型のインスタンスを返しま
-   す。例えば : ``frozenset('ab') | set('bc')`` は :class:`frozenset`
-   インスタンスを返します。
+   Binary operations that mix :class:`set` instances with :class:`frozenset`
+   return the type of the first operand.  For example: ``frozenset('ab') |
+   set('bc')`` returns an instance of :class:`frozenset`.
 
-   以下の内容を更新する操作は :class:`set` に適用されますが、変更不可
-   である :class:`frozenset` のインスタンスには適用されません :
+   The following table lists operations available for :class:`set` that do not
+   apply to immutable instances of :class:`frozenset`:
 
    .. method:: update(other, ...)
                set |= other | ...
 
-      全ての other の要素を追加し、 set を更新します。
+      Update the set, adding elements from all others.
 
       .. versionchanged:: 2.6
-         複数の入力イテラブルを受け付けるようになりました。
+         Accepts multiple input iterables.
 
    .. method:: intersection_update(other, ...)
                set &= other & ...
 
-      元の set と 全ての other に共通する要素だけを残して set を更新します。
+      Update the set, keeping only elements found in it and all others.
 
       .. versionchanged:: 2.6
-         複数の入力イテラブルを受け付けるようになりました。
+         Accepts multiple input iterables.
 
    .. method:: difference_update(other, ...)
                set -= other | ...
 
-      *other* に含まれる要素を取り除き、 set を更新します。
+      Update the set, removing elements found in others.
 
       .. versionchanged:: 2.6
-         複数の入力イテラブルを受け付けるようになりました。
+         Accepts multiple input iterables.
 
    .. method:: symmetric_difference_update(other)
                set ^= other
 
-      どちらかにのみ含まれて、共通には持たない要素のみで set を更新し
-      ます。
+      Update the set, keeping only elements found in either set, but not in both.
 
    .. method:: add(elem)
 
-      要素 *elem* を set に追加します。
+      Add element *elem* to the set.
 
    .. method:: remove(elem)
 
-      要素 *elem* を set から取り除きます。もし *elem* が set に含まれ
-      なければ  :exc:`KeyError` を送出します。
+      Remove element *elem* from the set.  Raises :exc:`KeyError` if *elem* is
+      not contained in the set.
 
    .. method:: discard(elem)
 
-      要素 *elem* が set に含まれていれば、取り除きます。
+      Remove element *elem* from the set if it is present.
 
    .. method:: pop()
 
-      任意に要素を set から返し、それを set から取り除きます。 set が
-      空であれば、 :exc:`KeyError` を送出します。
+      Remove and return an arbitrary element from the set.  Raises
+      :exc:`KeyError` if the set is empty.
 
    .. method:: clear()
 
-      set の全ての要素を取り除きます。
+      Remove all elements from the set.
 
 
-   非演算子版の :meth:`update`, :meth:`intersection_update`,
-   :meth:`difference_update`, および
-   :meth:`symmetric_difference_update` メソッドはどんなイテラブルでも
-   引数として受け付けることに注意して下さい。
+   Note, the non-operator versions of the :meth:`update`,
+   :meth:`intersection_update`, :meth:`difference_update`, and
+   :meth:`symmetric_difference_update` methods will accept any iterable as an
+   argument.
 
-   :meth:`__contains__`, :meth:`remove`, および :meth:`discard` メソッ
-   ドの引数 *elem* は set であっても構いません。等価な frozenset の検
-   索をサポートするために、 *elem* set は一時的に検索の間は変化させら
-   れ、その後、復元されます。検索の間は意味のある値を持たなくなるため、
-   *elem* set を読み出したり、変更してはいけません。
+   Note, the *elem* argument to the :meth:`__contains__`, :meth:`remove`, and
+   :meth:`discard` methods may be a set.  To support searching for an equivalent
+   frozenset, the *elem* set is temporarily mutated during the search and then
+   restored.  During the search, the *elem* set should not be read or mutated
+   since it does not have a meaningful value.
 
 
 .. seealso::
 
    :ref:`comparison-to-builtin-set`
-      :mod:`sets` モジュールと組み込み set 型の違い
+      Differences between the :mod:`sets` module and the built-in set types.
 
 
 .. _typesmapping:
 
-マップ型
-========
+Mapping Types --- :class:`dict`
+===============================
 
 .. index::
    object: mapping
@@ -1931,325 +1970,347 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
    statement: del
    builtin: len
 
-マップ型 (:dfn:`mapping`) オブジェクトは :term:`hashable` (ハッシュ可
-能) な値を任意のオブジェクトに割り付けます。
-マップ型は変更可能なオブジェクトです。現時点では、ひとつだけの標準マッ
-プ型として辞書型 (:dfn:`dictionary`) があります (他のコンテナ型につい
-ては組み込みクラスの :class:`list`, :class:`set`, および
-:class:`tuple` と、 :mod:`collections` モジュールを参照下さい) 。
+A :term:`mapping` object maps :term:`hashable` values to arbitrary objects.
+Mappings are mutable objects.  There is currently only one standard mapping
+type, the :dfn:`dictionary`.  (For other containers see the built in
+:class:`list`, :class:`set`, and :class:`tuple` classes, and the
+:mod:`collections` module.)
 
-辞書型のキーは *ほぼ* 任意の値です。ハッシュ可能(:term:`hashable`)でな
-い、つまり、リストや辞書型を含む、変更可能な型 (値ではなく、オブジェク
-トの同一性で比較されます) はキーとして使用できません。数値型は通常の数
-値比較のルールに従ってキーとして使われます　: もしふたつの数値を比較し、
-等しければ (例えば ``1`` と ``1.0`` のように) 同じ辞書型に対しインデッ
-クスとして同じものとして使用できます (しかしながら、コンピュータ上では
-近似値を浮動小数点数として保管されることに注意して下さい。これは大抵の
-場合、辞書型のキーとして使用するのに良い方法ではありません) 。
+A dictionary's keys are *almost* arbitrary values.  Values that are not
+:term:`hashable`, that is, values containing lists, dictionaries or other
+mutable types (that are compared by value rather than by object identity) may
+not be used as keys.  Numeric types used for keys obey the normal rules for
+numeric comparison: if two numbers compare equal (such as ``1`` and ``1.0``)
+then they can be used interchangeably to index the same dictionary entry.  (Note
+however, that since computers store floating-point numbers as approximations it
+is usually unwise to use them as dictionary keys.)
 
-辞書型は ``key: value`` の形式の対の値をカンマ区切りのリストを波括弧で
-くくることで作成できます。例えば : ``{'jack': 4098, 'sjoerd': 4127}``
-あるいは ``{4098: 'jack', 4127: 'sjoerd'}`` 。あるいは、 :class:`dict`
-のコンストラクタでも作成できます。
+Dictionaries can be created by placing a comma-separated list of ``key: value``
+pairs within braces, for example: ``{'jack': 4098, 'sjoerd': 4127}`` or ``{4098:
+'jack', 4127: 'sjoerd'}``, or by the :class:`dict` constructor.
 
-.. class:: dict([arg])
+.. class:: dict(**kwarg)
+           dict(mapping, **kwarg)
+           dict(iterable, **kwarg)
 
-   オプションのポジション引数、もしくは、一連のキーワード引数で初期化
-   された新しい辞書型を返します。引数が無い場合は、空の辞書型を返しま
-   す。もし、ポジション引数 *arg* がマップ型オブジェクトであれば、もと
-   のマップ型オブジェクトと同じ値に同じキーを割り当てた辞書型を返しま
-   す。そうでない場合は、ポジション引数はイテレーションをサポートする
-   シーケンスか、イテレータオブジェクトでなければなりません。引数の要
-   素もまた、それと同様でなくてはならず、かつ、それぞれがちょうどふた
-   つのオブジェクトを持っている必要があります。
-   最初のものが新しい辞書型において、キーとして使われます。ふたつめの
-   ものがキーの値として使われます。もし、与えられたキーが二度以上現れ
-   た場合は、最後に現れた値が新しい辞書型において採用されます。
+   Return a new dictionary initialized from an optional positional argument
+   and a possibly empty set of keyword arguments.
 
-   キーワード引数が与えられた場合、キーワード自身がその値として辞書型
-   に加えられます。もしキーがポジション引数において、キーワード引数を
-   規定した場合、キーワードに値が割り当てられ辞書に追加されます。例え
-   ば以下は全て ``{"one": 1, "two": 2}`` と等しい辞書型インスタンスを
-   返します :
+   If no positional argument is given, an empty dictionary is created.
+   If a positional argument is given and it is a mapping object, a dictionary
+   is created with the same key-value pairs as the mapping object.  Otherwise,
+   the positional argument must be an :term:`iterable` object.  Each item in
+   the iterable must itself be an iterable with exactly two objects.  The
+   first object of each item becomes a key in the new dictionary, and the
+   second object the corresponding value.  If a key occurs more than once, the
+   last value for that key becomes the corresponding value in the new
+   dictionary.
 
-   * ``dict(one=1, two=2)``
-   * ``dict({'one': 1, 'two': 2})``
-   * ``dict(zip(('one', 'two'), (1, 2)))``
-   * ``dict([['two', 2], ['one', 1]])``
+   If keyword arguments are given, the keyword arguments and their values are
+   added to the dictionary created from the positional argument.  If a key
+   being added is already present, the value from the keyword argument
+   replaces the value from the positional argument.
 
-   最初の例では、 Python の識別子として有効なキーに対してのみ機能しま
-   す ; 他の例はキーとして有効なものであればいかなるキーに対しても機能
-   します。
+   To illustrate, the following examples all return a dictionary equal to
+   ``{"one": 1, "two": 2, "three": 3}``::
+
+      >>> a = dict(one=1, two=2, three=3)
+      >>> b = {'one': 1, 'two': 2, 'three': 3}
+      >>> c = dict(zip(['one', 'two', 'three'], [1, 2, 3]))
+      >>> d = dict([('two', 2), ('one', 1), ('three', 3)])
+      >>> e = dict({'three': 3, 'one': 1, 'two': 2})
+      >>> a == b == c == d == e
+      True
+
+   Providing keyword arguments as in the first example only works for keys that
+   are valid Python identifiers.  Otherwise, any valid keys can be used.
+
+   .. versionadded:: 2.2
 
    .. versionchanged:: 2.3
-      キーワード引数からの辞書型の作成のサポートが追加されました。
+      Support for building a dictionary from keyword arguments added.
 
 
-   以下は辞書型がサポートする操作です (それゆえ、カスタムのマップ型も
-   これらの操作をサポートするべきです):
+   These are the operations that dictionaries support (and therefore, custom
+   mapping types should support too):
 
    .. describe:: len(d)
 
-      辞書 *d* に含まれる項目数を返します。
+      Return the number of items in the dictionary *d*.
 
    .. describe:: d[key]
 
-      *d* のキー *key* の項目を返します。もし *key* が存在しなければ、
-      :exc:`KeyError` を送出します。
+      Return the item of *d* with key *key*.  Raises a :exc:`KeyError` if *key*
+      is not in the map.
+
+      .. index:: __missing__()
+
+      If a subclass of dict defines a method :meth:`__missing__` and *key*
+      is not present, the ``d[key]`` operation calls that method with the key *key*
+      as argument.  The ``d[key]`` operation then returns or raises whatever is
+      returned or raised by the ``__missing__(key)`` call.
+      No other operations or methods invoke :meth:`__missing__`. If
+      :meth:`__missing__` is not defined, :exc:`KeyError` is raised.
+      :meth:`__missing__` must be a method; it cannot be an instance variable::
+
+          >>> class Counter(dict):
+          ...     def __missing__(self, key):
+          ...         return 0
+          >>> c = Counter()
+          >>> c['red']
+          0
+          >>> c['red'] += 1
+          >>> c['red']
+          1
+
+      The example above shows part of the implementation of
+      :class:`collections.Counter`.  A different ``__missing__`` method is used
+      by :class:`collections.defaultdict`.
 
       .. versionadded:: 2.5
-
-         もし、辞書型のサブクラスが :meth:`__missing__` メソッドを定義
-         していれば、 *key* が存在しないとき、 ``d[key]`` により *key*
-         を引数として呼び出されます。 ``d[key]`` は
-         ``__missing__(key)`` が存在しないキーで呼び出されたときに返す、
-         値を返すか、例外を送出します。他のいかなる操作やメソッドも
-         :meth:`__missing__` を呼び出しません。
-         :meth:`__missing__` が定義されていなければ、 :exc:`KeyError`
-         が送出されます。 :meth:`__missing__` はメソッドで無くてはなり
-         ません ; インスタンスや値であってはなりません。例は
-         :class:`collections.defaultdict` を参照下さい。
+         Recognition of __missing__ methods of dict subclasses.
 
    .. describe:: d[key] = value
 
-      ``d[key]`` に *value* を設定します。
+      Set ``d[key]`` to *value*.
 
    .. describe:: del d[key]
 
-      *d* から ``d[key]`` を削除します。もし *key* が存在しなければ、
-      :exc:`KeyError` を送出します。
+      Remove ``d[key]`` from *d*.  Raises a :exc:`KeyError` if *key* is not in the
+      map.
 
    .. describe:: key in d
 
-      *d* がキー *key* を持っていれば、 ``True`` を返します。そうでな
-      ければ、 ``False`` を返します。
+      Return ``True`` if *d* has a key *key*, else ``False``.
 
       .. versionadded:: 2.2
 
    .. describe:: key not in d
 
-      ``not key in d`` と等価です。
+      Equivalent to ``not key in d``.
 
       .. versionadded:: 2.2
 
    .. describe:: iter(d)
 
-      辞書 *d* の全てのキーに渡って、イテレータを返します。これは
-      :meth:`iterkeys` メソッドへのショートカットです。
+      Return an iterator over the keys of the dictionary.  This is a shortcut
+      for :meth:`iterkeys`.
 
    .. method:: clear()
 
-      辞書の全ての項目を消去します。
+      Remove all items from the dictionary.
 
    .. method:: copy()
 
-      辞書の浅いコピーを返します。
+      Return a shallow copy of the dictionary.
 
    .. method:: fromkeys(seq[, value])
 
-      *seq* をキーとし、 *value* を値に設定した、新しい辞書を作成します。
+      Create a new dictionary with keys from *seq* and values set to *value*.
 
-      :func:`fromkeys` は新しい辞書を返すクラスメソッドです。 *value*
-      のデフォルト値は ``None`` です。
+      :func:`fromkeys` is a class method that returns a new dictionary. *value*
+      defaults to ``None``.
 
       .. versionadded:: 2.3
 
    .. method:: get(key[, default])
 
-      もし *key* が辞書にあれば、 *key* に対する値を返します。そうでな
-      ければ、 *default* を返します。 *default* が与えられなかった場合、
-      デフォルトでは ``None`` となります。そのため、このメソッドは
-      :exc:`KeyError` を送出することはありません。
+      Return the value for *key* if *key* is in the dictionary, else *default*.
+      If *default* is not given, it defaults to ``None``, so that this method
+      never raises a :exc:`KeyError`.
 
    .. method:: has_key(key)
 
-      辞書に *key* が存在するかを確認します。 :meth:`has_key` は ``key
-      in d`` と同じことです。
+      Test for the presence of *key* in the dictionary.  :meth:`has_key` is
+      deprecated in favor of ``key in d``.
 
    .. method:: items()
 
-      辞書のコピーを ``(key, value)`` の対のリストとして返します。
+      Return a copy of the dictionary's list of ``(key, value)`` pairs.
 
       .. impl-detail::
 
-         キーと値のリストは任意の順序で返されますが、ランダムではなく、
-         Python の実装と、辞書への挿入、および、削除操作の来歴によって
-         決まります。
+         Keys and values are listed in an arbitrary order which is non-random,
+         varies across Python implementations, and depends on the dictionary's
+         history of insertions and deletions.
 
-      もし、 :meth:`items`, :meth:`keys`, :meth:`values`,
-      :meth:`iteritems`, :meth:`iterkeys` および :meth:`itervalues` が
-      辞書を変更することなく呼び出されたら、リストは一致するでしょう。
-      これにより、 ``(value, key)`` の対を :func:`zip`
-      または ``pairs = zip(d.values(), d.keys())`` を使って生成するとができます。
-      同じ関係が、 :meth:`iterkeys` および :meth:`itervalues` メソッドにもあてはまります :
-      ``pairs = zip(d.itervalues(), d.iterkeys())`` は ``pairs`` と同じ値を返します。
-      ``pairs = [(v, k) for (k, v) in d.iteritems()]`` も同様です。
+      If :meth:`items`, :meth:`keys`, :meth:`values`, :meth:`iteritems`,
+      :meth:`iterkeys`, and :meth:`itervalues` are called with no intervening
+      modifications to the dictionary, the lists will directly correspond.  This
+      allows the creation of ``(value, key)`` pairs using :func:`zip`: ``pairs =
+      zip(d.values(), d.keys())``.  The same relationship holds for the
+      :meth:`iterkeys` and :meth:`itervalues` methods: ``pairs =
+      zip(d.itervalues(), d.iterkeys())`` provides the same value for
+      ``pairs``. Another way to create the same list is ``pairs = [(v, k) for
+      (k, v) in d.iteritems()]``.
 
    .. method:: iteritems()
 
-      辞書の ``(key, value)`` の対をイテレータで返します。
-      :meth:`dict.items` の Note も参照下さい。
+      Return an iterator over the dictionary's ``(key, value)`` pairs.  See the
+      note for :meth:`dict.items`.
 
-      :meth:`iteritems` を辞書の項目の追加や削除と同時に行うと、
-      :exc:`RuntimeError` を送出されるか全ての項目に対する反復に失敗することになります。
+      Using :meth:`iteritems` while adding or deleting entries in the dictionary
+      may raise a :exc:`RuntimeError` or fail to iterate over all entries.
 
       .. versionadded:: 2.2
 
    .. method:: iterkeys()
 
-      辞書のキーをイテレータで返します。 :meth:`dict.items` の Note も
-      参照下さい。
+      Return an iterator over the dictionary's keys.  See the note for
+      :meth:`dict.items`.
 
-      :meth:`iterkeys` を辞書の項目の追加や削除と同時に行うと、
-      :exc:`RuntimeError` を送出されるか全ての項目に対する反復に失敗することになります。
+      Using :meth:`iterkeys` while adding or deleting entries in the dictionary
+      may raise a :exc:`RuntimeError` or fail to iterate over all entries.
 
       .. versionadded:: 2.2
 
    .. method:: itervalues()
 
-      辞書の値をイテレータで返します。 :meth:`dict.items` の Note も参
-      照下さい。
+      Return an iterator over the dictionary's values.  See the note for
+      :meth:`dict.items`.
 
-      :meth:`itervalues` を辞書の項目の追加や削除と同時に行うと、
-      :exc:`RuntimeError` を送出されるか全ての項目に対する反復に失敗することになります。
+      Using :meth:`itervalues` while adding or deleting entries in the
+      dictionary may raise a :exc:`RuntimeError` or fail to iterate over all
+      entries.
 
       .. versionadded:: 2.2
 
    .. method:: keys()
 
-      辞書のキーのリストのコピーを返します。 :meth:`dict.items` の
-      Note も参照下さい。
+      Return a copy of the dictionary's list of keys.  See the note for
+      :meth:`dict.items`.
 
    .. method:: pop(key[, default])
 
-      もし *key* が辞書に存在すれば、その値を辞書から除去して返します。
-      そうでなければ、 *default* を返します。 *default* が与えらず、か
-      つ、 *key* が辞書に存在しなければ :exc:`KeyError` を送出します。
+      If *key* is in the dictionary, remove it and return its value, else return
+      *default*.  If *default* is not given and *key* is not in the dictionary,
+      a :exc:`KeyError` is raised.
 
       .. versionadded:: 2.3
 
    .. method:: popitem()
 
-      任意の ``(key, value)`` の対を辞書から除去して返します。
+      Remove and return an arbitrary ``(key, value)`` pair from the dictionary.
 
-      set のアルゴリズムで使われるのと同じように :func:`popitem` は辞
-      書に繰り返し適用して消去するのに便利です。もし辞書が空であれば、
-      :func:`popitem` の呼び出しは :exc:`KeyError` を送出します。
+      :func:`popitem` is useful to destructively iterate over a dictionary, as
+      often used in set algorithms.  If the dictionary is empty, calling
+      :func:`popitem` raises a :exc:`KeyError`.
 
    .. method:: setdefault(key[, default])
 
-      もし、 *key* が辞書に存在すれば、その値を返します。そうでなけれ
-      ば、値を *default* として *key* を挿入し、 *default* を返します。
-      *default* のデフォルト値は ``None`` です。
+      If *key* is in the dictionary, return its value.  If not, insert *key*
+      with a value of *default* and return *default*.  *default* defaults to
+      ``None``.
 
    .. method:: update([other])
 
-      辞書の内容を *other* のキーと値で更新します。既存のキーは上書き
-      されます。返り値は ``None`` です。
+      Update the dictionary with the key/value pairs from *other*, overwriting
+      existing keys.  Return ``None``.
 
-      :func:`update` は、他の辞書オブジェクトでもキーと値の対のイテラ
-      ブル (タプル、もしくは、長さが2のイテラブル) でも、どちらでも受
-      け付けます。キーワード引数が指定されれば、そのキーと値で辞書を更
-      新します。 : ``d.update(red=1, blue=2)``
+      :func:`update` accepts either another dictionary object or an iterable of
+      key/value pairs (as tuples or other iterables of length two).  If keyword
+      arguments are specified, the dictionary is then updated with those
+      key/value pairs: ``d.update(red=1, blue=2)``.
 
       .. versionchanged:: 2.4
-          キーと値の対のイテラブル、および、キーワード引数を引数として
-          与えることができるようになりました。
+          Allowed the argument to be an iterable of key/value pairs and allowed
+          keyword arguments.
 
    .. method:: values()
 
-      辞書の値のリストのコピーを返します。 :meth:`dict.items` の Note
-      も参照下さい。
-      
+      Return a copy of the dictionary's list of values.  See the note for
+      :meth:`dict.items`.
+
    .. method:: viewitems()
 
-      辞書の要素 (``(key, value)`` の対) の新しいビューを返します。
-      ビューオブジェクトのドキュメントは下を参照してください。
+      Return a new view of the dictionary's items (``(key, value)`` pairs).  See
+      below for documentation of view objects.
 
       .. versionadded:: 2.7
 
    .. method:: viewkeys()
 
-      辞書のキーの新しいビューを返します。
-      ビューオブジェクトのドキュメントは下を参照してください。
+      Return a new view of the dictionary's keys.  See below for documentation of
+      view objects.
 
       .. versionadded:: 2.7
 
    .. method:: viewvalues()
 
-      辞書の値の新しいビューを返します。
-      ビューオブジェクトのドキュメントは下を参照してください。
+      Return a new view of the dictionary's values.  See below for documentation of
+      view objects.
 
       .. versionadded:: 2.7
+
+   Dictionaries compare equal if and only if they have the same ``(key,
+   value)`` pairs.
 
 
 .. _dict-views:
 
-辞書ビューオブジェクト
-----------------------
+Dictionary view objects
+-----------------------
 
-:meth:`dict.viewkeys`, :meth:`dict.viewvalues`, :meth:`dict.viewitems`
-によって返されるオブジェクトは、 *ビューオブジェクト* です。これらは、
-辞書の項目の動的なビューを提供し、辞書が変更された時、ビューはその変更
-を反映します。
+The objects returned by :meth:`dict.viewkeys`, :meth:`dict.viewvalues` and
+:meth:`dict.viewitems` are *view objects*.  They provide a dynamic view on the
+dictionary's entries, which means that when the dictionary changes, the view
+reflects these changes.
 
-辞書ビューを通して反復することで、対応するデータを産出できます。
-また、帰属検査をサポートしています。
+Dictionary views can be iterated over to yield their respective data, and
+support membership tests:
 
 .. describe:: len(dictview)
 
-   辞書の項目数を返します。
+   Return the number of entries in the dictionary.
 
 .. describe:: iter(dictview)
 
-   辞書のキー、値、または (``(key, value)`` のタプルとして表される) 要素に
-   渡るイテレータを返します。
+   Return an iterator over the keys, values or items (represented as tuples of
+   ``(key, value)``) in the dictionary.
 
-   キーと値のリストは任意の順序で反復されますが、ランダムではなく、
-   Python の実装によって変わり、辞書への挿入や削除の履歴に依存します。
-   キー、値、要素のビューを通して、辞書の変更を挟まずにイテレート
-   されたら、その要素の順序は完全に一致します。
-   これにより、 ``(value, key)`` の対を
-   :func:`zip` で作成できます: ``pairs = zip(d.values(), d.keys())`` 。
-   同じリストを作成する他の方法は、
-   ``pairs = [(v, k) for (k, v) in d.items()]`` です。
+   Keys and values are iterated over in an arbitrary order which is non-random,
+   varies across Python implementations, and depends on the dictionary's history
+   of insertions and deletions. If keys, values and items views are iterated
+   over with no intervening modifications to the dictionary, the order of items
+   will directly correspond.  This allows the creation of ``(value, key)`` pairs
+   using :func:`zip`: ``pairs = zip(d.values(), d.keys())``.  Another way to
+   create the same list is ``pairs = [(v, k) for (k, v) in d.items()]``.
 
-   辞書の項目の追加や削除中にビューをイテレートすると、 :exc:`RuntimeError`
-   を送出したり、すべての項目に渡ってイテレートできなかったりします。
+   Iterating views while adding or deleting entries in the dictionary may raise
+   a :exc:`RuntimeError` or fail to iterate over all entries.
 
 .. describe:: x in dictview
 
-   *x* が下にある辞書のキー、値、または要素 (要素の場合、 *x* は
-   ``(key, value)`` タプルであるべきです) にあるとき ``True`` を返します。
+   Return ``True`` if *x* is in the underlying dictionary's keys, values or
+   items (in the latter case, *x* should be a ``(key, value)`` tuple).
 
 
-キーのビューは、項目が一意的でハッシュ可能であるという点で、集合に似ています。
-すべての値がハッシュ可能なら、 ``(key, value)`` の対も一意的で
-ハッシュ可能であり、要素のビューも集合に似ています。(値のビューは、
-要素が一般に一意的でないことから、集合に似ているとは考えられません。)
-ですから、これらの集合演算が利用できます。
-("other" は別のビューか集合です):
+Keys views are set-like since their entries are unique and hashable.  If all
+values are hashable, so that (key, value) pairs are unique and hashable, then
+the items view is also set-like.  (Values views are not treated as set-like
+since the entries are generally not unique.)  Then these set operations are
+available ("other" refers either to another view or a set):
 
 .. describe:: dictview & other
 
-   辞書ビューと別のオブジェクトの共通部分を新しい集合として返します。
+   Return the intersection of the dictview and the other object as a new set.
 
 .. describe:: dictview | other
 
-   辞書ビューと別のオブジェクトの合併集合を新しい集合として返します。
+   Return the union of the dictview and the other object as a new set.
 
 .. describe:: dictview - other
 
-   辞書ビューと別のオブジェクトの差集合 (*dictview* に属して *other* に
-   属さないすべての要素) を新しい集合として返します。
+   Return the difference between the dictview and the other object (all elements
+   in *dictview* that aren't in *other*) as a new set.
 
 .. describe:: dictview ^ other
 
-   辞書ビューと別のオブジェクトの対称差 (*dictview* と *other* のどちらかに
-   属すが両方には属さないすべての要素) を新しい集合として返します。
+   Return the symmetric difference (all elements either in *dictview* or
+   *other*, but not in both) of the dictview and the other object as a new set.
 
 
-辞書ビューの使用法の例::
+An example of dictionary view usage::
 
    >>> dishes = {'eggs': 2, 'sausage': 1, 'bacon': 1, 'spam': 500}
    >>> keys = dishes.viewkeys()
@@ -2279,11 +2340,10 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
    {'bacon'}
 
 
-
 .. _bltin-file-objects:
 
-ファイルオブジェクト
-====================
+File Objects
+============
 
 .. index::
    object: file
@@ -2291,66 +2351,66 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
    module: os
    module: socket
 
-ファイルオブジェクト  は C の ``stdio`` パッケージを使って実装されてお
-り、組み込み関数の :func:`open` で生成することができます。
-ファイルオブジェクトはまた、 :func:`os.popen` や :func:`os.fdopen`,
-ソケットオブジェクトの :meth:`makefile` メソッドのような、他の組み込み
-関数およびメソッドによっても返されます。一時ファイルは :mod:`tempfile`
-モジュールを使って生成でき、ファイルやディレクトリのコピー、移動、消去
-などの高次の操作は :mod:`shutil` モジュールで行います。
+File objects are implemented using C's ``stdio`` package and can be
+created with the built-in :func:`open` function.  File
+objects are also returned by some other built-in functions and methods,
+such as :func:`os.popen` and :func:`os.fdopen` and the :meth:`makefile`
+method of socket objects. Temporary files can be created using the
+:mod:`tempfile` module, and high-level file operations such as copying,
+moving, and deleting files and directories can be achieved with the
+:mod:`shutil` module.
 
-ファイル操作が I/O 関連の理由で失敗した場合例外 :exc:`IOError` が送出
-されます。この理由には例えば :meth:`seek` を端末デバイスに行ったり、読
-み出し専用で開いたファイルに書き込みを行うといった、何らかの理由によっ
-てそのファイルで定義されていない操作を行ったような場合も含まれます。
+When a file operation fails for an I/O-related reason, the exception
+:exc:`IOError` is raised.  This includes situations where the operation is not
+defined for some reason, like :meth:`seek` on a tty device or writing a file
+opened for reading.
 
-ファイルは以下のメソッドを持ちます:
+Files have the following methods:
 
 
 .. method:: file.close()
 
-   ファイルを閉じます。閉じられたファイルはそれ以後読み書きすることは
-   できません。ファイルが開かれていることが必要な操作は、ファイルが閉
-   じられた後はすべて :exc:`ValueError` を送出します。 :meth:`close`
-   を一度以上呼び出してもかまいません。
+   Close the file.  A closed file cannot be read or written any more. Any operation
+   which requires that the file be open will raise a :exc:`ValueError` after the
+   file has been closed.  Calling :meth:`close` more than once is allowed.
 
-   Python 2.5 から :keyword:`with` 文を使えばこのメソッドを直接呼び出
-   す必要はなくなりました。たとえば、以下のコードは *f* を
-   :keyword:`with` ブロックを抜ける際に自動的に閉じます。 ::
+   As of Python 2.5, you can avoid having to call this method explicitly if you use
+   the :keyword:`with` statement.  For example, the following code will
+   automatically close *f* when the :keyword:`with` block is exited::
 
-      from __future__ import with_statement # これは Python 2.6 では不要です
+      from __future__ import with_statement # This isn't required in Python 2.6
 
       with open("hello.txt") as f:
           for line in f:
-              print line
+              print line,
 
-   古いバージョンの Python では同じ効果を得るために次のようにしなければいけませんでした。 ::
+   In older versions of Python, you would have needed to do this to get the same
+   effect::
 
       f = open("hello.txt")
       try:
           for line in f:
-              print line
+              print line,
       finally:
           f.close()
 
    .. note::
 
-      全ての Python の "ファイル的" 型が :keyword:`with` 文用のコンテ
-      キスト・マネージャとして使えるわけではありません。もし、全てのファ
-      イル的オブジェクトで動くようにコードを書きたいのならば、オブジェ
-      クトを直接使うのではなく :mod:`contextlib` にある
-      :func:`contextlib.closing` 関数を使うと良いでしょう。
+      Not all "file-like" types in Python support use as a context manager for the
+      :keyword:`with` statement.  If your code is intended to work with any file-like
+      object, you can use the function :func:`contextlib.closing` instead of using
+      the object directly.
 
 
 .. method:: file.flush()
 
-   ``stdio`` の :c:func:`fflush` のように、内部バッファをフラッシュし
-   ます。ファイル類似のオブジェクトによっては、この操作は何も行いません。
+   Flush the internal buffer, like ``stdio``'s :c:func:`fflush`.  This may be a
+   no-op on some file-like objects.
 
    .. note::
 
-      :meth:`flush` は必ずしもファイルのデータをディスクに書き込むとは限りません。
-      そのような挙動を保証するには :meth:`flush` の後に :func:`os.fsync` を使って下さい。
+      :meth:`flush` does not necessarily write the file's data to disk.  Use
+      :meth:`flush` followed by :func:`os.fsync` to ensure this behavior.
 
 
 .. method:: file.fileno()
@@ -2359,285 +2419,271 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
       pair: file; descriptor
       module: fcntl
 
-   背後にある実装系がオペレーティングシステムに I/O 操作を要求するため
-   に用いる、整数の "ファイル記述子" を返します。この値は他の用途とし
-   て、 :mod:`fcntl` モジュールや :func:`os.read` やその仲間のような、
-   ファイル記述子を必要とする低レベルのインタフェースで役に立ちます。
-
+   Return the integer "file descriptor" that is used by the underlying
+   implementation to request I/O operations from the operating system.  This can be
+   useful for other, lower level interfaces that use file descriptors, such as the
+   :mod:`fcntl` module or :func:`os.read` and friends.
 
    .. note::
 
-      ファイル類似のオブジェクトが実際のファイルに関連付けられていない
-      場合、このメソッドを提供すべきでは *ありません* 。
+      File-like objects which do not have a real file descriptor should *not* provide
+      this method!
 
 
 .. method:: file.isatty()
 
-   ファイルが tty (または類似の) デバイスに接続されている場合 ``True``
-   を返し、そうでない場合 ``False`` を返します。
+   Return ``True`` if the file is connected to a tty(-like) device, else ``False``.
 
    .. note::
 
-      ファイル類似のオブジェクトが実際のファイルに関連付けられていない
-      場合、このメソッドを実装すべきでは *ありません* 。
+      If a file-like object is not associated with a real file, this method should
+      *not* be implemented.
 
 
 .. method:: file.next()
 
-   ファイルオブジェクトはそれ自身がイテレータです。すなわち、
-   ``iter(f)`` は (*f* が閉じられていない限り) *f* を返します。
-   :keyword:`for` ループ (例えば ``for line in f: print line``) のよう
-   にファイルがイテレータとして使われた場合、 :meth:`next` メソッドが
-   繰り返し呼び出されます。ファイルが読み出しモードで開かれている場合、
-   このメソッドは次の入力行を返すか、または、 EOF に到達したときに
-   :exc:`StopIteration` を送出します (ファイルが書き込みモードで開かれ
-   ている場合、動作は未定義です) 。
-   ファイル内の各行に対する :keyword:`for` ループ (非常によくある操作
-   です) を効率的な方法で行うために、 :meth:`next` メソッドは隠蔽され
-   た先読みバッファを使います。先読みバッファを使った結果として、
-   (:meth:`readline` のような) 他のファイルメソッドと :meth:`next` を
-   組み合わせて使うとうまく動作しません。しかし、 :meth:`seek` を使っ
-   てファイル位置を絶対指定しなおすと、先読みバッファは消去されます。
+   A file object is its own iterator, for example ``iter(f)`` returns *f* (unless
+   *f* is closed).  When a file is used as an iterator, typically in a
+   :keyword:`for` loop (for example, ``for line in f: print line.strip()``), the
+   :meth:`~file.next` method is called repeatedly.  This method returns the next input
+   line, or raises :exc:`StopIteration` when EOF is hit when the file is open for
+   reading (behavior is undefined when the file is open for writing).  In order to
+   make a :keyword:`for` loop the most efficient way of looping over the lines of a
+   file (a very common operation), the :meth:`~file.next` method uses a hidden read-ahead
+   buffer.  As a consequence of using a read-ahead buffer, combining :meth:`~file.next`
+   with other file methods (like :meth:`~file.readline`) does not work right.  However,
+   using :meth:`seek` to reposition the file to an absolute position will flush the
+   read-ahead buffer.
 
    .. versionadded:: 2.3
 
 
 .. method:: file.read([size])
 
-   最大で *size* バイトをファイルから読み込みます (*size* バイトを取得
-   する前に EOF に到達した場合、それ以下の長さになります) 。 *size* 引
-   数が負であるか省略された場合、 EOF に到達するまでの全てのデータを読
-   み込みます。読み出されたバイト列は文字列オブジェクトとして返されま
-   す。直後に EOF に到達した場合、空の文字列が返されます。 (端末のよう
-   なある種のファイルでは、 EOF に到達した後でファイルを読みつづけるこ
-   とにも意味があります) 。
-   このメソッドは、 *size* バイトに可能な限り近くデータを取得するため
-   に、背後の C 関数 :c:func:`fread` を 1 度以上呼び出すかもしれないの
-   で注意してください。また、非ブロック・モードでは、 *size* パラメー
-   タが与えられなくても、要求されたよりも少ないデータが返される場合が
-   あることに注意してください。
+   Read at most *size* bytes from the file (less if the read hits EOF before
+   obtaining *size* bytes).  If the *size* argument is negative or omitted, read
+   all data until EOF is reached.  The bytes are returned as a string object.  An
+   empty string is returned when EOF is encountered immediately.  (For certain
+   files, like ttys, it makes sense to continue reading after an EOF is hit.)  Note
+   that this method may call the underlying C function :c:func:`fread` more than
+   once in an effort to acquire as close to *size* bytes as possible. Also note
+   that when in non-blocking mode, less data than was requested may be
+   returned, even if no *size* parameter was given.
 
    .. note::
-      この関数は単純に、背後の C 関数、 :c:func:`fread` のラッパーです。
-      そのため、 EOF が見つからない場合など、特殊な状況では同様に振る
-      舞います。
+      This function is simply a wrapper for the underlying
+      :c:func:`fread` C function, and will behave the same in corner cases,
+      such as whether the EOF value is cached.
 
 
 .. method:: file.readline([size])
 
-   ファイルから一行全部を読み込みます。終末の改行文字は文字列に残ります
-   (しかし、ファイルが不完全な行で終わっていたら、存在しないかもしれません)。 [#]_
-   *size* 引数が与えられ、負でなければ、それが (終末の改行文字を含む)
-   最大バイト数となり、不完全な行でも返されます。 *size* が 0 でなければ、
-   空の文字列が返されるのは、即座に EOF に到達したとき *だけ* です。
-
+   Read one entire line from the file.  A trailing newline character is kept in
+   the string (but may be absent when a file ends with an incomplete line). [6]_
+   If the *size* argument is present and non-negative, it is a maximum byte
+   count (including the trailing newline) and an incomplete line may be
+   returned. When *size* is not 0, an empty string is returned *only* when EOF
+   is encountered immediately.
 
    .. note::
 
-      ``stdio`` の :c:func:`fgets` と違い、入力中にヌル文字 (``'\0'``)
-      が含まれていれば、ヌル文字を含んだ文字列が返されます。
+      Unlike ``stdio``'s :c:func:`fgets`, the returned string contains null characters
+      (``'\0'``) if they occurred in the input.
 
 
 .. method:: file.readlines([sizehint])
 
-   :meth:`readline` を使ってに到達するまで読み出し、 EOF 読み出された
-   行を含むリストを返します。オプションの *sizehint* 引数が存在すれば、
-   EOF まで読み出す代わりに完全な行を全体で大体 *sizehint* バイトにな
-   るように (おそらく内部バッファサイズを切り詰めて) 読み出します。ファ
-   イル類似のインタフェースを実装しているオブジェクトは、 *sizehint*
-   を実装できないか効率的に実装できない場合には無視してもかまいません。
+   Read until EOF using :meth:`~file.readline` and return a list containing the lines
+   thus read.  If the optional *sizehint* argument is present, instead of
+   reading up to EOF, whole lines totalling approximately *sizehint* bytes
+   (possibly after rounding up to an internal buffer size) are read.  Objects
+   implementing a file-like interface may choose to ignore *sizehint* if it
+   cannot be implemented, or cannot be implemented efficiently.
 
 
 .. method:: file.xreadlines()
 
-   このメソッドは ``iter(f)`` と同じ結果を返します。
+   This method returns the same thing as ``iter(f)``.
 
    .. versionadded:: 2.1
 
    .. deprecated:: 2.3
-      代わりに ``for line in file`` を使ってください。
+      Use ``for line in file`` instead.
 
 
 .. method:: file.seek(offset[, whence])
 
-   ``stdio`` の :c:func:`fseek` と同様に、ファイルの現在位置を設定します。
-   *whence* 引数はオプションで、標準の値は ``os.SEEK_SET`` もしくは
-   ``0`` (絶対位置指定) です; 他に取り得る値は ``os.SEEK_CUR`` もしく
-   は ``1`` (現在のファイル位置から相対的に seek する) および
-   ``os.SEEK_END`` もしくは ``2`` (ファイルの末端から相対的に seek す
-   る) です。戻り値はありません。
+   Set the file's current position, like ``stdio``'s :c:func:`fseek`. The *whence*
+   argument is optional and defaults to  ``os.SEEK_SET`` or ``0`` (absolute file
+   positioning); other values are ``os.SEEK_CUR`` or ``1`` (seek relative to the
+   current position) and ``os.SEEK_END`` or ``2``  (seek relative to the file's
+   end).  There is no return value.
 
-   例えば、 ``f.seek(2, os.SEEK_CUR)`` 位置を2つ進めます。
-   ``f.seek(-3, os.SEEK_END)`` では終端の3つ手前に設定します。
+   For example, ``f.seek(2, os.SEEK_CUR)`` advances the position by two and
+   ``f.seek(-3, os.SEEK_END)`` sets the position to the third to last.
 
-   ファイルを追記モード (モード ``'a'`` または ``'a+'``) で開いた場合、
-   書き込みを行うまでに行った :meth:`seek` 操作はすべて元に戻されるの
-   で注意してください。ファイルが追記のみの書き込みモード (``'a'``) で
-   開かれた場合、このメソッドは実質何も行いませんが、読み込みが可能な
-   追記モード (``'a+'``) で開かれたファイルでは役に立ちます。ファイル
-   をテキストモードで (``'b'`` なしで) 開いた場合、 :meth:`tell` が返
-   すオフセットのみが正しい値になります。他のオフセット値を使った場合、
-   その振る舞いは未定義です。
+   Note that if the file is opened for appending
+   (mode ``'a'`` or ``'a+'``), any :meth:`seek` operations will be undone at the
+   next write.  If the file is only opened for writing in append mode (mode
+   ``'a'``), this method is essentially a no-op, but it remains useful for files
+   opened in append mode with reading enabled (mode ``'a+'``).  If the file is
+   opened in text mode (without ``'b'``), only offsets returned by :meth:`tell` are
+   legal.  Use of other offsets causes undefined behavior.
 
-   全てのファイルオブジェクトが seek できるとは限らないので注意してく
-   ださい。
+   Note that not all file objects are seekable.
+
+   .. versionchanged:: 2.6
+      Passing float values as offset has been deprecated.
 
 
 .. method:: file.tell()
 
-   ``stdio`` の :c:func:`ftell` と同様、ファイルの現在位置を返します。
+   Return the file's current position, like ``stdio``'s :c:func:`ftell`.
 
    .. note::
 
-      Windows では、(:c:func:`fgets` の後で) Unix-スタイルの改行のファ
-      イルを読むときに :meth:`tell` が不正な値を返すことがあります。
-      この問題に遭遇しないためにはバイナリーモード (``'rb'``) を使うよ
-      うにしてください。
+      On Windows, :meth:`tell` can return illegal values (after an :c:func:`fgets`)
+      when reading files with Unix-style line-endings. Use binary mode (``'rb'``) to
+      circumvent this problem.
 
 
 .. method:: file.truncate([size])
 
-   ファイルのサイズを切り詰めます。オプションの *size* が存在すれば、
-   ファイルは (最大で) 指定されたサイズに切り詰められます。標準設定の
-   サイズの値は、現在のファイル位置までのファイルサイズです。現在のファ
-   イル位置は変更されません。指定されたサイズがファイルの現在のサイズ
-   を越える場合、その結果はプラットフォーム依存なので注意してください:
-   可能性としては、ファイルは変更されないか、指定されたサイズまでゼロ
-   で埋められるか、指定されたサイズまで未定義の新たな内容で埋められる
-   か、があります。利用可能な環境:  Windows, 多くの Unix 系。
+   Truncate the file's size.  If the optional *size* argument is present, the file
+   is truncated to (at most) that size.  The size defaults to the current position.
+   The current file position is not changed.  Note that if a specified size exceeds
+   the file's current size, the result is platform-dependent:  possibilities
+   include that the file may remain unchanged, increase to the specified size as if
+   zero-filled, or increase to the specified size with undefined new content.
+   Availability:  Windows, many Unix variants.
 
 
 .. method:: file.write(str)
 
-   文字列をファイルに書き込みます。戻り値はありません。バッファリング
-   によって、 :meth:`flush` または :meth:`close` が呼び出されるまで
-   実際にファイル中に文字列が書き込まれないこともあります。
+   Write a string to the file.  There is no return value.  Due to buffering, the
+   string may not actually show up in the file until the :meth:`flush` or
+   :meth:`close` method is called.
 
 
 .. method:: file.writelines(sequence)
 
-   文字列からなるシーケンスをファイルに書き込みます。シーケンスは文字
-   列を生成する反復可能なオブジェクトなら何でもかまいません。よくある
-   のは文字列からなるリストです。戻り値はありません。 (関数の名前は
-   :meth:`readlines` と対応づけてつけられました; :meth:`writelines` は
-   行間の区切りを追加しません)
+   Write a sequence of strings to the file.  The sequence can be any iterable
+   object producing strings, typically a list of strings. There is no return value.
+   (The name is intended to match :meth:`readlines`; :meth:`writelines` does not
+   add line separators.)
 
-ファイルはイテレータプロトコルをサポートします。各反復操作では
-``file.readline()`` と同じ結果を返し、反復は :meth:`readline` メソッド
-が空文字列を返した際に終了します。
+Files support the iterator protocol.  Each iteration returns the same result as
+:meth:`~file.readline`, and iteration ends when the :meth:`~file.readline` method returns
+an empty string.
 
-ファイルオブジェクトはまた、多くの興味深い属性を提供します。これらはファ
-イル類似オブジェクトでは必要ではありませんが、特定のオブジェクトにとっ
-て意味を持たせたいなら実装しなければなりません。
+File objects also offer a number of other interesting attributes. These are not
+required for file-like objects, but should be implemented if they make sense for
+the particular object.
 
 
 .. attribute:: file.closed
 
-   現在のファイルオブジェクトの状態を示すブール値です。この値は読み出
-   し専用の属性です; :meth:`close` メソッドがこの値を変更します。全て
-   のファイル類似オブジェクトで利用可能とは限りません。
+   bool indicating the current state of the file object.  This is a read-only
+   attribute; the :meth:`close` method changes the value. It may not be available
+   on all file-like objects.
 
 
 .. attribute:: file.encoding
 
-   このファイルが使っているエンコーディングです。 Unicode 文字列がファ
-   イルに書き込まれる際、 Unicode 文字列はこのエンコーディングを使って
-   バイト文字列に変換されます。さらに、ファイルが端末に接続されている
-   場合、この属性は端末が使っているとおぼしきエンコーディング (この情
-   報は端末がうまく設定されていない場合には不正確なこともあります) を
-   与えます。この属性は読み出し専用で、すべてのファイル類似オブジェク
-   トにあるとは限りません。またこの値は ``None`` のこともあり、この場
-   合、ファイルは Unicode 文字列の変換のためにシステムのデフォルト
-   エンコーディングを使います。
+   The encoding that this file uses. When Unicode strings are written to a file,
+   they will be converted to byte strings using this encoding. In addition, when
+   the file is connected to a terminal, the attribute gives the encoding that the
+   terminal is likely to use (that  information might be incorrect if the user has
+   misconfigured the  terminal). The attribute is read-only and may not be present
+   on all file-like objects. It may also be ``None``, in which case the file uses
+   the system default encoding for converting Unicode strings.
 
    .. versionadded:: 2.3
 
 
 .. attribute:: file.errors
 
-   エンコーディングに用いられる、 Unicode エラーハンドラです。
+   The Unicode error handler used along with the encoding.
 
    .. versionadded:: 2.6
 
 
 .. attribute:: file.mode
 
-   ファイルの I/O モードです。ファイルが組み込み関数 :func:`open` で作
-   成された場合、この値は引数 *mode* の値になります。この値は読み出し
-   専用の属性で、全てのファイル類似オブジェクトに存在するとは限りませ
-   ん。
+   The I/O mode for the file.  If the file was created using the :func:`open`
+   built-in function, this will be the value of the *mode* parameter.  This is a
+   read-only attribute and may not be present on all file-like objects.
 
 
 .. attribute:: file.name
 
-   ファイルオブジェクトが :func:`open` を使って生成された時のファイル
-   の名前です。そうでなければ、ファイルオブジェクト生成の起源を示す何
-   らかの文字列になり、 ``<...>`` の形式をとります。この値は読み出し専
-   用の属性で、全てのファイル類似オブジェクトに存在するとは限りません。
+   If the file object was created using :func:`open`, the name of the file.
+   Otherwise, some string that indicates the source of the file object, of the
+   form ``<...>``.  This is a read-only attribute and may not be present on all
+   file-like objects.
+
+   .. index::
+      single: universal newlines; file.newlines attribute
 
 
 .. attribute:: file.newlines
 
-   Python がユニバーサル改行モードを (デフォルトどおり) 有効にして
-   ビルドされているなら、この読み込み専用属性が存在し、ファイルが
-   ユニバーサル改行モードで開かれたファイルで、ファイルの読み込み中に
-   あった改行の種類を記録します。取り得る値は ``'\r'``, ``'\n'``, ``'\r\n'``,
-   ``None`` (不明であるか、まだ改行を読み込んでいない)、または、複数の
-   改行方式の種類が存在したことを表す、見つかったすべての改行の種類を含む
-   タプルです。ユニバーサル改行モードで開かれたのでないファイルに対しては、
-   この属性の値は ``None`` になります。
+   If Python was built with :term:`universal newlines` enabled (the default) this
+   read-only attribute exists, and for files opened in universal newline read
+   mode it keeps track of the types of newlines encountered while reading the
+   file. The values it can take are ``'\r'``, ``'\n'``, ``'\r\n'``, ``None``
+   (unknown, no newlines read yet) or a tuple containing all the newline types
+   seen, to indicate that multiple newline conventions were encountered. For
+   files not opened in universal newlines read mode the value of this attribute
+   will be ``None``.
 
 
 .. attribute:: file.softspace
 
-   :keyword:`print` 文を使った場合、他の値を出力する前にスペース文字を
-   出力する必要があるかどうかを示すブール値です。ファイルオブジェクト
-   をシミュレート仕様とするクラスは書き込み可能な :attr:`softspace` 属
-   性を持たなければならず、この値はゼロに初期化されなければなりません。
-   この値は Python で実装されているほとんどのクラスで自動的に初期化さ
-   れます (属性へのアクセス手段を上書きするようなオブジェクトでは注意
-   が必要です); C で実装された型では、書き込み可能な :attr:`softspace`
-   属性を提供しなければなりません。
+   Boolean that indicates whether a space character needs to be printed before
+   another value when using the :keyword:`print` statement. Classes that are trying
+   to simulate a file object should also have a writable :attr:`softspace`
+   attribute, which should be initialized to zero.  This will be automatic for most
+   classes implemented in Python (care may be needed for objects that override
+   attribute access); types implemented in C will have to provide a writable
+   :attr:`softspace` attribute.
 
    .. note::
 
-      この属性は :keyword:`print` 文を制御するために用いられますが、
-      :keyword:`print` の内部状態を乱さないために、その実装を行うこと
-      はできません。
+      This attribute is not used to control the :keyword:`print` statement, but to
+      allow the implementation of :keyword:`print` to keep track of its internal
+      state.
 
 
 .. _typememoryview:
 
-メモリビュー型
-==============
+memoryview type
+===============
 
 .. versionadded:: 2.7
 
-:class:`memoryview` オブジェクトは、Python コードが、バッファプロトコルを
-サポートするオブジェクトの内部データへ、コピーすることなく
-アクセスすることを可能にします。
-メモリは通常、単純なバイト列として解釈されます。
+:class:`memoryview` objects allow Python code to access the internal data
+of an object that supports the buffer protocol without copying.  Memory
+is generally interpreted as simple bytes.
 
 .. class:: memoryview(obj)
 
-   *obj* を参照する :class:`memoryview` を作成します。 *obj* は
-   バッファプロトコルをサポートしていなければなりません。
-   バッファプロトコルをサポートする組み込みオブジェクトには、
-   :class:`str` 、 :class:`bytearray` などがあります
-   (ただし、 :class:`unicode` は違います)。
+   Create a :class:`memoryview` that references *obj*.  *obj* must support the
+   buffer protocol.  Built-in objects that support the buffer protocol include
+   :class:`str` and :class:`bytearray` (but not :class:`unicode`).
 
-   :class:`memoryview` には *要素* の概念があり、それが起源のオブジェクト
-   *obj* によって扱われる原子的なメモリの単位になります。
-   多くの単純なオブジェクト、例えば :class:`str` や :class:`bytearray` では、
-   要素は単バイトになりますが、他のサードパーティの型では、
-   要素はより大きくなりえます。
+   A :class:`memoryview` has the notion of an *element*, which is the
+   atomic memory unit handled by the originating object *obj*.  For many
+   simple types such as :class:`str` and :class:`bytearray`, an element
+   is a single byte, but other third-party types may expose larger elements.
 
-   ``len(view)`` は、メモリビュー *view* の要素の総数を返します。
-   :class:`~memoryview.itemsize` 属性は、一つの要素内のバイト数を与えます。
+   ``len(view)`` returns the total number of elements in the memoryview,
+   *view*.  The :class:`~memoryview.itemsize` attribute will give you the
+   number of bytes in a single element.
 
-   :class:`memoryview` はスライスしてデータを晒すことに対応しています。
-   一つのインデクスを取ると、一つの要素を :class:`str` オブジェクトとして
-   返します。完全なスライシングは部分ビューになります::
+   A :class:`memoryview` supports slicing to expose its data.  Taking a single
+   index will return a single element as a :class:`str` object.  Full
+   slicing will result in a subview::
 
       >>> v = memoryview('abcefg')
       >>> v[1]
@@ -2649,8 +2695,8 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
       >>> v[1:4].tobytes()
       'bce'
 
-   メモリビューが基にしているオブジェクトがデータの変更に対応していれば、
-   メモリビューはスライス代入に対応します::
+   If the object the memoryview is over supports changing its data, the
+   memoryview supports slice assignment::
 
       >>> data = bytearray('abcefg')
       >>> v = memoryview(data)
@@ -2667,14 +2713,14 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
         File "<stdin>", line 1, in <module>
       ValueError: cannot modify size of memoryview object
 
-   この通り、メモリビューオブジェクトの長さは変えられません。
+   Notice how the size of the memoryview object cannot be changed.
 
-   :class:`memoryview` には 2 つのメソッドがあります。
+   :class:`memoryview` has two methods:
 
    .. method:: tobytes()
 
-      バッファ中のデータをバイト文字列 (クラス :class:`str` のオブジェクト)
-      として返します::
+      Return the data in the buffer as a bytestring (an object of class
+      :class:`str`). ::
 
          >>> m = memoryview("abc")
          >>> m.tobytes()
@@ -2682,49 +2728,48 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
 
    .. method:: tolist()
 
-      バッファ中のデータを整数のリストとして返します::
+      Return the data in the buffer as a list of integers. ::
 
          >>> memoryview("abc").tolist()
          [97, 98, 99]
 
-   読み込み専用の属性もいくつか使えます:
+   There are also several readonly attributes available:
 
    .. attribute:: format
 
-      ビューのそれぞれの要素に対する、(:mod:`struct` モジュールのスタイルでの)
-      フォーマットを含む文字列です。
-      デフォルトは ``'B'`` で、単純なバイト文字列です。
+      A string containing the format (in :mod:`struct` module style) for each
+      element in the view.  This defaults to ``'B'``, a simple bytestring.
 
    .. attribute:: itemsize
 
-      メモリビューのそれぞれの要素のバイト数です。
+      The size in bytes of each element of the memoryview.
 
    .. attribute:: shape
 
-      メモリの形状を N 次元配列として与える、長さ :attr:`ndim` の整数の
-      タプルです。
+      A tuple of integers the length of :attr:`ndim` giving the shape of the
+      memory as a N-dimensional array.
 
    .. attribute:: ndim
 
-      メモリが表す多次元配列が何次元かを示す整数です。
+      An integer indicating how many dimensions of a multi-dimensional array the
+      memory represents.
 
    .. attribute:: strides
 
-      配列のそれぞれの次元に対して、それぞれの要素にアクセスするのに必要な
-      バイト数を表す、長さ :attr:`ndim` の整数のタプルです。
+      A tuple of integers the length of :attr:`ndim` giving the size in bytes to
+      access each element for each dimension of the array.
 
    .. attribute:: readonly
 
-      メモリが読み込み専用かを表すブールです。
+      A bool indicating whether the memory is read only.
 
-   .. memoryview.suboffsets は C にしか役立たなさそうなので、
-      ドキュメント化されていません。
+   .. memoryview.suboffsets isn't documented because it only seems useful for C
 
 
 .. _typecontextmanager:
 
-コンテキストマネージャ型
-========================
+Context Manager Types
+=====================
 
 .. versionadded:: 2.5
 
@@ -2733,181 +2778,183 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
    single: context management protocol
    single: protocol; context management
 
-Python の :keyword:`with` 文はコンテキストマネージャによって定義される
-実行時コンテキストの概念をサポートします。これは、ユーザ定義クラスが文
-の本体が実行される前に進入し文の終わりで脱出する実行時コンテキストを定
-義することを許す二つの別々のメソッドを使って実装されます。
+Python's :keyword:`with` statement supports the concept of a runtime context
+defined by a context manager.  This is implemented using two separate methods
+that allow user-defined classes to define a runtime context that is entered
+before the statement body is executed and exited when the statement ends.
 
-:dfn:`コンテキスト管理プロトコル` (:dfn:`context management protocol`) は
-実行時コンテキストを定義するコンテキストマネージャオブジェクトが提供す
-べき一対のメソッドから成ります。
+The :dfn:`context management protocol` consists of a pair of methods that need
+to be provided for a context manager object to define a runtime context:
 
 
 .. method:: contextmanager.__enter__()
 
-   実行時コンテキストに入り、このオブジェクトまたは他の実行時コンテキ
-   ストに関連したオブジェクトを返します。このメソッドが返す値はこのコ
-   ンテキストマネージャを使う :keyword:`with` 文の :keyword:`as` 節の
-   識別子に束縛されます。
+   Enter the runtime context and return either this object or another object
+   related to the runtime context. The value returned by this method is bound to
+   the identifier in the :keyword:`as` clause of :keyword:`with` statements using
+   this context manager.
 
-   自分自身を返すコンテキストマネージャの例としてファイルオブジェクト
-   があります。ファイルオブジェクトは :meth:`__enter__` から自分自身を
-   返して :func:`open` が :keyword:`with` 文のコンテキスト式として使わ
-   れるようにします。
+   An example of a context manager that returns itself is a file object. File
+   objects return themselves from __enter__() to allow :func:`open` to be used as
+   the context expression in a :keyword:`with` statement.
 
-   関連オブジェクトを返すコンテキストマネージャの例としては
-   :func:`decimal.localcontext` が返すものがあります。
-   このマネージャはアクティブな10進数コンテキストをオリジナルのコンテ
-   キストのコピーにセットしてそのコピーを返します。こうすること
-   で, :keyword:`with` 文の本体の内部で、外側のコードに影響を与えずに、
-   10進数コンテキストを変更できます。
+   An example of a context manager that returns a related object is the one
+   returned by :func:`decimal.localcontext`. These managers set the active
+   decimal context to a copy of the original decimal context and then return the
+   copy. This allows changes to be made to the current decimal context in the body
+   of the :keyword:`with` statement without affecting code outside the
+   :keyword:`with` statement.
 
 
 .. method:: contextmanager.__exit__(exc_type, exc_val, exc_tb)
 
-   実行時コンテキストから抜け、例外 (がもし起こっていたとしても) を抑
-   制することを示すブール値フラグを返します。 :keyword:`with` 文の本体
-   を実行中に例外が起こったならば、引数にはその例外の型と値とトレース
-   バック情報を渡します。そうでなければ、引数は全て ``None`` です。
+   Exit the runtime context and return a Boolean flag indicating if any exception
+   that occurred should be suppressed. If an exception occurred while executing the
+   body of the :keyword:`with` statement, the arguments contain the exception type,
+   value and traceback information. Otherwise, all three arguments are ``None``.
 
-   このメソッドから真となる値が返されると :keyword:`with` 文は例外の発
-   生を抑え、 :keyword:`with` 文の直後の文に実行を続けます。そうでなけ
-   れば、このメソッドの実行を終えると例外の伝播が続きます。このメソッ
-   ドの実行中に起きた例外は :keyword:`with` 文の本体の実行中に起こった
-   例外を置き換えてしまいます。
+   Returning a true value from this method will cause the :keyword:`with` statement
+   to suppress the exception and continue execution with the statement immediately
+   following the :keyword:`with` statement. Otherwise the exception continues
+   propagating after this method has finished executing. Exceptions that occur
+   during execution of this method will replace any exception that occurred in the
+   body of the :keyword:`with` statement.
 
-   渡された例外を直接的に再送出すべきではありません。その代わりに、こ
-   のメソッドが偽の値を返すことでメソッドの正常終了と送出された例外を
-   抑制しないことを伝えるべきです。このようにすれば
-   (``contextlib.nested`` のような) コンテキストマネージャは
-   :meth:`__exit__` メソッド自体が失敗したのかどうかを簡単に見分けるこ
-   とができます。
+   The exception passed in should never be reraised explicitly - instead, this
+   method should return a false value to indicate that the method completed
+   successfully and does not want to suppress the raised exception. This allows
+   context management code (such as ``contextlib.nested``) to easily detect whether
+   or not an :meth:`__exit__` method has actually failed.
 
-Python は幾つかのコンテキストマネージャを、易しいスレッド同期・ファイ
-ルなどのオブジェクトの即時クローズ・単純化されたアクティブな10進算術コ
-ンテキストのサポートのために用意しています。各型はコンテキスト管理プロ
-トコルを実装しているという以上の特別の取り扱いを受けるわけではありませ
-ん。例については :mod:`contextlib` モジュールを参照下さい。
+Python defines several context managers to support easy thread synchronisation,
+prompt closure of files or other objects, and simpler manipulation of the active
+decimal arithmetic context. The specific types are not treated specially beyond
+their implementation of the context management protocol. See the
+:mod:`contextlib` module for some examples.
 
-Python のジェネレータ (:term:`generator`) と
-``contextlib.contextmanager`` デコレータ (:term:`decorator`) はこの
-プロトコルの簡便な実装方法を提供します。ジェネレータ関数を
-``contextlib.contextmanager`` でデコレートすると、デコレートしなければ
-返されるイテレータを返す代わりに、必要な :meth:`__enter__` および
-:meth:`__exit__` メソッドを実装したコンテキストマネージャを返すように
-なります。
+Python's :term:`generator`\s and the ``contextlib.contextmanager`` :term:`decorator`
+provide a convenient way to implement these protocols.  If a generator function is
+decorated with the ``contextlib.contextmanager`` decorator, it will return a
+context manager implementing the necessary :meth:`__enter__` and
+:meth:`__exit__` methods, rather than the iterator produced by an undecorated
+generator function.
 
-これらのメソッドのために Python/C API の中の Python オブジェクトの型構
-造体に特別なスロットが作られたわけではないことに注意してください。これ
-らのメソッドを定義したい拡張型については通常の Python からアクセスでき
-るメソッドとして提供しなければなりません。実行時コンテキストを準備する
-ことに比べたら、一つのクラスの辞書引きは無視できるオーバーヘッドです。
+Note that there is no specific slot for any of these methods in the type
+structure for Python objects in the Python/C API. Extension types wanting to
+define these methods must provide them as a normal Python accessible method.
+Compared to the overhead of setting up the runtime context, the overhead of a
+single class dictionary lookup is negligible.
 
 
 .. _typesother:
 
-他の組み込み型
-==============
+Other Built-in Types
+====================
 
-インタプリタはその他の種類のオブジェクトをいくつかサポートします。これ
-らのほとんどは 1 または 2 つの演算だけをサポートします。
+The interpreter supports several other kinds of objects. Most of these support
+only one or two operations.
 
 
 .. _typesmodules:
 
-モジュール
-----------
+Modules
+-------
 
-モジュールに対する唯一の特殊な演算は属性へのアクセス: ``m.name`` です。
-ここで *m* はモジュールで、 *name* は *m* のシンボルテーブル上に定義さ
-れた名前にアクセスします。モジュール属性も代入することができます。
-(:keyword:`import` 文は、厳密にいえば、モジュールオブジェクトに対する
-演算です; ``import foo`` は *foo* と名づけられたモジュールオブジェクト
-が存在することを必要とはせず、むしろ *foo* と名づけられた (外部の) モ
-ジュールの *定義* を必要とします。)
+The only special operation on a module is attribute access: ``m.name``, where
+*m* is a module and *name* accesses a name defined in *m*'s symbol table.
+Module attributes can be assigned to.  (Note that the :keyword:`import`
+statement is not, strictly speaking, an operation on a module object; ``import
+foo`` does not require a module object named *foo* to exist, rather it requires
+an (external) *definition* for a module named *foo* somewhere.)
 
-各モジュールの特殊なメンバは :attr:`__dict__` です。これはモジュールの
-シンボルテーブルを含む辞書です。この辞書を修正すると、実際にはモジュー
-ルのシンボルテーブルを変更しますが、 :attr:`__dict__` 属性を直接代入す
-ることはできません (``m.__dict__['a'] = 1`` と書いて ``m.a`` を ``1``
-に定義することはできますが、 ``m.__dict__ = {}`` と書くことはできませ
-ん) 。 :attr:`__dict__` を直接編集するのは推奨されません。
+A special attribute of every module is :attr:`~object.__dict__`. This is the
+dictionary containing the module's symbol table. Modifying this dictionary will
+actually change the module's symbol table, but direct assignment to the
+:attr:`__dict__` attribute is not possible (you can write
+``m.__dict__['a'] = 1``, which defines ``m.a`` to be ``1``, but you can't write
+``m.__dict__ = {}``).  Modifying :attr:`__dict__` directly is not recommended.
 
-インタプリタ内に組み込まれたモジュールは、 ``<module 'sys'
-(built-in)>`` のように書かれます。ファイルから読み出された場合、
-``<module 'os' from '/usr/local/lib/pythonX.Y/os.pyc'>`` と書かれます。
+Modules built into the interpreter are written like this: ``<module 'sys'
+(built-in)>``.  If loaded from a file, they are written as ``<module 'os' from
+'/usr/local/lib/pythonX.Y/os.pyc'>``.
 
 
 .. _typesobjects:
 
-クラスおよびクラスインスタンス
-------------------------------
+Classes and Class Instances
+---------------------------
 
-これらについては :ref:`objects` および :ref:`class` を参照下さい。
+See :ref:`objects` and :ref:`class` for these.
 
 
 .. _typesfunctions:
 
-関数
-----
+Functions
+---------
 
-関数オブジェクトは関数定義によって生成されます。関数オブジェクトに対す
-る唯一の操作は、それを呼び出すことです: ``func(argument-list)``
+Function objects are created by function definitions.  The only operation on a
+function object is to call it: ``func(argument-list)``.
 
-関数オブジェクトには実際には 2 つの種: 組み込み関数とユーザ定義関数が
-あります。両方とも同じ操作 (関数の呼び出し) をサポートしますが、実装は
-異なるので、オブジェクトの型も異なります。
+There are really two flavors of function objects: built-in functions and
+user-defined functions.  Both support the same operation (to call the function),
+but the implementation is different, hence the different object types.
 
-詳細は、 :ref:`function` を参照下さい。
+See :ref:`function` for more information.
 
 
 .. _typesmethods:
 
-メソッド
---------
+Methods
+-------
 
 .. index:: object: method
 
-メソッドは属性表記を使って呼び出される関数です。メソッドには二つの種類
-があります: (リストへの :meth:`append` のような) 組み込みメソッドと、
-クラスインスタンスのメソッドです。組み込みメソッドはそれをサポートする
-型と一緒に記述されています。
+Methods are functions that are called using the attribute notation. There are
+two flavors: built-in methods (such as :meth:`append` on lists) and class
+instance methods.  Built-in methods are described with the types that support
+them.
 
-実装では、クラスインスタンスのメソッドに 2 つの読み込み専用の属性を追
-加しています: ``m.im_self`` はメソッドが操作するオブジェクトで、
-``m.im_func`` はメソッドを実装している関数です。 ``m(arg-1, arg-2, ...,
-arg-n)`` の呼び出しは、 ``m.im_func(m.im_self, arg-1, arg-2, ...,
-arg-n)`` の呼び出しと完全に等価です。
+The implementation adds two special read-only attributes to class instance
+methods: ``m.im_self`` is the object on which the method operates, and
+``m.im_func`` is the function implementing the method.  Calling ``m(arg-1,
+arg-2, ..., arg-n)`` is completely equivalent to calling ``m.im_func(m.im_self,
+arg-1, arg-2, ..., arg-n)``.
 
-クラスインスタンスメソッドには、メソッドがインスタンスからアクセスされ
-るかクラスからアクセスされるかによって、それぞれ *バインド* または *非
-バインド* があります。メソッドが非バインドメソッドの場合、 ``im_self``
-属性は ``None`` になるため、呼び出す際には ``self`` オブジェクトを明示
-的に第一引数として指定しなければなりません。この場合、 ``self`` は非バ
-インドメソッドのクラス (サブクラス) のインスタンスでなければならず、そ
-うでなければ :exc:`TypeError` が送出されます。
+Class instance methods are either *bound* or *unbound*, referring to whether the
+method was accessed through an instance or a class, respectively.  When a method
+is unbound, its ``im_self`` attribute will be ``None`` and if called, an
+explicit ``self`` object must be passed as the first argument.  In this case,
+``self`` must be an instance of the unbound method's class (or a subclass of
+that class), otherwise a :exc:`TypeError` is raised.
 
-関数オブジェクトと同じく、メソッドオブジェクトは任意の属性を取得できま
-す。しかし、メソッド属性は実際には背後の関数オブジェクト
-(``meth.im_func``) に記憶されているので、バインド、非バインド、メソッ
-ドへのメソッド属性の設定は許されていません。メソッド属性の設定を試みる
-と :exc:`TypeError` が送出されます。メソッド属性を設定するためには、そ
-の背後の関数オブジェクトで明示的に::
+Like function objects, methods objects support getting arbitrary attributes.
+However, since method attributes are actually stored on the underlying function
+object (``meth.im_func``), setting method attributes on either bound or unbound
+methods is disallowed.  Attempting to set an attribute on a method results in
+an :exc:`AttributeError` being raised.  In order to set a method attribute, you
+need to explicitly set it on the underlying function object::
 
-   class C:
-       def method(self):
-           pass
+   >>> class C:
+   ...     def method(self):
+   ...         pass
+   ...
+   >>> c = C()
+   >>> c.method.whoami = 'my name is method'  # can't set on the method
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+   AttributeError: 'instancemethod' object has no attribute 'whoami'
+   >>> c.method.im_func.whoami = 'my name is method'
+   >>> c.method.whoami
+   'my name is method'
 
-   c = C()
-   c.method.im_func.whoami = 'my name is c'
 
-詳細は、 :ref:`types` を参照下さい。
+See :ref:`types` for more information.
 
 
 .. _bltin-code-objects:
 
-コードオブジェクト
-------------------
+Code Objects
+------------
 
 .. index:: object: code
 
@@ -2915,182 +2962,191 @@ arg-n)`` の呼び出しと完全に等価です。
    builtin: compile
    single: func_code (function object attribute)
 
-コードオブジェクトは、関数本体のような "擬似コンパイルされた" Python
-の実行可能コードを表すために実装系によって使われます。
-コードオブジェクトはグローバルな実行環境への参照を持たない点で関数オブ
-ジェクトとは異なります。コードオブジェクトは組み込み関数
-:func:`compile` によって返され、関数オブジェクトの :attr:`func_code`
-属性として取り出すことができます。 :mod:`code` も参照下さい。
+Code objects are used by the implementation to represent "pseudo-compiled"
+executable Python code such as a function body. They differ from function
+objects because they don't contain a reference to their global execution
+environment.  Code objects are returned by the built-in :func:`compile` function
+and can be extracted from function objects through their :attr:`func_code`
+attribute. See also the :mod:`code` module.
 
 .. index::
    statement: exec
    builtin: eval
 
-コードオブジェクトは :keyword:`exec` 文や組み込み関数 :func:`eval` に
-(ソースコード文字列の代わりに) 渡すことで、実行したり値評価したりする
-ことができます。
+A code object can be executed or evaluated by passing it (instead of a source
+string) to the :keyword:`exec` statement or the built-in :func:`eval` function.
 
-詳細は、 :ref:`types` を参照下さい。
+See :ref:`types` for more information.
 
 
 .. _bltin-type-objects:
 
-型オブジェクト
---------------
+Type Objects
+------------
 
 .. index::
    builtin: type
    module: types
 
-型オブジェクトは様々なオブジェクト型を表します。オブジェクトの型は組み
-込み関数 :func:`type` でアクセスされます。型オブジェクトには特有の操作
-はありません。標準モジュール :mod:`types` には全ての組み込み型名が定義
-されています。
+Type objects represent the various object types.  An object's type is accessed
+by the built-in function :func:`type`.  There are no special operations on
+types.  The standard module :mod:`types` defines names for all standard built-in
+types.
 
-型は ``<type 'int'>`` のように書き表されます。
+Types are written like this: ``<type 'int'>``.
 
 
 .. _bltin-null-object:
 
-ヌルオブジェクト
-----------------
+The Null Object
+---------------
 
-このオブジェクトは明示的に値を返さない関数によって返されます。このオブ
-ジェクトには特有の操作はありません。ヌルオブジェクトは一つだけで、
-``None`` (組み込み名) と名づけられています。
+This object is returned by functions that don't explicitly return a value.  It
+supports no special operations.  There is exactly one null object, named
+``None`` (a built-in name).
 
-``None`` と書き表されます。
+It is written as ``None``.
 
 
 .. _bltin-ellipsis-object:
 
-省略表記オブジェクト
---------------------
+The Ellipsis Object
+-------------------
 
-このオブジェクトは拡張スライス表記によって使われます (:ref:`slicings`
-を参照下さい)。特殊な操作は何もサポートしていません。省略表記オブジェ
-クトは一つだけで、その名前は :const:`Ellipsis` (組み込み名) です。
+This object is used by extended slice notation (see :ref:`slicings`).  It
+supports no special operations.  There is exactly one ellipsis object, named
+:const:`Ellipsis` (a built-in name).
 
-``Ellipsis`` と書き表されます。
+It is written as ``Ellipsis``.  When in a subscript, it can also be written as
+``...``, for example ``seq[...]``.
 
 
-ブール値
---------
+The NotImplemented Object
+-------------------------
 
-ブール値とは二つの定数オブジェクト ``False`` および ``True`` です。こ
-れらは真偽値を表すために使われます (他の値も偽または真とみなされます)
-数値処理のコンテキスト (例えば算術演算子の引数として使われた場合) では、
-これらはそれぞれ 0 および 1 と同様に振舞います。
-任意の値に対して真偽値を変換できる場合、組み込み関数 :func:`bool` は値
-をブール値にキャストするのに使われます (真理値テストの節を参照してくださ
-い) 。
+This object is returned from comparisons and binary operations when they are
+asked to operate on types they don't support. See :ref:`comparisons` for more
+information.
+
+It is written as ``NotImplemented``.
+
+
+Boolean Values
+--------------
+
+Boolean values are the two constant objects ``False`` and ``True``.  They are
+used to represent truth values (although other values can also be considered
+false or true).  In numeric contexts (for example when used as the argument to
+an arithmetic operator), they behave like the integers 0 and 1, respectively.
+The built-in function :func:`bool` can be used to convert any value to a
+Boolean, if the value can be interpreted as a truth value (see section
+:ref:`truth` above).
 
 .. index::
    single: False
    single: True
    pair: Boolean; values
 
-これらはそれぞれ ``False`` および ``True`` と書き表されます。
+They are written as ``False`` and ``True``, respectively.
 
 
 .. _typesinternal:
 
-内部オブジェクト
+Internal Objects
 ----------------
 
-スタックフレームオブジェクト、トレースバックオブジェクト、スライスオブ
-ジェクト関しては、 :ref:`types` を参照下さい。
+See :ref:`types` for this information.  It describes stack frame objects,
+traceback objects, and slice objects.
 
 
 .. _specialattrs:
 
-特殊な属性
-==========
+Special Attributes
+==================
 
-実装は、いくつかのオブジェクト型に対して、適切な場合には特殊な読み出し
-専用の属性を追加します。そのうちいくつかは :func:`dir` 組込み
-関数で報告されません。
+The implementation adds a few special read-only attributes to several object
+types, where they are relevant.  Some of these are not reported by the
+:func:`dir` built-in function.
 
 
 .. attribute:: object.__dict__
 
-   オブジェクトの (書き込み可能な) 属性を保存するために使われる辞書ま
-   たは他のマップ型オブジェクトです。
+   A dictionary or other mapping object used to store an object's (writable)
+   attributes.
 
 
 .. attribute:: object.__methods__
 
    .. deprecated:: 2.2
-      オブジェクトの属性からなるリストを取得するには、組み込み関数
-      :func:`dir` を使ってください。この属性はもう利用できません。
+      Use the built-in function :func:`dir` to get a list of an object's attributes.
+      This attribute is no longer available.
 
 
 .. attribute:: object.__members__
 
    .. deprecated:: 2.2
-      オブジェクトの属性からなるリストを取得するには、組み込み関数
-      :func:`dir` を使ってください。この属性はもう利用できません。
+      Use the built-in function :func:`dir` to get a list of an object's attributes.
+      This attribute is no longer available.
 
 
 .. attribute:: instance.__class__
 
-   クラスインスタンスが属しているクラスです。
+   The class to which a class instance belongs.
 
 
 .. attribute:: class.__bases__
 
-   クラスオブジェクトの基底クラスからなるタプルです。
+   The tuple of base classes of a class object.
 
 
 .. attribute:: class.__name__
 
-    クラスまたは型の名前です。
+   The name of the class or type.
 
 
-以下の属性は、新しいクラス (:term:`new-style class`) でのみサポートされます。
+The following attributes are only supported by :term:`new-style class`\ es.
 
 .. attribute:: class.__mro__
 
-   この属性はメソッドの解決に探索される基底クラスのタプルです。
+   This attribute is a tuple of classes that are considered when looking for
+   base classes during method resolution.
 
 
 .. method:: class.mro()
 
-   このメソッドは、メタクラスによって、そのインスタンスのメソッド解決
-   の順序をカスタマイズするために、上書きされるかも知れません。
-   これは、クラスインスタンスの作成と呼び、その結果は :attr:`__mro__`
-   に格納されます。
+   This method can be overridden by a metaclass to customize the method
+   resolution order for its instances.  It is called at class instantiation, and
+   its result is stored in :attr:`~class.__mro__`.
 
 
 .. method:: class.__subclasses__
 
-   それぞれの新しいクラスは、それ自身の直接のサブクラスへの弱参照を保
-   持します。このメソッドはそれらの参照のうち、生存しているもののリス
-   トを返します。
-   例 ::
+   Each new-style class keeps a list of weak references to its immediate
+   subclasses.  This method returns a list of all those references still alive.
+   Example::
 
       >>> int.__subclasses__()
       [<type 'bool'>]
 
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] これらの特殊なメソッドのさらなる情報は、 Python リファレンスマ
-   ニュアル (:ref:`customization`) を参照下さい。
+.. [1] Additional information on these special methods may be found in the Python
+   Reference Manual (:ref:`customization`).
 
+.. [2] As a consequence, the list ``[1, 2]`` is considered equal to ``[1.0, 2.0]``, and
+   similarly for tuples.
 
-.. [#] この結果として、リスト ``[1, 2]`` は ``[1.0, 2.0]`` と等しいと
-   見なされます。タプルの場合も同様です。
+.. [3] They must have since the parser can't tell the type of the operands.
 
-.. [#] パーザが被演算子の型を識別できるようにするために、このような優
-   先度でなければならないのです。
+.. [4] Cased characters are those with general category property being one of
+   "Lu" (Letter, uppercase), "Ll" (Letter, lowercase), or "Lt" (Letter, titlecase).
 
-.. [#] 従って、一個のタプルだけをフォーマット出力したい場合には出力し
-   たいタプルを唯一の要素とする単一のタプルを *values* に与えなくては
-   なりません。
+.. [5] To format only a tuple you should therefore provide a singleton tuple whose only
+   element is the tuple to be formatted.
 
-.. [#] 改行を残す利点は、空の文字列が返ると EOF を示し、紛らわしくなく
-   なるからです。また、ファイルの最後の行が改行で終わっているかそうで
-   ない (ありえることです!) か (例えば、ファイルを行単位で読みながらそ
-   の完全なコピーを作成した場合には問題になります) を調べることができ
-   ます。
+.. [6] The advantage of leaving the newline on is that returning an empty string is
+   then an unambiguous EOF indication.  It is also possible (in cases where it
+   might matter, for example, if you want to make an exact copy of a file while
+   scanning its lines) to tell whether the last line of a file ended in a newline
+   or not (yes this happens!).

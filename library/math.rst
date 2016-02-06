@@ -1,161 +1,174 @@
-:mod:`math` --- 数学関数
-========================
+
+:mod:`math` --- Mathematical functions
+======================================
 
 .. module:: math
-   :synopsis: 数学関数(sin() など)。
+   :synopsis: Mathematical functions (sin() etc.).
+
+.. testsetup::
+
+   from math import fsum
+
+This module is always available.  It provides access to the mathematical
+functions defined by the C standard.
+
+These functions cannot be used with complex numbers; use the functions of the
+same name from the :mod:`cmath` module if you require support for complex
+numbers.  The distinction between functions which support complex numbers and
+those which don't is made since most users do not want to learn quite as much
+mathematics as required to understand complex numbers.  Receiving an exception
+instead of a complex result allows earlier detection of the unexpected complex
+number used as a parameter, so that the programmer can determine how and why it
+was generated in the first place.
+
+The following functions are provided by this module.  Except when explicitly
+noted otherwise, all return values are floats.
 
 
-このモジュールはいつでも利用できます。
-標準 C で定義されている数学関数にアクセスすることができます。
-
-これらの関数で複素数を使うことはできません。
-複素数に対応する必要があるならば、
-:mod:`cmath` モジュールにある同じ名前の関数を使ってください。
-ほとんどのユーザーは複素数を理解するのに必要なだけの数学を勉強したくないので、複素数に対応した関数と対応していない関数の区別がされています。
-これらの関数では複素数が利用できないため、引数に複素数を渡されると、複素数の結果が返るのではなく例外が発生します。
-その結果、どういった理由で例外が送出されたかに早い段階で気づく事ができます。 [#]_
-
-このモジュールでは次の関数を提供しています。
-明示的な注記のない限り、戻り値は全て浮動小数点数になります。
-
-数論および数表現にまつわる関数です
------------------------------------
+Number-theoretic and representation functions
+---------------------------------------------
 
 .. function:: ceil(x)
 
-   *x* の天井値 (ceil)、すなわち *x* 以上の最も小さい整数を float 型で返します。
+   Return the ceiling of *x* as a float, the smallest integer value greater than or
+   equal to *x*.
 
 
 .. function:: copysign(x, y)
 
-   *x* に *y* の符号を付けて返します。符号付きのゼロをサポートしている
-   プラットフォームでは、 ``copysign(1.0, -0.0)`` は *-1.0* を返します。
+   Return *x* with the sign of *y*.  On a platform that supports
+   signed zeros, ``copysign(1.0, -0.0)`` returns *-1.0*.
 
    .. versionadded:: 2.6
 
 
 .. function:: fabs(x)
 
-   *x* の絶対値を返します。
+   Return the absolute value of *x*.
 
 
 .. function:: factorial(x)
 
-   *x* の階乗を返します。 *x* が整数値でなかったり負であったりするときは、
-   :exc:`ValueError` を送出します。
+   Return *x* factorial.  Raises :exc:`ValueError` if *x* is not integral or
+   is negative.
 
    .. versionadded:: 2.6
 
 
 .. function:: floor(x)
 
-   *x* の床値 (floor)、すなわち *x* 以下の最も大きい整数を float型で返します。
+   Return the floor of *x* as a float, the largest integer value less than or equal
+   to *x*.
 
 
 .. function:: fmod(x, y)
 
-   プラットフォームの C ライブラリで定義されている ``fmod(x, y)`` を返します。 Python の ``x % y``
-   という式は必ずしも同じ結果を返さないということに注意してください。 C 標準の要求では、 :c:func:`fmod` は除算の結果が *x* と同じ符号に
-   なり、大きさが ``abs(y)`` より小さくなるような整数 *n* については ``fmod(x, y)`` が厳密に (数学的に、つまり限りなく高い精度で)
-   ``x - n*y``  と等価であるよう求めています。
-   Python の ``x % y`` は、 *y* と同じ符号の結果を返し、
-   浮動小数点の引数に対して厳密な解を出せないことがあります。
-   例えば、 ``fmod(-1e-100, 1e100)`` は ``-1e-100``
-   ですが、 Python の ``-1e-100 % 1e100`` は ``1e100-1e-100`` になり、
-   浮動小数点型で厳密に表現できず、ややこしいことに ``1e100`` に丸められます。
-   このため、一般には浮動小数点の場合には関数 :func:`fmod` 、
-   整数の場合には ``x % y`` を使う方がよいでしょう。
+   Return ``fmod(x, y)``, as defined by the platform C library. Note that the
+   Python expression ``x % y`` may not return the same result.  The intent of the C
+   standard is that ``fmod(x, y)`` be exactly (mathematically; to infinite
+   precision) equal to ``x - n*y`` for some integer *n* such that the result has
+   the same sign as *x* and magnitude less than ``abs(y)``.  Python's ``x % y``
+   returns a result with the sign of *y* instead, and may not be exactly computable
+   for float arguments. For example, ``fmod(-1e-100, 1e100)`` is ``-1e-100``, but
+   the result of Python's ``-1e-100 % 1e100`` is ``1e100-1e-100``, which cannot be
+   represented exactly as a float, and rounds to the surprising ``1e100``.  For
+   this reason, function :func:`fmod` is generally preferred when working with
+   floats, while Python's ``x % y`` is preferred when working with integers.
 
 
 .. function:: frexp(x)
 
-   *x* の仮数と指数を ``(m, e)`` のペアとして返します。
-   *m* はfloat型で、 *e* は厳密に ``x == m * 2**e``
-   であるような整数型です。
-   *x* がゼロの場合は、 ``(0.0, 0)`` を返し、それ以外の場合は、 ``0.5 <= abs(m) < 1``
-   を返します。これは浮動小数点型の内部表現を可搬性を保ったまま
-   "分解 (pick apart)" するためです。
+   Return the mantissa and exponent of *x* as the pair ``(m, e)``.  *m* is a float
+   and *e* is an integer such that ``x == m * 2**e`` exactly. If *x* is zero,
+   returns ``(0.0, 0)``, otherwise ``0.5 <= abs(m) < 1``.  This is used to "pick
+   apart" the internal representation of a float in a portable way.
 
 
 .. function:: fsum(iterable)
 
-   iterable 中の値の浮動小数点数の正確な和を返します。複数の部分和を追跡することで
-   桁落ちを防ぎます::
+   Return an accurate floating point sum of values in the iterable.  Avoids
+   loss of precision by tracking multiple intermediate partial sums::
 
         >>> sum([.1, .1, .1, .1, .1, .1, .1, .1, .1, .1])
         0.9999999999999999
         >>> fsum([.1, .1, .1, .1, .1, .1, .1, .1, .1, .1])
         1.0
 
-   アルゴリズムの正確性は IEEE-754 演算の保証と丸めモードが偶数丸め (half-even)
-   である典型的な場合に依存します。
-   Windows以外の幾つかのビルドでは、依存するCライブラリが、拡張精度の加算と
-   時々時々合計の中間値を double 型へ丸めを行ってしまい、最下位ビットの
-   消失が発生します。
+   The algorithm's accuracy depends on IEEE-754 arithmetic guarantees and the
+   typical case where the rounding mode is half-even.  On some non-Windows
+   builds, the underlying C library uses extended precision addition and may
+   occasionally double-round an intermediate sum causing it to be off in its
+   least significant bit.
 
-   より詳しい議論と代替となる二つのアプローチについては、 `ASPN cookbook
+   For further discussion and two alternative approaches, see the `ASPN cookbook
    recipes for accurate floating point summation
-   <http://code.activestate.com/recipes/393090/>`_ をご覧下さい。
+   <http://code.activestate.com/recipes/393090/>`_\.
 
    .. versionadded:: 2.6
 
 
 .. function:: isinf(x)
 
-   浮動小数点数 *x* が正または負の無限大であるかチェックします。
+   Check if the float *x* is positive or negative infinity.
 
    .. versionadded:: 2.6
 
 
 .. function:: isnan(x)
 
-   浮動小数点数 *x* が NaN (not a number) であるかチェックします。
-   NaN についての詳しい情報は、 IEEE 754 標準を参照してください。
+   Check if the float *x* is a NaN (not a number).  For more information
+   on NaNs, see the IEEE 754 standards.
 
    .. versionadded:: 2.6
 
 
 .. function:: ldexp(x, i)
 
-   ``x * (2**i)`` を返します。
+   Return ``x * (2**i)``.  This is essentially the inverse of function
+   :func:`frexp`.
 
 
 .. function:: modf(x)
 
-   *x* の小数部分と整数部分を返します。
-   両方の結果は *x* の符号を受け継ぎます。整数部はfloat型で返されます。
+   Return the fractional and integer parts of *x*.  Both results carry the sign
+   of *x* and are floats.
 
 
 .. function:: trunc(x)
 
-   *x* の :class:`Integral` (たいてい長整数)へ切り捨てられた :class:`Real`
-   値を返します。 ``__trunc__`` メソッドを利用します。
+   Return the :class:`~numbers.Real` value *x* truncated to an
+   :class:`~numbers.Integral` (usually a long integer).  Uses the
+   ``__trunc__`` method.
 
    .. versionadded:: 2.6
 
 
-:func:`frexp` と :func:`modf` は C のものとは異なった呼び出し/返し
-パターンを持っていることに注意してください。引数を1つだけ受け取り、1組のペアになった値を返すので、2つ目の戻り値を '出力用の引数'
-経由で返したりはしません (Python には出力用の引数はありません)。
+Note that :func:`frexp` and :func:`modf` have a different call/return pattern
+than their C equivalents: they take a single argument and return a pair of
+values, rather than returning their second return value through an 'output
+parameter' (there is no such thing in Python).
 
-:func:`ceil` 、 :func:`floor` 、および :func:`modf` 関数については、
-非常に大きな浮動小数点数が *全て* 整数そのものになるということに注意してください。
-通常、Python の浮動小数点型は 53 ビット以上の精度をもたない (プラットフォームにおける C
-double 型と同じ) ので、結果的に ``abs(x) >= 2**52`` であるような浮動小数点型 *x* は小数部分を持たなくなるのです。
+For the :func:`ceil`, :func:`floor`, and :func:`modf` functions, note that *all*
+floating-point numbers of sufficiently large magnitude are exact integers.
+Python floats typically carry no more than 53 bits of precision (the same as the
+platform C double type), in which case any float *x* with ``abs(x) >= 2**52``
+necessarily has no fractional bits.
 
-指数および対数関数
-------------------
+
+Power and logarithmic functions
+-------------------------------
 
 .. function:: exp(x)
 
-   ``e**x`` を返します。
+   Return ``e**x``.
 
 
 .. function:: expm1(x)
 
-   ``e**x - 1`` を返します。 *x* が小さい float の場合は、 ``exp(x) - 1``
-   の減算は桁落ちを発生させるかもしれません。
-   :func:`expm1` 関数はこの計算を完全な精度で実行します。 ::
+   Return ``e**x - 1``.  For small floats *x*, the subtraction in
+   ``exp(x) - 1`` can result in a significant loss of precision; the
+   :func:`expm1` function provides a way to compute this quantity to
+   full precision::
 
       >>> from math import exp, expm1
       >>> exp(1e-5) - 1  # gives result accurate to 11 places
@@ -168,223 +181,221 @@ double 型と同じ) ので、結果的に ``abs(x) >= 2**52`` であるよう�
 
 .. function:: log(x[, base])
 
-   引数が1つの場合、 *x* の (*e* を底とする)自然対数を返します。
+   With one argument, return the natural logarithm of *x* (to base *e*).
 
-   引数が2つの場合、 ``log(x)/log(base)`` として求められる *base* を底とした *x*
-   の対数を返します。
+   With two arguments, return the logarithm of *x* to the given *base*,
+   calculated as ``log(x)/log(base)``.
 
    .. versionchanged:: 2.3
-      *base* 引数が追加されました。
+      *base* argument added.
 
 
 .. function:: log1p(x)
 
-   *1+x* の自然対数(つまり底 *e* の対数)を返します。
-   結果はゼロに近い *x* に対して正確になるような方法で計算されます。
+   Return the natural logarithm of *1+x* (base *e*). The
+   result is calculated in a way which is accurate for *x* near zero.
 
    .. versionadded:: 2.6
 
 
 .. function:: log10(x)
 
-   *x* の10を底とした対数(常用対数)を返します。
-   この関数は通常、 ``log(x, 10)`` よりも高精度です。
+   Return the base-10 logarithm of *x*.  This is usually more accurate
+   than ``log(x, 10)``.
 
 
 .. function:: pow(x, y)
 
-   ``x`` の ``y`` 乗を返します。例外的な場合については、
-   C99 標準の付録 'F' に可能な限り従います。特に、
-   ``pow(1.0, x)`` と ``pow(x, 0.0)`` は、たとえ ``x`` が零や NaN でも、
-   常に ``1.0`` を返します。もし ``x`` と ``y`` の両方が有限の値で、
-   ``x`` が負、 ``y`` が整数でない場合、 ``pow(x, y)`` は未定義で、
-   :exc:`ValueError` を送出します。
+   Return ``x`` raised to the power ``y``.  Exceptional cases follow
+   Annex 'F' of the C99 standard as far as possible.  In particular,
+   ``pow(1.0, x)`` and ``pow(x, 0.0)`` always return ``1.0``, even
+   when ``x`` is a zero or a NaN.  If both ``x`` and ``y`` are finite,
+   ``x`` is negative, and ``y`` is not an integer then ``pow(x, y)``
+   is undefined, and raises :exc:`ValueError`.
+
+   Unlike the built-in ``**`` operator, :func:`math.pow` converts both
+   its arguments to type :class:`float`.  Use ``**`` or the built-in
+   :func:`pow` function for computing exact integer powers.
 
    .. versionchanged:: 2.6
-      以前は ``1**nan`` や ``nan**0`` の結果は未定義でした。
+      The outcome of ``1**nan`` and ``nan**0`` was undefined.
 
 
 .. function:: sqrt(x)
 
-   *x* の平方根を返します。
+   Return the square root of *x*.
 
 
-三角関数
---------
+Trigonometric functions
+-----------------------
 
 .. function:: acos(x)
 
-   *x* の逆余弦を返します。
+   Return the arc cosine of *x*, in radians.
 
 
 .. function:: asin(x)
 
-   *x* の逆正弦を返します。
+   Return the arc sine of *x*, in radians.
 
 
 .. function:: atan(x)
 
-   *x* の逆正接を返します。
+   Return the arc tangent of *x*, in radians.
 
 
 .. function:: atan2(y, x)
 
-   ``y / x`` の逆正接をラジアンで返します。
-   戻り値は ``-pi`` から ``pi`` の間になります。この角度は、
-   極座標平面において原点から ``(x, y)`` へのベクトルが X 軸の正の方向となす角です。
-   :func:`atan2` のポイントは、入力 *x*,
-   *y* の両方の符号が既知であるために、位相角の正しい象限を計算できることにあります。
-   例えば、 ``atan(1)`` と ``atan2(1, 1)``
-   はいずれも ``pi/4`` ですが、 ``atan2(-1, -1)`` は ``-3*pi/4`` になります。
+   Return ``atan(y / x)``, in radians. The result is between ``-pi`` and ``pi``.
+   The vector in the plane from the origin to point ``(x, y)`` makes this angle
+   with the positive X axis. The point of :func:`atan2` is that the signs of both
+   inputs are known to it, so it can compute the correct quadrant for the angle.
+   For example, ``atan(1)`` and ``atan2(1, 1)`` are both ``pi/4``, but ``atan2(-1,
+   -1)`` is ``-3*pi/4``.
 
 
 .. function:: cos(x)
 
-   *x* の余弦を返します。
+   Return the cosine of *x* radians.
 
 
 .. function:: hypot(x, y)
 
-   ユークリッド距離(``sqrt(x*x + y*y)``)を返します。
+   Return the Euclidean norm, ``sqrt(x*x + y*y)``. This is the length of the vector
+   from the origin to point ``(x, y)``.
 
 
 .. function:: sin(x)
 
-   *x* の正弦を返します。
+   Return the sine of *x* radians.
 
 
 .. function:: tan(x)
 
-   *x* の正接を返します。
+   Return the tangent of *x* radians.
 
 
-角度に関する関数
-----------------
+Angular conversion
+------------------
 
 .. function:: degrees(x)
 
-   角 *x* をラジアンから度に変換します。
+   Convert angle *x* from radians to degrees.
 
 
 .. function:: radians(x)
 
-   角 *x* を度からラジアンに変換します。
+   Convert angle *x* from degrees to radians.
 
 
-双曲線関数
-----------
+Hyperbolic functions
+--------------------
 
 .. function:: acosh(x)
 
-   *x* の逆双曲線余弦を返します。
+   Return the inverse hyperbolic cosine of *x*.
 
    .. versionadded:: 2.6
 
 
 .. function:: asinh(x)
 
-   *x* の逆双曲線正弦を返します。
+   Return the inverse hyperbolic sine of *x*.
 
    .. versionadded:: 2.6
 
 
 .. function:: atanh(x)
 
-   *x* の逆双曲線正接を返します。
+   Return the inverse hyperbolic tangent of *x*.
 
    .. versionadded:: 2.6
 
 
 .. function:: cosh(x)
 
-   *x* の双曲線余弦を返します。
+   Return the hyperbolic cosine of *x*.
 
 
 .. function:: sinh(x)
 
-   *x* の双曲線正弦を返します。
+   Return the hyperbolic sine of *x*.
 
 
 .. function:: tanh(x)
 
-   *x* の双曲線正接を返します。
+   Return the hyperbolic tangent of *x*.
 
 
-.. Special functions
-
-特殊な関数
+Special functions
 -----------------
 
 .. function:: erf(x)
 
-   *x* の誤差関数を返します。
+   Return the error function at *x*.
 
    .. versionadded:: 2.7
 
 
 .. function:: erfc(x)
 
-   *x* の相補誤差関数を返します。
+   Return the complementary error function at *x*.
 
    .. versionadded:: 2.7
 
 
 .. function:: gamma(x)
 
-   *x* のガンマ関数を返します。
+   Return the Gamma function at *x*.
 
    .. versionadded:: 2.7
 
 
 .. function:: lgamma(x)
 
-   *x* のガンマ関数の絶対値の自然対数を返します。
+   Return the natural logarithm of the absolute value of the Gamma
+   function at *x*.
 
    .. versionadded:: 2.7
 
 
-定数
-----
+Constants
+---------
 
 .. data:: pi
 
-   利用可能な精度の、数学定数 π = 3.141592... (円周率)
+   The mathematical constant π = 3.141592..., to available precision.
 
 
 .. data:: e
 
-   利用可能な精度の、数学定数 *e* = 2.718281... (自然対数の底)
+   The mathematical constant e = 2.718281..., to available precision.
 
 
 .. impl-detail::
 
-   :mod:`math` モジュールは、ほとんどが実行プラットフォームにおける C
-   言語の数学ライブラリ関数に対する薄いラッパでできています。
-   例外的な場合での挙動は、適切である限り C99 標準の Annex F に従います。
-   現在の実装では、(C99 Annex F でゼロ除算か不正な演算やゼロ除算を通知する
-   ことが推奨されている) ``sqrt(-1.0)`` や ``log(0.0)`` といった不正な操作
-   に対して :exc:`ValueError` を発生させ、(例えば ``exp(1000.0)`` のような)
-   演算結果がオーバーフローする場合には :exc:`OverflowError` を発生させます。
-   上記の関数群は、1つ以上の引数が NaN であった場合を除いて、 NaN を返しません。
-   引数に NaN が与えられた場合は、殆どの関数は NaN を返しますが、 (C99 Annex
-   F に従って) 別の動作をする場合があります。例えば、 ``pow(float('nan'), 0.0)``
-   や ``hypot(float('nan'), float('inf'))`` といった場合です。
+   The :mod:`math` module consists mostly of thin wrappers around the platform C
+   math library functions.  Behavior in exceptional cases follows Annex F of
+   the C99 standard where appropriate.  The current implementation will raise
+   :exc:`ValueError` for invalid operations like ``sqrt(-1.0)`` or ``log(0.0)``
+   (where C99 Annex F recommends signaling invalid operation or divide-by-zero),
+   and :exc:`OverflowError` for results that overflow (for example,
+   ``exp(1000.0)``).  A NaN will not be returned from any of the functions
+   above unless one or more of the input arguments was a NaN; in that case,
+   most functions will return a NaN, but (again following C99 Annex F) there
+   are some exceptions to this rule, for example ``pow(float('nan'), 0.0)`` or
+   ``hypot(float('nan'), float('inf'))``.
 
-   Python は signaling NaN と quiet NaN を区別せず、 signaling NaN に対する
-   挙動は未定義とされていることに注意してください。典型的な挙動は、全ての NaN
-   を quiet NaN として扱うことです。
+   Note that Python makes no effort to distinguish signaling NaNs from
+   quiet NaNs, and behavior for signaling NaNs remains unspecified.
+   Typical behavior is to treat all NaNs as though they were quiet.
 
    .. versionchanged:: 2.6
+      Behavior in special cases now aims to follow C99 Annex F.  In earlier
+      versions of Python the behavior in special cases was loosely specified.
 
-      特別なケースにおける挙動は、 C99 Annex F に従うことを意図するようになりました。
-      以前のバージョンの Python では、特別なケースでの挙動は曖昧にしか定義されていませんでした。
 
 .. seealso::
 
    Module :mod:`cmath`
-      これらの多くの関数の複素数版。
-
-.. rubric:: 注記
-
-.. [#] 訳注：例外が発生せずに結果が返ると、計算結果がおかしくなった原因が
-       複素数を渡したためだということに気づくのが遅れる可能性があります。
+      Complex number versions of many of these functions.

@@ -1,146 +1,155 @@
-
-:mod:`mimetypes` --- ファイル名を MIME 型へマップする
-=====================================================
+:mod:`mimetypes` --- Map filenames to MIME types
+================================================
 
 .. module:: mimetypes
-   :synopsis: ファイル名拡張子の MIME 型へのマッピング。
+   :synopsis: Mapping of filename extensions to MIME types.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
 .. index:: pair: MIME; content type
 
-:mod:`mimetypes` モジュールは、ファイル名あるいは URL と、ファイル名拡張子に関連付けられた MIME 型とを変換します。ファイル名から
-MIME 型へと、 MIME 型からファイル名拡張子への変換が提供されます；後者の変換では符号化方式はサポートされていません。
+**Source code:** :source:`Lib/mimetypes.py`
 
-このモジュールは、一つのクラスと多くの便利な関数を提供します。これらの関数がこのモジュールへの標準のインターフェースですが、
-アプリケーションによっては、そのクラスにも関係するかもしれません。
+--------------
 
-以下で説明されている関数は、このモジュールへの主要なインターフェースを提供します。たとえモジュールが初期化されていなくても、もしこれらの関数が、
-:func:`init` がセットアップする情報に依存していれば、これらの関数は、 :func:`init` を呼びます。
+The :mod:`mimetypes` module converts between a filename or URL and the MIME type
+associated with the filename extension.  Conversions are provided from filename
+to MIME type and from MIME type to filename extension; encodings are not
+supported for the latter conversion.
+
+The module provides one class and a number of convenience functions. The
+functions are the normal interface to this module, but some applications may be
+interested in the class as well.
+
+The functions described below provide the primary interface for this module.  If
+the module has not been initialized, they will call :func:`init` if they rely on
+the information :func:`init` sets up.
 
 
-.. function:: guess_type(filename[, strict])
+.. function:: guess_type(url, strict=True)
 
    .. index:: pair: MIME; headers
 
-   *filename* で与えられるファイル名あるいは URL に基づいて、ファイルの型を推定します。戻り値は、タプル ``(type, encoding)``
-   です、ここで  *type* は、もし型が(拡張子がないあるいは未定義のため)推定できない場合は、 ``None`` を、あるいは、 MIME
-   :mailheader:`content-type` ヘッダ  に利用できる、 ``'type/subtype'`` の形の文字列です。
+   Guess the type of a file based on its filename or URL, given by *url*.  The
+   return value is a tuple ``(type, encoding)`` where *type* is ``None`` if the
+   type can't be guessed (missing or unknown suffix) or a string of the form
+   ``'type/subtype'``, usable for a MIME :mailheader:`content-type` header.
 
-   *encoding* は、符合化方式がない場合は ``None`` を、あるいは、符号化に使われるプログラムの名前
-   (たとえば、 :program:`compress` あるいは :program:`gzip`)です。符号化方式は
-   :mailheader:`Content-Encoding` ヘッダとして使うのに適しており、
-   :mailheader:`Content-Transfer-Encoding` ヘッダには適して *いません* 。
-   マッピングはテーブルドリブンです。符号化方式のサフィックスは大/小文字を区別します; データ型サフィックスは、最初大/小文字を区別して試し、
-   それから大/小文字を区別せずに試します。
+   *encoding* is ``None`` for no encoding or the name of the program used to encode
+   (e.g. :program:`compress` or :program:`gzip`). The encoding is suitable for use
+   as a :mailheader:`Content-Encoding` header, **not** as a
+   :mailheader:`Content-Transfer-Encoding` header. The mappings are table driven.
+   Encoding suffixes are case sensitive; type suffixes are first tried case
+   sensitively, then case insensitively.
 
-   省略可能な *strict* は、既知の MIME 型のリストとして認識されるものが、
-   `IANAに登録された <http://www.iana.org/assignments/media-types>`_
-   正式な型のみに限定されるかどうかを指定するフラグです。 *strict* が
-   true (デフォルト)の時は、IANA 型のみがサポートされます;
-   *strict* が false のときは、いくつかの追加の、非標準ではあるが、一般的に\
-   使用される MIME 型も認識されます。
-
-
-.. function:: guess_all_extensions(type[, strict])
-
-   *type* で与えられる MIME 型に基づいてファイルの拡張子を推定します。戻り値は、先頭のドット (``'.'``)を含む、可能なファイル拡張子すべてを
-   与える文字列のリストです。拡張子と特別なデータストリームとの関連付けは保証されませんが、 :func:`guess_type` によって MIME型
-   *type* とマップされます。
-
-   省略可能な *strict* は :func:`guess_type` 関数のものと同じ意味を持ちます。
+   The optional *strict* argument is a flag specifying whether the list of known MIME types
+   is limited to only the official types `registered with IANA
+   <http://www.iana.org/assignments/media-types/media-types.xhtml>`_.
+   When *strict* is ``True`` (the default), only the IANA types are supported; when
+   *strict* is ``False``, some additional non-standard but commonly used MIME types
+   are also recognized.
 
 
-.. function:: guess_extension(type[, strict])
+.. function:: guess_all_extensions(type, strict=True)
 
-   *type* で与えられる MIME 型に基づいてファイルの拡張子を推定します。戻り値は、先頭のドット (``'.'``)を含む、ファイル拡張子を
-   与える文字列のリストです。拡張子と特別なデータストリームとの関連付けは保証されませんが、 :func:`guess_type` によって MIME型
-   *type* とマップされます。もし *type* に対して拡張子が推定できない場合は、 ``None`` が返されます。
+   Guess the extensions for a file based on its MIME type, given by *type*. The
+   return value is a list of strings giving all possible filename extensions,
+   including the leading dot (``'.'``).  The extensions are not guaranteed to have
+   been associated with any particular data stream, but would be mapped to the MIME
+   type *type* by :func:`guess_type`.
 
-   省略可能な *strict* は :func:`guess_type` 関数のものと同じ意味を持ちます。
-
-モジュールの動作を制御するために、いくつかの追加の関数とデータ項目が利用できます。
+   The optional *strict* argument has the same meaning as with the :func:`guess_type` function.
 
 
-.. function:: init([files])
+.. function:: guess_extension(type, strict=True)
 
-   内部のデータ構造を初期化します。もし  *files* が与えられていれば、
-   これはデフォールトの type map を増やすために使われる、一連のファイル名でなければなりません。
-   もし省略されていれば、使われるファイル名は :const:`knownfiles` から
-   取られます。 Windows であれば、現在のレジストリの設定が読み込まれます。
-   *file* あるいは :const:`knownfiles` 内の各ファイル名は、それ以前に現れる
-   名前より優先されます。繰り返し :func:`init` を呼び出すことは許されています。
+   Guess the extension for a file based on its MIME type, given by *type*. The
+   return value is a string giving a filename extension, including the leading dot
+   (``'.'``).  The extension is not guaranteed to have been associated with any
+   particular data stream, but would be mapped to the MIME type *type* by
+   :func:`guess_type`.  If no extension can be guessed for *type*, ``None`` is
+   returned.
+
+   The optional *strict* argument has the same meaning as with the :func:`guess_type` function.
+
+Some additional functions and data items are available for controlling the
+behavior of the module.
+
+
+.. function:: init(files=None)
+
+   Initialize the internal data structures.  If given, *files* must be a sequence
+   of file names which should be used to augment the default type map.  If omitted,
+   the file names to use are taken from :const:`knownfiles`; on Windows, the
+   current registry settings are loaded.  Each file named in *files* or
+   :const:`knownfiles` takes precedence over those named before it.  Calling
+   :func:`init` repeatedly is allowed.
+
+   Specifying an empty list for *files* will prevent the system defaults from
+   being applied: only the well-known values will be present from a built-in list.
 
    .. versionchanged:: 2.7
-      前のバージョンでは、 Windows のレジストリの設定は無視されていました。
+      Previously, Windows registry settings were ignored.
+
 
 .. function:: read_mime_types(filename)
 
-   ファイル *filename* で与えられた型のマップが、もしあればロードします。
-   型のマップは、先頭の dot (``'.'``) を含むファイル名拡張子を、
-   ``'type/subtype'`` の形の文字列にマッピングする辞書として返されます。
-   もしファイル *filename* が存在しないか、読み込めなければ、
-   ``None`` が返されます。
+   Load the type map given in the file *filename*, if it exists.  The type map is
+   returned as a dictionary mapping filename extensions, including the leading dot
+   (``'.'``), to strings of the form ``'type/subtype'``.  If the file *filename*
+   does not exist or cannot be read, ``None`` is returned.
 
 
-.. function:: add_type(type, ext[, strict])
+.. function:: add_type(type, ext, strict=True)
 
-   mime型 *type* からのマッピングを拡張子 *ext* に追加します。
-   拡張子がすでに既知であれば、新しい型が古いものに置き替わります。
-   その型がすでに既知であれば、その拡張子が、既知の拡張子のリストに追加されます。
+   Add a mapping from the MIME type *type* to the extension *ext*. When the
+   extension is already known, the new type will replace the old one. When the type
+   is already known the extension will be added to the list of known extensions.
 
-   *strict* が True の時(デフォルト)は、そのマッピングは正式なMIME型に、
-   そうでなければ、非標準のMIME型に追加されます。
+   When *strict* is ``True`` (the default), the mapping will be added to the
+   official MIME types, otherwise to the non-standard ones.
 
 
 .. data:: inited
 
-   グローバルなデータ構造が初期化されているかどうかを示すフラグ。これは :func:`init` により true に設定されます。
+   Flag indicating whether or not the global data structures have been initialized.
+   This is set to ``True`` by :func:`init`.
 
 
 .. data:: knownfiles
 
    .. index:: single: file; mime.types
 
-   共通にインストールされた型マップファイル名のリスト。これらのファイルは、普通 :file:`mime.types` という名前であり、パッケージごとに
-   異なる場所にインストールされます。
+   List of type map file names commonly installed.  These files are typically named
+   :file:`mime.types` and are installed in different locations by different
+   packages.
 
 
 .. data:: suffix_map
 
-   サフィックスをサフィックスにマップする辞書。これは、符号化方式と型が同一拡張子で示される符号化ファイルが認識できるように
-   使用されます。例えば、 :file:`.tgz` 拡張子は、符号化と型が別個に認識できるように :file:`.tar.gz` にマップされます。
+   Dictionary mapping suffixes to suffixes.  This is used to allow recognition of
+   encoded files for which the encoding and the type are indicated by the same
+   extension.  For example, the :file:`.tgz` extension is mapped to :file:`.tar.gz`
+   to allow the encoding and type to be recognized separately.
 
 
 .. data:: encodings_map
 
-   ファイル名拡張子を符号化方式型にマッピングする辞書
+   Dictionary mapping filename extensions to encoding types.
 
 
 .. data:: types_map
 
-   ファイル名拡張子をMIME型にマップする辞書
+   Dictionary mapping filename extensions to MIME types.
 
 
 .. data:: common_types
 
-   ファイル名拡張子を非標準ではあるが、一般に使われているMIME型にマップする辞書
+   Dictionary mapping filename extensions to non-standard, but commonly found MIME
+   types.
 
-:class:`MimeTypes` クラスは、1つ以上のMIME-型データベースを必要とするアプリケーションに役に立つでしょう。
 
-
-.. class:: MimeTypes([filenames])
-
-   このクラスは、MIME-型データベースを表現します。デフォールトでは、このモジュールの他のものと同じデータベースへのアクセスを提供します。
-   初期データベースは、このモジュールによって提供されるもののコピーで、追加の :file:`mime.types` \
-   -形式のファイルを、 :meth:`read` あるいは :meth:`readfp` メソッドを使って、データベースにロードすることで拡張されます。
-   マッピング辞書も、もしデフォールトのデータが望むものでなければ、追加のデータをロードする前にクリアされます。
-
-   省略可能な *filenames* パラメータは、追加のファイルを、デフォールトデータベースの"トップに"ロードさせるのに使うことができます。
-
-   .. versionadded:: 2.2
-
-モジュールの使用例::
+An example usage of the module::
 
    >>> import mimetypes
    >>> mimetypes.init()
@@ -156,63 +165,99 @@ MIME 型へと、 MIME 型からファイル名拡張子への変換が提供さ
 
 .. _mimetypes-objects:
 
-Mime型オブジェクト
--------------------
+MimeTypes Objects
+-----------------
 
-:class:`MimeTypes` インスタンスは、 :mod:`mimetypes` モジュールのそれと非常によく似たインターフェースを提供します。
+The :class:`MimeTypes` class may be useful for applications which may want more
+than one MIME-type database; it provides an interface similar to the one of the
+:mod:`mimetypes` module.
+
+
+.. class:: MimeTypes(filenames=(), strict=True)
+
+   This class represents a MIME-types database.  By default, it provides access to
+   the same database as the rest of this module. The initial database is a copy of
+   that provided by the module, and may be extended by loading additional
+   :file:`mime.types`\ -style files into the database using the :meth:`read` or
+   :meth:`readfp` methods.  The mapping dictionaries may also be cleared before
+   loading additional data if the default data is not desired.
+
+   The optional *filenames* parameter can be used to cause additional files to be
+   loaded "on top" of the default database.
 
 
 .. attribute:: MimeTypes.suffix_map
 
-   サフィックスをサフィックスにマップする辞書。これは、符号化方式と型が同一拡張子で示されるような符号化ファイルが認識できるように
-   使用されます。例えば、 :file:`.tgz` 拡張子は、符号化方式と型が別個に認識できるように :file:`.tar.gz` に対応づけられます。
-   これは、最初はモジュールで定義されたグローバルな ``suffix_map`` のコピーです。
+   Dictionary mapping suffixes to suffixes.  This is used to allow recognition of
+   encoded files for which the encoding and the type are indicated by the same
+   extension.  For example, the :file:`.tgz` extension is mapped to :file:`.tar.gz`
+   to allow the encoding and type to be recognized separately.  This is initially a
+   copy of the global :data:`suffix_map` defined in the module.
 
 
 .. attribute:: MimeTypes.encodings_map
 
-   ファイル名拡張子を符号化型にマッピングする辞書。これは、最初はモジュールで定義されたグローバルな ``encodings_map`` のコピーです。
+   Dictionary mapping filename extensions to encoding types.  This is initially a
+   copy of the global :data:`encodings_map` defined in the module.
 
 
 .. attribute:: MimeTypes.types_map
 
-   ファイル名拡張子をMIME型にマッピングするる辞書。これは、最初はモジュールで定義されたグローバルな ``types_map`` のコピーです。
+   Tuple containing two dictionaries, mapping filename extensions to MIME types:
+   the first dictionary is for the non-standards types and the second one is for
+   the standard types. They are initialized by :data:`common_types` and
+   :data:`types_map`.
 
 
-.. attribute:: MimeTypes.common_types
+.. attribute:: MimeTypes.types_map_inv
 
-   ファイル名拡張子を非標準ではあるが、一般に使われているMIME型にマップする辞書。これは、最初はモジュールで定義されたグローバルな
-   ``common_types`` のコピーです。
-
-
-.. method:: MimeTypes.guess_extension(type[, strict])
-
-   :func:`guess_extension` 関数と同様ですが、オブジェクトに保存されたテーブルを使用します。
+   Tuple containing two dictionaries, mapping MIME types to a list of filename
+   extensions: the first dictionary is for the non-standards types and the
+   second one is for the standard types. They are initialized by
+   :data:`common_types` and :data:`types_map`.
 
 
-.. method:: MimeTypes.guess_all_extensions(type[, strict])
+.. method:: MimeTypes.guess_extension(type, strict=True)
 
-   :func:`guess_all_extensions` と同様ですが、オブジェクトに保存されたテーブルを参照します。
-
-
-.. method:: MimeTypes.guess_type(url[, strict])
-
-   :func:`guess_type` 関数と同様ですが、オブジェクトに保存されたテーブルを使用します。
+   Similar to the :func:`guess_extension` function, using the tables stored as part
+   of the object.
 
 
-.. method:: MimeTypes.read(path)
+.. method:: MimeTypes.guess_type(url, strict=True)
 
-   MIME情報を、 *path* という名のファイルからロードします。
-   これはファイルを解析するのに :meth:`readfp` を使用します。
-
-
-.. method:: MimeTypes.readfp(file)
-
-   MIME型情報を、オープンしたファイルからロードします。ファイルは、標準の :file:`mime.types` ファイルの形式でなければなりません。
+   Similar to the :func:`guess_type` function, using the tables stored as part of
+   the object.
 
 
-.. method:: MimeTypes.read_windows_registry()
+.. method:: MimeTypes.guess_all_extensions(type, strict=True)
 
-   MIME type 情報を Windows のレジストリから読み込みます。 Windows でのみ利用できます。
+   Similar to the :func:`guess_all_extensions` function, using the tables stored
+   as part of the object.
+
+
+.. method:: MimeTypes.read(filename, strict=True)
+
+   Load MIME information from a file named *filename*.  This uses :meth:`readfp` to
+   parse the file.
+
+   If *strict* is ``True``, information will be added to list of standard types,
+   else to the list of non-standard types.
+
+
+.. method:: MimeTypes.readfp(fp, strict=True)
+
+   Load MIME type information from an open file *fp*.  The file must have the format of
+   the standard :file:`mime.types` files.
+
+   If *strict* is ``True``, information will be added to the list of standard
+   types, else to the list of non-standard types.
+
+
+.. method:: MimeTypes.read_windows_registry(strict=True)
+
+   Load MIME type information from the Windows registry.  Availability: Windows.
+
+   If *strict* is ``True``, information will be added to the list of standard
+   types, else to the list of non-standard types.
 
    .. versionadded:: 2.7

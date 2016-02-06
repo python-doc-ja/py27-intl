@@ -1,13 +1,13 @@
 
-:mod:`Bastion` --- オブジェクトに対するアクセスの制限
-=====================================================
+:mod:`Bastion` --- Restricting access to objects
+================================================
 
 .. module:: Bastion
-   :synopsis: オブジェクトに対するアクセスの制限を提供する。
+   :synopsis: Providing restricted access to objects.
    :deprecated:
 
 .. deprecated:: 2.6
-   :mod:`Bastion` モジュールは Python 3.0 で削除されました。
+   The :mod:`Bastion` module has been removed in Python 3.
 
 .. moduleauthor:: Barry Warsaw <bwarsaw@python.org>
 
@@ -17,15 +17,15 @@
 
 .. note::
 
-   このドキュメントは、Bastion モジュールを使用している古いコードを読む際の
-   参照用として残されています。
+   The documentation has been left in place to help in reading old code that uses
+   the module.
 
-辞書によると、バスチョン (bastion、要塞) とは、"防衛された領域や地点"、
-または "最後の砦と考えられているもの" であり、オブジェクトの特定の属性への
-アクセスを禁じる方法を提供するこのモジュールにふさわしい名前です。
-制限モード下のプログラムに対して、あるオブジェクトにおける特定の安全な
-属性へのアクセスを許可し、かつその他の安全でない属性へのアクセスを拒否するには、
-要塞オブジェクトは常に :mod:`rexec` モジュールと共に使われなければなりません。
+According to the dictionary, a bastion is "a fortified area or position", or
+"something that is considered a stronghold."  It's a suitable name for this
+module, which provides a way to forbid access to certain attributes of an
+object.  It must always be used with the :mod:`rexec` module, in order to allow
+restricted-mode programs access to certain safe attributes of an object, while
+denying access to other, unsafe attributes.
 
 .. I'm concerned that the word 'bastion' won't be understood by people
 .. for whom English is a second language, making the module name
@@ -36,29 +36,29 @@
 
 .. function:: Bastion(object[, filter[, name[, class]]])
 
-   オブジェクト *object* を保護し、オブジェクトに対する要塞オブジェクトを返します。
-   オブジェクトの属性に対するアクセスの試みは全て、 *filter*
-   関数によって認可されなければなりません;
-   アクセスが拒否された場合 :exc:`AttributeError` 例外が送出されます。
+   Protect the object *object*, returning a bastion for the object.  Any attempt to
+   access one of the object's attributes will have to be approved by the *filter*
+   function; if the access is denied an :exc:`AttributeError` exception will be
+   raised.
 
-   *filter* が存在する場合、この関数は属性名を含む文字列を受理し、
-   その属性に対するアクセスが許可される場合には真を返さなければなりません;
-   *filter* が偽を返す場合、アクセスは拒否されます。
-   標準のフィルタは、アンダースコア (``'_'``) で始まる全ての
-   関数に対するアクセスを拒否します。
-   *name* の値が与えられた場合、要塞オブジェクトの文字列表現は
-   ``<Bastion for name>`` になります;
-   そうでない場合、 ``repr(object)`` が使われます。
+   If present, *filter* must be a function that accepts a string containing an
+   attribute name, and returns true if access to that attribute will be permitted;
+   if *filter* returns false, the access is denied.  The default filter denies
+   access to any function beginning with an underscore (``'_'``).  The bastion's
+   string representation will be ``<Bastion for name>`` if a value for *name* is
+   provided; otherwise, ``repr(object)`` will be used.
 
-   *class* が存在する場合、 :class:`BastionClass` のサブクラスでなくてはなりません;
-   詳細は :file:`bastion.py` のコードを参照してください。
-   :class:`BastionClass` の標準設定を上書きする必要はほとんどないはずです。
+   *class*, if present, should be a subclass of :class:`BastionClass`;  see the
+   code in :file:`bastion.py` for the details.  Overriding the default
+   :class:`BastionClass` will rarely be required.
 
 
 .. class:: BastionClass(getfunc, name)
 
-   実際に要塞オブジェクトを実装しているクラスです。
-   このクラスは :func:`Bastion` によって使われる標準のクラスです。
-   *getfunc* 引数は関数で、唯一の引数である属性の名前を与えて呼び出した際、
-   制限された実行環境に対して、開示すべき属性の値を返します。 *name* は
-   :class:`BastionClass` インスタンスの :func:`repr` を構築するために使われます。
+   Class which actually implements bastion objects.  This is the default class used
+   by :func:`Bastion`.  The *getfunc* parameter is a function which returns the
+   value of an attribute which should be exposed to the restricted execution
+   environment when called with the name of the attribute as the only parameter.
+   *name* is used to construct the :func:`repr` of the :class:`BastionClass`
+   instance.
+

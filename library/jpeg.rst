@@ -1,89 +1,93 @@
 
-:mod:`jpeg` --- JPEGファイルの読み書きを行う
-============================================
+:mod:`jpeg` --- Read and write JPEG files
+=========================================
 
 .. module:: jpeg
    :platform: IRIX
-   :synopsis: JPEGファイルの読み書きを行います。
+   :synopsis: Read and write image files in compressed JPEG format.
    :deprecated:
 
-
 .. deprecated:: 2.6
-    :mod:`jpeg` モジュールは Python 3.0 での削除に向けて非推奨になりました。
+   The :mod:`jpeg` module has been removed in Python 3.
+
 
 
 .. index:: single: Independent JPEG Group
 
-この :mod:`jpeg` モジュールは Independent JPEG Group (IJG)
-によって書かれた JEPG 圧縮及び展開アルゴリズムを提供します。
-JPEG 形式は写真等の画像圧縮で標準的に利用され、ISO 10918で定義されてます。
-JPEG、あるいは Independent JPEG Group ソフトウェアの詳細は、
-標準JPEG、若しくは提供されるソフトウェアのドキュメントを参照してください。
+The module :mod:`jpeg` provides access to the jpeg compressor and decompressor
+written by the Independent JPEG Group (IJG). JPEG is a standard for compressing
+pictures; it is defined in ISO 10918.  For details on JPEG or the Independent
+JPEG Group software refer to the JPEG standard or the documentation provided
+with the software.
 
 .. index::
    single: Python Imaging Library
    single: PIL (the Python Imaging Library)
    single: Lundh, Fredrik
 
-JPEGファイルを扱うポータブルなインタフェースは Fredrik Lundh による
-Python Imaging Library (PIL)があります。
-また、PILの情報は http://www.pythonware.com/products/pil/ で見つけることができます。
+A portable interface to JPEG image files is available with the Python Imaging
+Library (PIL) by Fredrik Lundh.  Information on PIL is available at
+http://www.pythonware.com/products/pil/.
 
-モジュール :mod:`jpeg` では、一つの例外といくつかの関数を定義しています。
+The :mod:`jpeg` module defines an exception and some functions.
 
 
 .. exception:: error
 
-   関数 :func:`compress` または :func:`decompress` のエラーで上げられる例外です。
+   Exception raised by :func:`compress` and :func:`decompress` in case of errors.
 
 
 .. function:: compress(data, w, h, b)
 
    .. index:: single: JFIF
 
-   イメージファイルの幅 *w* 、高さ *h* 、1ピクセルあたりのバイト数 *b*
-   を引数として扱います。データは SGI GL 順になっていて、
-   最初のピクセルは左下端になります。また、これは :func:`gl.lrectread`
-   が返す値をすぐに :func:`compress` にかけるためです。
-   現在は、1 バイト若しくは 4 バイトのピクセルを取り扱うことができます。
-   前者はグレースケール、後者はRGBカラーを扱います。
-   :func:`compress` は、圧縮された JFIF 形式のイメージが含まれた文字列を返します。
+   Treat data as a pixmap of width *w* and height *h*, with *b* bytes per pixel.
+   The data is in SGI GL order, so the first pixel is in the lower-left corner.
+   This means that :func:`gl.lrectread` return data can immediately be passed to
+   :func:`compress`. Currently only 1 byte and 4 byte pixels are allowed, the
+   former being treated as greyscale and the latter as RGB color. :func:`compress`
+   returns a string that contains the compressed picture, in JFIF format.
 
 
 .. function:: decompress(data)
 
    .. index:: single: JFIF
 
-   データは圧縮された JFIF 形式のイメージが含まれた文字列で、
-   この関数はタプル ``(data, width, height, bytesperpixel)`` を返します。
-   また、そのデータは :func:`gl.lrectwrite` を通過します。
+   Data is a string containing a picture in JFIF format. It returns a tuple
+   ``(data, width, height, bytesperpixel)``.  Again, the data is suitable to pass
+   to :func:`gl.lrectwrite`.
 
 
 .. function:: setoption(name, value)
 
-   :func:`compress` と :func:`decompress` を呼ぶための様々な\
-   オプションをセットします。次のオプションが利用できます:
+   Set various options.  Subsequent :func:`compress` and :func:`decompress` calls
+   will use these options.  The following options are available:
 
-   +-----------------+------------------------------------------------------------------------+
-   | オプション      | 効果                                                                   |
-   +=================+========================================================================+
-   | ``'forcegray'`` | 入力がRGBでも強制的にグレースケールを出力します。                      |
-   +-----------------+------------------------------------------------------------------------+
-   | ``'quality'``   | 圧縮後イメージの品質を ``0`` から ``100`` の間の値で指定します         |
-   |                 | (デフォルトは ``75`` です)。これは圧縮にのみ影響します。               |
-   +-----------------+------------------------------------------------------------------------+
-   | ``'optimize'``  | ハフマンテーブルを最適化します。時間がかかりますが、高圧縮になります。 |
-   |                 | これは圧縮にのみ影響します。                                           |
-   +-----------------+------------------------------------------------------------------------+
-   | ``'smooth'``    | 圧縮されていないイメージ上でインターブロックスムーシングを行います。   |
-   |                 | 低品質イメージに役立ちます。これは展開にのみ影響します。               |
-   +-----------------+------------------------------------------------------------------------+
+   +-----------------+---------------------------------------------+
+   | Option          | Effect                                      |
+   +=================+=============================================+
+   | ``'forcegray'`` | Force output to be grayscale, even if input |
+   |                 | is RGB.                                     |
+   +-----------------+---------------------------------------------+
+   | ``'quality'``   | Set the quality of the compressed image to  |
+   |                 | a value between ``0`` and ``100`` (default  |
+   |                 | is ``75``).  This only affects compression. |
+   +-----------------+---------------------------------------------+
+   | ``'optimize'``  | Perform Huffman table optimization.  Takes  |
+   |                 | longer, but results in smaller compressed   |
+   |                 | image.  This only affects compression.      |
+   +-----------------+---------------------------------------------+
+   | ``'smooth'``    | Perform inter-block smoothing on            |
+   |                 | uncompressed image.  Only useful for low-   |
+   |                 | quality images.  This only affects          |
+   |                 | decompression.                              |
+   +-----------------+---------------------------------------------+
 
 
 .. seealso::
 
    JPEG Still Image Data Compression Standard
-      The  canonical reference for the JPEG image format, by Pennebaker and Mitchell.
+      The canonical reference for the JPEG image format, by Pennebaker and Mitchell.
 
    `Information Technology - Digital Compression and Coding of Continuous-tone Still Images - Requirements and Guidelines <http://www.w3.org/Graphics/JPEG/itu-t81.pdf>`_
       The ISO standard for JPEG is also published as ITU T.81.  This is available

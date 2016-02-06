@@ -1,11 +1,12 @@
 
-:mod:`itertools` --- 効率的なループ実行のためのイテレータ生成関数
-=================================================================
+:mod:`itertools` --- Functions creating iterators for efficient looping
+=======================================================================
 
 .. module:: itertools
-   :synopsis: 効率的なループ実行のためのイテレータ生成関数。
+   :synopsis: Functions creating iterators for efficient looping.
 .. moduleauthor:: Raymond Hettinger <python@rcn.com>
 .. sectionauthor:: Raymond Hettinger <python@rcn.com>
+
 
 .. testsetup::
 
@@ -13,64 +14,64 @@
 
 .. versionadded:: 2.3
 
-このモジュールではイテレータ(:term:`iterator`)を構築する部品を実装しています。
-プログラム言語 APL, Haskell, SML からアイデアを得ていますが、
-Python に適した形に修正されています。
+This module implements a number of :term:`iterator` building blocks inspired
+by constructs from APL, Haskell, and SML.  Each has been recast in a form
+suitable for Python.
 
-このモジュールは、高速でメモリ効率に優れ、
-単独でも組合せても使用することのできるツールを標準化したものです。
-同時に、このツール群は "イテレータの代数" を構成していて、 pure Python
-で簡潔かつ効率的なツールを作れるようにしています。
+The module standardizes a core set of fast, memory efficient tools that are
+useful by themselves or in combination.  Together, they form an "iterator
+algebra" making it possible to construct specialized tools succinctly and
+efficiently in pure Python.
 
-例えば、SML の作表ツール ``tabulate(f)`` は ``f(0), f(1), ...``
-のシーケンスを作成します。
-同じことを Python では :func:`imap` と :func:`count` を組合せて
-``imap(f, count())`` という形で実現できます。
+For instance, SML provides a tabulation tool: ``tabulate(f)`` which produces a
+sequence ``f(0), f(1), ...``.  The same effect can be achieved in Python
+by combining :func:`imap` and :func:`count` to form ``imap(f, count())``.
 
-これらのツールと、対をなすビルトインの組合せは、 :mod:`operator` モジュール\
-にある高速な関数を使うことでうまく実現できます。
-例えば、乗算演算子を二つのベクタにmapすることで効率的なドット積ができます:
-``sum(imap(operator.mul, vector1, vector2))``
+These tools and their built-in counterparts also work well with the high-speed
+functions in the :mod:`operator` module.  For example, the multiplication
+operator can be mapped across two vectors to form an efficient dot-product:
+``sum(imap(operator.mul, vector1, vector2))``.
 
-**無限イテレータ:**
+
+**Infinite Iterators:**
 
 ==================  =================       =================================================               =========================================
-イテレータ          引数                    結果                                                            例
+Iterator            Arguments               Results                                                         Example
 ==================  =================       =================================================               =========================================
 :func:`count`       start, [step]           start, start+step, start+2*step, ...                            ``count(10) --> 10 11 12 13 14 ...``
 :func:`cycle`       p                       p0, p1, ... plast, p0, p1, ...                                  ``cycle('ABCD') --> A B C D A B C D ...``
-:func:`repeat`      elem [,n]               elem, elem, elem, ... 無限もしくは n 回                         ``repeat(10, 3) --> 10 10 10``
+:func:`repeat`      elem [,n]               elem, elem, elem, ... endlessly or up to n times                ``repeat(10, 3) --> 10 10 10``
 ==================  =================       =================================================               =========================================
 
-**一番短い入力シーケンスで止まるイテレータ:**
+**Iterators terminating on the shortest input sequence:**
 
-====================    ============================    ===================================================   =============================================================
-イテレータ              引数                            結果                                                  例
-====================    ============================    ===================================================   =============================================================
-:func:`chain`           p, q, ...                       p0, p1, ... plast, q0, q1, ...                        ``chain('ABC', 'DEF') --> A B C D E F``
-:func:`compress`        data, selectors                 (d[0] if s[0]), (d[1] if s[1]), ...                   ``compress('ABCDEF', [1,0,1,0,1,1]) --> A C E F``
-:func:`dropwhile`       pred, seq                       seq[n], seq[n+1], pred が偽の場所から始まる           ``dropwhile(lambda x: x<5, [1,4,6,4,1]) --> 6 4 1``
-:func:`groupby`         iterable[, keyfunc]             keyfunc(v) の値でグループ化したサブイテレータ
-:func:`ifilter`         pred, seq                       pred(elem) が真になるseqの要素                        ``ifilter(lambda x: x%2, range(10)) --> 1 3 5 7 9``
-:func:`ifilterfalse`    pred, seq                       pred(elem) が偽になるseqの要素                        ``ifilterfalse(lambda x: x%2, range(10)) --> 0 2 4 6 8``
-:func:`islice`          seq, [start,] stop [, step]     seq[start:stop:step]                                  ``islice('ABCDEFG', 2, None) --> C D E F G``
-:func:`imap`            func, p, q, ...                 func(p0, q0), func(p1, q1), ...                       ``imap(pow, (2,3,10), (5,2,3)) --> 32 9 1000``
-:func:`starmap`         func, seq                       func(\*seq[0]), func(\*seq[1]), ...                   ``starmap(pow, [(2,5), (3,2), (10,3)]) --> 32 9 1000``
-:func:`tee`             it, n                           it1, it2 , ... itn  一つのイテレータを n 個に分ける
-:func:`takewhile`       pred, seq                       seq[0], seq[1], pred が偽になるまで                   ``takewhile(lambda x: x<5, [1,4,6,4,1]) --> 1 4``
-:func:`izip`            p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                       ``izip('ABCD', 'xy') --> Ax By``
-:func:`izip_longest`    p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                       ``izip_longest('ABCD', 'xy', fillvalue='-') --> Ax By C- D-``
-====================    ============================    ===================================================   =============================================================
+====================    ============================    =================================================   =============================================================
+Iterator                Arguments                       Results                                             Example
+====================    ============================    =================================================   =============================================================
+:func:`chain`           p, q, ...                       p0, p1, ... plast, q0, q1, ...                      ``chain('ABC', 'DEF') --> A B C D E F``
+:func:`compress`        data, selectors                 (d[0] if s[0]), (d[1] if s[1]), ...                 ``compress('ABCDEF', [1,0,1,0,1,1]) --> A C E F``
+:func:`dropwhile`       pred, seq                       seq[n], seq[n+1], starting when pred fails          ``dropwhile(lambda x: x<5, [1,4,6,4,1]) --> 6 4 1``
+:func:`groupby`         iterable[, keyfunc]             sub-iterators grouped by value of keyfunc(v)
+:func:`ifilter`         pred, seq                       elements of seq where pred(elem) is true            ``ifilter(lambda x: x%2, range(10)) --> 1 3 5 7 9``
+:func:`ifilterfalse`    pred, seq                       elements of seq where pred(elem) is false           ``ifilterfalse(lambda x: x%2, range(10)) --> 0 2 4 6 8``
+:func:`islice`          seq, [start,] stop [, step]     elements from seq[start:stop:step]                  ``islice('ABCDEFG', 2, None) --> C D E F G``
+:func:`imap`            func, p, q, ...                 func(p0, q0), func(p1, q1), ...                     ``imap(pow, (2,3,10), (5,2,3)) --> 32 9 1000``
+:func:`starmap`         func, seq                       func(\*seq[0]), func(\*seq[1]), ...                 ``starmap(pow, [(2,5), (3,2), (10,3)]) --> 32 9 1000``
+:func:`tee`             it, n                           it1, it2, ... itn  splits one iterator into n
+:func:`takewhile`       pred, seq                       seq[0], seq[1], until pred fails                    ``takewhile(lambda x: x<5, [1,4,6,4,1]) --> 1 4``
+:func:`izip`            p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                     ``izip('ABCD', 'xy') --> Ax By``
+:func:`izip_longest`    p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                     ``izip_longest('ABCD', 'xy', fillvalue='-') --> Ax By C- D-``
+====================    ============================    =================================================   =============================================================
 
-**組合せジェネレータ:**
+**Combinatoric generators:**
 
 ==============================================   ====================       =============================================================
-イテレータ                                       引数                       結果
+Iterator                                         Arguments                  Results
 ==============================================   ====================       =============================================================
-:func:`product`                                  p, q, ... [repeat=1]       デカルト積、ネストしたforループと等価
-:func:`permutations`                             p[, r]                     長さrのタプル列, 繰り返しを許さない順列
-:func:`combinations`                             p, r                       長さrのタプル列, 繰り返しを許さない組合せ
-:func:`combinations_with_replacement`            p, r                       長さrのタプル列, 繰り返しを許した組合せ
+:func:`product`                                  p, q, ... [repeat=1]       cartesian product, equivalent to a nested for-loop
+:func:`permutations`                             p[, r]                     r-length tuples, all possible orderings, no repeated elements
+:func:`combinations`                             p, r                       r-length tuples, in sorted order, no repeated elements
+:func:`combinations_with_replacement`            p, r                       r-length tuples, in sorted order, with repeated elements
 ``product('ABCD', repeat=2)``                                               ``AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD``
 ``permutations('ABCD', 2)``                                                 ``AB AC AD BA BC BD CA CB CD DA DB DC``
 ``combinations('ABCD', 2)``                                                 ``AB AC AD BC BD CD``
@@ -80,20 +81,20 @@ Python に適した形に修正されています。
 
 .. _itertools-functions:
 
-Itertool関数
-------------
+Itertool functions
+------------------
 
-以下の関数は全て、イテレータを作成して返します。
-無限長のストリームのイテレータを返す関数もあり、
-この場合にはストリームを中断するような関数かループ処理から使用しなければなりません。
+The following module functions all construct and return iterators. Some provide
+streams of infinite length, so they should only be accessed by functions or
+loops that truncate the stream.
 
 
 .. function:: chain(*iterables)
 
-   先頭の iterable の全要素を返し、
-   次に2番目の iterable の全要素…と全 iterable の要素を返すイテレータを作成します。
-   連続したシーケンスを、一つのシーケンスとして扱う場合に使用します。
-   この関数は以下のスクリプトと同等です： ::
+   Make an iterator that returns elements from the first iterable until it is
+   exhausted, then proceeds to the next iterable, until all of the iterables are
+   exhausted.  Used for treating consecutive sequences as a single sequence.
+   Equivalent to::
 
       def chain(*iterables):
           # chain('ABC', 'DEF') --> A B C D E F
@@ -104,11 +105,9 @@ Itertool関数
 
 .. classmethod:: chain.from_iterable(iterable)
 
-   もう一つの :func:`chain` のためのコンストラクタです。
-   遅延評価される唯一のイテラブル引数から連鎖した入力を受け取ります。
-   この関数は以下のコードと等価です： ::
+   Alternate constructor for :func:`chain`.  Gets chained inputs from a
+   single iterable argument that is evaluated lazily.  Roughly equivalent to::
 
-      @classmethod
       def from_iterable(iterables):
           # chain.from_iterable(['ABC', 'DEF']) --> A B C D E F
           for it in iterables:
@@ -117,18 +116,20 @@ Itertool関数
 
    .. versionadded:: 2.6
 
+
 .. function:: combinations(iterable, r)
 
-   入力 *iterable* の要素からなる長さ *r* の部分列を返します。
+   Return *r* length subsequences of elements from the input *iterable*.
 
-   組合せ(combination)は辞書式順序で出力されます。
-   したがって、入力 *iterable* がソートされていれば、
-   組合せのタプルは整列された形で生成されます。
+   Combinations are emitted in lexicographic sort order.  So, if the
+   input *iterable* is sorted, the combination tuples will be produced
+   in sorted order.
 
-   各要素は場所に基づいて一意に取り扱われ、値には依りません。
-   入力された要素がバラバラならば、各組合せの中に重複した値は現れません。
+   Elements are treated as unique based on their position, not on their
+   value.  So if the input elements are unique, there will be no repeat
+   values in each combination.
 
-   この関数は以下のコードと等価です： ::
+   Equivalent to::
 
         def combinations(iterable, r):
             # combinations('ABCD', 2) --> AB AC AD BC BD CD
@@ -150,9 +151,9 @@ Itertool関数
                     indices[j] = indices[j-1] + 1
                 yield tuple(pool[i] for i in indices)
 
-   :func:`combination` のコードは :func:`permutations` のシーケンスから
-   (入力プールでの位置に応じた順序で)
-   要素がソートされていないものをフィルターしたようにも表現できます::
+   The code for :func:`combinations` can be also expressed as a subsequence
+   of :func:`permutations` after filtering entries where the elements are not
+   in sorted order (according to their position in the input pool)::
 
         def combinations(iterable, r):
             pool = tuple(iterable)
@@ -161,24 +162,25 @@ Itertool関数
                 if sorted(indices) == list(indices):
                     yield tuple(pool[i] for i in indices)
 
-   返される要素の数は、 ``0 <= r <= n`` の場合は、 ``n! / r! / (n-r)!``
-   で、 ``r > n`` の場合は 0 です。
+   The number of items returned is ``n! / r! / (n-r)!`` when ``0 <= r <= n``
+   or zero when ``r > n``.
 
    .. versionadded:: 2.6
 
 .. function:: combinations_with_replacement(iterable, r)
 
-   入力 *iterable* から、それぞれの要素が複数回現れることを許して、
-   長さ *r* の要素の部分列を返します。
+   Return *r* length subsequences of elements from the input *iterable*
+   allowing individual elements to be repeated more than once.
 
-   組合せは、辞書的に並べられた順序で出力されます。
-   ですから、入力 *iterable* がソートされていれば、組合せのタプルは
-   ソートされた順に生成されます。
+   Combinations are emitted in lexicographic sort order.  So, if the
+   input *iterable* is sorted, the combination tuples will be produced
+   in sorted order.
 
-   要素は、値ではなく位置に基づいて一意に扱われます。ですから、入力の要素が
-   一意であれば、生成された組合せも一意になります。
+   Elements are treated as unique based on their position, not on their
+   value.  So if the input elements are unique, the generated combinations
+   will also be unique.
 
-   以下と等価です::
+   Equivalent to::
 
         def combinations_with_replacement(iterable, r):
             # combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC
@@ -197,9 +199,9 @@ Itertool関数
                 indices[i:] = [indices[i] + 1] * (r - i)
                 yield tuple(pool[i] for i in indices)
 
-   :func:`combinations_with_replacement` のコードは、 :func:`product` の
-   部分列から、要素が (入力プールの位置に従って) ソートされた順に
-   なっていない項目をフィルタリングしたものとしても表せます::
+   The code for :func:`combinations_with_replacement` can be also expressed as
+   a subsequence of :func:`product` after filtering entries where the elements
+   are not in sorted order (according to their position in the input pool)::
 
         def combinations_with_replacement(iterable, r):
             pool = tuple(iterable)
@@ -208,16 +210,16 @@ Itertool関数
                 if sorted(indices) == list(indices):
                     yield tuple(pool[i] for i in indices)
 
-   返される要素の数は、 ``n > 0`` のとき ``(n+r-1)! / r! / (n-1)!`` です。
+   The number of items returned is ``(n+r-1)! / r! / (n-1)!`` when ``n > 0``.
 
    .. versionadded:: 2.7
 
 .. function:: compress(data, selectors)
 
-   *data* の要素から、 *selectors* の対応する要素が ``True`` と評価される
-   ものだけを返す、フィルタリングしたイテレータを作ります。
-   *data* と *selectors* のどちらかが尽きたときに止まります。
-   以下と等価です::
+   Make an iterator that filters elements from *data* returning only those that
+   have a corresponding element in *selectors* that evaluates to ``True``.
+   Stops when either the *data* or *selectors* iterables has been exhausted.
+   Equivalent to::
 
        def compress(data, selectors):
            # compress('ABCDEF', [1,0,1,0,1,1]) --> A C E F
@@ -228,30 +230,30 @@ Itertool関数
 
 .. function:: count(start=0, step=1)
 
-   *n* で始まる、等間隔の値を返すイテレータを作成します。
-   :func:`imap` で連続したデータの生成によく使われます。
-   また、 :func:`izip` にシーケンス番号を追加するのにも使われます。
-   この関数は以下のスクリプトと同等です::
+   Make an iterator that returns evenly spaced values starting with *n*. Often
+   used as an argument to :func:`imap` to generate consecutive data points.
+   Also, used with :func:`izip` to add sequence numbers.  Equivalent to::
 
       def count(start=0, step=1):
+          # count(10) --> 10 11 12 13 14 ...
           # count(2.5, 0.5) -> 2.5 3.0 3.5 ...
           n = start
           while True:
               yield n
               n += step
 
-   浮動小数点数で数えるときは、 ``(start + step * i for i in count())``
-   のように、掛け算を使ったコードに置き換えたほうが正確にできることがあります。
+   When counting with floating point numbers, better accuracy can sometimes be
+   achieved by substituting multiplicative code such as: ``(start + step * i
+   for i in count())``.
 
    .. versionchanged:: 2.7
-      *step* 引数を追加し、非整数の引数を取れるようになりました。
+      added *step* argument and allowed non-integer arguments.
 
 .. function:: cycle(iterable)
 
-   iterable から要素を取得し、
-   同時にそのコピーを保存するイテレータを作成します。
-   iterable の全要素を返すと、セーブされたコピーから要素を返し、
-   これを無限に繰り返します。この関数は以下のスクリプトと同等です： ::
+   Make an iterator returning elements from the iterable and saving a copy of each.
+   When the iterable is exhausted, return elements from the saved copy.  Repeats
+   indefinitely.  Equivalent to::
 
       def cycle(iterable):
           # cycle('ABCD') --> A B C D A B C D A B C D ...
@@ -263,17 +265,16 @@ Itertool関数
               for element in saved:
                     yield element
 
-   :func:`cycle` は大きなメモリ領域を使用します。
-   使用するメモリ量は iterable の大きさに依存します。
+   Note, this member of the toolkit may require significant auxiliary storage
+   (depending on the length of the iterable).
 
 
 .. function:: dropwhile(predicate, iterable)
 
-   predicate が真である限りは要素を無視し、
-   その後は全ての要素を返すイテレータを作成します。
-   このイテレータは、predicate が最初に偽になるまで *全く* 要素を返さないため、
-   要素を返し始めるまでに長い時間がかかる場合があります。
-   この関数は以下のスクリプトと同等です： ::
+   Make an iterator that drops elements from the iterable as long as the predicate
+   is true; afterwards, returns every element.  Note, the iterator does not produce
+   *any* output until the predicate first becomes false, so it may have a lengthy
+   start-up time.  Equivalent to::
 
       def dropwhile(predicate, iterable):
           # dropwhile(lambda x: x<5, [1,4,6,4,1]) --> 6 4 1
@@ -288,23 +289,22 @@ Itertool関数
 
 .. function:: groupby(iterable[, key])
 
-   同じキーをもつような要素からなる *iterable* 中のグループに対して、
-   キーとグループを返すようなイテレータを作成します。 *key*
-   は各要素に対するキー値を計算する関数です。
-   キーを指定しない場合や ``None`` にした場合、
-   *key* 関数のデフォルトは恒等関数になり要素をそのまま返します。
-   通常、 *iterable* は同じキー関数で並べ替え済みである必要があります。
+   Make an iterator that returns consecutive keys and groups from the *iterable*.
+   The *key* is a function computing a key value for each element.  If not
+   specified or is ``None``, *key* defaults to an identity function and returns
+   the element unchanged.  Generally, the iterable needs to already be sorted on
+   the same key function.
 
-   :func:`groupby` の操作は Unix の ``uniq`` フィルターと似ています。
-   key 関数の値が変わるたびに休止または新しいグループを生成します
-   (このために通常同じ key 関数でソートしておく必要があるのです)。
-   この動作は SQL の入力順に関係なく共通の要素を集約する GROUP BY とは違ます。
+   The operation of :func:`groupby` is similar to the ``uniq`` filter in Unix.  It
+   generates a break or new group every time the value of the key function changes
+   (which is why it is usually necessary to have sorted the data using the same key
+   function).  That behavior differs from SQL's GROUP BY which aggregates common
+   elements regardless of their input order.
 
-   返されるグループはそれ自体がイテレータで、 :func:`groupby` と
-   *iterable* を共有しています。もととなる *iterable* を共有しているため、
-   :func:`groupby` オブジェクトの要素取り出しを先に進めると、
-   それ以前の要素であるグループは見えなくなってしまいます。
-   従って、データが後で必要な場合にはリストの形で保存しておく必要があります： ::
+   The returned group is itself an iterator that shares the underlying iterable
+   with :func:`groupby`.  Because the source is shared, when the :func:`groupby`
+   object is advanced, the previous group is no longer visible.  So, if that data
+   is needed later, it should be stored as a list::
 
       groups = []
       uniquekeys = []
@@ -313,7 +313,7 @@ Itertool関数
           groups.append(list(g))      # Store group iterator as a list
           uniquekeys.append(k)
 
-   :func:`groupby` は以下のコードと等価です： ::
+   :func:`groupby` is equivalent to::
 
       class groupby(object):
           # [k for k, g in groupby('AAAABBBCCDAABBB')] --> A B C D A B
@@ -343,9 +343,9 @@ Itertool関数
 
 .. function:: ifilter(predicate, iterable)
 
-   predicate が ``True`` となる要素だけを返すイテレータを作成します。
-   *predicate* が ``None`` の場合、値が真であるアイテムだけを返します。
-   この関数は以下のスクリプトと同等です： ::
+   Make an iterator that filters elements from iterable returning only those for
+   which the predicate is ``True``. If *predicate* is ``None``, return the items
+   that are true. Equivalent to::
 
       def ifilter(predicate, iterable):
           # ifilter(lambda x: x%2, range(10)) --> 1 3 5 7 9
@@ -358,9 +358,9 @@ Itertool関数
 
 .. function:: ifilterfalse(predicate, iterable)
 
-   predicateが ``False`` となる要素だけを返すイテレータを作成します。
-   *predicate* が ``None`` の場合、値が偽であるアイテムだけを返します。
-   この関数は以下のスクリプトと同等です： ::
+   Make an iterator that filters elements from iterable returning only those for
+   which the predicate is ``False``. If *predicate* is ``None``, return the items
+   that are false. Equivalent to::
 
       def ifilterfalse(predicate, iterable):
           # ifilterfalse(lambda x: x%2, range(10)) --> 0 2 4 6 8
@@ -373,15 +373,13 @@ Itertool関数
 
 .. function:: imap(function, *iterables)
 
-   iterables の要素を引数として funtion を呼び出すイテレータを作成します。
-   *function* が ``None`` の場合、引数のタプルを返します。
-   :func:`map` と似ていますが、
-   最短の iterable の末尾まで到達した後は
-   ``None`` を補って処理を続行するのではなく、終了します。これは、
-   :func:`map` に無限長のイテレータを指定するのは多くの場合誤りですが
-   (全出力が評価されてしまうため)、
-   :func:`imap` の場合には一般的で役に立つ方法であるためです。
-   この関数は以下のスクリプトと同等です： ::
+   Make an iterator that computes the function using arguments from each of the
+   iterables.  If *function* is set to ``None``, then :func:`imap` returns the
+   arguments as a tuple.  Like :func:`map` but stops when the shortest iterable is
+   exhausted instead of filling in ``None`` for shorter iterables.  The reason for
+   the difference is that infinite iterator arguments are typically an error for
+   :func:`map` (because the output is fully evaluated) but represent a common and
+   useful way of supplying arguments to :func:`imap`. Equivalent to::
 
       def imap(function, *iterables):
           # imap(pow, (2,3,10), (5,2,3)) --> 32 9 1000
@@ -394,21 +392,18 @@ Itertool関数
                   yield function(*args)
 
 
-.. function:: islice(iterable, [start,] stop [, step])
+.. function:: islice(iterable, stop)
+              islice(iterable, start, stop[, step])
 
-   iterable から要素を選択して返すイテレータを作成します。
-   *start* が0以外であれば、iterable の先頭要素は start に達するまでスキップします。
-   以降、 *step* が1以下なら連続した要素を返し、
-   1以上なら指定された値分の要素をスキップします。
-   *stop* が ``None`` であれば、無限に、
-   もしくは iterable の全要素を返すまで値を返します。
-   ``None`` 以外ならイテレータは指定された要素位置で停止します。
-   通常のスライスと異なり、 *start* 、
-   *stop* 、 *step* に負の値を指定する事はできません。
-   シーケンス化されたデータから関連するデータを取得する場合
-   （複数行からなるレポートで、三行ごとに名前が指定されている場合など）
-   に使用します。
-   この関数は以下のスクリプトと同等です：  ::
+   Make an iterator that returns selected elements from the iterable. If *start* is
+   non-zero, then elements from the iterable are skipped until start is reached.
+   Afterward, elements are returned consecutively unless *step* is set higher than
+   one which results in items being skipped.  If *stop* is ``None``, then iteration
+   continues until the iterator is exhausted, if at all; otherwise, it stops at the
+   specified position.  Unlike regular slicing, :func:`islice` does not support
+   negative values for *start*, *stop*, or *step*.  Can be used to extract related
+   fields from data where the internal structure has been flattened (for example, a
+   multi-line report may list a name field on every third line).  Equivalent to::
 
       def islice(iterable, *args):
           # islice('ABCDEFG', 2) --> A B
@@ -423,84 +418,88 @@ Itertool関数
                   yield element
                   nexti = next(it)
 
-   *start* が ``None`` ならば、繰返しは0から始まります。
-   *step* が ``None`` ならば、ステップは1となります。
+   If *start* is ``None``, then iteration starts at zero. If *step* is ``None``,
+   then the step defaults to one.
 
    .. versionchanged:: 2.5
-      *start* と *step* はデフォルト値として ``None`` を受け付けます。
+      accept ``None`` values for default *start* and *step*.
 
 
 .. function:: izip(*iterables)
 
-   各 iterable の要素をまとめるイテレータを作成します。
-   :func:`zip` に似ていますが、リストではなくイテレータを返します。
-   複数のイテレート可能オブジェクトに対して、
-   同じ繰り返し処理を同時に行う場合に使用します。
-   この関数は以下のスクリプトと同等です： ::
+   Make an iterator that aggregates elements from each of the iterables. Like
+   :func:`zip` except that it returns an iterator instead of a list.  Used for
+   lock-step iteration over several iterables at a time.  Equivalent to::
 
       def izip(*iterables):
           # izip('ABCD', 'xy') --> Ax By
-          iterables = map(iter, iterables)
-          while iterables:
-              yield tuple(map(next, iterables))
+          iterators = map(iter, iterables)
+          while iterators:
+              yield tuple(map(next, iterators))
 
    .. versionchanged:: 2.4
-      イテレート可能オブジェクトを指定しない場合、
-      :exc:`TypeError` 例外を送出する代わりに長さゼロのイテレータを返します。
+      When no iterables are specified, returns a zero length iterator instead of
+      raising a :exc:`TypeError` exception.
 
-   イテレート可能オブジェクトの左から右への評価順序は保証されます。
-   このことによって、データ列を長さnのグループにまとめる常套句
-   ``izip(*[iter(s)]*n)`` が実現可能になります。
+   The left-to-right evaluation order of the iterables is guaranteed. This
+   makes possible an idiom for clustering a data series into n-length groups
+   using ``izip(*[iter(s)]*n)``.
 
-   :func:`izip` を長さが不揃いな入力に使うのは、
-   残され使われなかった長い方のイテレート可能オブジェクトの値を気にしない時だけにするべきです。
-   こういった値が重要ならば :func:`izip_longest` を代わりに使ってください。
+   :func:`izip` should only be used with unequal length inputs when you don't
+   care about trailing, unmatched values from the longer iterables.  If those
+   values are important, use :func:`izip_longest` instead.
 
 
 .. function:: izip_longest(*iterables[, fillvalue])
 
-   各 iterable の要素をまとめるイテレータを作成します。
-   イテレート可能オブジェクトの長さが不揃いならば、足りない値は *fillvalue*
-   で埋められます。最も長いイテレート可能オブジェクトが尽きるまで繰り返されます。
-   この関数は以下のコードと等価です： ::
+   Make an iterator that aggregates elements from each of the iterables. If the
+   iterables are of uneven length, missing values are filled-in with *fillvalue*.
+   Iteration continues until the longest iterable is exhausted.  Equivalent to::
+
+      class ZipExhausted(Exception):
+          pass
 
       def izip_longest(*args, **kwds):
           # izip_longest('ABCD', 'xy', fillvalue='-') --> Ax By C- D-
           fillvalue = kwds.get('fillvalue')
-          def sentinel(counter = ([fillvalue]*(len(args)-1)).pop):
-              yield counter()         # yields the fillvalue, or raises IndexError
+          counter = [len(args) - 1]
+          def sentinel():
+              if not counter[0]:
+                  raise ZipExhausted
+              counter[0] -= 1
+              yield fillvalue
           fillers = repeat(fillvalue)
-          iters = [chain(it, sentinel(), fillers) for it in args]
+          iterators = [chain(it, sentinel(), fillers) for it in args]
           try:
-              for tup in izip(*iters):
-                  yield tup
-          except IndexError:
+              while iterators:
+                  yield tuple(map(next, iterators))
+          except ZipExhausted:
               pass
 
-   もしイテラブルの内一つでも潜在的に無限列であれば、
-   :func:`izip_longest` 関数の呼出しを呼び出し回数を制限する何か
-   (たとえば :func:`islice` や :func:`takewhile`)
-   で包むべきです。
-   *fillvalue* が指定されない場合のデフォルトは ``None`` です。
+   If one of the iterables is potentially infinite, then the
+   :func:`izip_longest` function should be wrapped with something that limits
+   the number of calls (for example :func:`islice` or :func:`takewhile`).  If
+   not specified, *fillvalue* defaults to ``None``.
 
    .. versionadded:: 2.6
 
 .. function:: permutations(iterable[, r])
 
-   *iterable* の要素からなる長さ *r* の置換(permutation)を次々と返します。
+   Return successive *r* length permutations of elements in the *iterable*.
 
-   *r* が指定されないかまたは ``None`` であるならば、
-   *r* のデフォルトは *iterable* の長さとなり全ての可能な最長の置換が生成されます。
+   If *r* is not specified or is ``None``, then *r* defaults to the length
+   of the *iterable* and all possible full-length permutations
+   are generated.
 
-   置換は辞書式にソートされた順序で吐き出されます。
-   したがって入力の *iterable* がソートされていたならば、
-   置換のタプルはソートされた状態で出力されます。
+   Permutations are emitted in lexicographic sort order.  So, if the
+   input *iterable* is sorted, the permutation tuples will be produced
+   in sorted order.
 
-   要素は位置に基づいて一意的に扱われ、値に基づいてではありません。
-   したがって入力された要素が全て異なっているならば、
-   それぞれの置換に重複した要素が現れないことになります。
+   Elements are treated as unique based on their position, not on their
+   value.  So if the input elements are unique, there will be no repeat
+   values in each permutation.
 
-   以下と等価です： ::
+   Equivalent to::
 
         def permutations(iterable, r=None):
             # permutations('ABCD', 2) --> AB AC AD BA BC BD CA CB CD DA DB DC
@@ -527,9 +526,9 @@ Itertool関数
                 else:
                     return
 
-   :func:`permutations` のコードは :func:`product` の列から重複のあるもの
-   (それらは入力プールの同じ位置から取られたものです)
-   を除外するようにフィルタを掛けたものとしても表現できます： ::
+   The code for :func:`permutations` can be also expressed as a subsequence of
+   :func:`product`, filtered to exclude entries with repeated elements (those
+   from the same position in the input pool)::
 
         def permutations(iterable, r=None):
             pool = tuple(iterable)
@@ -539,30 +538,29 @@ Itertool関数
                 if len(set(indices)) == r:
                     yield tuple(pool[i] for i in indices)
 
-   返される要素の数は、 ``0 <= r <= n`` の場合 ``n! / (n-r)!``
-   で、 ``r > n`` の場合は 0 です。
+   The number of items returned is ``n! / (n-r)!`` when ``0 <= r <= n``
+   or zero when ``r > n``.
 
    .. versionadded:: 2.6
 
 .. function:: product(*iterables[, repeat])
 
-   入力イテラブルの直積(Cartesian product)です。
+   Cartesian product of input iterables.
 
-   ジェネレータ式の入れ子 for ループと等価になります。
-   たとえば ``product(A, B)`` は ``((x,y) for x in A for y in B)``
-   と同じものを返します。
+   Equivalent to nested for-loops in a generator expression. For example,
+   ``product(A, B)`` returns the same as ``((x,y) for x in A for y in B)``.
 
-   入れ子ループは走行距離計と同じように右端の要素がイテレーションごとに更新されていきます。
-   このパターンは辞書式順序を作り出し、
-   入力のイテレート可能オブジェクトたちがソートされていれば、
-   直積タプルもソートされた順に吐き出されます。
+   The nested loops cycle like an odometer with the rightmost element advancing
+   on every iteration.  This pattern creates a lexicographic ordering so that if
+   the input's iterables are sorted, the product tuples are emitted in sorted
+   order.
 
-   イテラブル自身との直積を計算するためには、
-   オプションの *repeat* キーワード引数に繰り返し回数を指定します。
-   たとえば ``product(A, repeat=4)`` は  ``product(A, A, A, A)``
-   と同じ意味です。
+   To compute the product of an iterable with itself, specify the number of
+   repetitions with the optional *repeat* keyword argument.  For example,
+   ``product(A, repeat=4)`` means the same as ``product(A, A, A, A)``.
 
-   この関数は以下のコードと等価ですが、実際の実装ではメモリ中に中間結果を作りません： ::
+   This function is equivalent to the following code, except that the
+   actual implementation does not build up intermediate results in memory::
 
        def product(*args, **kwds):
            # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
@@ -576,15 +574,12 @@ Itertool関数
 
    .. versionadded:: 2.6
 
-
 .. function:: repeat(object[, times])
 
-   繰り返し *object* を返すイテレータを作成します。
-   *times* を指定しない場合、無限に値を返し続けます。
-   :func:`imap` で常に同じオブジェクトを関数の引数として指定する場合に使用します。
-   また、 :func:`izip`
-   で作成するタプルの定数部分を指定する場合にも使用することもできます。
-   この関数は以下のスクリプトと同等です： ::
+   Make an iterator that returns *object* over and over again. Runs indefinitely
+   unless the *times* argument is specified. Used as argument to :func:`imap` for
+   invariant function parameters.  Also used with :func:`izip` to create constant
+   fields in a tuple record.  Equivalent to::
 
       def repeat(object, times=None):
           # repeat(10, 3) --> 10 10 10
@@ -595,16 +590,19 @@ Itertool関数
               for i in xrange(times):
                   yield object
 
+   A common use for *repeat* is to supply a stream of constant values to *imap*
+   or *zip*::
+
+      >>> list(imap(pow, xrange(10), repeat(2)))
+      [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
 
 .. function:: starmap(function, iterable)
 
-   iterables の要素を引数として funtion を呼び出すイテレータを作成します。
-   function の引数が単一の iterable にタプルとして格納されている場合("zip済み")、
-   :func:`imap` の代わりに使用します。 :func:`imap` と
-   :func:`starmap` ではfunctionの呼び出し方法が異なり、
-   :func:`imap` は ``function(a,b)`` 、 :func:`starmap` では
-   ``function(*c)`` のように呼び出します。
-   この関数は以下のスクリプトと同等です： ::
+   Make an iterator that computes the function using arguments obtained from
+   the iterable.  Used instead of :func:`imap` when argument parameters are already
+   grouped in tuples from a single iterable (the data has been "pre-zipped").  The
+   difference between :func:`imap` and :func:`starmap` parallels the distinction
+   between ``function(a,b)`` and ``function(*c)``. Equivalent to::
 
       def starmap(function, iterable):
           # starmap(pow, [(2,5), (3,2), (10,3)]) --> 32 9 1000
@@ -612,20 +610,17 @@ Itertool関数
               yield function(*args)
 
    .. versionchanged:: 2.6
-       以前のバージョンでは、
-       :func:`starmap` は関数の引数がタプルであることが必要でした。
-       このバージョンからどんなイテレート可能オブジェクトでも良くなりました。
-
+      Previously, :func:`starmap` required the function arguments to be tuples.
+      Now, any iterable is allowed.
 
 .. function:: takewhile(predicate, iterable)
 
-   predicate が真である限り iterable から要素を返すイテレータを作成します。
-   この関数は以下のスクリプトと同等です： ::
+   Make an iterator that returns elements from the iterable as long as the
+   predicate is true.  Equivalent to::
 
       def takewhile(predicate, iterable):
           # takewhile(lambda x: x<5, [1,4,6,4,1]) --> 1 4
           for x in iterable:
-              x = iterable.next()
               if predicate(x):
                   yield x
               else:
@@ -634,8 +629,7 @@ Itertool関数
 
 .. function:: tee(iterable[, n=2])
 
-   一つの *iterable* から *n* 個の独立したイテレータを生成して返します。
-   以下のコードと等価になります： ::
+   Return *n* independent iterators from a single iterable.  Equivalent to::
 
         def tee(iterable, n=2):
             it = iter(iterable)
@@ -649,33 +643,33 @@ Itertool関数
                     yield mydeque.popleft()
             return tuple(gen(d) for d in deques)
 
-   一度 :func:`tee` でイテレータを分割すると、
-   もとの *iterable* を他で使ってはいけません。
-   さもなければ、 :func:`tee` オブジェクトの知らない間に
-   *iterable* が先の要素に進んでしまうことになります。
+   Once :func:`tee` has made a split, the original *iterable* should not be
+   used anywhere else; otherwise, the *iterable* could get advanced without
+   the tee objects being informed.
 
-   :func:`tee` はかなり大きなメモリ領域を使用するかもしれません
-   (使用するメモリ量はiterableの大きさに依存します)。
-   一般には、一つのイテレータが他のイテレータよりも先にほとんどまたは全ての要素を消費するような場合には、
-   :func:`tee` よりも :func:`list`
-   を使った方が高速です。
+   This itertool may require significant auxiliary storage (depending on how
+   much temporary data needs to be stored). In general, if one iterator uses
+   most or all of the data before another iterator starts, it is faster to use
+   :func:`list` instead of :func:`tee`.
 
    .. versionadded:: 2.4
 
 
 .. _itertools-recipes:
 
-レシピ
-------
+Recipes
+-------
 
-この節では、既存の itertools を素材としてツールセットを拡張するためのレシピを示します。
+This section shows recipes for creating an extended toolset using the existing
+itertools as building blocks.
 
-iterable 全体を一度にメモリ上に置くよりも、
-要素を一つづつ処理する方がメモリ効率上の有利さを保てます。
-関数形式のままツールをリンクしてゆくと、
-コードのサイズを減らし、一時変数を減らす助けになります。
-インタプリタのオーバヘッドをもたらす for ループやジェネレータ(:term:`generator`)
-を使わずに、 "ベクトル化された" ビルディングブロックを使うと、高速な処理を実現できます。
+The extended tools offer the same high performance as the underlying toolset.
+The superior memory performance is kept by processing elements one at a time
+rather than bringing the whole iterable into memory all at once. Code volume is
+kept small by linking the tools together in a functional style which helps
+eliminate temporary variables.  High speed is retained by preferring
+"vectorized" building blocks over the use of for-loops and :term:`generator`\s
+which incur interpreter overhead.
 
 .. testcode::
 
@@ -738,8 +732,9 @@ iterable 全体を一度にメモリ上に置くよりも、
        next(b, None)
        return izip(a, b)
 
-   def grouper(n, iterable, fillvalue=None):
-       "grouper(3, 'ABCDEFG', 'x') --> ABC DEF Gxx"
+   def grouper(iterable, n, fillvalue=None):
+       "Collect data into fixed-length chunks or blocks"
+       # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
        args = [iter(iterable)] * n
        return izip_longest(fillvalue=fillvalue, *args)
 
@@ -833,9 +828,21 @@ iterable 全体を一度にメモリ上に置くよりも、
        indices = sorted(random.randrange(n) for i in xrange(r))
        return tuple(pool[i] for i in indices)
 
-上記のレシピはデフォルト値を指定してグローバルな名前検索をローカル変数の\
-検索に変えることで、より効率を上げることができます。
-例えば、 *dotproduct* のレシピを書き換えるとすればこんな具合です::
+   def tee_lookahead(t, i):
+       """Inspect the i-th upcomping value from a tee object
+          while leaving the tee object at its current position.
+
+          Raise an IndexError if the underlying iterator doesn't
+          have enough values.
+
+       """
+       for value in islice(t.__copy__(), i, None):
+           return value
+       raise IndexError(i)
+
+Note, many of the above recipes can be optimized by replacing global lookups
+with local variables defined as default values.  For example, the
+*dotproduct* recipe can be written as::
 
    def dotproduct(vec1, vec2, sum=sum, imap=imap, mul=operator.mul):
        return sum(imap(mul, vec1, vec2))

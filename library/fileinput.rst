@@ -1,169 +1,190 @@
-
-:mod:`fileinput` --- 複数の入力ストリームをまたいだ行の繰り返し処理をサポートする。
-===================================================================================
+:mod:`fileinput` --- Iterate over lines from multiple input streams
+===================================================================
 
 .. module:: fileinput
-   :synopsis: 標準入力もしくはファイルのリストをまたいでループする
+   :synopsis: Loop over standard input or a list of files.
 .. moduleauthor:: Guido van Rossum <guido@python.org>
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
+**Source code:** :source:`Lib/fileinput.py`
 
-.. % Iterate over lines from multiple input streams}
+--------------
 
+This module implements a helper class and functions to quickly write a
+loop over standard input or a list of files. If you just want to read or
+write one file see :func:`open`.
 
-
-このモジュールは標準入力やファイルの並びにまたがるループを素早く書くためのヘルパークラスと関数を提供しています。
-
-典型的な使い方は以下の通りです。 ::
+The typical use is::
 
    import fileinput
    for line in fileinput.input():
        process(line)
 
-このプログラムは ``sys.argv[1:]`` に含まれる全てのファイルをまたいで繰り返します。
-もし該当するものがなければ、 ``sys.stdin`` がデフォルトとして扱われます。
-ファイル名として ``'-'`` が与えられた場合も、 ``sys.stdin`` に置き換えられます。別のファイル名リストを使いたい時には、
-:func:`.input` の最初の引数にリストを与えます。単一ファイル名の文字列も受け付けます。
+This iterates over the lines of all files listed in ``sys.argv[1:]``, defaulting
+to ``sys.stdin`` if the list is empty.  If a filename is ``'-'``, it is also
+replaced by ``sys.stdin``.  To specify an alternative list of filenames, pass it
+as the first argument to :func:`.input`.  A single file name is also allowed.
 
-全てのファイルはデフォルトでテキストモードでオープンされます。しかし、 :func:`.input` や :class:`FileInput()`
-をコールする際に *mode* パラメータを指定すれば、これをオーバーライドすることができます。オープン中あるいは読み込み中にI/Oエラーが発生した場合には、
-:exc:`IOError` が発生します。
+All files are opened in text mode by default, but you can override this by
+specifying the *mode* parameter in the call to :func:`.input` or
+:class:`FileInput()`.  If an I/O error occurs during opening or reading a file,
+:exc:`IOError` is raised.
 
-``sys.stdin`` が2回以上使われた場合は、2回目以降は行を返しません。ただしインタラクティブに利用している時や明示的にリセット
-(``sys.stdin.seek(0))`` を使う)を行った場合はその限りではありません。
+If ``sys.stdin`` is used more than once, the second and further use will return
+no lines, except perhaps for interactive use, or if it has been explicitly reset
+(e.g. using ``sys.stdin.seek(0)``).
 
-空のファイルは開いた後すぐ閉じられます。空のファイルはファイル名リストの最後にある場合にしか外部に影響を与えません。
+Empty files are opened and immediately closed; the only time their presence in
+the list of filenames is noticeable at all is when the last file opened is
+empty.
 
-ファイルの各行は、各種改行文字まで含めて返されます。ファイルの最後が改行文字で終っていない場合には、改行文字で終わらない行が返されます。
+Lines are returned with any newlines intact, which means that the last line in
+a file may not have one.
 
-ファイルのオープン方法を制御するためのオープン時フックは、 :func:`fileinput.input` あるいは :class:`FileInput()` の
-*openhook* パラメータで設定します。このフックは、ふたつの引数 *filename* と *mode*
-をとる関数でなければなりません。そしてその関数の返り値はオープンしたファイルオブジェクトとなります。このモジュールには、便利なフックが既に用意されています。
+You can control how files are opened by providing an opening hook via the
+*openhook* parameter to :func:`fileinput.input` or :class:`FileInput()`. The
+hook must be a function that takes two arguments, *filename* and *mode*, and
+returns an accordingly opened file-like object. Two useful hooks are already
+provided by this module.
 
-.. seealso::
-
-   最新バージョンの `fileinput Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/fileinput.py?view=markup>`_
-
-以下の関数がこのモジュールの基本的なインタフェースです。
+The following function is the primary interface of this module:
 
 
-.. function:: input([files[, inplace[, backup[, mode[, openhook]]]]])
+.. function:: input([files[, inplace[, backup[, bufsize[, mode[, openhook]]]]]])
 
-   :class:`FileInput` クラスのインスタンスを作ります。生成されたインスタンス
-   は、このモジュールの関数群が利用するグローバルな状態として利用されます。
-   この関数への引数は :class:`FileInput` クラスのコンストラクタへ渡されます。
+   Create an instance of the :class:`FileInput` class.  The instance will be used
+   as global state for the functions of this module, and is also returned to use
+   during iteration.  The parameters to this function will be passed along to the
+   constructor of the :class:`FileInput` class.
 
    .. versionchanged:: 2.5
-      パラメータ *mode* および *openhook* が追加されました.
+      Added the *mode* and *openhook* parameters.
 
-以下の関数は :func:`fileinput.input` 関数によって作られたグローバルな状態を利用します。
-アクティブな状態が無い場合には、 :exc:`RuntimeError` が発生します。
+The following functions use the global state created by :func:`fileinput.input`;
+if there is no active state, :exc:`RuntimeError` is raised.
 
 
 .. function:: filename()
 
-   現在読み込み中のファイル名を返します。一行目が読み込まれる前は ``None`` を返します。
+   Return the name of the file currently being read.  Before the first line has
+   been read, returns ``None``.
 
 
 .. function:: fileno()
 
-   現在のファイルの "ファイルデスクリプタ" を整数値で返します。ファイルがオープンされていない場合 (最初の行の前、ファイルとファイルの間) は ``-1``
-   を返します。
+   Return the integer "file descriptor" for the current file. When no file is
+   opened (before the first line and between files), returns ``-1``.
 
    .. versionadded:: 2.5
 
 
 .. function:: lineno()
 
-   最後に読み込まれた行の、累積した行番号を返します。1行目が読み込まれる前は ``0`` を返します。最後のファイルの最終行が読み込まれた後には、その
-   行の行番号を返します。
+   Return the cumulative line number of the line that has just been read.  Before
+   the first line has been read, returns ``0``.  After the last line of the last
+   file has been read, returns the line number of that line.
 
 
 .. function:: filelineno()
 
-   現在のファイル中での行番号を返します。1行目が読み込まれる前は ``0`` を返します。最後のファイルの最終行が読み込まれた後には、その
-   行のファイル中での行番号を返します。
+   Return the line number in the current file.  Before the first line has been
+   read, returns ``0``.  After the last line of the last file has been read,
+   returns the line number of that line within the file.
 
 
 .. function:: isfirstline()
 
-   最後に読み込まれた行がファイルの1行目ならTrue、そうでなければFalseを返します。
+   Returns true if the line just read is the first line of its file, otherwise
+   returns false.
 
 
 .. function:: isstdin()
 
-   最後に読み込まれた行が ``sys.stdin`` から読まれていればTrue、そうでなければFalseを返します。
+   Returns true if the last line was read from ``sys.stdin``, otherwise returns
+   false.
 
 
 .. function:: nextfile()
 
-   現在のファイルを閉じます。次の繰り返しでは(存在すれば)次のファイルの最初の行が読み込まれます。閉じたファイルの読み込まれなかった行は、累積の行
-   数にカウントされません。ファイル名は次のファイルの最初の行が読み込まれるまで変更されません。最初の行の読み込みが行われるまでは、この関数は呼
-   び出されても何もしませんので、最初のファイルをスキップするために利用することはできません。最後のファイルの最終行が読み込まれた後にも、この関
-   数は呼び出されても何もしません。
+   Close the current file so that the next iteration will read the first line from
+   the next file (if any); lines not read from the file will not count towards the
+   cumulative line count.  The filename is not changed until after the first line
+   of the next file has been read.  Before the first line has been read, this
+   function has no effect; it cannot be used to skip the first file.  After the
+   last line of the last file has been read, this function has no effect.
 
 
 .. function:: close()
 
-   シーケンスを閉じます。
+   Close the sequence.
 
-このモジュールのシーケンスの振舞いを実装しているクラスのサブクラスを作ることもできます。
+The class which implements the sequence behavior provided by the module is
+available for subclassing as well:
 
 
-.. class:: FileInput([files[, inplace[, backup[, mode[, openhook]]]]])
+.. class:: FileInput([files[, inplace[, backup[,bufsize[, mode[, openhook]]]]]])
 
-   :class:`FileInput` クラスはモジュールの関数に対応するメソッド
-   :meth:`filename` 、 :meth:`fileno` 、 :meth:`lineno` 、
-   :meth:`filelineno` 、 :meth:`isfirstline` 、 :meth:`isstdin` 、 :meth:`nextfile` および
-   :meth:`close` を実装しています。それに加えて、次の入力行を返す :meth:`readline` メソッドと、シーケンスの振舞
-   いの実装をしている :meth:`__getitem__` メソッドがあります。シーケンスはシーケンシャルに読み込むことしかできません。
-   つまりランダムアクセスと :meth:`readline` を混在させることはできません。
+   Class :class:`FileInput` is the implementation; its methods :meth:`filename`,
+   :meth:`fileno`, :meth:`lineno`, :meth:`filelineno`, :meth:`isfirstline`,
+   :meth:`isstdin`, :meth:`nextfile` and :meth:`close` correspond to the
+   functions of the same name in the module. In addition it has a
+   :meth:`~file.readline` method which returns the next input line,
+   and a :meth:`__getitem__` method which implements the sequence behavior.
+   The sequence must be accessed in strictly sequential order; random access
+   and :meth:`~file.readline` cannot be mixed.
 
-   *mode* を使用すると、 :func:`open` に渡すファイルモードを指定することができます。これは ``'r'`` 、 ``'rU'`` 、 ``'U'``
-   および ``'rb'`` のうちのいずれかとなります。
+   With *mode* you can specify which file mode will be passed to :func:`open`. It
+   must be one of ``'r'``, ``'rU'``, ``'U'`` and ``'rb'``.
 
-   *openhook* を指定する場合は、ふたつの引数 *filename* と *mode* をとる関数でなければなりません。この関数の返り値は、オー
-   プンしたファイルオブジェクトとなります。 *inplace* と *openhook* を同時に使うことはできません。
+   The *openhook*, when given, must be a function that takes two arguments,
+   *filename* and *mode*, and returns an accordingly opened file-like object. You
+   cannot use *inplace* and *openhook* together.
 
    .. versionchanged:: 2.5
-      パラメータ *mode* および *openhook* が追加されました.
+      Added the *mode* and *openhook* parameters.
 
-**インプレース(in-place)フィルタオプション:** キーワード引数 ``inplace=1`` が :func:`input` か
-:class:`FileInput` クラスのコンストラクタに渡された場合には、
-入力ファイルはバックアップファイルに移動され、標準出力が入力ファイルに設定されます(バックアップファイルと同じ名前のファイルが既に存在していた
-場合には、警告無しに置き替えられます)。これによって入力ファイルをその場で書き替えるフィルタを書くことができます。
-キーワード引数 *backup* (通常は ``backup='.<拡張子>'`` という形で利用します)が与えられていた場合、
-バックアップファイルの拡張子として利用され、バックアップファイルは削除されずに残ります。
-デフォルトでは、拡張子は ``'.bak'`` になっていて、出力先のファイルが閉じられればバックアップファイルも消されます。
-インプレースフィルタ機能は、標準入力を読み込んでいる間は無効にされます。
+**Optional in-place filtering:** if the keyword argument ``inplace=1`` is passed
+to :func:`fileinput.input` or to the :class:`FileInput` constructor, the file is
+moved to a backup file and standard output is directed to the input file (if a
+file of the same name as the backup file already exists, it will be replaced
+silently).  This makes it possible to write a filter that rewrites its input
+file in place.  If the *backup* parameter is given (typically as
+``backup='.<some extension>'``), it specifies the extension for the backup file,
+and the backup file remains around; by default, the extension is ``'.bak'`` and
+it is deleted when the output file is closed.  In-place filtering is disabled
+when standard input is read.
 
 .. note::
-    現在の実装はMS-DOSの8+3ファイルシステムでは動作しません。
 
-このモジュールには、次のふたつのオープン時フックが用意されています。
+   The current implementation does not work for MS-DOS 8+3 filesystems.
 
+
+The two following opening hooks are provided by this module:
 
 .. function:: hook_compressed(filename, mode)
 
-   gzipやbzip2で圧縮された(拡張子が ``'.gz'`` や ``'.bz2'`` の)
-   ファイルを、 :mod:`gzip` モジュールや :mod:`bz2` モジュールを使って透過的にオープンします。ファイルの拡張子が ``'.gz'`` や
-   ``'.bz2'`` でない場合は、通常通りファイルをオープンします (つまり、 :func:`open` をコールする際に伸長を行いません)。
+   Transparently opens files compressed with gzip and bzip2 (recognized by the
+   extensions ``'.gz'`` and ``'.bz2'``) using the :mod:`gzip` and :mod:`bz2`
+   modules.  If the filename extension is not ``'.gz'`` or ``'.bz2'``, the file is
+   opened normally (ie, using :func:`open` without any decompression).
 
-   使用例: ``fi = fileinput.FileInput(openhook=fileinput.hook_compressed)``
+   Usage example:  ``fi = fileinput.FileInput(openhook=fileinput.hook_compressed)``
 
    .. versionadded:: 2.5
 
 
 .. function:: hook_encoded(encoding)
 
-   各ファイルを :func:`codecs.open` でオープンするフックを返します。指定した *encoding* でファイルを読み込みます。
+   Returns a hook which opens each file with :func:`codecs.open`, using the given
+   *encoding* to read the file.
 
-   使用例: ``fi = fileinput.FileInput(openhook=fileinput.hook_encoded("iso-8859-1"))``
+   Usage example: ``fi =
+   fileinput.FileInput(openhook=fileinput.hook_encoded("iso-8859-1"))``
 
    .. note::
 
-      このフックでは、指定した *encoding* によっては :class:`FileInput` がUnicode文字列を返す可能性があります。
+      With this hook, :class:`FileInput` might return Unicode strings depending on the
+      specified *encoding*.
 
    .. versionadded:: 2.5
 

@@ -1,75 +1,76 @@
-:mod:`CGIHTTPServer` ---  CGI 実行機能付き HTTP リクエスト処理機構
-==================================================================
+:mod:`CGIHTTPServer` --- CGI-capable HTTP request handler
+=========================================================
 
 .. module:: CGIHTTPServer
-   :synopsis: CGI スクリプトの実行機能を持つ HTTP サーバのためのリクエスト処理機構を提供します。
+   :synopsis: This module provides a request handler for HTTP servers which can run CGI
+              scripts.
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 .. note::
+   The :mod:`CGIHTTPServer` module has been merged into :mod:`http.server` in
+   Python 3.  The :term:`2to3` tool will automatically adapt imports when
+   converting your sources to Python 3.
 
-   :mod:`BaseHTTPServer` モジュールは Python 3.0 では :mod:`http.server` に統合されました。
-   ソースコードを 3.0 用に変換する時は、 :term:`2to3` ツールが自動的に import を修正します。
 
-
-
-:mod:`CGIHTTPServer` モジュールでは、 :class:`BaseHTTPServer.BaseHTTPRequestHandler`
-互換のインタフェースを持ち、 :class:`SimpleHTTPServer.SimpleHTTPRequestHandler` の動作を継承していますが
-CGI スクリプトを動作することもできる、 HTTP 要求処理機構クラスを定義しています。
-
-.. note::
-
-   このモジュールは CGI スクリプトを Unix および Windows システム上で実行させることができます。
+The :mod:`CGIHTTPServer` module defines a request-handler class, interface
+compatible with :class:`BaseHTTPServer.BaseHTTPRequestHandler` and inherits
+behavior from :class:`SimpleHTTPServer.SimpleHTTPRequestHandler` but can also
+run CGI scripts.
 
 .. note::
 
-   :class:`CGIHTTPRequestHandler` クラスで実行されるCGIスクリプトは HTTP コード200
-   (スクリプトの出力が後に続く)を実行に先立って出力される (これがステータスコードになります)
-   ため、リダイレクト(コード302)を行なうことができません。
+   This module can run CGI scripts on Unix and Windows systems.
 
-:mod:`CGIHTTPServer` モジュールでは、以下のクラスを定義しています:
+.. note::
+
+   CGI scripts run by the :class:`CGIHTTPRequestHandler` class cannot execute
+   redirects (HTTP code 302), because code 200 (script output follows) is sent
+   prior to execution of the CGI script.  This pre-empts the status code.
+
+The :mod:`CGIHTTPServer` module defines the following class:
 
 
 .. class:: CGIHTTPRequestHandler(request, client_address, server)
 
-   このクラスは、現在のディレクトリかその下のディレクトリにおいて、ファイルか CGI
-   スクリプト出力を提供するために使われます。
-   HTTP 階層構造からローカルなディレクトリ構造への対応付けは
-   :class:`SimpleHTTPServer.SimpleHTTPRequestHandler` と全く同じなので注意してください。
+   This class is used to serve either files or output of CGI scripts from  the
+   current directory and below. Note that mapping HTTP hierarchic structure to
+   local directory structure is exactly as in
+   :class:`SimpleHTTPServer.SimpleHTTPRequestHandler`.
 
-   このクラスでは、ファイルが CGI スクリプトであると推測された場合、
-   これをファイルして提供する代わりにスクリプトを実行します。
-   他の一般的なサーバ設定は特殊な拡張子を使って CGI スクリプトであることを示すのに対し、
-   ディレクトリベースの CGI だけが使われます。
+   The class will however, run the CGI script, instead of serving it as a file, if
+   it guesses it to be a CGI script. Only directory-based CGI are used --- the
+   other common server configuration is to treat special extensions as denoting CGI
+   scripts.
 
-   :func:`do_GET` および :func:`do_HEAD` 関数は、HTTP 要求が ``cgi_directories``
-   パス以下のどこかを指している場合、ファイルを提供するのではなく、CGI
-   スクリプトを実行してその出力を提供するように変更されています。
+   The :func:`do_GET` and :func:`do_HEAD` functions are modified to run CGI scripts
+   and serve the output, instead of serving files, if the request leads to
+   somewhere below the ``cgi_directories`` path.
 
-    :class:`CGIHTTPRequestHandler` では以下のデータメンバを定義しています:
+   The :class:`CGIHTTPRequestHandler` defines the following data member:
 
 
    .. attribute:: cgi_directories
 
-      この値は標準で ``['/cgi-bin', '/htbin']`` であり、CGI
-      スクリプトを含んでいることを示すディレクトリを記述します。
+      This defaults to ``['/cgi-bin', '/htbin']`` and describes directories to
+      treat as containing CGI scripts.
 
-   :class:`CGIHTTPRequestHandler` では以下のメソッドを定義しています:
+   The :class:`CGIHTTPRequestHandler` defines the following methods:
 
 
    .. method:: do_POST()
 
-      このメソッドは、CGI スクリプトでのみ許されている ``'POST'``
-      型の HTTP 要求に対するサービスを行います。 CGI でない url に対して
-      POST を試みた場合、出力は Error 501, "Can only POST to CGI scripts" になります。
+      This method serves the ``'POST'`` request type, only allowed for CGI
+      scripts.  Error 501, "Can only POST to CGI scripts", is output when trying
+      to POST to a non-CGI url.
 
-セキュリティ上の理由から、CGI スクリプトはユーザ nobody の UID で動作するので注意してください。
-CGI スクリプトが原因で発生した問題は、Error 403 に変換されます。
+Note that CGI scripts will be run with UID of user nobody, for security reasons.
+Problems with the CGI script will be translated to error 403.
 
-使用例については、 :func:`test` 関数の実装を参照してください。
+For example usage, see the implementation of the :func:`test` function.
 
 
 .. seealso::
 
    Module :mod:`BaseHTTPServer`
-      Web サーバとリクエスト処理機構を実装した基底クラスです。
+      Base class implementation for Web server and request handler.
 

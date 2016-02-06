@@ -1,9 +1,9 @@
 
-:mod:`parser` --- Python 解析木にアクセスする
-=============================================
+:mod:`parser` --- Access Python parse trees
+===========================================
 
 .. module:: parser
-   :synopsis: Python ソースコードに対する解析木へのアクセス。
+   :synopsis: Access parse trees for Python source code.
 .. moduleauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
@@ -17,288 +17,326 @@
 
 .. index:: single: parsing; Python source code
 
-:mod:`parser` モジュールは Python の内部パーサとバイトコード・コンパイラへのインターフェイスを提供します。
-このインターフェイスの第一の目的は、 Python コードから Python の式の解析木を編集したり、これから実行可能なコードを作成したりできるようにすることです。
-これは任意の Python コードの断片を文字列として構文解析や変更を行うより良い方法です。
-なぜなら、構文解析がアプリケーションを作成するコードと同じ方法で実行されるからです。
-その上、高速です。
+The :mod:`parser` module provides an interface to Python's internal parser and
+byte-code compiler.  The primary purpose for this interface is to allow Python
+code to edit the parse tree of a Python expression and create executable code
+from this.  This is better than trying to parse and modify an arbitrary Python
+code fragment as a string because parsing is performed in a manner identical to
+the code forming the application.  It is also faster.
 
 .. note::
 
-   Python 2.5 以降、抽象構文木 (AST) の生成・コンパイルの段階に割り込むには
-   :mod:`ast` モジュールを使うのがずっとお手軽です。
+   From Python 2.5 onward, it's much more convenient to cut in at the Abstract
+   Syntax Tree (AST) generation and compilation stage, using the :mod:`ast`
+   module.
 
-   .. TODO: cut in = 割り込むで良い?
+   The :mod:`parser` module exports the names documented here also with "st"
+   replaced by "ast"; this is a legacy from the time when there was no other
+   AST and has nothing to do with the AST found in Python 2.5.  This is also the
+   reason for the functions' keyword arguments being called *ast*, not *st*.
+   The "ast" functions have been removed in Python 3.
 
-   :mod:`parser` モジュールはこの文書に書かれている名前の "st" を "ast"
-   に置き換えたものも使えるようにしてあります。
-   こうした名前は Python 2.5 で AST を扱い始める前の AST が他になかった頃から名残です。
-   このことはまた関数の引数が *st* ではなく *ast* と呼ばれていることの理由でもあります。
-   "ast" 系の名前は Python 3.0 で無くなります。
+There are a few things to note about this module which are important to making
+use of the data structures created.  This is not a tutorial on editing the parse
+trees for Python code, but some examples of using the :mod:`parser` module are
+presented.
 
-このモジュールについて注意すべきことが少しあります。
-それは作成したデータ構造を利用するために重要なことです。
-この文書は Python コードの解析木を編集するためのチュートリアルではありませんが、
-:mod:`parser` モジュールを使った例をいくつか示しています。
+Most importantly, a good understanding of the Python grammar processed by the
+internal parser is required.  For full information on the language syntax, refer
+to :ref:`reference-index`.  The parser
+itself is created from a grammar specification defined in the file
+:file:`Grammar/Grammar` in the standard Python distribution.  The parse trees
+stored in the ST objects created by this module are the actual output from the
+internal parser when created by the :func:`expr` or :func:`suite` functions,
+described below.  The ST objects created by :func:`sequence2st` faithfully
+simulate those structures.  Be aware that the values of the sequences which are
+considered "correct" will vary from one version of Python to another as the
+formal grammar for the language is revised.  However, transporting code from one
+Python version to another as source text will always allow correct parse trees
+to be created in the target version, with the only restriction being that
+migrating to an older version of the interpreter will not support more recent
+language constructs.  The parse trees are not typically compatible from one
+version to another, whereas source code has always been forward-compatible.
 
-もっとも重要なことは、内部パーサが処理する Python の文法についてよく理解しておく必要があるということです。
-言語の文法に関する完全な情報については、
-:ref:`reference-index` を参照してください。
-標準の Python ディストリビューションに含まれるファイル :file:`Grammar/Grammar`
-の中で定義されている文法仕様から、パーサ自身は作成されています。
-このモジュールが作成する ST オブジェクトの中に格納される解析木は、下で説明する
-:func:`expr` または :func:`suite` 関数によって作られるときに内部パーサから実際に出力されるものです。
-:func:`sequence2st` が作る ST オブジェクトは忠実にこれらの構造をシミュレートしています。
-言語の形式文法が改訂されるために、 "正しい" と考えられるシーケンスの値が Python
-のあるバージョンから別のバージョンで変化することがあるということに注意してください。
-しかし、 Python のあるバージョンから別のバージョンへテキストのソースのままコードを移せば、目的のバージョンで正しい解析木を常に作成できます。
-ただし、インタープリタの古いバージョンへ移行する際に、最近の言語コンストラクトをサポートしていないことがあるという制限だけがあります。
-ソースコードが常に前方互換性があるのに対して、一般的に解析木はあるバージョンから別のバージョンへの互換性がありません。
+Each element of the sequences returned by :func:`st2list` or :func:`st2tuple`
+has a simple form.  Sequences representing non-terminal elements in the grammar
+always have a length greater than one.  The first element is an integer which
+identifies a production in the grammar.  These integers are given symbolic names
+in the C header file :file:`Include/graminit.h` and the Python module
+:mod:`symbol`.  Each additional element of the sequence represents a component
+of the production as recognized in the input string: these are always sequences
+which have the same form as the parent.  An important aspect of this structure
+which should be noted is that keywords used to identify the parent node type,
+such as the keyword :keyword:`if` in an :const:`if_stmt`, are included in the
+node tree without any special treatment.  For example, the :keyword:`if` keyword
+is represented by the tuple ``(1, 'if')``, where ``1`` is the numeric value
+associated with all :const:`NAME` tokens, including variable and function names
+defined by the user.  In an alternate form returned when line number information
+is requested, the same token might be represented as ``(1, 'if', 12)``, where
+the ``12`` represents the line number at which the terminal symbol was found.
 
-:func:`st2list` または :func:`st2tuple` から返されるシーケンスのそれぞれの要素は単純な形式です。
-文法の非終端要素を表すシーケンスは常に一より大きい長さを持ちます。
-最初の要素は文法の生成規則を識別する整数です。
-これらの整数は C ヘッダファイル :file:`Include/graminit.h` と Python モジュール :mod:`symbol` の中の特定のシンボル名です。
-シーケンスに付け加えられている各要素は、入力文字列の中で認識されたままの形で生成規則の構成要素を表しています:
-これらは常に親と同じ形式を持つシーケンスです。
-この構造の注意すべき重要な側面は、 :const:`if_stmt` の中のキーワード :keyword:`if` のような親ノードの型を識別するために使われるキーワードがいかなる特別な扱いもなくノードツリーに含まれているということです。
-例えば、 :keyword:`if` キーワードはタプル ``(1, 'if')`` と表されます。
-ここで、 ``1`` は、ユーザが定義した変数名と関数名を含むすべての :const:`NAME` トークンに対応する数値です。
-行番号情報が必要なときに返される別の形式では、同じトークンが ``(1, 'if', 12)`` のように表されます。
-ここでは、 ``12`` が終端記号の見つかった行番号を表しています。
+Terminal elements are represented in much the same way, but without any child
+elements and the addition of the source text which was identified.  The example
+of the :keyword:`if` keyword above is representative.  The various types of
+terminal symbols are defined in the C header file :file:`Include/token.h` and
+the Python module :mod:`token`.
 
-終端要素は同じ方法で表現されますが、子の要素や識別されたソーステキストの追加は全くありません。
-上記の :keyword:`if` キーワードの例が代表的なものです。
-終端記号のいろいろな型は、 C ヘッダファイル :file:`Include/token.h` と Python モジュール :mod:`token` で定義されています。
+The ST objects are not required to support the functionality of this module,
+but are provided for three purposes: to allow an application to amortize the
+cost of processing complex parse trees, to provide a parse tree representation
+which conserves memory space when compared to the Python list or tuple
+representation, and to ease the creation of additional modules in C which
+manipulate parse trees.  A simple "wrapper" class may be created in Python to
+hide the use of ST objects.
 
-ST オブジェクトはこのモジュールの機能をサポートするために必要ありませんが、三つの目的から提供されています:
-アプリケーションが複雑な解析木を処理するコストを償却するため、
-Python のリストやタプル表現に比べてメモリ空間を保全する解析木表現を提供するため、
-解析木を操作する追加モジュールを C で作ることを簡単にするため。
-ST オブジェクトを使っていることを隠すために、簡単な "ラッパー" クラスを Python
-で作ることができます。
-
-:mod:`parser` モジュールは二、三の別々の目的のために関数を定義しています。
-もっとも重要な目的は ST オブジェクトを作ることと、
-ST オブジェクトを解析木とコンパイルされたコードオブジェクトのような他の表現に変換することです。
-しかし、 ST オブジェクトで表現された解析木の型を調べるために役に立つ関数もあります。
+The :mod:`parser` module defines functions for a few distinct purposes.  The
+most important purposes are to create ST objects and to convert ST objects to
+other representations such as parse trees and compiled code objects, but there
+are also functions which serve to query the type of parse tree represented by an
+ST object.
 
 
 .. seealso::
 
-   :mod:`symbol` モジュール
-      解析木の内部ノードを表す便利な定数。
+   Module :mod:`symbol`
+      Useful constants representing internal nodes of the parse tree.
 
-   :mod:`token` モジュール
-      便利な解析木の葉のノードを表す定数とノード値をテストするための関数。
+   Module :mod:`token`
+      Useful constants representing leaf nodes of the parse tree and functions for
+      testing node values.
 
 
 .. _creating-sts:
 
-ST オブジェクトを作成する
--------------------------
+Creating ST Objects
+-------------------
 
-ST オブジェクトはソースコードあるいは解析木から作られます。
-ST オブジェクトをソースから作るときは、 ``'eval'`` と ``'exec'`` 形式を作成するために別々の関数が使われます。
+ST objects may be created from source code or from a parse tree. When creating
+an ST object from source, different functions are used to create the ``'eval'``
+and ``'exec'`` forms.
 
 
 .. function:: expr(source)
 
-   まるで ``compile(source, 'file.py', 'eval')`` への入力であるかのように、
-   :func:`expr` 関数はパラメータ *source* を構文解析します。
-   解析が成功した場合は、 ST オブジェクトは内部解析木表現を保持するために作成されます。
-   そうでなければ、適切な例外を発生させます。
+   The :func:`expr` function parses the parameter *source* as if it were an input
+   to ``compile(source, 'file.py', 'eval')``.  If the parse succeeds, an ST object
+   is created to hold the internal parse tree representation, otherwise an
+   appropriate exception is raised.
 
 
 .. function:: suite(source)
 
-   まるで ``compile(source, 'file.py', 'exec')`` への入力であるかのように、
-   :func:`suite` 関数はパラメータ *source* を構文解析します。
-   解析が成功した場合は、 ST オブジェクトは内部解析木表現を保持するために作成されます。
-   そうでなければ、適切な例外を発生させます。
+   The :func:`suite` function parses the parameter *source* as if it were an input
+   to ``compile(source, 'file.py', 'exec')``.  If the parse succeeds, an ST object
+   is created to hold the internal parse tree representation, otherwise an
+   appropriate exception is raised.
 
 
 .. function:: sequence2st(sequence)
 
-   この関数はシーケンスとして表現された解析木を受け取り、可能ならば内部表現を作ります。
-   木が Python の文法に合っていることと、すべてのノードが Python のホストバージョンで有効なノード型であることを確認した場合は、
-   ST オブジェクトが内部表現から作成されて呼び出し側へ返されます。
-   内部表現の作成に問題があるならば、あるいは木が正しいと確認できないならば、
-   :exc:`ParserError` 例外を発生します。
-   この方法で作られた ST オブジェクトが正しくコンパイルできると決めつけない方がよいでしょう。
-   ST オブジェクトが :func:`compilest` へ渡されたとき、コンパイルによって送出された通常の例外がまだ発生するかもしれません。
-   これは(:exc:`MemoryError` 例外のような)構文に関係していない問題を示すのかもしれないし、
-   ``del f(0)`` を解析した結果のようなコンストラクトが原因であるかもしれません。
-   このようなコンストラクトは Python のパーサを逃れますが、バイトコードインタープリタによってチェックされます。
+   This function accepts a parse tree represented as a sequence and builds an
+   internal representation if possible.  If it can validate that the tree conforms
+   to the Python grammar and all nodes are valid node types in the host version of
+   Python, an ST object is created from the internal representation and returned
+   to the called.  If there is a problem creating the internal representation, or
+   if the tree cannot be validated, a :exc:`ParserError` exception is raised.  An
+   ST object created this way should not be assumed to compile correctly; normal
+   exceptions raised by compilation may still be initiated when the ST object is
+   passed to :func:`compilest`.  This may indicate problems not related to syntax
+   (such as a :exc:`MemoryError` exception), but may also be due to constructs such
+   as the result of parsing ``del f(0)``, which escapes the Python parser but is
+   checked by the bytecode compiler.
 
-   終端トークンを表すシーケンスは、 ``(1, 'name')`` 形式の二つの要素のリストか、または ``(1, 'name', 56)`` 形式の三つの要素のリストです。
-   三番目の要素が存在する場合は、有効な行番号だとみなされます。
-   行番号が指定されるのは、入力木の終端記号の一部に対してです。
+   Sequences representing terminal tokens may be represented as either two-element
+   lists of the form ``(1, 'name')`` or as three-element lists of the form ``(1,
+   'name', 56)``.  If the third element is present, it is assumed to be a valid
+   line number.  The line number may be specified for any subset of the terminal
+   symbols in the input tree.
 
 
 .. function:: tuple2st(sequence)
 
-   これは :func:`sequence2st` と同じ関数です。
-   このエントリポイントは後方互換性のために維持されています。
+   This is the same function as :func:`sequence2st`.  This entry point is
+   maintained for backward compatibility.
 
 
 .. _converting-sts:
 
-ST オブジェクトを変換する
--------------------------
+Converting ST Objects
+---------------------
 
-作成するために使われた入力に関係なく、 ST オブジェクトはリスト木またはタプル木として表される解析木へ変換されるか、または実行可能なオブジェクトへコンパイルされます。
-解析木は行番号情報を持って、あるいは持たずに抽出されます。
+ST objects, regardless of the input used to create them, may be converted to
+parse trees represented as list- or tuple- trees, or may be compiled into
+executable code objects.  Parse trees may be extracted with or without line
+numbering information.
 
 
 .. function:: st2list(ast[, line_info])
 
-   この関数は呼び出し側から *ast* に ST オブジェクトを受け取り、解析木と等価な
-   Python のリストを返します。
-   結果のリスト表現はインスペクションあるいはリスト形式の新しい解析木の作成に使うことができます。
-   リスト表現を作るためにメモリが利用できる限り、この関数は失敗しません。
-   解析木がインスペクションのためだけにつかわれるならば、メモリの消費量と断片化を減らすために :func:`st2tuple` を代わりに使うべきです。
-   リスト表現が必要とされるとき、この関数はタプル表現を取り出して入れ子のリストに変換するよりかなり高速です。
+   This function accepts an ST object from the caller in *ast* and returns a
+   Python list representing the equivalent parse tree.  The resulting list
+   representation can be used for inspection or the creation of a new parse tree in
+   list form.  This function does not fail so long as memory is available to build
+   the list representation.  If the parse tree will only be used for inspection,
+   :func:`st2tuple` should be used instead to reduce memory consumption and
+   fragmentation.  When the list representation is required, this function is
+   significantly faster than retrieving a tuple representation and converting that
+   to nested lists.
 
-   *line_info* が真ならば、トークンを表すリストの三番目の要素として行番号情報がすべての終端トークンに含まれます。
-   与えられた行番号はトークン *が終わる* 行を指定していることに注意してください。
-   フラグが偽または省略された場合は、この情報は省かれます。
+   If *line_info* is true, line number information will be included for all
+   terminal tokens as a third element of the list representing the token.  Note
+   that the line number provided specifies the line on which the token *ends*.
+   This information is omitted if the flag is false or omitted.
 
 
 .. function:: st2tuple(ast[, line_info])
 
-   この関数は呼び出し側から *ast* に ST オブジェクトを受け取り、解析木と等価な
-   Python のタプルを返します。
-   リストの代わりにタプルを返す以外は、この関数は :func:`st2list` と同じです。
+   This function accepts an ST object from the caller in *ast* and returns a
+   Python tuple representing the equivalent parse tree.  Other than returning a
+   tuple instead of a list, this function is identical to :func:`st2list`.
 
-   *line_info* が真ならば、トークンを表すリストの三番目の要素として行番号情報がすべての終端トークンに含まれます。
-   フラグが偽または省略された場合は、この情報は省かれます。
+   If *line_info* is true, line number information will be included for all
+   terminal tokens as a third element of the list representing the token.  This
+   information is omitted if the flag is false or omitted.
 
 
-.. function:: compilest(ast[, filename='<syntax-tree>'])
+.. function:: compilest(ast, filename='<syntax-tree>')
 
    .. index:: builtin: eval
 
-   :keyword:`exec` 文の一部として使える、あるいは、組み込み :func:`eval`
-   関数への呼び出しとして使えるコードオブジェクトを生成するために、
-   Python バイトコードコンパイラを ST オブジェクトに対して呼び出すことができます。
-   この関数はコンパイラへのインターフェイスを提供し、
-   *filename* パラメータで指定されるソースファイル名を使って、
-   *ast* からパーサへ内部解析木を渡します。
-   *filename* に与えられるデフォルト値は、
-   ソースが ST オブジェクトだったことを示唆しています。
+   The Python byte compiler can be invoked on an ST object to produce code objects
+   which can be used as part of an :keyword:`exec` statement or a call to the
+   built-in :func:`eval` function. This function provides the interface to the
+   compiler, passing the internal parse tree from *ast* to the parser, using the
+   source file name specified by the *filename* parameter. The default value
+   supplied for *filename* indicates that the source was an ST object.
 
-   ST オブジェクトをコンパイルすることは、コンパイルに関する例外を引き起こすことになるかもしれません。
-   例としては、 ``del f(0)`` の解析木によって発生させられる :exc:`SyntaxError` があります:
-   この文は Python の形式文法としては正しいと考えられますが、正しい言語コンストラクトではありません。
-   この状況に対して発生する :exc:`SyntaxError` は、実際には Python バイトコンパイラによって通常作り出されます。
-   これが :mod:`parser` モジュールがこの時点で例外を発生できる理由です。
-   解析木のインスペクションを行うことで、コンパイルが失敗するほとんどの原因をプログラムによって診断することができます。
+   Compiling an ST object may result in exceptions related to compilation; an
+   example would be a :exc:`SyntaxError` caused by the parse tree for ``del f(0)``:
+   this statement is considered legal within the formal grammar for Python but is
+   not a legal language construct.  The :exc:`SyntaxError` raised for this
+   condition is actually generated by the Python byte-compiler normally, which is
+   why it can be raised at this point by the :mod:`parser` module.  Most causes of
+   compilation failure can be diagnosed programmatically by inspection of the parse
+   tree.
 
 
 .. _querying-sts:
 
-ST オブジェクトに対する問い合わせ
----------------------------------
+Queries on ST Objects
+---------------------
 
-ST が式または suite として作成されたかどうかをアプリケーションが決定できるようにする二つの関数が提供されています。
-これらの関数のどちらも、 ST が :func:`expr` または :func:`suite` を通してソースコードから作られたかどうか、あるいは、 :func:`sequence2st` を通して解析木から作られたかどうかを決定できません。
+Two functions are provided which allow an application to determine if an ST was
+created as an expression or a suite.  Neither of these functions can be used to
+determine if an ST was created from source code via :func:`expr` or
+:func:`suite` or from a parse tree via :func:`sequence2st`.
 
 
 .. function:: isexpr(ast)
 
    .. index:: builtin: compile
 
-   *ast* が ``'eval'`` 形式を表している場合に、この関数は真を返します。
-   そうでなければ、偽を返します。
-   これは役に立ちます。
-   なぜならば、通常は既存の組み込み関数を使ってもコードオブジェクトに対してこの情報を問い合わせることができないからです。
-   このどちらのようにも :func:`compilest` によって作成されたコードオブジェクトに問い合わせることはできませんし、そのコードオブジェクトは組み込み :func:`compile` 関数によって作成されたコードオブジェクトと同じであることに注意してください。
+   When *ast* represents an ``'eval'`` form, this function returns true, otherwise
+   it returns false.  This is useful, since code objects normally cannot be queried
+   for this information using existing built-in functions.  Note that the code
+   objects created by :func:`compilest` cannot be queried like this either, and
+   are identical to those created by the built-in :func:`compile` function.
 
 
 .. function:: issuite(ast)
 
-   ST オブジェクトが(通常 "suite" として知られる) ``'exec'`` 形式を表しているかどうかを報告するという点で、この関数は :func:`isexpr` に酷似しています。
-   追加の構文が将来サポートされるかもしれないので、この関数が ``not isexpr(ast)`` と等価であるとみなすのは安全ではありません。
+   This function mirrors :func:`isexpr` in that it reports whether an ST object
+   represents an ``'exec'`` form, commonly known as a "suite."  It is not safe to
+   assume that this function is equivalent to ``not isexpr(ast)``, as additional
+   syntactic fragments may be supported in the future.
 
 
-.. _as-errors:
+.. _st-errors:
 
-例外とエラー処理
-----------------
+Exceptions and Error Handling
+-----------------------------
 
-parser モジュールは例外を一つ定義していますが、 Python ランタイム環境の他の部分が提供する別の組み込み例外を発生させることもあります。
-各関数が発生させる例外の情報については、それぞれ関数を参照してください。
+The parser module defines a single exception, but may also pass other built-in
+exceptions from other portions of the Python runtime environment.  See each
+function for information about the exceptions it can raise.
 
 
 .. exception:: ParserError
 
-   parser モジュール内部で障害が起きたときに発生する例外。
-   普通の構文解析中に発生する組み込みの :exc:`SyntaxError` ではなく、一般的に妥当性確認が失敗した場合に引き起こされます。
-   例外の引数としては、障害の理由を説明する文字列である場合と、 :func:`sequence2st` へ渡される解析木の中の障害を引き起こすシーケンスを含むタプルと説明用の文字列である場合があります。
-   モジュール内の他の関数の呼び出しは単純な文字列値を検出すればよいだけですが、 :func:`sequence2st` の呼び出しはどちらの例外の型も処理できる必要があります。
+   Exception raised when a failure occurs within the parser module.  This is
+   generally produced for validation failures rather than the built-in
+   :exc:`SyntaxError` raised during normal parsing. The exception argument is
+   either a string describing the reason of the failure or a tuple containing a
+   sequence causing the failure from a parse tree passed to :func:`sequence2st`
+   and an explanatory string.  Calls to :func:`sequence2st` need to be able to
+   handle either type of exception, while calls to other functions in the module
+   will only need to be aware of the simple string values.
 
-普通は構文解析とコンパイル処理によって発生する例外を、関数 :func:`compilest` 、 :func:`expr` および :func:`suite` が発生させることに注意してください。
-このような例外には組み込み例外 :exc:`MemoryError` 、 :exc:`OverflowError` 、 :exc:`SyntaxError` および :exc:`SystemError` が含まれます。
-こうした場合には、これらの例外が通常その例外に関係する全ての意味を伝えます。
-詳細については、各関数の説明を参照してください。
+Note that the functions :func:`compilest`, :func:`expr`, and :func:`suite` may
+raise exceptions which are normally raised by the parsing and compilation
+process.  These include the built in exceptions :exc:`MemoryError`,
+:exc:`OverflowError`, :exc:`SyntaxError`, and :exc:`SystemError`.  In these
+cases, these exceptions carry all the meaning normally associated with them.
+Refer to the descriptions of each function for detailed information.
 
 
 .. _st-objects:
 
-ST オブジェクト
----------------
+ST Objects
+----------
 
-ST オブジェクト間の順序と等値性の比較がサポートされています。
-(:mod:`pickle` モジュールを使った) ST オブジェクトのピクルス化もサポートされています。
+Ordered and equality comparisons are supported between ST objects. Pickling of
+ST objects (using the :mod:`pickle` module) is also supported.
 
 
 .. data:: STType
 
-   :func:`expr` 、 :func:`suite` と :func:`sequence2st` が返すオブジェクトの型。
+   The type of the objects returned by :func:`expr`, :func:`suite` and
+   :func:`sequence2st`.
 
-ST オブジェクトは次のメソッドを持っています:
+ST objects have the following methods:
 
 
 .. method:: ST.compile([filename])
 
-   ``compilest(st, filename)`` と同じ。
+   Same as ``compilest(st, filename)``.
 
 
 .. method:: ST.isexpr()
 
-   ``isexpr(st)`` と同じ。
+   Same as ``isexpr(st)``.
 
 
 .. method:: ST.issuite()
 
-   ``issuite(st)`` と同じ。
+   Same as ``issuite(st)``.
 
 
 .. method:: ST.tolist([line_info])
 
-   ``st2list(ast, line_info)`` と同じ。
+   Same as ``st2list(st, line_info)``.
 
 
 .. method:: ST.totuple([line_info])
 
-   ``st2tuple(ast, line_info)`` と同じ。
+   Same as ``st2tuple(st, line_info)``.
 
 
-例: :func:`compile` のエミュレーション
-----------------------------------------
+Example: Emulation of :func:`compile`
+-------------------------------------
 
-たくさんの有用な演算を構文解析とバイトコード生成の間に行うことができますが、もっとも単純な演算は何もしないことです。
-このため、 :mod:`parser` モジュールを使って中間データ構造を作ることは次のコードと等価です。
-::
+While many useful operations may take place between parsing and bytecode
+generation, the simplest operation is to do nothing.  For this purpose, using
+the :mod:`parser` module to produce an intermediate data structure is equivalent
+to the code ::
 
    >>> code = compile('a + 5', 'file.py', 'eval')
    >>> a = 5
    >>> eval(code)
    10
 
-:mod:`parser` モジュールを使った等価な演算はやや長くなりますが、
-ST オブジェクトとして中間内部解析木が維持されるようにします::
+The equivalent operation using the :mod:`parser` module is somewhat longer, and
+allows the intermediate internal parse tree to be retained as an ST object::
 
    >>> import parser
    >>> st = parser.expr('a + 5')
@@ -307,7 +345,8 @@ ST オブジェクトとして中間内部解析木が維持されるように�
    >>> eval(code)
    10
 
-ST とコードオブジェクトの両方が必要なアプリケーションでは、このコードを簡単に利用できる関数にまとめることができます::
+An application which needs both ST and code objects can package this code into
+readily available functions::
 
    import parser
 
@@ -318,4 +357,3 @@ ST とコードオブジェクトの両方が必要なアプリケーション�
    def load_expression(source_string):
        st = parser.expr(source_string)
        return st, st.compile()
-

@@ -1,474 +1,501 @@
-
-:mod:`zipfile` --- ZIP アーカイブの処理
-=======================================
+:mod:`zipfile` --- Work with ZIP archives
+=========================================
 
 .. module:: zipfile
-   :synopsis: ZIP-フォーマットのアーカイブファイルを読み書きする
+   :synopsis: Read and write ZIP-format archive files.
 .. moduleauthor:: James C. Ahlstrom <jim@interet.com>
 .. sectionauthor:: James C. Ahlstrom <jim@interet.com>
 
-
-.. % Japanese translation by Yasushi Mausda <y.masuda@acm.org>
-
 .. versionadded:: 1.6
 
-ZIP は一般によく知られているアーカイブ（書庫化）および圧縮の標準ファイルフォーマットです。このモジュールでは ZIP
-形式のファイルの作成、読み書き、追記、書庫内のファイル一覧の作成を行うためのツールを提供します。より高度な使い方でこのモジュールを利用したいなら、
-`PKZIP Application Note <http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_. に定義されている
-ZIP ファイルフォーマットを理解することが必要になるでしょう。
+**Source code:** :source:`Lib/zipfile.py`
 
-このモジュールは現在のところ、マルチディスク ZIP ファイルを扱うことはできません
-ZIP64 拡張を利用する ZIP ファイル (サイズが 4GB を超えるような ZIP ファイル) は扱えます。
-このモジュールは暗号化されたアーカイブの復号をサポートしますが、現在のところ、暗号化ファイルを作成することはできません。
-C言語ではなく、Pythonで実装されているため、復号は非常に遅いです。
+--------------
 
-他のアーカイブ形式については、 :mod:`bz2` 、 :mod:`gzip` 、および、 :mod:`tarfile` モジュールを参照下さい。
+The ZIP file format is a common archive and compression standard. This module
+provides tools to create, read, write, append, and list a ZIP file.  Any
+advanced use of this module will require an understanding of the format, as
+defined in `PKZIP Application Note
+<http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_.
 
-このモジュールでは、以下の項目が定義されています:
+This module does not currently handle multi-disk ZIP files.
+It can handle ZIP files that use the ZIP64 extensions
+(that is ZIP files that are more than 4 GByte in size).  It supports
+decryption of encrypted files in ZIP archives, but it currently cannot
+create an encrypted file.  Decryption is extremely slow as it is
+implemented in native Python rather than C.
 
-.. % raise error エラーの送出
-
+The module defines the following items:
 
 .. exception:: BadZipfile
 
-   不備のある ZIP ファイル操作の際に送出されるエラー (旧名称: ``zipfile.error``)
+   The error raised for bad ZIP files (old name: ``zipfile.error``).
 
 
 .. exception:: LargeZipFile
 
-   ZIP ファイルが ZIP64 の機能を必要とするとき、その機能が有効にされていないと送出されるエラー
+   The error raised when a ZIP file would require ZIP64 functionality but that has
+   not been enabled.
 
 
 .. class:: ZipFile
    :noindex:
 
-   ZIP ファイルの読み書きのためのクラスです。コンストラクタの詳細については、 :ref:`zipfile-objects` 節)
-   を参照してください。
+   The class for reading and writing ZIP files.  See section
+   :ref:`zipfile-objects` for constructor details.
 
 
 .. class:: PyZipFile
 
-   Python ライブラリを含む ZIP アーカイブを生成するためのクラスです。
+   Class for creating ZIP archives containing Python libraries.
 
 
 .. class:: ZipInfo([filename[, date_time]])
 
-   アーカイブ中のメンバに関する情報を提供するために用いられるクラスです。このクラスのインスタンスは
-   :class:`ZipFile` オブジェクトの :meth:`getinfo` および :meth:`infolist` メソッドによって返されます。
-   :mod:`zipfile` モジュールを利用するほとんどのユーザはこのオブジェクトを自ら生成する必要はなく、
-   モジュールが生成して返すオブジェクトを利用するだけでしょう。 *filename* はアーカイブメンバの完全な名前で、
-   *date_time* はファイルの最終更新時刻を記述する、6つのフィールドからなるタプルでなくてはなりません。
-   各フィールドについては :ref:`zipinfo-objects` 節を参照してください。
+   Class used to represent information about a member of an archive. Instances
+   of this class are returned by the :meth:`.getinfo` and :meth:`.infolist`
+   methods of :class:`ZipFile` objects.  Most users of the :mod:`zipfile` module
+   will not need to create these, but only use those created by this
+   module. *filename* should be the full name of the archive member, and
+   *date_time* should be a tuple containing six fields which describe the time
+   of the last modification to the file; the fields are described in section
+   :ref:`zipinfo-objects`.
 
 
 .. function:: is_zipfile(filename)
 
-   *filename* が正しいマジックナンバをもつ ZIP ファイルのときに ``True`` を返し、
-   そうでない場合 ``False`` を返します。
-   *filename* にはファイルやファイルライクオブジェクトを渡すこともできます。
+   Returns ``True`` if *filename* is a valid ZIP file based on its magic number,
+   otherwise returns ``False``.  *filename* may be a file or file-like object too.
 
    .. versionchanged:: 2.7
-      ファイルやファイルライクオブジェクトをサポート
-
+      Support for file and file-like objects.
 
 .. data:: ZIP_STORED
 
-   アーカイブメンバが圧縮されていないことを表す数値定数です。
+   The numeric constant for an uncompressed archive member.
 
 
 .. data:: ZIP_DEFLATED
 
-   通常の ZIP 圧縮手法を表す数値定数。ZIP 圧縮は zlib モジュールを必要とします。現在のところ他の圧縮手法はサポートされていません。
+   The numeric constant for the usual ZIP compression method.  This requires the
+   :mod:`zlib` module.  No other compression methods are currently supported.
 
 
 .. seealso::
 
    `PKZIP Application Note <http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_
-      ZIP ファイル形式およびアルゴリズムを作成した  Phil Katz によるドキュメント。
+      Documentation on the ZIP file format by Phil Katz, the creator of the format and
+      algorithms used.
 
    `Info-ZIP Home Page <http://www.info-zip.org/>`_
-      Info-ZIP プロジェクトによる ZIP アーカイブプログラム及びプログラム開発ライブラリに関する情報。
+      Information about the Info-ZIP project's ZIP archive programs and development
+      libraries.
 
 
 .. _zipfile-objects:
 
-ZipFile オブジェクト
---------------------
+ZipFile Objects
+---------------
 
 
 .. class:: ZipFile(file[, mode[, compression[, allowZip64]]])
 
-   ZIP ファイルを開きます。 *file* はファイルへのパス名 (文字列) またはファイルのように振舞うオブジェクトのどちらでもかまいません。 *mode*
-   パラメタは、既存のファイルを読むためには ``'r'`` 、既存のファイルを切り詰めたり新しいファイルに書き込むためには ``'w'`` 、
-   追記を行うためには ``'a'`` でなくてはなりません。 *mode* が ``'a'`` で *file* が既存の ZIP ファイルを
-   参照している場合、追加するファイルは既存のファイル中の ZIP アーカイブに追加されます。 *file* が ZIP を参照していない場合、新しい ZIP
-   アーカイブが生成され、既存のファイルの末尾に追加されます。
-   このことは、ある ZIP ファイルを他のファイル(例えば :file:`python.exe`)に
-   追加することを意味しています。
+   Open a ZIP file, where *file* can be either a path to a file (a string) or a
+   file-like object.  The *mode* parameter should be ``'r'`` to read an existing
+   file, ``'w'`` to truncate and write a new file, or ``'a'`` to append to an
+   existing file.  If *mode* is ``'a'`` and *file* refers to an existing ZIP
+   file, then additional files are added to it.  If *file* does not refer to a
+   ZIP file, then a new ZIP archive is appended to the file.  This is meant for
+   adding a ZIP archive to another file (such as :file:`python.exe`).
 
    .. versionchanged:: 2.6
-      *mode* が ``'a'`` でファイルが存在しない場合、ファイルが作られるようになりました。
+      If *mode* is ``a`` and the file does not exist at all, it is created.
 
-   *compression* はアーカイブを書き出すときの ZIP 圧縮法で、 :const:`ZIP_STORED`
-   または :const:`ZIP_DEFLATED` でなくてはなりません。
-   不正な値を指定すると :exc:`RuntimeError` が送出されます。
-   また、 :const:`ZIP_DEFLATED` 定数が指定されているのに :mod:`zlib` を利用することが
-   できない場合も、 :exc:`RuntimeError` が送出されます。
-   デフォルト値は :const:`ZIP_STORED` です。
-   *allowZip64* が ``True`` ならば 2GB より大きな ZIP ファイルの作成時に
-   ZIP64 拡張を使用します。これが ``False`` (デフォルト) ならば、 :mod:`zipfile`
-   モジュールは ZIP64 拡張が必要になる場面で例外を送出します。
-   ZIP64 拡張はデフォルトでは無効にされていますが、これは Unix の :program:`zip` および
-   :program:`unzip` (InfoZIP ユーティリティ) コマンドがこの拡張をサポートしていないからです。
+   *compression* is the ZIP compression method to use when writing the archive,
+   and should be :const:`ZIP_STORED` or :const:`ZIP_DEFLATED`; unrecognized
+   values will cause :exc:`RuntimeError` to be raised.  If :const:`ZIP_DEFLATED`
+   is specified but the :mod:`zlib` module is not available, :exc:`RuntimeError`
+   is also raised. The default is :const:`ZIP_STORED`.  If *allowZip64* is
+   ``True`` zipfile will create ZIP files that use the ZIP64 extensions when
+   the zipfile is larger than 2 GB. If it is  false (the default) :mod:`zipfile`
+   will raise an exception when the ZIP file would require ZIP64 extensions.
+   ZIP64 extensions are disabled by default because the default :program:`zip`
+   and :program:`unzip` commands on Unix (the InfoZIP utilities) don't support
+   these extensions.
 
    .. versionchanged:: 2.7.1
-      ファイルが ``'a'`` か ``'w'`` モードで作成されて、アーカイブに1ファイルも
-      追加しないまま :meth:`close` した場合に、空のアーカイブとして正しいZIPの
-      構造がそのファイルに書かれるようになりました。
+      If the file is created with mode ``'a'`` or ``'w'`` and then
+      :meth:`closed <close>` without adding any files to the archive, the appropriate
+      ZIP structures for an empty archive will be written to the file.
 
-   ZipFile はコンテキストマネージャーにもなっているので、 :keyword:`with` 文をサポートしています。
-   次の例では、 *myzip* は :keyword:`with` 文のブロックが終了したときに、
-   (たとえ例外が発生したとしても) close されます。 ::
+   ZipFile is also a context manager and therefore supports the
+   :keyword:`with` statement.  In the example, *myzip* is closed after the
+   :keyword:`with` statement's suite is finished---even if an exception occurs::
 
       with ZipFile('spam.zip', 'w') as myzip:
           myzip.write('eggs.txt')
 
    .. versionadded:: 2.7
-      :class:`ZipFile` にコンテキストマネージャーの機能を追加しました。
+      Added the ability to use :class:`ZipFile` as a context manager.
 
 
 .. method:: ZipFile.close()
 
-   アーカイブファイルを閉じます。 :meth:`close` はプログラムを終了する前に必ず呼び出さなければなりません。
-   さもないとアーカイブ上の重要なレコードが書き込まれません。
+   Close the archive file.  You must call :meth:`close` before exiting your program
+   or essential records will not be written.
 
 
 .. method:: ZipFile.getinfo(name)
 
-   アーカイブメンバ *name* に関する情報を持つ :class:`ZipInfo`  オブジェクトを返します。
-   アーカイブに含まれないファイル名に対して :meth:`getinfo` を呼び出すと、 :exc:`KeyError` が送出されます。
+   Return a :class:`ZipInfo` object with information about the archive member
+   *name*.  Calling :meth:`getinfo` for a name not currently contained in the
+   archive will raise a :exc:`KeyError`.
+
 
 .. method:: ZipFile.infolist()
 
-   アーカイブに含まれる各メンバの :class:`ZipInfo` オブジェクトからなるリストを返します。既存のアーカイブファイルを開いている場合、
-   リストの順番は実際の ZIP ファイル中のメンバの順番と同じになります。
+   Return a list containing a :class:`ZipInfo` object for each member of the
+   archive.  The objects are in the same order as their entries in the actual ZIP
+   file on disk if an existing archive was opened.
 
 
 .. method:: ZipFile.namelist()
 
-   アーカイブメンバの名前のリストを返します。
+   Return a list of archive members by name.
+
+   .. index::
+      single: universal newlines; zipfile.ZipFile.open method
+
 
 .. method:: ZipFile.open(name[, mode[, pwd]])
 
-   アーカイブからメンバーを file-like オブジェクト (ZipExtFile) として展開します。 *name* は
-   アーカイブに含まれるファイル名、もしくは、 :class:`ZipInfo` オブジェクトです。 *mode*
-   パラメーターを指定するならば、以下のうちのどれかである必要があります: ``'r'`` (デフォルト)、
-   ``'U'`` 、 ``'rU'``
-   ``'U'`` か  ``'rU'`` を選ぶと、読み出し専用オブジェクトにおいて universal newline
-   support が有効化されます。 *pwd* は、暗号化ファイルで使われるパスワードです。
-   閉じられた ZIP ファイルに対して :meth:`open` を呼び出すと、 :exc:`RuntimeError` が送出されます。
+   Extract a member from the archive as a file-like object (ZipExtFile). *name* is
+   the name of the file in the archive, or a :class:`ZipInfo` object. The *mode*
+   parameter, if included, must be one of the following: ``'r'`` (the default),
+   ``'U'``, or ``'rU'``. Choosing ``'U'`` or  ``'rU'`` will enable
+   :term:`universal newline <universal newlines>`
+   support in the read-only object. *pwd* is the password used for encrypted files.
+   Calling  :meth:`.open` on a closed ZipFile will raise a  :exc:`RuntimeError`.
 
    .. note::
 
-      file-like オブジェクトは読み出し専用で、以下のメソッドを提供します:
-      :meth:`!read`, :meth:`!readline`, :meth:`!readlines`, :meth:`!__iter__`,
-      :meth:`!next`
+      The file-like object is read-only and provides the following methods:
+      :meth:`~file.read`, :meth:`~file.readline`,
+      :meth:`~file.readlines`, :meth:`__iter__`,
+      :meth:`~object.next`.
 
    .. note::
 
-      file-like オブジェクトをコンストラクターの第一引数として、 ZipFile が作成された場合、
-      ZipFile のファイルポインターを使った :meth:`.open` メソッドにより、オブジェクトが返されます。
-      この場合、 :meth:`.open` で返されたオブジェクトに対し、 ZipFile オブジェクトに対する追加の
-      操作をしてはいけません。もし、 ZipFile が文字列 (ファイル名) をコンストラクターに対する第一引数として
-      作成されたなら、 :meth:`.open` は、 ZipExtFile に含まれる、ZipFile と独立して操作することができる、
-      ファイルオブジェクトを新規に作成します。
-
+      If the ZipFile was created by passing in a file-like object as the  first
+      argument to the constructor, then the object returned by :meth:`.open` shares the
+      ZipFile's file pointer.  Under these  circumstances, the object returned by
+      :meth:`.open` should not  be used after any additional operations are performed
+      on the  ZipFile object.  If the ZipFile was created by passing in a string (the
+      filename) as the first argument to the constructor, then  :meth:`.open` will
+      create a new file object that will be held by the ZipExtFile, allowing it to
+      operate independently of the  ZipFile.
 
    .. note::
 
-      :meth:`open`, :meth:`read`, および、 :meth:`extract` の各メソッドはファイル名、
-      もしくは、 :class:`ZipInfo` オブジェクトを引数にとれます。
-      これは、名前が重複するメンバーを持つ ZIP ファイルを読み出すときに役に立つでしょう。
+      The :meth:`.open`, :meth:`read` and :meth:`extract` methods can take a filename
+      or a :class:`ZipInfo` object.  You will appreciate this when trying to read a
+      ZIP file that contains members with duplicate names.
 
    .. versionadded:: 2.6
 
 
 .. method:: ZipFile.extract(member[, path[, pwd]])
 
-   メンバーをアーカイブからカレントワーキングディレクトリに展開します。 *member* は、
-   展開するファイルのフルネーム、もしくは、 :class:`ZipInfo` オブジェクトでなければなりません。
-   ファイル情報は、可能な限り正確に展開されます。 *path* は展開先のディレクトリを指定します。
-   *member* はファイル名、もしくは、 :class:`ZipInfo` オブジェクトです。
-   *pwd* は暗号化ファイルに使われるパスワードです。
+   Extract a member from the archive to the current working directory; *member*
+   must be its full name or a :class:`ZipInfo` object).  Its file information is
+   extracted as accurately as possible.  *path* specifies a different directory
+   to extract to.  *member* can be a filename or a :class:`ZipInfo` object.
+   *pwd* is the password used for encrypted files.
+
+   Returns the normalized path created (a directory or new file).
 
    .. versionadded:: 2.6
+
+   .. note::
+
+      If a member filename is an absolute path, a drive/UNC sharepoint and
+      leading (back)slashes will be stripped, e.g.: ``///foo/bar`` becomes
+      ``foo/bar`` on Unix, and ``C:\foo\bar`` becomes ``foo\bar`` on Windows.
+      And all ``".."`` components in a member filename will be removed, e.g.:
+      ``../../foo../../ba..r`` becomes ``foo../ba..r``.  On Windows illegal
+      characters (``:``, ``<``, ``>``, ``|``, ``"``, ``?``, and ``*``)
+      replaced by underscore (``_``).
 
 
 .. method:: ZipFile.extractall([path[, members[, pwd]]])
 
-   すべてのメンバーをアーカイブからカレントワーキングディレクトリに展開します。 *path* は、
-   展開先のディレクトリを指定します。 *members* は、オプションで、
-   :meth:`namelist` で返されるリストの部分集合でなければなりません。 *pwd* は、暗号化ファイルに
-   使われるパスワードです。
+   Extract all members from the archive to the current working directory.  *path*
+   specifies a different directory to extract to.  *members* is optional and must
+   be a subset of the list returned by :meth:`namelist`.  *pwd* is the password
+   used for encrypted files.
 
-   .. warning
+   .. warning::
+
       Never extract archives from untrusted sources without prior inspection.
       It is possible that files are created outside of *path*, e.g. members
       that have absolute filenames starting with ``"/"`` or filenames with two
       dots ``".."``.
 
-   .. warning::
-
-      信頼できないソースからきた Zip ファイルを、事前に中身をチェックせずに
-      展開してはいけません。ファイルを *path* の外側に作成することができるからです。
-      例えば、 ``"/"`` で始まる絶対パスを持ったメンバーや、 2 つのドット
-      ``".."`` を持つファイル名などの場合です。
+   .. versionchanged:: 2.7.4
+      The zipfile module attempts to prevent that.  See :meth:`extract` note.
 
    .. versionadded:: 2.6
 
 
 .. method:: ZipFile.printdir()
 
-   アーカイブの目次を ``sys.stdout`` に出力します。
+   Print a table of contents for the archive to ``sys.stdout``.
+
 
 .. method:: ZipFile.setpassword(pwd)
 
-   *pwd* を展開する圧縮ファイルのデフォルトパスワードとして指定します。
+   Set *pwd* as default password to extract encrypted files.
 
    .. versionadded:: 2.6
 
 
 .. method:: ZipFile.read(name[, pwd])
 
-   アーカイブ中のファイル名 *name* の内容をバイト列にして返します。 *name* はアーカイブに含まれるファイル、
-   もしくは、 :class:`ZipInfo` オブジェクトの名前です。
-   アーカイブは読み込みまたは追記モードで開かれていなくてはなりません。
-   *pwd* は暗号化されたファイルのパスワードで、指定された場合、 :meth:`setpassword` で指定された
-   デフォルトのパスワードを上書きします。
-   閉じられた ZipFile に対し :meth:`read` を呼び出すと、 :exc:`RuntimeError` が送出されます。
+   Return the bytes of the file *name* in the archive.  *name* is the name of the
+   file in the archive, or a :class:`ZipInfo` object.  The archive must be open for
+   read or append. *pwd* is the password used for encrypted  files and, if specified,
+   it will override the default password set with :meth:`setpassword`.  Calling
+   :meth:`read` on a closed ZipFile  will raise a :exc:`RuntimeError`.
 
    .. versionchanged:: 2.6
-      *pwd* が追加され、 *name* に :class:`ZipInfo` オブジェクトを指定できるようになりました。
-
+      *pwd* was added, and *name* can now be a :class:`ZipInfo` object.
 
 
 .. method:: ZipFile.testzip()
 
-   アーカイブ中の全てのファイルを読み、CRC チェックサムとヘッダが正常か調べます。
-   最初に見つかった不正なファイルの名前を返します。不正なファイルがなければ ``None`` を返します。
-   閉じた ZipFile に対して :meth:`testzip` メソッドを呼び出すと、 :exc:`RuntimeError` が送出されます。
+   Read all the files in the archive and check their CRC's and file headers.
+   Return the name of the first bad file, or else return ``None``. Calling
+   :meth:`testzip` on a closed ZipFile will raise a :exc:`RuntimeError`.
+
 
 .. method:: ZipFile.write(filename[, arcname[, compress_type]])
 
-   *filename* に指定したファイル名を持つファイルを、アーカイブ名を *arcname* (デフォルトでは *filename* と同じですが
-   ドライブレターと先頭にあるパスセパレータは取り除かれます) にしてアーカイブに収録します。 *compress_type*
-   を指定した場合、コンストラクタを使って新たなアーカイブエントリを生成した際に使った *compression* パラメタを上書きします。
-   アーカイブのモードは ``'w'`` または ``'a'`` でなくてはなりません。
-   モードが ``'r'`` で作成された ZipFile に対し :meth:`write` メソッドを呼び出すと、
-   :exc:`RuntimeError` が送出されます。閉じた ZipFile に対し :meth:`write` メソッドを呼び出すと、
-   :exc:`RuntimeError` が送出されます。
-
-
-   .. note::
-
-      ZIP ファイル中のファイル名に関する公式なエンコーディング方式はありません。もしユニコードのファイル名が付けられているならば、それを
-      :meth:`write` に渡す前に望ましいエンコーディングでバイト列に変換しなければなりません。 WinZip は全てのファイル名を DOS Latin
-      としても知られる CP437 で解釈します。
+   Write the file named *filename* to the archive, giving it the archive name
+   *arcname* (by default, this will be the same as *filename*, but without a drive
+   letter and with leading path separators removed).  If given, *compress_type*
+   overrides the value given for the *compression* parameter to the constructor for
+   the new entry.  The archive must be open with mode ``'w'`` or ``'a'`` -- calling
+   :meth:`write` on a ZipFile created with mode ``'r'`` will raise a
+   :exc:`RuntimeError`.  Calling  :meth:`write` on a closed ZipFile will raise a
+   :exc:`RuntimeError`.
 
    .. note::
 
-      アーカイブ名はアーカイブルートに対する相対的なものでなければなりません。
-      言い換えると、アーカイブ名はパスセパレータで始まってはいけません。
+      There is no official file name encoding for ZIP files. If you have unicode file
+      names, you must convert them to byte strings in your desired encoding before
+      passing them to :meth:`write`. WinZip interprets all file names as encoded in
+      CP437, also known as DOS Latin.
 
    .. note::
 
-      もし、 ``arcname`` (``arcname`` が与えられない場合は、 ``filename``) が null byte を含むなら、
-      アーカイブ中のファイルのファイル名は、 null byte までで、切り詰められます。
+      Archive names should be relative to the archive root, that is, they should not
+      start with a path separator.
+
+   .. note::
+
+      If ``arcname`` (or ``filename``, if ``arcname`` is  not given) contains a null
+      byte, the name of the file in the archive will be truncated at the null byte.
+
 
 .. method:: ZipFile.writestr(zinfo_or_arcname, bytes[, compress_type])
 
-   文字列 *bytes* をアーカイブに書き込みます。
-   *zinfo_or_arcname* はアーカイブ中で指定するファイル名か、または :class:`ZipInfo` インスタンス
-   を指定します。
-   *zinfo_or_arcname* に :class:`ZipInfo` インスタンスを指定する場合、 *zinfo* インスタンスには
-   少なくともファイル名、日付および時刻を指定しなければなりません。ファイル名を指定した場合、
-   日付と時刻には現在の日付と時間が設定されます。アーカイブはモード ``'w'`` または ``'a'`` で
-   開かれていなければなりません。
-   閉じた ZipFile に対し :meth:`writestr` メソッドを呼び出すと :exc:`RuntimeError` が送出されます。
+   Write the string *bytes* to the archive; *zinfo_or_arcname* is either the file
+   name it will be given in the archive, or a :class:`ZipInfo` instance.  If it's
+   an instance, at least the filename, date, and time must be given.  If it's a
+   name, the date and time is set to the current date and time. The archive must be
+   opened with mode ``'w'`` or ``'a'`` -- calling  :meth:`writestr` on a ZipFile
+   created with mode ``'r'``  will raise a :exc:`RuntimeError`.  Calling
+   :meth:`writestr` on a closed ZipFile will raise a :exc:`RuntimeError`.
 
-   *compressed_type* が指定された場合、その値はコンストラクタに与えられた *compression*
-   の値か、 *zinfo_or_arcname* が :class:`ZipInfo` のインスタンスだったときはその値を
-   オーバーライドします。
+   If given, *compress_type* overrides the value given for the *compression*
+   parameter to the constructor for the new entry, or in the *zinfo_or_arcname*
+   (if that is a :class:`ZipInfo` instance).
 
    .. note::
 
-      :class:`ZipInfo` インスタンスを、引数 *zinfo_or_arcname* として与えた場合、
-      与えられた :class:`ZipInfo` インスタンスのメンバーである、 *compress_type*
-      で指定された圧縮方法が使われます。デフォルトでは、
-      :class:`ZipInfo` コンストラクターが、このメンバーを :const:`ZIP_STORED` に設定します。
+      When passing a :class:`ZipInfo` instance as the *zinfo_or_arcname* parameter,
+      the compression method used will be that specified in the *compress_type*
+      member of the given :class:`ZipInfo` instance.  By default, the
+      :class:`ZipInfo` constructor sets this member to :const:`ZIP_STORED`.
 
    .. versionchanged:: 2.7
-      *compression_type* 引数
+      The *compress_type* argument.
 
-以下のデータ属性も利用することができます。
+The following data attributes are also available:
 
 
 .. attribute:: ZipFile.debug
 
-   使用するデバッグ出力レベル。この属性は ``0`` (デフォルト、何も出力しない) から ``3``
-   (最も多くデバッグ情報を出力する) までの値に設定することができます。
-   デバッグ情報は  ``sys.stdout`` に出力されます。
+   The level of debug output to use.  This may be set from ``0`` (the default, no
+   output) to ``3`` (the most output).  Debugging information is written to
+   ``sys.stdout``.
 
 .. attribute:: ZipFile.comment
 
-   ZIP ファイルの付けられたコメントです。
-   モードが 'a'、または、'w'で作成された :class:`ZipFile` インスタンスにコメントを付ける場合、
-   コメント 65535 byte 以下の文字列でなければなりません。コメントがそれより長い場合、
-   アーカイブでは、 :meth:`ZipFile.close` メソッドが呼び出された時点で切り詰められます。
+   The comment text associated with the ZIP file.  If assigning a comment to a
+   :class:`ZipFile` instance created with mode 'a' or 'w', this should be a
+   string no longer than 65535 bytes.  Comments longer than this will be
+   truncated in the written archive when :meth:`.close` is called.
 
 .. _pyzipfile-objects:
 
-PyZipFile オブジェクト
-----------------------
+PyZipFile Objects
+-----------------
 
-:class:`PyZipFile` コンストラクタは :class:`ZipFile` コンストラクタと同じパラメタを必要とします。インスタンスは
-:class:`ZipFile` のメソッドの他に、追加のメソッドを一つ持ちます。
+The :class:`PyZipFile` constructor takes the same parameters as the
+:class:`ZipFile` constructor.  Instances have one method in addition to those of
+:class:`ZipFile` objects.
 
 
 .. method:: PyZipFile.writepy(pathname[, basename])
 
-   :file:`\*.py` ファイルを探し、 :file:`\*.py` ファイルに対応するファイルをアーカイブに追加します。
-   対応するファイルとは、もしあれば :file:`\*.pyo` であり、そうでなければ :file:`\*.pyc` で、
-   必要に応じて :file:`\*.py` からコンパイルします。
-   もし pathname がファイルなら、ファイル名は :file:`.py` で終わっていなければなりません。
-   また、(:file:`\*.py` に対応する :file:`\*.py[co]`) ファイルはアーカイブのトップレベルに (パス情報なしで) 追加されます。
-   もし pathname が :file:`.py` で終わらないファイル名なら :exc:`RuntimeError` を送出します。
-   もし pathname がディレクトリで、ディレクトリがパッケージディレクトリでないなら、
-   全ての :file:`\*.py[co]` ファイルはトップレベルに追加されます。
-   もしディレクトリがパッケージディレクトリなら、全ての :file:`\*.py[co]` ファイルはパッケージ名の
-   名前をもつファイルパスの下に追加されます。
-   サブディレクトリがパッケージディレクトリなら、それらは再帰的に追加されます *basename* はクラス内部
-   での呼び出しに使用するためのものです。
-   :meth:`writepy` メソッドは以下のようなファイル名を持ったアーカイブを生成します。 ::
+   Search for files :file:`\*.py` and add the corresponding file to the archive.
+   The corresponding file is a :file:`\*.pyo` file if available, else a
+   :file:`\*.pyc` file, compiling if necessary.  If the pathname is a file, the
+   filename must end with :file:`.py`, and just the (corresponding
+   :file:`\*.py[co]`) file is added at the top level (no path information).  If the
+   pathname is a file that does not end with :file:`.py`, a :exc:`RuntimeError`
+   will be raised.  If it is a directory, and the directory is not a package
+   directory, then all the files :file:`\*.py[co]` are added at the top level.  If
+   the directory is a package directory, then all :file:`\*.py[co]` are added under
+   the package name as a file path, and if any subdirectories are package
+   directories, all of these are added recursively.  *basename* is intended for
+   internal use only.  The :meth:`writepy` method makes archives with file names
+   like this::
 
-      string.pyc                    # トップレベル名
-      test/__init__.pyc             # パッケージディレクトリ
-      test/test_support.pyc         # test.test_suport モジュール
-      test/bogus/__init__.pyc       # サブパッケージディレクトリ
-      test/bogus/myfile.pyc         # test.bogus.myfile サブモジュール
+      string.pyc                                # Top level name
+      test/__init__.pyc                         # Package directory
+      test/test_support.pyc                          # Module test.test_support
+      test/bogus/__init__.pyc                   # Subpackage directory
+      test/bogus/myfile.pyc                     # Submodule test.bogus.myfile
 
 
 .. _zipinfo-objects:
 
-ZipInfo オブジェクト
---------------------
+ZipInfo Objects
+---------------
 
-:class:`ZipFile` オブジェクトの :meth:`getinfo` および :meth:`infolist` メソッドは
-:class:`ZipInfo` クラスのインスタンスを返します。それぞれのインスタンスオブジェクトは ZIP アーカイブの
-一個のメンバについての情報を保持しています。
+Instances of the :class:`ZipInfo` class are returned by the :meth:`.getinfo` and
+:meth:`.infolist` methods of :class:`ZipFile` objects.  Each object stores
+information about a single member of the ZIP archive.
 
-   インスタンスは以下の属性を持ちます:
+Instances have the following attributes:
 
 
 .. attribute:: ZipInfo.filename
 
-   アーカイブ中のファイルの名前。
+   Name of the file in the archive.
 
 
 .. attribute:: ZipInfo.date_time
 
-   アーカイブメンバの最終更新日時。この属性は6つの値からなるタプルです。:
+   The time and date of the last modification to the archive member.  This is a
+   tuple of six values:
 
-   +-------+-------------------+
-   | Index | Value             |
-   +=======+===================+
-   | ``0`` | 西暦年            |
-   +-------+-------------------+
-   | ``1`` | 月 (1 から始まる) |
-   +-------+-------------------+
-   | ``2`` | 日 (1 から始まる) |
-   +-------+-------------------+
-   | ``3`` | 時 (0 から始まる) |
-   +-------+-------------------+
-   | ``4`` | 分 (0 から始まる) |
-   +-------+-------------------+
-   | ``5`` | 秒 (0 から始まる) |
-   +-------+-------------------+
+   +-------+--------------------------+
+   | Index | Value                    |
+   +=======+==========================+
+   | ``0`` | Year (>= 1980)           |
+   +-------+--------------------------+
+   | ``1`` | Month (one-based)        |
+   +-------+--------------------------+
+   | ``2`` | Day of month (one-based) |
+   +-------+--------------------------+
+   | ``3`` | Hours (zero-based)       |
+   +-------+--------------------------+
+   | ``4`` | Minutes (zero-based)     |
+   +-------+--------------------------+
+   | ``5`` | Seconds (zero-based)     |
+   +-------+--------------------------+
+
+   .. note::
+
+      The ZIP file format does not support timestamps before 1980.
 
 
 .. attribute:: ZipInfo.compress_type
 
-   アーカイブメンバの圧縮形式。
+   Type of compression for the archive member.
 
 
 .. attribute:: ZipInfo.comment
 
-   各アーカイブメンバに対するコメント。
+   Comment for the individual archive member.
 
 
 .. attribute:: ZipInfo.extra
 
-   拡張フィールドデータ。この文字列データに含まれているデータの内部構成については、 `PKZIP Application Note
-   <http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_
-   でコメントされています。
+   Expansion field data.  The `PKZIP Application Note
+   <http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_ contains
+   some comments on the internal structure of the data contained in this string.
 
 
 .. attribute:: ZipInfo.create_system
 
-   ZIP アーカイブを作成したシステムを記述する文字列。
+   System which created ZIP archive.
 
 
 .. attribute:: ZipInfo.create_version
 
-   このアーカイブを作成した PKZIP のバージョン。
+   PKZIP version which created ZIP archive.
 
 
 .. attribute:: ZipInfo.extract_version
 
-   このアーカイブを展開する際に必要な PKZIP のバージョン。
+   PKZIP version needed to extract archive.
 
 
 .. attribute:: ZipInfo.reserved
 
-   予約領域。ゼロでなくてはなりません。
+   Must be zero.
 
 
 .. attribute:: ZipInfo.flag_bits
 
-   ZIP フラグビット列。
+   ZIP flag bits.
 
 
 .. attribute:: ZipInfo.volume
 
-   ファイルヘッダのボリュームナンバ。
+   Volume number of file header.
 
 
 .. attribute:: ZipInfo.internal_attr
 
-   内部属性。
+   Internal attributes.
 
 
 .. attribute:: ZipInfo.external_attr
 
-   外部ファイル属性。
+   External file attributes.
 
 
 .. attribute:: ZipInfo.header_offset
 
-   ファイルヘッダへのバイト数で表したオフセット。
+   Byte offset to the file header.
 
 
 .. attribute:: ZipInfo.CRC
 
-   圧縮前のファイルの CRC-32 チェックサム。
+   CRC-32 of the uncompressed file.
 
 
 .. attribute:: ZipInfo.compress_size
 
-   圧縮後のデータのサイズ。
+   Size of the compressed data.
 
 
 .. attribute:: ZipInfo.file_size
 
-   圧縮前のファイルのサイズ。
+   Size of the uncompressed file.
 

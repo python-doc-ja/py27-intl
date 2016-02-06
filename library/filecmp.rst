@@ -1,160 +1,195 @@
-:mod:`filecmp` --- ファイルおよびディレクトリの比較
-===================================================
+:mod:`filecmp` --- File and Directory Comparisons
+=================================================
 
 .. module:: filecmp
-   :synopsis: ファイル群を効率的に比較します。
+   :synopsis: Compare files efficiently.
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
+**Source code:** :source:`Lib/filecmp.py`
 
-:mod:`filecmp` モジュールでは、ファイルおよびディレクトリを比較するため、様々な時間／正確性のトレードオフに関するオプションを
-備えた関数を定義しています。
-ファイルの比較については、 :mod:`differ` モジュールも参照してください。
+--------------
 
-.. seealso::
+The :mod:`filecmp` module defines functions to compare files and directories,
+with various optional time/correctness trade-offs. For comparing files,
+see also the :mod:`difflib` module.
 
-   最新バージョンの `filecmp Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/filecmp.py?view=markup>`_
-
-:mod:`filecmp` モジュールでは以下の関数を定義しています:
+The :mod:`filecmp` module defines the following functions:
 
 
 .. function:: cmp(f1, f2[, shallow])
 
-   名前が *f1* および *f2* のファイルを比較し、二つのファイルが同じらしければ ``True`` を返し、そうでなければ ``false`` を
-   返します。
+   Compare the files named *f1* and *f2*, returning ``True`` if they seem equal,
+   ``False`` otherwise.
 
-   *shallow* が与えられておりかつ偽でなければ、 :func:`os.stat` の返すシグネチャが一致するファイルは同じであると見なされます。
+   Unless *shallow* is given and is false, files with identical :func:`os.stat`
+   signatures are taken to be equal.
 
-   この関数で比較されたファイルは :func:`os.stat` シグネチャが変更されるまで再び比較されることはありません。 *use_statcache*
-   を真にすると、キャッシュ無効化機構を失敗させます --- そのため、 :mod:`statcache` のキャッシュから古いファイル stat 値が
-   使われます。
+   Files that were compared using this function will not be compared again unless
+   their :func:`os.stat` signature changes.
 
-   可搬性と効率のために、個の関数は外部プログラムを一切呼び出さないので注意してください。
+   Note that no external programs are called from this function, giving it
+   portability and efficiency.
 
 
 .. function:: cmpfiles(dir1, dir2, common[, shallow])
 
-   *dir1* と *dir2* ディレクトリの中の、 *common* で指定されたファイルを比較します。
+   Compare the files in the two directories *dir1* and *dir2* whose names are
+   given by *common*.
 
-   ファイル名からなる3つのリスト: *match*, *mismatch*, *errors* を返します。
-   *match* には双方のディレクトリで一致したファイルのリストが含まれ、
-   *mismatch* にはそうでないファイル名のリストが入ります。
-   そして *errors* は比較されなかったファイルが列挙されます。
-   *errors* になるのは、片方あるいは両方のディレクトリに存在しなかった、ユーザーにそのファイルを読む権限がなかった、
-   その他何らかの理由で比較を完了することができなかった場合です。
+   Returns three lists of file names: *match*, *mismatch*,
+   *errors*.  *match* contains the list of files that match, *mismatch* contains
+   the names of those that don't, and *errors* lists the names of files which
+   could not be compared.  Files are listed in *errors* if they don't exist in
+   one of the directories, the user lacks permission to read them or if the
+   comparison could not be done for some other reason.
 
-   引数 *shallow* はその意味も標準の設定も :func:`filecmp.cmp` と同じです。
+   The *shallow* parameter has the same meaning and default value as for
+   :func:`filecmp.cmp`.
 
-   .. For example, ``cmpfiles('a', 'b', ['c', 'd/e'])`` will compare ``a/c`` with
-      ``b/c`` and ``a/d/e`` with ``b/d/e``.  ``'c'`` and ``'d/e'`` will each be in
-      one of the three returned lists.
+   For example, ``cmpfiles('a', 'b', ['c', 'd/e'])`` will compare ``a/c`` with
+   ``b/c`` and ``a/d/e`` with ``b/d/e``.  ``'c'`` and ``'d/e'`` will each be in
+   one of the three returned lists.
 
-   例えば、 ``cmpfiles('a', 'b', ['c', 'd/e'])`` は ``a/c`` を ``b/c`` と、
-   ``a/d/e`` を ``b/d/e`` と、それぞれ比較します。 ``'c'`` と ``'d/e'``
-   はそれぞれ、返される3つのリストのいずれかに登録されます。
 
-例::
+Example::
 
    >>> import filecmp
-   >>> filecmp.cmp('undoc.rst', 'undoc.rst')
+   >>> filecmp.cmp('undoc.rst', 'undoc.rst') # doctest: +SKIP
    True
-   >>> filecmp.cmp('undoc.rst', 'index.rst')
+   >>> filecmp.cmp('undoc.rst', 'index.rst') # doctest: +SKIP
    False
 
 
 .. _dircmp-objects:
 
-:class:`dircmp` クラス
-----------------------
+The :class:`dircmp` class
+-------------------------
 
-:class:`dircmp` のインスタンスは以下のコンストラクタで生成されます:
+:class:`dircmp` instances are built using this constructor:
 
 
 .. class:: dircmp(a, b[, ignore[, hide]])
 
-   ディレクトリ *a* および *b* を比較するための新しいディレクトリ比較オブジェクトを生成します。 *ignore* は比較の際に無視する
-   ファイル名のリストで、標準の設定では ``['RCS', 'CVS', 'tags']`` です。 *hide* は表示しない名前のリストで、標準の設定では
-   ``[os.curdir, os.pardir]`` です。
+   Construct a new directory comparison object, to compare the directories *a* and
+   *b*. *ignore* is a list of names to ignore, and defaults to ``['RCS', 'CVS',
+   'tags']``. *hide* is a list of names to hide, and defaults to ``[os.curdir,
+   os.pardir]``.
 
-   :class:`dircmp` クラスは以下のメソッドを提供しています:
+   The :class:`dircmp` class compares files by doing *shallow* comparisons
+   as described for :func:`filecmp.cmp`.
+
+   The :class:`dircmp` class provides the following methods:
 
 
    .. method:: report()
 
-      *a* および *b* の間の比較結果を (``sys.stdout`` に) 出力します。
+      Print (to ``sys.stdout``) a comparison between *a* and *b*.
 
 
    .. method:: report_partial_closure()
 
-      *a* および *b* およびそれらの直下にある共通のサブディレクトリ間での比較結果を出力します。
+      Print a comparison between *a* and *b* and common immediate
+      subdirectories.
 
 
    .. method:: report_full_closure()
 
-      *a* および *b* およびそれらの共通のサブディレクトリ間での比較結果を (再帰的に比較して) 出力します。
+      Print a comparison between *a* and *b* and common subdirectories
+      (recursively).
 
-   :class:`dircmp` は、比較しているディレクトリツリーに関する様々な種類の情報を取得するために使えるような、多くの興味深い属性を提供しています。
+   The :class:`dircmp` class offers a number of interesting attributes that may be
+   used to get various bits of information about the directory trees being
+   compared.
 
-   :meth:`__getattr__` フックを経由すると、全ての属性をのろのろと計算するため、速度上のペナルティを受けないのは
-   計算処理の軽い属性を使ったときだけなので注意してください。
+   Note that via :meth:`__getattr__` hooks, all attributes are computed lazily,
+   so there is no speed penalty if only those attributes which are lightweight
+   to compute are used.
+
+
+   .. attribute:: left
+
+      The directory *a*.
+
+
+   .. attribute:: right
+
+      The directory *b*.
 
 
    .. attribute:: left_list
 
-      *a* にあるファイルおよびサブディレクトリです。 *hide* および *ignore* でフィルタされています。
+      Files and subdirectories in *a*, filtered by *hide* and *ignore*.
 
 
    .. attribute:: right_list
 
-      *b* にあるファイルおよびサブディレクトリです。 *hide* および *ignore* でフィルタされています。
+      Files and subdirectories in *b*, filtered by *hide* and *ignore*.
 
 
    .. attribute:: common
 
-      *a* および *b* の両方にあるファイルおよびサブディレクトリです。
+      Files and subdirectories in both *a* and *b*.
 
 
    .. attribute:: left_only
 
-      *a* だけにあるファイルおよびサブディレクトリです。
+      Files and subdirectories only in *a*.
 
 
    .. attribute:: right_only
 
-      *b* だけにあるファイルおよびサブディレクトリです。
+      Files and subdirectories only in *b*.
 
 
    .. attribute:: common_dirs
 
-      *a* および *b* の両方にあるサブディレクトリです。
+      Subdirectories in both *a* and *b*.
 
 
    .. attribute:: common_files
 
-      *a* および *b* の両方にあるファイルです。
+      Files in both *a* and *b*
 
 
    .. attribute:: common_funny
 
-      *a* および *b* の両方にあり、ディレクトリ間でタイプが異なるか、 :func:`os.stat` がエラーを報告するような名前です。
+      Names in both *a* and *b*, such that the type differs between the
+      directories, or names for which :func:`os.stat` reports an error.
 
 
    .. attribute:: same_files
 
-      *a* および *b* 両方にあり、一致するファイルです。
+      Files which are identical in both *a* and *b*, using the class's
+      file comparison operator.
 
 
    .. attribute:: diff_files
 
-      *a* および *b* 両方にあるが、一致しないファイルです。
+      Files which are in both *a* and *b*, whose contents differ according
+      to the class's file comparison operator.
 
 
    .. attribute:: funny_files
 
-      *a* および *b* 両方にあるが、比較されなかったファイルです。
+      Files which are in both *a* and *b*, but could not be compared.
 
 
    .. attribute:: subdirs
 
-      :attr:`common_dirs` のファイル名を :class:`dircmp` オブジェクトに対応付けた辞書です。
+      A dictionary mapping names in :attr:`common_dirs` to :class:`dircmp` objects.
+
+
+Here is a simplified example of using the ``subdirs`` attribute to search
+recursively through two directories to show common different files::
+
+    >>> from filecmp import dircmp
+    >>> def print_diff_files(dcmp):
+    ...     for name in dcmp.diff_files:
+    ...         print "diff_file %s found in %s and %s" % (name, dcmp.left,
+    ...               dcmp.right)
+    ...     for sub_dcmp in dcmp.subdirs.values():
+    ...         print_diff_files(sub_dcmp)
+    ...
+    >>> dcmp = dircmp('dir1', 'dir2') # doctest: +SKIP
+    >>> print_diff_files(dcmp) # doctest: +SKIP
 

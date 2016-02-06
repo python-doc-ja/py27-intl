@@ -1,17 +1,14 @@
-
-:mod:`thread` --- マルチスレッドのコントロール
-==============================================
+:mod:`thread` --- Multiple threads of control
+=============================================
 
 .. module:: thread
-   :synopsis: 1つのインタープリタの中でのマルチスレッド制御
+   :synopsis: Create multiple threads of control within one interpreter.
 
 .. note::
-
-   Python 3.0 では :mod:`thread` モジュールは :mod:`_thread` に改名さ
-   れました。
-   :term:`2to3` ツールは、 3.0 コードへの変換時に、自動的に import 宣
-   言を適合させます。しかしながら、上位の :mod:`threading` モジュール
-   を使うことを検討して下さい。
+   The :mod:`thread` module has been renamed to :mod:`_thread` in Python 3.
+   The :term:`2to3` tool will automatically adapt imports when converting your
+   sources to Python 3; however, you should consider using the high-level
+   :mod:`threading` module instead.
 
 
 .. index::
@@ -20,141 +17,130 @@
    single: binary semaphores
    single: semaphores, binary
 
-このモジュールはマルチスレッド (別名 :dfn:`軽量プロセス`
-(:dfn:`light-weight processes`)または :dfn:`タスク` (:dfn:`tasks`)) に
-用いられる低レベルプリミティブを提供します --- グローバルデータ空間を
-共有するマルチスレッドを制御します。
-同期のための単純なロック (別名 :dfn:`mutexes` またはバイナリセマフォ
-(:dfn:`binary semaphores`))が提供されています。
-:mod:`threading` モジュールは、このモジュール上で、より使い易く高級
-なスレッディングの API　を提供します。
-
- .. index::
-    single: pthreads
-    pair: threads; POSIX
-
-このモジュールはオプションです。 Windows, Linux, SGI IRIX, Solaris 2.x、
-そして同じようなPOSIXスレッド (別名 "pthread" ) 実装のシステム上でサポー
-トされます。 :mod:`thread` を使用することのできないシステムでは、
-:mod:`dummy_thread` が用意されています。 :mod:`dummy_thread` はこのモ
-ジュールと同じインターフェースを持ち、置き換えて使用することができます。
+This module provides low-level primitives for working with multiple threads
+(also called :dfn:`light-weight processes` or :dfn:`tasks`) --- multiple threads of
+control sharing their global data space.  For synchronization, simple locks
+(also called :dfn:`mutexes` or :dfn:`binary semaphores`) are provided.
+The :mod:`threading` module provides an easier to use and higher-level
+threading API built on top of this module.
 
 .. index::
    single: pthreads
    pair: threads; POSIX
 
-定数と関数は以下のように定義されています:
+The module is optional.  It is supported on Windows, Linux, SGI IRIX, Solaris
+2.x, as well as on systems that have a POSIX thread (a.k.a. "pthread")
+implementation.  For systems lacking the :mod:`thread` module, the
+:mod:`dummy_thread` module is available. It duplicates this module's interface
+and can be used as a drop-in replacement.
+
+It defines the following constant and functions:
 
 
 .. exception:: error
 
-   スレッド特有の例外です。
+   Raised on thread-specific errors.
 
 
 .. data:: LockType
 
-   これはロックオブジェクトのタイプです。
+   This is the type of lock objects.
 
 
 .. function:: start_new_thread(function, args[, kwargs])
 
-   新しいスレッドを開始して、そのIDを返します。スレッドは引数リスト
-   *args* (タプルでなければなりません)の関数 *function* を実行します。
-   オプション引数 *kwargs* はキーワード引数の辞書を指定します。関数が
-   戻るとき、スレッドは黙って終了します。関数が未定義の例外でターミネー
-   トしたとき、スタックトレースが表示され、そしてスレッドが終了します
-   (しかし他のスレッドは走り続けます)。
+   Start a new thread and return its identifier.  The thread executes the function
+   *function* with the argument list *args* (which must be a tuple).  The optional
+   *kwargs* argument specifies a dictionary of keyword arguments. When the function
+   returns, the thread silently exits.  When the function terminates with an
+   unhandled exception, a stack trace is printed and then the thread exits (but
+   other threads continue to run).
 
 
 .. function:: interrupt_main()
 
-   メインスレッドで :exc:`KeyboardInterrupt` を送出します。サブスレッ
-   ドはこの関数を使ってメインスレッドに割り込みをかけることができます。
+   Raise a :exc:`KeyboardInterrupt` exception in the main thread.  A subthread can
+   use this function to interrupt the main thread.
 
    .. versionadded:: 2.3
 
 
 .. function:: exit()
 
-   :exc:`SystemExit` を送出します。それが捕えられないときは、黙っ
-   てスレッドを終了させます。
+   Raise the :exc:`SystemExit` exception.  When not caught, this will cause the
+   thread to exit silently.
 
+..
+   function:: exit_prog(status)
 
-.. function:: exit_prog(status)
-
-   全てのスレッドを終了させ、整数の引き数 *status* をプログラム全体の
-   終了コードとして返します。
-   ** 警告:** このスレッド、および、他のスレッドの :keyword:`finally`
-   節の、未実行のプログラムは実行されません。
+      Exit all threads and report the value of the integer argument
+      *status* as the exit status of the entire program.
+      **Caveat:** code in pending :keyword:`finally` clauses, in this thread
+      or in other threads, is not executed.
 
 
 .. function:: allocate_lock()
 
-   新しいロックオブジェクトを返します。ロックのメソッドはこの後に記述
-   されます。ロックは初期状態としてアンロック状態です。
+   Return a new lock object.  Methods of locks are described below.  The lock is
+   initially unlocked.
 
 
 .. function:: get_ident()
 
-   現在のスレッドの 'スレッドID' を返します。非ゼロの整数です。
-   この値は直接の意味を持っていません;
-   例えばスレッド特有のデータの辞書に索引をつけるためのような、マジッ
-   ククッキーとして意図されています。スレッドが終了し、他のスレッドが
-   作られたとき、スレッド ID は再利用されるかもしれません。
+   Return the 'thread identifier' of the current thread.  This is a nonzero
+   integer.  Its value has no direct meaning; it is intended as a magic cookie to
+   be used e.g. to index a dictionary of thread-specific data.  Thread identifiers
+   may be recycled when a thread exits and another thread is created.
 
 
 .. function:: stack_size([size])
 
-   新しいスレッドが作られる際に使われるスレッドのスタックサイズを返し
-   ます。オプションの *size* 引数は次に作られるスレッドに対するスタッ
-   クサイズを指定するものですが、 0 (プラットフォームまたは設定された
-   デフォルト) または少なくとも 32,768 (32kB) であるような正の整数でな
-   ければなりません。もしスタックサイズの変更がサポートされていなけれ
-   ば :exc:`ThreadError` が送出されます。また指定されたスタックサイズ
-   が条件を満たしていなければ :exc:`ValueError` が送出されスタックサイ
-   ズは変更されないままになります。 32kB は今のところインタプリタ自体
-   に十分なスタックスペースを保証するための値としてサポートされる最小
-   のスタックサイズです。プラットフォームによってはスタックサイズの値
-   に固有の制限が課されることもあります。たとえば 32kB より大きな最小
-   スタックサイズを要求されたり、システムメモリサイズの倍数の割り当て
-   を要求されるなどです - より詳しい情報はプラットフォームごとの文書で
-   確認してください (4kB ページは一般的ですので、情報が見当たらないと
-   きには 4096 の倍数を指定しておくといいかもしれません)。利用可能:
-   Windows, POSIX スレッドのあるシステム。
+   Return the thread stack size used when creating new threads.  The optional
+   *size* argument specifies the stack size to be used for subsequently created
+   threads, and must be 0 (use platform or configured default) or a positive
+   integer value of at least 32,768 (32kB). If *size* is not specified,
+   0 is used. If changing the thread stack size is
+   unsupported, the :exc:`error` exception is raised.  If the specified stack size is
+   invalid, a :exc:`ValueError` is raised and the stack size is unmodified.  32kB
+   is currently the minimum supported stack size value to guarantee sufficient
+   stack space for the interpreter itself.  Note that some platforms may have
+   particular restrictions on values for the stack size, such as requiring a
+   minimum stack size > 32kB or requiring allocation in multiples of the system
+   memory page size - platform documentation should be referred to for more
+   information (4kB pages are common; using multiples of 4096 for the stack size is
+   the suggested approach in the absence of more specific information).
+   Availability: Windows, systems with POSIX threads.
 
    .. versionadded:: 2.5
 
-ロックオブジェクトは次のようなメソッドを持っています:
+
+Lock objects have the following methods:
 
 
 .. method:: lock.acquire([waitflag])
 
-   オプションの引数なしで使用すると、このメソッドは他のスレッドがロッ
-   クしているかどうかにかかわらずロックを獲得します。
-   ただし、他のスレッドがすでにロックしている場合には解除されるまで待っ
-   てからロックを獲得します (同時にロックを獲得できるスレッドはひとつ
-   だけであり、これこそがロックの存在理由です)。整数の引数 *waitflag*
-   を指定すると、その値によって動作が変わります。引数が ``0`` のときは、
-   待たずにすぐ獲得できる場合にだけロックを獲得します。 ``0`` 以外の値
-   を与えると、先の例と同様、ロックの状態にかかわらず獲得をおこないま
-   す。なお、ロックを獲得すると ``True`` 、できなかったときには
-   ``False`` を返します。
+   Without the optional argument, this method acquires the lock unconditionally, if
+   necessary waiting until it is released by another thread (only one thread at a
+   time can acquire a lock --- that's their reason for existence).  If the integer
+   *waitflag* argument is present, the action depends on its value: if it is zero,
+   the lock is only acquired if it can be acquired immediately without waiting,
+   while if it is nonzero, the lock is acquired unconditionally as before.  The
+   return value is ``True`` if the lock is acquired successfully, ``False`` if not.
 
 
 .. method:: lock.release()
 
-   ロックを解放します。そのロックは既に獲得されたものでなければなりま
-   せんが、しかし同じスレッドによって獲得されたものである必要はありま
-   せん。
+   Releases the lock.  The lock must have been acquired earlier, but not
+   necessarily by the same thread.
 
 
 .. method:: lock.locked()
 
-   ロックの状態を返します: 同じスレッドによって獲得されたものなら
-   ``True`` 、違うのなら ``False`` を返します。
+   Return the status of the lock: ``True`` if it has been acquired by some thread,
+   ``False`` if not.
 
-これらのメソッドに加えて、ロックオブジェクトは :keyword:`with` 文を通
-じて以下の例のように使うこともできます。 ::
+In addition to these methods, lock objects can also be used via the
+:keyword:`with` statement, e.g.::
 
    import thread
 
@@ -163,35 +149,28 @@
    with a_lock:
        print "a_lock is locked while this executes"
 
-**警告:**
+**Caveats:**
 
   .. index:: module: signal
 
-* スレッドは割り込みと奇妙な相互作用をします: :exc:`KeyboardInterrupt`
-  例外は任意のスレッドによって受け取られます。
-  ( :mod:`signal` モジュールが利用可能なとき、割り込みは常にメインスレッ
-  ドへ行きます。)
+* Threads interact strangely with interrupts: the :exc:`KeyboardInterrupt`
+  exception will be received by an arbitrary thread.  (When the :mod:`signal`
+  module is available, interrupts always go to the main thread.)
 
-* :func:`sys.exit` を呼び出す、あるいは :exc:`SystemExit` 例外を送出することは、
-  :func:`thread.exit` を呼び出すことと同じです。
+* Calling :func:`sys.exit` or raising the :exc:`SystemExit` exception is
+  equivalent to calling :func:`thread.exit`.
 
-* I/O待ちをブロックするかもしれない全ての組込み関数が、他のスレッドの
-  走行を許すわけではありません。 (ほとんどの一般的なもの (
-  :func:`time.sleep`, :meth:`file.read`, :func:`select.select`) は期待
-  通りに働きます。)
-
-* ロックの :meth:`acquire` メソッドに割り込むことはできません ---
-  :exc:`KeyboardInterrupt` 例外は、ロックが獲得された後に発生します。
+* It is not possible to interrupt the :meth:`acquire` method on a lock --- the
+  :exc:`KeyboardInterrupt` exception will happen after the lock has been acquired.
 
   .. index:: pair: threads; IRIX
 
-* メインスレッドが終了したとき、他のスレッドが生き残るかどうかは、シス
-  テムに依存します。ネイティブスレッド実装を使う SGI, IRIX では生き残り
-  ます。
-  その他の多くのシステムでは、 :keyword:`try` ... :keyword:`finally`
-  節や、オブジェクトデストラクタを実行せずに終了されます。
+* When the main thread exits, it is system defined whether the other threads
+  survive.  On SGI IRIX using the native thread implementation, they survive.  On
+  most other systems, they are killed without executing :keyword:`try` ...
+  :keyword:`finally` clauses or executing object destructors.
 
-* メインスレッドが終了したとき、それの通常のクリーンアップは行なわれず、
-  (:keyword:`try` ... :keyword:`finally` 節が尊重されることは除きます)、
-  標準 I/O ファイルはフラッシュされません。
+* When the main thread exits, it does not do any of its usual cleanup (except
+  that :keyword:`try` ... :keyword:`finally` clauses are honored), and the
+  standard I/O files are not flushed.
 

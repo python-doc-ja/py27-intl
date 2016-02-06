@@ -1,79 +1,92 @@
-:mod:`dumbdbm` --- 可搬性のある DBM 実装
-========================================
+:mod:`dumbdbm` --- Portable DBM implementation
+==============================================
 
 .. module:: dumbdbm
-   :synopsis: 単純な DBM インタフェースに対する可搬性のある実装。
+   :synopsis: Portable implementation of the simple DBM interface.
 
 .. note::
-
-   :mod:`dumbdbm` モジュールは、 Python 3.0 では :mod:`dbm.dumb` にリネームされます。
-   :term:`2to3` ツールが自動的にimportを修正します。
+   The :mod:`dumbdbm` module has been renamed to :mod:`dbm.dumb` in Python 3.
+   The :term:`2to3` tool will automatically adapt imports when converting your
+   sources to Python 3.
 
 .. index:: single: databases
 
 .. note::
 
-   :mod:`dumbdbm` モジュールは、 :mod:`anydbm` が安定なモジュールを他に見つけることができなかった際の最後の手段とされています。
-   :mod:`dumbdbm` モジュールは速度を重視して書かれているわけではなく、他のデータベースモジュールのように重い使い方をするためのものでは
-   ありません。
+   The :mod:`dumbdbm` module is intended as a last resort fallback for the
+   :mod:`anydbm` module when no more robust module is available. The :mod:`dumbdbm`
+   module is not written for speed and is not nearly as heavily used as the other
+   database modules.
 
-:mod:`dumbdbm` モジュールは永続性辞書に類似したインタフェースを提供し、全て Python で書かれています。 :mod:`gdbm` や
-:mod:`bsddb` といったモジュールと異なり、外部ライブラリは必要ありません。他の永続性マップ型のように、
-キーおよび値は常に文字列でなければなりません。
+The :mod:`dumbdbm` module provides a persistent dictionary-like interface which
+is written entirely in Python.  Unlike other modules such as :mod:`gdbm` and
+:mod:`bsddb`, no external library is required.  As with other persistent
+mappings, the keys and values must always be strings.
 
-このモジュールでは以下の内容を定義してします:
+The module defines the following:
 
 
 .. exception:: error
 
-   I/O エラーのような dumbdbm 特有のエラーの際に送出されます。不正なキーを指定したときのような、一般的な対応付けエラーの際には
-   :exc:`KeyError` が送出されます。
+   Raised on dumbdbm-specific errors, such as I/O errors.  :exc:`KeyError` is
+   raised for general mapping errors like specifying an incorrect key.
 
 
 .. function:: open(filename[, flag[, mode]])
 
-   dumbdbm データベースを開き、 dubmdbm オブジェクトを返します。 *filename* 引数はデータベースファイル名の雛型 (特定の拡張子を
-   もたないもの) です。dumbdbm データベースが生成される際、 :file:`.dat` および :file:`.dir`
-   の拡張子を持ったファイルが生成されます。
+   Open a dumbdbm database and return a dumbdbm object.  The *filename* argument is
+   the basename of the database file (without any specific extensions).  When a
+   dumbdbm database is created, files with :file:`.dat` and :file:`.dir` extensions
+   are created.
 
-   オプションの *flag* 引数は現状では無視されます; データベースは常に更新のために開かれ、存在しない場合には新たに作成されます。
+   The optional *flag* argument is currently ignored; the database is always opened
+   for update, and will be created if it does not exist.
 
-   オプションの *mode* 引数は Unix におけるファイルのモードで、データベースを作成する際に使われます。デフォルトでは 8 進コードの
-   ``0666`` になっています (umask によって修正を受けます)。
+   The optional *mode* argument is the Unix mode of the file, used only when the
+   database has to be created.  It defaults to octal ``0666`` (and will be modified
+   by the prevailing umask).
 
    .. versionchanged:: 2.2
-      *mode* 引数は以前のバージョンでは無視されます.
+      The *mode* argument was ignored in earlier versions.
+
+In addition to the dictionary-like methods, ``dumbdm`` objects
+provide the following method:
+
+
+.. function:: close()
+
+   Close the ``dumbdm`` database.
 
 
 .. seealso::
 
    Module :mod:`anydbm`
-      ``dbm`` 形式のデータベースに対する汎用インタフェース。
+      Generic interface to ``dbm``\ -style databases.
 
    Module :mod:`dbm`
-      DBM/NDBM ライブラリに対する同様のインタフェース。
+      Similar interface to the DBM/NDBM library.
 
    Module :mod:`gdbm`
-      GNU GDBM ライブラリに対する同様のインタフェース。
+      Similar interface to the GNU GDBM library.
 
    Module :mod:`shelve`
-      非文字列データを記録する永続化モジュール。
+      Persistence module which stores non-string data.
 
    Module :mod:`whichdb`
-      既存のデータベースの形式を判定するために使われるユーティリティモジュール。
+      Utility module used to determine the type of an existing database.
 
 
 .. _dumbdbm-objects:
 
-Dumbdbm オブジェクト
---------------------
+Dumbdbm Objects
+---------------
 
-:class:`UserDict.DictMixin` クラスで提供されているメソッドに加え、 :class:`dumbdbm`
-オブジェクトでは以下のメソッドを提供しています。
+In addition to the methods provided by the :class:`UserDict.DictMixin` class,
+:class:`dumbdbm` objects provide the following methods.
 
 
 .. method:: dumbdbm.sync()
 
-   ディスク上の辞書とデータファイルを同期します。このメソッドは :class:`Shelve` オブジェクトの :meth:`sync` メソッドから
-   呼び出されます。
+   Synchronize the on-disk directory and data files.  This method is called by the
+   :meth:`sync` method of :class:`Shelve` objects.
 

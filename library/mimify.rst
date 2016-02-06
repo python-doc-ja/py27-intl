@@ -1,88 +1,96 @@
 
-:mod:`mimify` --- 電子メールメッセージの MIME 処理
+:mod:`mimify` --- MIME processing of mail messages
 ==================================================
 
 .. module:: mimify
-   :synopsis: 電子メールメッセージの MIME 化および非 MIME 化。
+   :synopsis: Mimification and unmimification of mail messages.
    :deprecated:
 
-.. deprecated:: 2.3
-   :mod:`mimify` モジュールを使うよりも :mod:`email` パッケージを使うべきです。
-   このモジュールは以前のバージョンとの互換性のために保守されているにすぎません。
 
-:mod:`mimify` モジュールでは電子メールメッセージから MIME へ、および
-MIME から電子メールメッセージへの変換を行うための二つの関数を定義しています。
-電子メールメッセージは単なるメッセージでも、 MIME 形式でもかまいません。
-各パートは個別に扱われます。
-メッセージ (の一部) の MIME 化 (mimify) の際、7 ビット ASCII
-文字を使って表現できない何らかの文字が含まれていた場合、メッセージの
-quoted-printable への符号化が伴います。
-メッセージが送信される前に編集しなければならない場合、
-MIME 化および非 MIME 化は特に便利です。
-典型的な使用法は以下のようになります::
+.. deprecated:: 2.3
+   The :mod:`email` package should be used in preference to the :mod:`mimify`
+   module.  This module is present only to maintain backward compatibility.
+
+The :mod:`mimify` module defines two functions to convert mail messages to and
+from MIME format.  The mail message can be either a simple message or a
+so-called multipart message.  Each part is treated separately. Mimifying (a part
+of) a message entails encoding the message as quoted-printable if it contains
+any characters that cannot be represented using 7-bit ASCII.  Unmimifying (a
+part of) a message entails undoing the quoted-printable encoding.  Mimify and
+unmimify are especially useful when a message has to be edited before being
+sent.  Typical use would be::
 
    unmimify message
    edit message
    mimify message
    send message
 
-モジュールでは以下のユーザから呼び出し可能な関数と、ユーザが設定可能な変数を定義しています:
+The modules defines the following user-callable functions and user-settable
+variables:
 
 
 .. function:: mimify(infile, outfile)
 
-   *infile* を *outfile* にコピーします。その際、パートを quoted-printable に変換し、必要なら MIME
-   メールヘッダを追加します。 *infile* および *outfile* はファイルオブジェクト (実際には、 :meth:`readline` メソッドを持つ
-   (*infile*) か、 :meth:`write` (*outfile*) メソッドを持つあらゆるオブジェクト)
-   か、ファイル名を指す文字列を指定することができます。 *infile* および *outfile* が両方とも文字列の場合、同じ値にすることができます。
+   Copy the message in *infile* to *outfile*, converting parts to quoted-printable
+   and adding MIME mail headers when necessary. *infile* and *outfile* can be file
+   objects (actually, any object that has a :meth:`readline` method (for *infile*)
+   or a :meth:`write` method (for *outfile*)) or strings naming the files. If
+   *infile* and *outfile* are both strings, they may have the same value.
 
 
 .. function:: unmimify(infile, outfile[, decode_base64])
 
-   *infile* を *outfile* にコピーします。その際、全ての quoted-printable 化されたパートを復号化します。 *infile*
-   および *outfile* はファイルオブジェクト (実際には、 :meth:`readline` メソッドを持つ (*infile*) か、
-   :meth:`write` (*outfile*) メソッドを持つあらゆるオブジェクト)  か、ファイル名を指す文字列を指定することができます。
-   *decode_base64* 引数が与えられており、その値が真である場合、 base64 符号で符号化されているパートも同様に復号化されます。
+   Copy the message in *infile* to *outfile*, decoding all quoted-printable parts.
+   *infile* and *outfile* can be file objects (actually, any object that has a
+   :meth:`readline` method (for *infile*) or a :meth:`write` method (for
+   *outfile*)) or strings naming the files.  If *infile* and *outfile* are both
+   strings, they may have the same value. If the *decode_base64* argument is
+   provided and tests true, any parts that are coded in the base64 encoding are
+   decoded as well.
 
 
 .. function:: mime_decode_header(line)
 
-   *line* 内の符号化されたヘッダ行が復号化されたものを返します。ISO 8859-1 文字セット (Latin-1) だけをサポートします。
+   Return a decoded version of the encoded header line in *line*. This only
+   supports the ISO 8859-1 charset (Latin-1).
 
 
 .. function:: mime_encode_header(line)
 
-   *line* 内のヘッダ行が MIME 符号化されたものを返します。
+   Return a MIME-encoded version of the header line in *line*.
 
 
 .. data:: MAXLEN
 
-   標準では、非 ASCII 文字 (8 ビット目がセットされている文字) を含むか、 :const:`MAXLEN` 文字 (標準の値は 200 です)
-   よりも長い部分は quoted-printable 形式で符号化されます。
+   By default, a part will be encoded as quoted-printable when it contains any
+   non-ASCII characters (characters with the 8th bit set), or if there are any
+   lines longer than :const:`MAXLEN` characters (default value 200).
 
 
 .. data:: CHARSET
 
-   文字セットがメールヘッダで指定されていない場合指定しなければなりません。使われている文字セットを表す文字列は :const:`CHARSET`
-   に記憶されます。標準の値は ISO-8859-1 (Latin1 (latin-one) としても知られています)。
+   When not specified in the mail headers, a character set must be filled in.  The
+   string used is stored in :const:`CHARSET`, and the default value is ISO-8859-1
+   (also known as Latin1 (latin-one)).
 
-このモジュールはコマンドラインから利用することもできます。以下のような使用法::
+This module can also be used from the command line.  Usage is as follows::
 
    mimify.py -e [-l length] [infile [outfile]]
    mimify.py -d [-b] [infile [outfile]]
 
-で、それぞれ符号化 (mimify) および復号化 (unmimify) を行います。
-標準の設定では *infile* は標準入力で、 *putfile* は標準出力です。
-入出力に同じファイルを指定することもできます。
+to encode (mimify) and decode (unmimify) respectively.  *infile* defaults to
+standard input, *outfile* defaults to standard output. The same file can be
+specified for input and output.
 
-符号化の際に **-l** オプションを与えた場合、
-*length* で指定した長さより長い行があれば、その長さに含まれる部分が符号化されます。
+If the **-l** option is given when encoding, if there are any lines longer than
+the specified *length*, the containing part will be encoded.
 
-復号化の際に **-b** オプションが与えられていれば、base64 パートも同様に復号化されます。
+If the **-b** option is given when decoding, any base64 parts will be decoded as
+well.
 
 
 .. seealso::
 
    Module :mod:`quopri`
-      MIME quoted-printable 形式ファイルのエンコードおよびデコード。
+      Encode and decode MIME quoted-printable files.
 

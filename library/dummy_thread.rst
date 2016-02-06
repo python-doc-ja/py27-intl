@@ -1,29 +1,31 @@
-:mod:`dummy_thread` --- :mod:`thread` の代替モジュール
-=======================================================
+:mod:`dummy_thread` --- Drop-in replacement for the :mod:`thread` module
+========================================================================
 
 .. module:: dummy_thread
-   :synopsis: thread の代替モジュール。
+   :synopsis: Drop-in replacement for the thread module.
 
 .. note::
-   .. The :mod:`dummy_thread` module has been renamed to :mod:`_dummy_thread` in
-      Python 3.0.  The :term:`2to3` tool will automatically adapt imports when
-      converting your sources to 3.0; however, you should consider using the
-      high-lever :mod:`dummy_threading` module instead.
+   The :mod:`dummy_thread` module has been renamed to :mod:`_dummy_thread` in
+   Python 3.  The :term:`2to3` tool will automatically adapt imports when
+   converting your sources to Python 3; however, you should consider using the
+   high-lever :mod:`dummy_threading` module instead.
 
-   :mod:`dummy_thread` モジュールは、Python 3.0では :mod:`_dummy_thread` に変更されました。
-   :term:`2to3` ツールは自動的にソースコードの import を修正します。
-   しかし、代わりに高レベルの :mod:`dummy_threading` モジュールの利用を検討するべきです。
+**Source code:** :source:`Lib/dummy_thread.py`
 
-このモジュールは :mod:`thread` モジュールのインターフェースをそっくりまねるものです。
-:mod:`thread` モジュールがサポートされていないプラットフォームで import することを意図して作られたものです。
+--------------
 
-使用例::
+This module provides a duplicate interface to the :mod:`thread` module.  It is
+meant to be imported when the :mod:`thread` module is not provided on a
+platform.
+
+Suggested usage is::
 
    try:
        import thread as _thread
    except ImportError:
        import dummy_thread as _thread
 
-生成するスレッドが、他のブロックしたスレッドを待ち、デッドロック発生の可能性がある場合には、このモジュールを使わないようにしてください。
-ブロッキング I/O を使っている場合によく起きます。
+Be careful to not use this module where deadlock might occur from a thread
+being created that blocks waiting for another thread to be created.  This  often
+occurs with blocking I/O.
 

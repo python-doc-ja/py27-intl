@@ -1,9 +1,9 @@
-
-:mod:`cgi` --- CGI (ゲートウェイインタフェース規格) のサポート
-==============================================================
+:mod:`cgi` --- Common Gateway Interface support
+===============================================
 
 .. module:: cgi
-   :synopsis: PythonスクリプトをCGIとして実行するためのヘルパー
+   :synopsis: Helpers for running Python scripts via the Common Gateway Interface.
+
 
 .. index::
    pair: WWW; server
@@ -13,36 +13,48 @@
    single: URL
    single: Common Gateway Interface
 
-ゲートウェイインタフェース規格 (CGI) に準拠したスクリプトをサポートするためのモジュールです。
+**Source code:** :source:`Lib/cgi.py`
 
-このモジュールでは、 Python で CGI スクリプトを書く際に使える様々なユーティリティを定義しています。
+--------------
+
+Support module for Common Gateway Interface (CGI) scripts.
+
+This module defines a number of utilities for use by CGI scripts written in
+Python.
 
 
-はじめに
---------
+Introduction
+------------
 
 .. _cgi-intro:
 
-CGI スクリプトは、HTTP サーバによって起動され、通常は HTML の ``<FORM>`` または ``<ISINDEX>`` エレメントを
-通じてユーザが入力した内容を処理します。
+A CGI script is invoked by an HTTP server, usually to process user input
+submitted through an HTML ``<FORM>`` or ``<ISINDEX>`` element.
 
-ほとんどの場合、CGI スクリプトはサーバ上の特殊なディレクトリ :file:`cgi-bin` の下に置きます。HTTP サーバは、まずスクリプトを
-駆動するためのシェルの環境変数に、リクエストの全ての情報  (クライアントのホスト名、リクエストされている URL、クエリ文字列、その他諸々)
-を設定し、スクリプトを実行した後、スクリプトの出力をクライアントに送信します。
+Most often, CGI scripts live in the server's special :file:`cgi-bin` directory.
+The HTTP server places all sorts of information about the request (such as the
+client's hostname, the requested URL, the query string, and lots of other
+goodies) in the script's shell environment, executes the script, and sends the
+script's output back to the client.
 
-スクリプトの入力端もクライアントに接続されていて、この経路を通じてフォームデータを読み込むこともあります。それ以外の場合には、フォームデータは URL
-の一部分である「クエリ文字列」を介して渡されます。このモジュールでは、上記のケースの違いに注意しつつ、 Python
-スクリプトに対しては単純なインタフェースを提供しています。このモジュールではまた、スクリプトをデバッグするための
-ユーティリティも多数提供しています。また、最近はフォームを経由したファイルのアップロードをサポートしています (ブラウザ側がサポートしていればです)。
+The script's input is connected to the client too, and sometimes the form data
+is read this way; at other times the form data is passed via the "query string"
+part of the URL.  This module is intended to take care of the different cases
+and provide a simpler interface to the Python script.  It also provides a number
+of utilities that help in debugging scripts, and the latest addition is support
+for file uploads from a form (if your browser supports it).
 
-CGI スクリプトの出力は 2 つのセクションからなり、空行で分割されています。最初のセクションは複数のヘッダからなり、
-後続するデータがどのようなものかをクライアントに通知します。最小のヘッダセクションを生成するための Python のコードは以下のようなものです::
+The output of a CGI script should consist of two sections, separated by a blank
+line.  The first section contains a number of headers, telling the client what
+kind of data is following.  Python code to generate a minimal header section
+looks like this::
 
-   print "Content-Type: text/html"     # 以降のデータが HTML であることを示す行
-   print                               # ヘッダ部の終了を示す空行
+   print "Content-Type: text/html"     # HTML is following
+   print                               # blank line, end of headers
 
-二つ目のセクションは通常、ヘッダやインラインイメージ等の付属したテキストをうまくフォーマットして表示できるようにした HTML です。以下に単純な HTML
-を出力する Python コードを示します::
+The second section is usually HTML, which allows the client software to display
+nicely formatted text with header, in-line images, etc. Here's Python code that
+prints a simple piece of HTML::
 
    print "<TITLE>CGI script output</TITLE>"
    print "<H1>This is my first CGI script</H1>"
@@ -51,41 +63,50 @@ CGI スクリプトの出力は 2 つのセクションからなり、空行で�
 
 .. _using-the-cgi-module:
 
-cgi モジュールを使う
+Using the cgi module
 --------------------
 
-先頭には ``import cgi`` と書いてください。 ``from cgi import *`` と書いてはなりません ---
-このモジュールでは、以前のバージョンとの互換性を持たせるため、内部で呼び出す名前を多数定義しており、それらをユーザの名前空間に存在させる必要はないからです。
+Begin by writing ``import cgi``.  Do not use ``from cgi import *`` --- the
+module defines all sorts of names for its own use or for backward compatibility
+that you don't want in your namespace.
 
-新たにスクリプトを書く際には、以下の行を付加するかどうか検討してください::
+When you write a new script, consider adding these lines::
 
    import cgitb
    cgitb.enable()
 
-これによって、特別な例外処理が有効にされ、エラーが発生した際にブラウザ上に詳細なレポートを出力するようになります。ユーザにスクリプトの内部を
-見せたくないのなら、以下のようにしてレポートをファイルに保存できます::
+This activates a special exception handler that will display detailed reports in
+the Web browser if any errors occur.  If you'd rather not show the guts of your
+program to users of your script, you can have the reports saved to files
+instead, with code like this::
 
    import cgitb
-   cgitb.enable(display=0, logdir="/tmp")
+   cgitb.enable(display=0, logdir="/path/to/logdir")
 
-スクリプトを開発する際には、この機能はとても役に立ちます。 :mod:`cgitb` が生成する報告はバグを追跡するためにかかる
-時間を大幅に減らせるような情報を提供してくれます。スクリプトをテストし終わり、正確に動作することを確認したら、いつでも ``cgitb``
-の行を削除できます。
+It's very helpful to use this feature during script development. The reports
+produced by :mod:`cgitb` provide information that can save you a lot of time in
+tracking down bugs.  You can always remove the ``cgitb`` line later when you
+have tested your script and are confident that it works correctly.
 
-入力されたフォームデータを取得するには、 :class:`FieldStorage` クラス
-を使うのが最良の方法です。このモジュールで定義されている他のクラスのほとんどは以前のバージョンとの互換性のためのものです。インスタンス生成は引数なしで必ず
-1 度だけ行います。これにより、標準入力または環境変数からフォームの内容を読み出します (どちらから読み出すかは、複数の環境変数の値が CGI 標準に従って
-どう設定されているかで決まります)。インスタンスが標準入力を使うかもしれないので、インスタンス生成を行うのは一度だけにしなければなりません。
+To get at submitted form data, it's best to use the :class:`FieldStorage` class.
+The other classes defined in this module are provided mostly for backward
+compatibility. Instantiate it exactly once, without arguments.  This reads the
+form contents from standard input or the environment (depending on the value of
+various environment variables set according to the CGI standard).  Since it may
+consume standard input, it should be instantiated only once.
 
-:class:`FieldStorage` のインスタンスは Python の辞書のようにインデクスを使って参照できます。
-:keyword:`in` 演算子を使って包含検査でき、
-辞書の標準メソッド :meth:`keys` や組み込み関数 :func:`len` もサポートしています。
-空の文字列を含むフォームのフィールドは無視され、辞書には入りません; そういった値を保持するには、
-:class:`FieldStorage` のインスタンスを生成する時にオプションの  *keep_blank_values* キーワード引数を true
-に設定してください。
+The :class:`FieldStorage` instance can be indexed like a Python dictionary.
+It allows membership testing with the :keyword:`in` operator, and also supports
+the standard dictionary method :meth:`~dict.keys` and the built-in function
+:func:`len`.  Form fields containing empty strings are ignored and do not appear
+in the dictionary; to keep such values, provide a true value for the optional
+*keep_blank_values* keyword parameter when creating the :class:`FieldStorage`
+instance.
 
-例えば、以下のコード (:mailheader:`Content-Type` ヘッダと空行はすでに出力された後とします) は ``name`` および
-``addr``  フィールドが両方とも空の文字列に設定されていないか調べます::
+For instance, the following code (which assumes that the
+:mailheader:`Content-Type` header and blank line have already been printed)
+checks that the fields ``name`` and ``addr`` are both set to a non-empty
+string::
 
    form = cgi.FieldStorage()
    if "name" not in form or "addr" not in form:
@@ -96,30 +117,33 @@ cgi モジュールを使う
    print "<p>addr:", form["addr"].value
    ...further form processing here...
 
-ここで、 ``form[key]`` で参照される各フィールドはそれ自体が :class:`FieldStorage` (または
-:class:`MiniFieldStorage` 。フォームのエンコードによって変わります) のインスタンスです。インスタンスの属性
-:attr:`value` の内容は対応するフィールドの値で、文字列になります。 :meth:`getvalue` メソッドはこの文字列値を直接返します。
-:meth:`getvalue` の 2 つめの引数にオプションの値を与えると、リクエストされたキーが存在しない場合に返すデフォルトの値になります。
+Here the fields, accessed through ``form[key]``, are themselves instances of
+:class:`FieldStorage` (or :class:`MiniFieldStorage`, depending on the form
+encoding). The :attr:`~FieldStorage.value` attribute of the instance yields
+the string value of the field.  The :meth:`~FieldStorage.getvalue` method
+returns this string value directly; it also accepts an optional second argument
+as a default to return if the requested key is not present.
 
-入力されたフォームデータに同じ名前のフィールドが二つ以上あれば、 ``form[key]`` で得られるオブジェクトは
-:class:`FieldStorage` や :class:`MiniFieldStorage` のインスタンスではなく、そうしたインスタンスの
-リストになります。この場合、 ``form.getvalue(key)`` も同様に、文字列からなるリストを返します。もしこうした状況が起きうると思うなら
-(HTML のフォームに同じ名前をもったフィールドが複数含まれているのなら) 、組み込み関数 :func:`isinstance`
-を使って、返された値が単一のインスタンスかインスタンスのリストかどうか調べてください。例えば、以下のコードは任意の数のユーザ名フィールドを
-結合し、コンマで分割された文字列にします::
+If the submitted form data contains more than one field with the same name, the
+object retrieved by ``form[key]`` is not a :class:`FieldStorage` or
+:class:`MiniFieldStorage` instance but a list of such instances.  Similarly, in
+this situation, ``form.getvalue(key)`` would return a list of strings. If you
+expect this possibility (when your HTML form contains multiple fields with the
+same name), use the :meth:`~FieldStorage.getlist` method, which always returns
+a list of values (so that you do not need to special-case the single item
+case).  For example, this code concatenates any number of username fields,
+separated by commas::
 
-   value = form.getvalue("username", "")
-   if isinstance(value, list):
-       # Multiple username fields specified
-       usernames = ",".join(value)
-   else:
-       # Single or no username field specified
-       usernames = value
+   value = form.getlist("username")
+   usernames = ",".join(value)
 
-フィールドがアップロードされたファイルを表している場合、 :attr:`value` 属性や :func:`getvalue`
-メソッドを使ってフィールドの値にアクセスすると、ファイルの内容を全て文字列としてメモリ上に読み込んでしまいます。
-これは望ましくない機能かもしれません。アップロードされたファイルがあるかどうかは :attr:`filename` 属性および :attr:`!file`
-属性のいずれかで調べられます。その後、以下のようにして :attr:`!file` 属性から落ち着いてデータを読み出せます::
+If a field represents an uploaded file, accessing the value via the
+:attr:`~FieldStorage.value` attribute or the :func:`~FieldStorage.getvalue`
+method reads the entire file in memory as a string.  This may not be what you
+want. You can test for an uploaded file by testing either the
+:attr:`~FieldStorage.filename` attribute or the :attr:`~FieldStorage.file`
+attribute.  You can then read the data at leisure from the :attr:`!file`
+attribute::
 
    fileitem = form["userfile"]
    if fileitem.file:
@@ -130,47 +154,47 @@ cgi モジュールを使う
            if not line: break
            linecount = linecount + 1
 
-.. If an error is encountered when obtaining the contents of an uploaded file
-   (for example, when the user interrupts the form submission by clicking on
-   a Back or Cancel button) the :attr:`done` attribute of the object for the
-   field will be set to the value -1.
+If an error is encountered when obtaining the contents of an uploaded file
+(for example, when the user interrupts the form submission by clicking on
+a Back or Cancel button) the :attr:`~FieldStorage.done` attribute of the
+object for the field will be set to the value -1.
 
-アップロードされたファイルの内容を取得している間にエラーが発生した場合
-(例えば、ユーザーがバックやキャンセルボタンで submit を中断した場合)、
-そのフィールドのオブジェクトの :attr:`done` 属性には -1 が設定されます。
+The file upload draft standard entertains the possibility of uploading multiple
+files from one field (using a recursive :mimetype:`multipart/\*` encoding).
+When this occurs, the item will be a dictionary-like :class:`FieldStorage` item.
+This can be determined by testing its :attr:`!type` attribute, which should be
+:mimetype:`multipart/form-data` (or perhaps another MIME type matching
+:mimetype:`multipart/\*`).  In this case, it can be iterated over recursively
+just like the top-level form object.
 
-現在ドラフトとなっているファイルアップロードの標準仕様では、一つのフィールドから (再帰的な :mimetype:`multipart/\*`
-エンコーディングを使って) 複数のファイルがアップロードされる可能性を受け入れています。この場合、アイテムは辞書形式の
-:class:`FieldStorage` アイテムとなります。複数ファイルかどうかは :attr:`!type` 属性が
-:mimetype:`multipart/form-data` (または :mimetype:`multipart/\*` にマッチする他の MIME 型)
-になっているかどうかを調べれば判別できます。この場合、トップレベルのフォームオブジェクトと同様にして再帰的に個別処理できます。
+When a form is submitted in the "old" format (as the query string or as a single
+data part of type :mimetype:`application/x-www-form-urlencoded`), the items will
+actually be instances of the class :class:`MiniFieldStorage`.  In this case, the
+:attr:`!list`, :attr:`!file`, and :attr:`filename` attributes are always ``None``.
 
-フォームが「古い」形式で入力された場合 (クエリ文字列または単一の :mimetype:`application/x-www-form-urlencoded`
-データで入力された場合)、データ要素の実体は :class:`MiniFieldStorage` クラスの
-インスタンスになります。この場合、 :attr:`!list` 、 :attr:`!file` 、および :attr:`filename` 属性は常に ``None``
-になります。
+A form submitted via POST that also has a query string will contain both
+:class:`FieldStorage` and :class:`MiniFieldStorage` items.
 
-.. A form submitted via POST that also has a query string will contain both
-.. :class:`FieldStorage` and :class:`MiniFieldStorage` items.
-
-フォームがPOSTによって送信され、クエリー文字列も持っていた場合、
-:class:`FieldStorage` と :class:`MiniFieldStorage` の両方が含まれます。
-
-高水準インタフェース
---------------------
+Higher Level Interface
+----------------------
 
 .. versionadded:: 2.2
 
-前節では CGI フォームデータを :class:`FieldStorage` クラスを使って読み出す方法について解説しました。この節では、フォームデータを
-分かりやすく直感的な方法で読み出せるようにするために追加された、より高水準のインタフェースについて記述します。
-このインタフェースは前節で説明した技術を撤廃するものではありません --- 例えば、前節の技術は依然としてファイルのアップロードを効率的に行う上で便利です。
+The previous section explains how to read CGI form data using the
+:class:`FieldStorage` class.  This section describes a higher level interface
+which was added to this class to allow one to do it in a more readable and
+intuitive way.  The interface doesn't make the techniques described in previous
+sections obsolete --- they are still useful to process file uploads efficiently,
+for example.
 
 .. XXX: Is this true ?
 
-このインタフェースは 2 つの単純なメソッドからなります。このメソッドを使えば、一般的な方法でフォームデータを処理でき、ある名前のフィールドに
-入力された値が一つなのかそれ以上なのかを心配する必要がなくなります。
+The interface consists of two simple methods. Using the methods you can process
+form data in a generic way, without the need to worry whether only one or more
+values were posted under one name.
 
-前節では、一つのフィールド名に対して二つ以上の値が入力されるかもしれない場合には、常に以下のようなコードを書くよう学びました::
+In the previous section, you learned to write following code anytime you
+expected a user to post more than one value under one name::
 
    item = form.getvalue("item")
    if isinstance(item, list):
@@ -178,44 +202,52 @@ cgi モジュールを使う
    else:
        # The user is requesting only one item.
 
-こういった状況は、例えば以下のように、同じ名前を持った複数のチェックボックスからなるグループがフォームに入っているような場合によく起きます::
+This situation is common for example when a form contains a group of multiple
+checkboxes with the same name::
 
    <input type="checkbox" name="item" value="1" />
    <input type="checkbox" name="item" value="2" />
 
-しかしながら、ほとんどの場合、あるフォーム中で特定の名前を持ったコントロールはただ一つしかないので、その名前に関連付けられた値は
-ただ一つしかないはずだと考えるでしょう。そこで、スクリプトには例えば以下のようなコードを書くでしょう::
+In most situations, however, there's only one form control with a particular
+name in a form and then you expect and need only one value associated with this
+name.  So you write a script containing for example this code::
 
    user = form.getvalue("user").upper()
 
-このコードの問題点は、クライアント側がスクリプトにとって常に有効な入力を提供するとは期待できないところにあります。例えば、もし好奇心旺盛なユーザがもう一つの
-``user=foo`` ペアをクエリ文字列に追加したら、 ``getvalue('user')`` メソッドは
-文字列ではなくリストを返すため、このスクリプトはクラッシュするでしょう。リストに対して :meth:`~str.upper` メソッドを呼び出すと、引数が
-有効でない (リスト型はその名前のメソッドを持っていない) ため、例外 :exc:`AttributeError` を送出します。
+The problem with the code is that you should never expect that a client will
+provide valid input to your scripts.  For example, if a curious user appends
+another ``user=foo`` pair to the query string, then the script would crash,
+because in this situation the ``getvalue("user")`` method call returns a list
+instead of a string.  Calling the :meth:`~str.upper` method on a list is not valid
+(since lists do not have a method of this name) and results in an
+:exc:`AttributeError` exception.
 
-従って、フォームデータの値を読み出しには、得られた値が単一の値なのか値のリストなのかを常に調べるコードを使うのが適切
-でした。これでは煩わしく、より読みにくいスクリプトになってしまいます。
+Therefore, the appropriate way to read form data values was to always use the
+code which checks whether the obtained value is a single value or a list of
+values.  That's annoying and leads to less readable scripts.
 
-ここで述べる高水準のインタフェースで提供している :meth:`getfirst` や :meth:`getlist`
-メソッドを使うと、もっと便利にアプローチできます。
+A more convenient approach is to use the methods :meth:`~FieldStorage.getfirst`
+and :meth:`~FieldStorage.getlist` provided by this higher level interface.
 
 
 .. method:: FieldStorage.getfirst(name[, default])
 
-   フォームフィールド *name* に関連付けられた値をつねに一つだけ返す軽量メソッドです。同じ名前で 1 つ以上の値がポストされている場合、
-   このメソッドは最初の値だけを返します。フォームから値を受信する際の値の並び順はブラウザ間で異なる可能性があり、特定の順番であるとは
-   期待できないので注意してください。  [#]_
-
-   指定したフォームフィールドや値がない場合、このメソッドはオプションの引数 *default* を返します。このパラメタを指定しない場合、標準の値は
-   ``None`` に設定されます。
+   This method always returns only one value associated with form field *name*.
+   The method returns only the first value in case that more values were posted
+   under such name.  Please note that the order in which the values are received
+   may vary from browser to browser and should not be counted on. [#]_  If no such
+   form field or value exists then the method returns the value specified by the
+   optional parameter *default*.  This parameter defaults to ``None`` if not
+   specified.
 
 
 .. method:: FieldStorage.getlist(name)
 
-   このメソッドはフォームフィールド *name* に関連付けられた値を常にリストにして返します。 *name* に指定したフォームフィールドや値が
-   存在しない場合、このメソッドは空のリストを返します。値が一つだけ存在する場合、要素を一つだけ含むリストを返します。
+   This method always returns a list of values associated with form field *name*.
+   The method returns an empty list if no such form field or value exists for
+   *name*.  It returns a list consisting of one item if only one such value exists.
 
-これらのメソッドを使うことで、以下のようにナイスでコンパクトにコードを書けます::
+Using these methods you can write nice compact code::
 
    import cgi
    form = cgi.FieldStorage()
@@ -224,210 +256,241 @@ cgi モジュールを使う
        do_something(item)
 
 
-古いクラス群
-------------
+Old classes
+-----------
 
 .. deprecated:: 2.6
-   これらのクラスは、 :mod:`cgi` モジュールの以前のバージョンに入っており、以前のバージョンとの互換性のために現在もサポートされています。
-   新しいアプリケーションでは :class:`FieldStorage` クラスを使うべきです。
 
-:class:`SvFormContentDict` は単一の値しか持たないフォームデータの内容を辞書として記憶します;
-このクラスでは、各フィールド名はフォーム中に一度しか現れないと仮定しています。
+   These classes, present in earlier versions of the :mod:`cgi` module, are
+   still supported for backward compatibility.  New applications should use the
+   :class:`FieldStorage` class.
 
-:class:`FormContentDict` は複数の値を持つフォームデータの内容を辞書として記憶します (フォーム要素は値のリストです);
-フォームが同じ名前を持ったフィールドを複数含む場合に便利です。
+:class:`SvFormContentDict` stores single value form content as dictionary; it
+assumes each field name occurs in the form only once.
 
-他のクラス (:class:`FormContent` 、 :class:`InterpFormContentDict`) は
-非常に古いアプリケーションとの後方互換性のために存在します。
+:class:`FormContentDict` stores multiple value form content as a dictionary (the
+form items are lists of values).  Useful if your form contains multiple fields
+with the same name.
+
+Other classes (:class:`FormContent`, :class:`InterpFormContentDict`) are present
+for backwards compatibility with really old applications only.
+
 
 .. _functions-in-cgi-module:
 
-関数
-----
+Functions
+---------
 
-より細かく CGI をコントロールしたり、このモジュールで実装されているアルゴリズムを他の状況で利用したい場合には、以下の関数が便利です。
+These are useful if you want more control, or if you want to employ some of the
+algorithms implemented in this module in other circumstances.
 
 
 .. function:: parse(fp[, environ[, keep_blank_values[, strict_parsing]]])
 
-   環境変数、またはファイルからからクエリを解釈します (ファイルは標準で
-   ``sys.stdin`` 、環境変数は標準で ``os.environ`` になります) *keep_blank_values*
-   および *strict_parsing* パラメタはそのまま :func:`urlparse.parse_qs` に渡されます。
+   Parse a query in the environment or from a file (the file defaults to
+   ``sys.stdin`` and environment defaults to ``os.environ``).  The *keep_blank_values* and *strict_parsing* parameters are
+   passed to :func:`urlparse.parse_qs` unchanged.
 
 
 .. function:: parse_qs(qs[, keep_blank_values[, strict_parsing]])
 
-   .. This function is deprecated in this module. Use :func:`urlparse.parse_qs`
-      instead. It is maintained here only for backward compatiblity.
-
-   この関数はこのモジュールでは廃止予定です。
-   代わりに :func:`urlparse.parse_qs` を利用してください。
-   この関数は後方互換性のためだけに残されています。
-
+   This function is deprecated in this module. Use :func:`urlparse.parse_qs`
+   instead. It is maintained here only for backward compatiblity.
 
 .. function:: parse_qsl(qs[, keep_blank_values[, strict_parsing]])
 
-   この関数はこのモジュールでは廃止予定です。
-   代わりに :func:`urlparse.parse_qsl` を利用してください。
-   この関数は後方互換性のためだけに残されています。
-
+   This function is deprecated in this module. Use :func:`urlparse.parse_qsl`
+   instead. It is maintained here only for backward compatiblity.
 
 .. function:: parse_multipart(fp, pdict)
 
-   (ファイル入力のための) :mimetype:`multipart/form-data` 型の入力を解釈します。引数は入力ファイルを示す *fp* と
-   :mailheader:`Content-Type` ヘッダ内の他のパラメタを含む辞書 *pdict* です。
+   Parse input of type :mimetype:`multipart/form-data` (for  file uploads).
+   Arguments are *fp* for the input file and *pdict* for a dictionary containing
+   other parameters in the :mailheader:`Content-Type` header.
 
-   :func:`urlparse.parse_qs` と同じく辞書を返します。辞書のキーはフィールド名で、対応する値は各フィールドの値でできたリストです。
-   この関数は簡単に使えますが、数メガバイトのデータがアップロードされると考えられる場合にはあまり適していません --- その場合、より柔軟性のある
-   :class:`FieldStorage` を代りに使ってください。
+   Returns a dictionary just like :func:`urlparse.parse_qs` keys are the field names, each
+   value is a list of values for that field.  This is easy to use but not much good
+   if you are expecting megabytes to be uploaded --- in that case, use the
+   :class:`FieldStorage` class instead which is much more flexible.
 
-   マルチパートデータがネストしている場合、各パートを解釈できないので注意してください --- 代りに :class:`FieldStorage`
-   を使ってください。
+   Note that this does not parse nested multipart parts --- use
+   :class:`FieldStorage` for that.
 
 
 .. function:: parse_header(string)
 
-   (:mailheader:`Content-Type` のような) MIME ヘッダを解釈し、ヘッダの主要値と各パラメタからなる辞書にします。
+   Parse a MIME header (such as :mailheader:`Content-Type`) into a main value and a
+   dictionary of parameters.
 
 
 .. function:: test()
 
-   メインプログラムから利用できる堅牢性テストを行う CGI スクリプトです。最小の HTTP ヘッダと、HTML フォームからスクリプトに供給された全ての
-   情報を書式化して出力します。
+   Robust test CGI script, usable as main program. Writes minimal HTTP headers and
+   formats all information provided to the script in HTML form.
 
 
 .. function:: print_environ()
 
-   シェル変数を HTML に書式化して出力します。
+   Format the shell environment in HTML.
 
 
 .. function:: print_form(form)
 
-   フォームを HTML に初期化して出力します。
+   Format a form in HTML.
 
 
 .. function:: print_directory()
 
-   現在のディレクトリを HTML に書式化して出力します。
+   Format the current directory in HTML.
 
 
 .. function:: print_environ_usage()
 
-   意味のある (CGI の使う) 環境変数を HTML で出力します。
+   Print a list of useful (used by CGI) environment variables in HTML.
 
 
 .. function:: escape(s[, quote])
 
-   文字列 *s* 中の文字 ``'&'`` 、 ``'<'`` 、および  ``'>'`` を HTML で正しく表示できる文字列に変換します。
-   それらの文字が中に入っているかもしれないようなテキストを出力する必要があるときに使ってください。オプションの引数 *quote*
-   の値が真であれば、二重引用符文字 (``"``) も変換します; この機能は ``<a href="...">`` のように二重引用符で区切られた
-   HTML の属性値を出力に含めるのに役立ちます。
-   単引用符は変換されないことに注意して下さい。
+   Convert the characters ``'&'``, ``'<'`` and ``'>'`` in string *s* to HTML-safe
+   sequences.  Use this if you need to display text that might contain such
+   characters in HTML.  If the optional flag *quote* is true, the quotation mark
+   character (``"``) is also translated; this helps for inclusion in an HTML
+   attribute value delimited by double quotes, as in ``<a href="...">``.  Note
+   that single quotes are never translated.
 
-   クオートされる値が単引用符か二重引用符、またはその両方を含む可能性がある場合は、代りに
-   :mod:`xml.sax.saxutils` の :func:`~xml.sax.saxutils.quoteattr` 関数を検討してください。
+   If the value to be quoted might include single- or double-quote characters,
+   or both, consider using the :func:`~xml.sax.saxutils.quoteattr` function in the
+   :mod:`xml.sax.saxutils` module instead.
 
 
 .. _cgi-security:
 
-セキュリティへの配慮
---------------------
+Caring about security
+---------------------
 
 .. index:: pair: CGI; security
 
-重要なルールが一つあります: ( 関数 :func:`os.system`  または :func:`os.popen` 、またはその他の同様の機能によって )
-外部プログラムを呼び出すなら、クライアントから受信した任意の文字列をシェルに渡していないことをよく確かめてください。
-これはよく知られているセキュリティホールであり、これによって Web  のどこかにいる悪賢いハッカーが、だまされやすい CGI スクリプトに任意の
-シェルコマンドを実行させてしまえます。URL の一部やフィールド名でさえも信用してはいけません。CGI へのリクエストは
-あなたの作ったフォームから送信されるとは限らないからです！
+There's one important rule: if you invoke an external program (via the
+:func:`os.system` or :func:`os.popen` functions. or others with similar
+functionality), make very sure you don't pass arbitrary strings received from
+the client to the shell.  This is a well-known security hole whereby clever
+hackers anywhere on the Web can exploit a gullible CGI script to invoke
+arbitrary shell commands.  Even parts of the URL or field names cannot be
+trusted, since the request doesn't have to come from your form!
 
-安全な方法をとるために、フォームから入力された文字をシェルに渡す場合、文字列に入っているのが英数文字、ダッシュ、アンダースコア、
-およびピリオドだけかどうかを確認してください。
+To be on the safe side, if you must pass a string gotten from a form to a shell
+command, you should make sure the string contains only alphanumeric characters,
+dashes, underscores, and periods.
 
 
-CGI スクリプトを Unix システムにインストールする
-------------------------------------------------
+Installing your CGI script on a Unix system
+-------------------------------------------
 
-あなたの使っている HTTP サーバのドキュメントを読んでください。そしてローカルシステムの管理者と一緒にどのディレクトリに CGI スクリプト
-をインストールすべきかを調べてください; 通常これはサーバのファイルシステムツリー内の :file:`cgi-bin` ディレクトリです。
+Read the documentation for your HTTP server and check with your local system
+administrator to find the directory where CGI scripts should be installed;
+usually this is in a directory :file:`cgi-bin` in the server tree.
 
-あなたのスクリプトが "others" によって読み取り可能および実行可能であることを確認してください; Unix ファイルモードは 8 進表記で
-``0755`` です (``chmod 0755 filename`` を使ってください)。スクリプトの最初の行の 1 カラム目が、 ``#!``
-で開始し、その後に Python インタプリタへのパス名が続いていることを確認してください。例えば::
+Make sure that your script is readable and executable by "others"; the Unix file
+mode should be ``0755`` octal (use ``chmod 0755 filename``).  Make sure that the
+first line of the script contains ``#!`` starting in column 1 followed by the
+pathname of the Python interpreter, for instance::
 
    #!/usr/local/bin/python
 
-Python インタプリタが存在し、"others" によって実行可能であることを確かめてください。
+Make sure the Python interpreter exists and is executable by "others".
 
-あなたのスクリプトが読み書きしなければならないファイルが全て "others" によって読み出しや書き込み可能であることを確かめてください ---
-読み出し可能のファイルモードは ``0644`` で、書き込み可能のファイルモードは ``0666`` になるはずです。これは、セキュリティ上の理由から、
-HTTP サーバがあなたのスクリプトを特権を全く持たないユーザ "nobody" の権限で実行するからです。この権限下では、誰でもが読める
-(書ける、実行できる) ファイルしか読み出し (書き込み、実行) できません。スクリプト実行時のディレクトリや環境変数のセットもあなたがログイン
-したときの設定と異なります。特に、実行ファイルに対するシェルの検索パス (:envvar:`PATH`) や Python のモジュール検索パス
-(:envvar:`PYTHONPATH`)が何らかの値に設定されていると期待してはいけません。
+Make sure that any files your script needs to read or write are readable or
+writable, respectively, by "others" --- their mode should be ``0644`` for
+readable and ``0666`` for writable.  This is because, for security reasons, the
+HTTP server executes your script as user "nobody", without any special
+privileges.  It can only read (write, execute) files that everybody can read
+(write, execute).  The current directory at execution time is also different (it
+is usually the server's cgi-bin directory) and the set of environment variables
+is also different from what you get when you log in.  In particular, don't count
+on the shell's search path for executables (:envvar:`PATH`) or the Python module
+search path (:envvar:`PYTHONPATH`) to be set to anything interesting.
 
-モジュールを Python の標準設定におけるモジュール検索パス上にないディレクトリからロードする必要がある場合、他のモジュールを取り込む
-前にスクリプト内で検索パスを変更できます。例えば::
+If you need to load modules from a directory which is not on Python's default
+module search path, you can change the path in your script, before importing
+other modules.  For example::
 
    import sys
    sys.path.insert(0, "/usr/home/joe/lib/python")
    sys.path.insert(0, "/usr/local/lib/python")
 
-(この方法では、最後に挿入されたディレクトリが最初に検索されます！)
+(This way, the directory inserted last will be searched first!)
 
-非 Unix システムにおける説明は変わるでしょう; あなたの使っている HTTP サーバのドキュメントを調べてください (普通は CGI スクリプトに
-関する節があります)。
-
-
-CGI スクリプトをテストする
---------------------------
-
-残念ながら、 CGI スクリプトは普通、コマンドラインから起動しようとしても動きません。また、コマンドラインから起動した場合には完璧に
-動作するスクリプトが、不思議なことにサーバからの起動では失敗することがあります。しかし、スクリプトをコマンドラインから実行してみなければ
-ならない理由が一つあります: もしスクリプトが文法エラーを含んでいれば、Python インタプリタはそのプログラムを全く実行しないため、 HTTP
-サーバはほとんどの場合クライアントに謎めいたエラーを送信するからです。
-
-スクリプトが構文エラーを含まないのにうまく動作しないなら、次の節に読み進むしかありません。
+Instructions for non-Unix systems will vary; check your HTTP server's
+documentation (it will usually have a section on CGI scripts).
 
 
-CGI スクリプトをデバッグする
-----------------------------
+Testing your CGI script
+-----------------------
+
+Unfortunately, a CGI script will generally not run when you try it from the
+command line, and a script that works perfectly from the command line may fail
+mysteriously when run from the server.  There's one reason why you should still
+test your script from the command line: if it contains a syntax error, the
+Python interpreter won't execute it at all, and the HTTP server will most likely
+send a cryptic error to the client.
+
+Assuming your script has no syntax errors, yet it does not work, you have no
+choice but to read the next section.
+
+
+Debugging CGI scripts
+---------------------
 
 .. index:: pair: CGI; debugging
 
-何よりもまず、些細なインストール関連のエラーでないか確認してください --- 上の CGI スクリプトのインストールに関する節を注意深く読めば
-時間を大いに節約できます。もしインストールの手続きを正しく理解しているか不安なら、このモジュールのファイル (:file:`cgi.py`)
-をコピーして、CGI スクリプトとしてインストールしてみてください。このファイルはスクリプトとして呼び出すと、スクリプトの実行環境とフォームの内容を
-HTML フォームに出力します。正しいモードなどをフォームに与えて、リクエストを送ってみてください。標準的な :file:`cgi-bin`
-ディレクトリにインストールされていれば、以下のような URL をブラウザに入力してリクエストを送信できるはずです::
+First of all, check for trivial installation errors --- reading the section
+above on installing your CGI script carefully can save you a lot of time.  If
+you wonder whether you have understood the installation procedure correctly, try
+installing a copy of this module file (:file:`cgi.py`) as a CGI script.  When
+invoked as a script, the file will dump its environment and the contents of the
+form in HTML form. Give it the right mode etc, and send it a request.  If it's
+installed in the standard :file:`cgi-bin` directory, it should be possible to
+send it a request by entering a URL into your browser of the form::
 
    http://yourhostname/cgi-bin/cgi.py?name=Joe+Blow&addr=At+Home
 
-もしタイプ 404 のエラーになるなら、サーバはスクリプトを発見できないでいます -- おそらくあなたはスクリプトを別のディレクトリ
-に入れる必要があるのでしょう。他のエラーになるなら、先に進む前に解決しなければならないインストール上の問題があります。もし実行環境の情報とフォーム内容
-(この例では、各フィールドはフィールド名 "addr" に対して値 "At Home"、およびフィールド名 "name" に対して "Joe Blow" )
-が綺麗にフォーマットされて表示されるなら、 :file:`cgi.py` スクリプトは正しくインストールされています。
-同じ操作をあなたの自作スクリプトに対して行えば、スクリプトをデバッグできるようになるはずです。
+If this gives an error of type 404, the server cannot find the script -- perhaps
+you need to install it in a different directory.  If it gives another error,
+there's an installation problem that you should fix before trying to go any
+further.  If you get a nicely formatted listing of the environment and form
+content (in this example, the fields should be listed as "addr" with value "At
+Home" and "name" with value "Joe Blow"), the :file:`cgi.py` script has been
+installed correctly.  If you follow the same procedure for your own script, you
+should now be able to debug it.
 
-次のステップでは :mod:`cgi` モジュールの :func:`test` 関数を呼び出すことになります: メインプログラムコードを以下の 1 行、 ::
+The next step could be to call the :mod:`cgi` module's :func:`test` function
+from your script: replace its main code with the single statement ::
 
    cgi.test()
 
-と置き換えてください。この操作で :file:`cgi.py` ファイル自体をインストールした時と同じ結果を出力するはずです。
+This should produce the same results as those gotten from installing the
+:file:`cgi.py` file itself.
 
-通常の Python スクリプトが例外を処理しきれずに送出した場合 (様々な理由: モジュール名のタイプミス、ファイルが開けなかった、など)、 Python
-インタプリタはナイスなトレースバックを出力して終了します。 Python インタプリタはあなたの CGI スクリプトが例外を送出した場合
-にも同様に振舞うので、トレースバックは大抵HTTP サーバのいずれかのログファイルに残るかまったく無視されるかです。
+When an ordinary Python script raises an unhandled exception (for whatever
+reason: of a typo in a module name, a file that can't be opened, etc.), the
+Python interpreter prints a nice traceback and exits.  While the Python
+interpreter will still do this when your CGI script raises an exception, most
+likely the traceback will end up in one of the HTTP server's log files, or be
+discarded altogether.
 
-幸運なことに、あなたが自作のスクリプトで *何らかの* コードを実行できるようになったら、 :mod:`cgitb` モジュールを使って
-簡単にトレースバックをブラウザに送信できます。まだそうでないなら、以下の2行::
+Fortunately, once you have managed to get your script to execute *some* code,
+you can easily send tracebacks to the Web browser using the :mod:`cgitb` module.
+If you haven't done so already, just add the lines::
 
-   import cgitb;
+   import cgitb
    cgitb.enable()
 
-をスクリプトの先頭に追加してください。そしてスクリプトを再度走らせます; 問題が発生すれば、クラッシュの原因を見出せるような詳細な報告を読めます。
+to the top of your script.  Then try running it again; when a problem occurs,
+you should see a detailed report that will likely make apparent the cause of the
+crash.
 
-:mod:`cgitb` モジュールのインポートに問題がありそうだと思うなら、(組み込みモジュールだけを使った) もっと堅牢なアプローチを取れます::
+If you suspect that there may be a problem in importing the :mod:`cgitb` module,
+you can use an even more robust approach (which only uses built-in modules)::
 
    import sys
    sys.stderr = sys.stdout
@@ -435,36 +498,48 @@ HTML フォームに出力します。正しいモードなどをフォームに
    print
    ...your code here...
 
-このコードは Python インタプリタがトレースバックを出力することに依存しています。出力のコンテント型はプレーンテキストに設定されており、全ての
-HTML 処理を無効にしています。スクリプトがうまく動作する場合、生の HTML コードがクライアントに表示されます。スクリプトが例外を送出する場合、最初の
-2 行が出力された後、トレースバックが表示されます。HTML の解釈は行われないので、トレースバックを読めるはずです。
+This relies on the Python interpreter to print the traceback.  The content type
+of the output is set to plain text, which disables all HTML processing.  If your
+script works, the raw HTML will be displayed by your client.  If it raises an
+exception, most likely after the first two lines have been printed, a traceback
+will be displayed. Because no HTML interpretation is going on, the traceback
+will be readable.
 
 
-よくある問題と解決法
---------------------
+Common problems and solutions
+-----------------------------
 
-* ほとんどの HTTP サーバはスクリプトの実行が完了するまで CGI からの出力をバッファします。このことは、スクリプトの実行中にクライアントが
-  進捗状況報告を表示できないことを意味します。
+* Most HTTP servers buffer the output from CGI scripts until the script is
+  completed.  This means that it is not possible to display a progress report on
+  the client's display while the script is running.
 
-* 上のインストールに関する説明を調べましょう。
+* Check the installation instructions above.
 
-* HTTP サーバのログファイルを調べましょう。(別のウィンドウで  ``tail -f logfile`` を実行すると便利かもしれません！)
+* Check the HTTP server's log files.  (``tail -f logfile`` in a separate window
+  may be useful!)
 
-* 常に ``python script.py`` などとして、スクリプトが構文エラーでないか調べましょう。
+* Always check a script for syntax errors first, by doing something like
+  ``python script.py``.
 
-* スクリプトに構文エラーがないなら、 ``import cgitb; cgitb.enable()`` をスクリプトの先頭に追加してみましょう。
+* If your script does not have any syntax errors, try adding ``import cgitb;
+  cgitb.enable()`` to the top of the script.
 
-* 外部プログラムを起動するときには、スクリプトがそのプログラムを見つけられるようにしましょう。これは通常、絶対パス名を使うことを意味します ---
-  :envvar:`PATH` は普通、あまり CGI スクリプトにとって便利でない値に設定されています。
+* When invoking external programs, make sure they can be found. Usually, this
+  means using absolute path names --- :envvar:`PATH` is usually not set to a very
+  useful value in a CGI script.
 
-* 外部のファイルを読み書きする際には、CGI スクリプトを動作させるときに使われる userid でファイルを読み書きできるように
-  なっているか確認しましょう: userid は通常、Web サーバを動作させている userid か、Web サーバの ``suexec``
-  機能で明示的に指定している userid になります。
+* When reading or writing external files, make sure they can be read or written
+  by the userid under which your CGI script will be running: this is typically the
+  userid under which the web server is running, or some explicitly specified
+  userid for a web server's ``suexec`` feature.
 
-* CGI スクリプトを set-uid モードにしてはいけません。これはほとんどのシステムで動作せず、セキュリティ上の信頼性もありません。
+* Don't try to give a CGI script a set-uid mode.  This doesn't work on most
+  systems, and is a security liability as well.
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] 最近のバージョンの HTML 仕様ではフィールドの値を供給する順番を取り決めてはいますが、ある HTTP リクエストがその取り決めに
-   準拠したブラウザから受信したものかどうか、そもそもブラウザから送信されたものかどうかの判別は退屈で間違いやすいので注意してください。
+.. [#] Note that some recent versions of the HTML specification do state what order the
+   field values should be supplied in, but knowing whether a request was
+   received from a conforming browser, or even from a browser at all, is tedious
+   and error-prone.
 

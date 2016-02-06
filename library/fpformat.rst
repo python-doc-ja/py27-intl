@@ -1,61 +1,59 @@
 
-:mod:`fpformat` --- 浮動小数点数の変換
-======================================
+:mod:`fpformat` --- Floating point conversions
+==============================================
 
 .. module:: fpformat
-   :synopsis: 浮動小数点をフォーマットする汎用関数。
+   :synopsis: General floating point formatting functions.
    :deprecated:
 
 .. deprecated:: 2.6
-    :mod:`fpformat` は Python 3.0 で削除されました。
+    The :mod:`fpformat` module has been removed in Python 3.
 
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 
-:mod:`fpformat` モジュールは浮動小数点数の表示を 100% 純粋に Python
-だけで行うための関数を定義しています。
+The :mod:`fpformat` module defines functions for dealing with floating point
+numbers representations in 100% pure Python.
 
 .. note::
 
-   このモジュールは必要ありません: このモジュールのすべてのことは、
-   :ref:`string-formatting` 節で説明されている
-   ``%`` を使った文字列の補間演算により実現可能です。
+   This module is unnecessary: everything here can be done using the ``%`` string
+   interpolation operator described in the :ref:`string-formatting` section.
 
-:mod:`fpformat` モジュールは次にあげる関数と例外を定義しています。
+The :mod:`fpformat` module defines the following functions and an exception:
 
 
 .. function:: fix(x, digs)
 
-   *x* を ``[-]ddd.ddd`` の形にフォーマットします。
-   小数点の後ろに *digs* 桁と、小数点の前に少なくとも1桁です。
-   ``digs <= 0`` の場合、小数点以下は切り捨てられます。
+   Format *x* as ``[-]ddd.ddd`` with *digs* digits after the point and at least one
+   digit before. If ``digs <= 0``, the decimal point is suppressed.
 
-   *x* は数字か数字を表した文字列です。
-   *digs* は整数です。
+   *x* can be either a number or a string that looks like one. *digs* is an
+   integer.
 
-   返り値は文字列です。
+   Return value is a string.
 
 
 .. function:: sci(x, digs)
 
-   *x* を ``[-]d.dddE[+-]ddd`` の形にフォーマットします。
-   小数点の後ろに *digs* 桁と、小数点の前に1桁だけです。
-   ``digs <= 0`` の場合、1桁だけ残され、小数点以下は切り捨てられます。
+   Format *x* as ``[-]d.dddE[+-]ddd`` with *digs* digits after the  point and
+   exactly one digit before. If ``digs <= 0``, one digit is kept and the point is
+   suppressed.
 
-   *x* は実数か実数を表した文字列です。
-   *digs* は整数です。
+   *x* can be either a real number, or a string that looks like one. *digs* is an
+   integer.
 
-   返り値は文字列です。
+   Return value is a string.
 
 
 .. exception:: NotANumber
 
-   :func:`fix` や :func:`sci` にパラメータとして渡された文字列
-   *x* が数字として認識できなかった場合、例外が発生します。
-   標準の例外が文字列の頃から、この例外は :exc:`ValueError` のサブクラスです。
-   例外値は、例外を発生させた不適切にフォーマットされた文字列です。
+   Exception raised when a string passed to :func:`fix` or :func:`sci` as the *x*
+   parameter does not look like a number. This is a subclass of :exc:`ValueError`
+   when the standard exceptions are strings.  The exception value is the improperly
+   formatted string that caused the exception to be raised.
 
-例::
+Example::
 
    >>> import fpformat
    >>> fpformat.fix(1.23, 1)

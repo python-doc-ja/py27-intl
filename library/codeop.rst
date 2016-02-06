@@ -1,73 +1,76 @@
 
-:mod:`codeop` --- Pythonコードをコンパイルする
-==============================================
+:mod:`codeop` --- Compile Python code
+=====================================
 
 .. module:: codeop
-   :synopsis: (完全ではないかもしれない)Pythonコードをコンパイルする。
+   :synopsis: Compile (possibly incomplete) Python code.
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 .. sectionauthor:: Michael Hudson <mwh@python.net>
 
+The :mod:`codeop` module provides utilities upon which the Python
+read-eval-print loop can be emulated, as is done in the :mod:`code` module.  As
+a result, you probably don't want to use the module directly; if you want to
+include such a loop in your program you probably want to use the :mod:`code`
+module instead.
 
-:mod:`codeop` モジュールは、 :mod:`code` モジュールで行われているようなPythonの
-read-eval-printループをエミュレートするユーティリティを提供します。
-そのため、このモジュールを直接利用する場面はあまり無いでしょう。
-プログラムにこのようなループを含めたい場合は、 :mod:`code` モジュールの方が便利です。
+There are two parts to this job:
 
-この仕事には二つの部分があります:
+#. Being able to tell if a line of input completes a Python  statement: in
+   short, telling whether to print '``>>>``' or '``...``' next.
 
-#. 入力の一行がPythonの文として完全であるかどうかを見分けられること:
-   簡単に言えば、次が '``>>>``' か、あるいは '``...``' かどうかを見分けます。
+#. Remembering which future statements the user has entered, so  subsequent
+   input can be compiled with these in effect.
 
-#. どのfuture文をユーザが入力したのかを覚えていること。したがって、実質的にそれに続く入力をこれらとともにコンパイルすることができます。
+The :mod:`codeop` module provides a way of doing each of these things, and a way
+of doing them both.
 
-:mod:`codeop` モジュールはこうしたことのそれぞれを行う方法とそれら両方を行う方法を提供します。
-
-前者は実行するには:
-
+To do just the former:
 
 .. function:: compile_command(source[, filename[, symbol]])
 
-   Pythonコードの文字列であるべき *source* をコンパイルしてみて、
-   *source* が有効なPythonコードの場合はコードオブジェクトを返します。
-   このような場合、コードオブジェクトのファイル名属性は、デフォルトで
-   ``'<input>'`` である *filename* でしょう。
-   *source* が有効なPythonコードでは *ない* が、有効なPythonコードの接頭語である場合には、 ``None`` を返します。
+   Tries to compile *source*, which should be a string of Python code and return a
+   code object if *source* is valid Python code. In that case, the filename
+   attribute of the code object will be *filename*, which defaults to
+   ``'<input>'``. Returns ``None`` if *source* is *not* valid Python code, but is a
+   prefix of valid Python code.
 
-   *source* に問題がある場合は、例外を発生させます。
-   無効なPython構文がある場合は、 :exc:`SyntaxError` を発生させます。
-   また、無効なリテラルがある場合は、 :exc:`OverflowError` または :exc:`ValueError` を発生させます。
+   If there is a problem with *source*, an exception will be raised.
+   :exc:`SyntaxError` is raised if there is invalid Python syntax, and
+   :exc:`OverflowError` or :exc:`ValueError` if there is an invalid literal.
 
-   *symbol* 引数は *source* が文としてコンパイルされるか(``'single'`` 、デフォルト)
-   、または式としてコンパイルされたかどうかを決定します(``'eval'``)。
-   他のどんな値も :exc:`ValueError` を発生させる原因となります。
-
+   The *symbol* argument determines whether *source* is compiled as a statement
+   (``'single'``, the default) or as an :term:`expression` (``'eval'``).  Any
+   other value will cause :exc:`ValueError` to  be raised.
 
    .. note::
 
-      ソースの終わりに達する前に、成功した結果をもってパーサは構文解析を止めることがあります。
-      このような場合、後ろに続く記号はエラーとならずに無視されます。
-      例えば、バックスラッシュの後ろに改行が2つあって、その後ろにゴミがあるかもしれません。
-      パーサのAPIがより良くなればすぐに、この挙動は修正されるでしょう。
+      It is possible (but not likely) that the parser stops parsing with a
+      successful outcome before reaching the end of the source; in this case,
+      trailing symbols may be ignored instead of causing an error.  For example,
+      a backslash followed by two newlines may be followed by arbitrary garbage.
+      This will be fixed once the API for the parser is better.
 
 
 .. class:: Compile()
 
-   このクラスのインスタンスは組み込み関数 :func:`compile` とシグネチャが一致する
-   :meth:`__call__` メソッドを持っていますが、インスタンスが :mod:`__future__`
-   文を含むプログラムテキストをコンパイルする場合は、インスタンスは有効なその文と\
-   ともに続くすべてのプログラムテキストを'覚えていて'コンパイルするという違いがあります。
+   Instances of this class have :meth:`__call__` methods identical in signature to
+   the built-in function :func:`compile`, but with the difference that if the
+   instance compiles program text containing a :mod:`__future__` statement, the
+   instance 'remembers' and compiles all subsequent program texts with the
+   statement in force.
 
 
 .. class:: CommandCompiler()
 
-   このクラスのインスタンスは :func:`compile_command` とシグネチャが一致する
-   :meth:`__call__` メソッドを持っています。
-   インスタンスが ``__future__`` 文を含むプログラムテキストをコンパイルする場合に、
-   インスタンスは有効なその文とともにそれに続くすべてのプログラムテキストを'覚えていて'コンパイルするという違いがあります。
+   Instances of this class have :meth:`__call__` methods identical in signature to
+   :func:`compile_command`; the difference is that if the instance compiles program
+   text containing a ``__future__`` statement, the instance 'remembers' and
+   compiles all subsequent program texts with the statement in force.
 
-バージョン間の互換性についての注意: :class:`Compile` と :class:`CommandCompiler` はPython
-2.2で導入されました。2.2のfuture-tracking機能を有効にするだけでなく、
-2.1とPythonのより以前のバージョンとの互換性も保ちたい場合は、次のように書くことができます ::
+A note on version compatibility: the :class:`Compile` and
+:class:`CommandCompiler` are new in Python 2.2.  If you want to enable the
+future-tracking features of 2.2 but also retain compatibility with 2.1 and
+earlier versions of Python you can either write ::
 
    try:
        from codeop import CommandCompiler
@@ -76,7 +79,8 @@ read-eval-printループをエミュレートするユーティリティを提�
    except ImportError:
        from codeop import compile_command
 
-これは影響の小さい変更ですが、あなたのプログラムにおそらく望まれないグローバル状態を導入します。または、次のように書くこともできます::
+which is a low-impact change, but introduces possibly unwanted global state into
+your program, or you can write::
 
    try:
        from codeop import CommandCompiler
@@ -85,5 +89,5 @@ read-eval-printループをエミュレートするユーティリティを提�
            from codeop import compile_command
            return compile_command
 
-そして、新たなコンパイラオブジェクトが必要となるたびに ``CommandCompiler`` を呼び出します。
+and then call ``CommandCompiler`` every time you need a fresh compiler object.
 

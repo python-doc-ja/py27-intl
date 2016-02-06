@@ -1,135 +1,151 @@
-:mod:`Cookie` --- HTTPの状態管理
-================================
+:mod:`Cookie` --- HTTP state management
+=======================================
 
 .. module:: Cookie
-   :synopsis: HTTP状態管理(cookies)のサポート。
+   :synopsis: Support for HTTP state management (cookies).
 .. moduleauthor:: Timothy O'Malley <timo@alum.mit.edu>
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 .. note::
-   Python 3.0 では :mod:`Cookie` モジュールは :mod:`http.cookies` にリネームされました。
-   ソースコードを 3.0 用に変換する時は、 :term:`2to3` ツールが自動的に import を修正します。
+   The :mod:`Cookie` module has been renamed to :mod:`http.cookies` in Python
+   3.  The :term:`2to3` tool will automatically adapt imports when converting
+   your sources to Python 3.
 
-:mod:`Cookie` モジュールはHTTPの状態管理機能であるcookieの概念を抽象
-化、定義しているクラスです。単純な文字列のみで構成されるcookieのほか、
-シリアル化可能なあらゆるデータ型でクッキーの値を保持するための機能も備
-えています。
+**Source code:** :source:`Lib/Cookie.py`
 
-このモジュールは元々 :rfc:`2109` と :rfc:`2068` に定義されている構文解析の規則を厳密に守っていました。しかし、MSIE
-3.0xがこれらのRFCで定義された文字の規則に従っていないことが判明したため、結局、
-やや厳密さを欠く構文解析規則にせざるを得ませんでした。
+--------------
+
+The :mod:`Cookie` module defines classes for abstracting the concept of
+cookies, an HTTP state management mechanism. It supports both simple string-only
+cookies, and provides an abstraction for having any serializable data-type as
+cookie value.
+
+The module formerly strictly applied the parsing rules described in the
+:rfc:`2109` and :rfc:`2068` specifications.  It has since been discovered that
+MSIE 3.0x doesn't follow the character rules outlined in those specs and also
+many current day browsers and servers have relaxed parsing rules when comes to
+Cookie handling.  As a result, the parsing rules used are a bit less strict.
+
+The character set, :data:`string.ascii_letters`, :data:`string.digits` and
+``!#$%&'*+-.^_`|~`` denote the set of valid characters allowed by this module
+in Cookie name (as :attr:`~Morsel.key`).
+
 
 .. note::
 
-   正しくない cookie に遭遇した場合、 :exc:`CookieError` 例外を送出します。
-   なので、ブラウザから持ってきた cookie データを parse するときには常に
-   :exc:`CookieError` 例外を catch して不正な cookie に備えるべきです。
+   On encountering an invalid cookie, :exc:`CookieError` is raised, so if your
+   cookie data comes from a browser you should always prepare for invalid data
+   and catch :exc:`CookieError` on parsing.
+
 
 .. exception:: CookieError
 
-   属性や :mailheader:`Set-Cookie` ヘッダが正しくないなど、 :rfc:`2109` に合致していないときに発生する例外です。
+   Exception failing because of :rfc:`2109` invalidity: incorrect attributes,
+   incorrect :mailheader:`Set-Cookie` header, etc.
 
 
 .. class:: BaseCookie([input])
 
-   このクラスはキーが文字列、値が :class:`Morsel` インスタンスで構成される辞書風オブジェクトです。
-   値に対するキーを設定するときは、値がキーと値を含む :class:`Morsel` に変換されることに注意してください。
+   This class is a dictionary-like object whose keys are strings and whose values
+   are :class:`Morsel` instances. Note that upon setting a key to a value, the
+   value is first converted to a :class:`Morsel` containing the key and the value.
 
-   *input* が与えられたときは、そのまま :meth:`load` メソッドへ渡されます。
+   If *input* is given, it is passed to the :meth:`load` method.
 
 
 .. class:: SimpleCookie([input])
 
-   このクラスは :class:`BaseCookie` の派生クラスで、 :meth:`value_decode`
-   は与えられた値の正当性を確認するように、 :meth:`value_encode` は :func:`str` で文字列化するようにそれぞれオーバライドします。
+   This class derives from :class:`BaseCookie` and overrides :meth:`value_decode`
+   and :meth:`value_encode` to be the identity and :func:`str` respectively.
 
 
 .. class:: SerialCookie([input])
 
-   このクラスは :class:`BaseCookie` の派生クラスで、 :meth:`value_decode`
-   と :meth:`value_encode` をそれぞれ :func:`pickle.loads` と
-   :func:`pickle.dumps` を実行するようにオーバーライドします。
+   This class derives from :class:`BaseCookie` and overrides :meth:`value_decode`
+   and :meth:`value_encode` to be the :func:`pickle.loads` and
+   :func:`pickle.dumps`.
 
    .. deprecated:: 2.3
-      このクラスを使ってはいけません! 信頼できないcookieのデータから pickle 化された値を読み込むことは、あなたのサーバ上で任意のコードを
-      実行するために pickle 化した文字列の作成が可能であることを意味し、重大なセキュリティホールとなります。
+      Reading pickled values from untrusted cookie data is a huge security hole, as
+      pickle strings can be crafted to cause arbitrary code to execute on your server.
+      It is supported for backwards compatibility only, and may eventually go away.
 
 
 .. class:: SmartCookie([input])
 
-   このクラスは :class:`BaseCookie` の派生クラスで、 :meth:`value_decode`  を、値が pickle
-   化されたデータとして正当なときは :func:`pickle.loads` を実行、そうでないときはその値自体を返すよう
-   にオーバーライドします。また :meth:`value_encode` を、値が文字列以外
-   のときは :func:`pickle.dumps` を実行、文字列のときはその値自体を返すようにオーバーライドします。
+   This class derives from :class:`BaseCookie`. It overrides :meth:`value_decode`
+   to be :func:`pickle.loads` if it is a valid pickle, and otherwise the value
+   itself. It overrides :meth:`value_encode` to be :func:`pickle.dumps` unless it
+   is a string, in which case it returns the value itself.
 
    .. deprecated:: 2.3
-      :class:`SerialCookie` と同じセキュリティ上の注意が当てはまります。
+      The same security warning from :class:`SerialCookie` applies here.
 
-関連して、さらなるセキュリティ上の注意があります。後方互換性のため、 :mod:`Cookie` モジュールは :class:`Cookie` というクラス名を
-:class:`SmartCookie` のエイリアスとしてエクスポートしています。これはほ
-ぼ確実に誤った措置であり、将来のバージョンでは削除することが適当と思わ
-れます。アプリケーションにおいて :class:`SerialCookie` クラスを使うべきで
-ないのと同じ理由で :class:`Cookie` クラスを使うべきではありません。
+A further security note is warranted.  For backwards compatibility, the
+:mod:`Cookie` module exports a class named :class:`Cookie` which is just an
+alias for :class:`SmartCookie`.  This is probably a mistake and will likely be
+removed in a future version.  You should not use the :class:`Cookie` class in
+your applications, for the same reason why you should not use the
+:class:`SerialCookie` class.
 
 
 .. seealso::
 
    Module :mod:`cookielib`
-      Web *クライアント* 向けの HTTP クッキー処理です。 :mod:`cookielib` と :mod:`Cookie` は互いに独立しています。
+      HTTP cookie handling for web *clients*.  The :mod:`cookielib` and :mod:`Cookie`
+      modules do not depend on each other.
 
    :rfc:`2109` - HTTP State Management Mechanism
-      このモジュールが実装しているHTTPの状態管理に関する規格です。
-
-.. % \subsection{Cookie Objects \label{cookie-objects}}
+      This is the state management specification implemented by this module.
 
 
 .. _cookie-objects:
 
-Cookieオブジェクト
-------------------
+Cookie Objects
+--------------
+
 
 .. method:: BaseCookie.value_decode(val)
 
-   文字列表現を値にデコードして返します。戻り値の型はどのようなものでも許
-   されます。このメソッドは :class:`BaseCookie` において何も実行せず、オーバーライドされるためにだけ存在します。
+   Return a decoded value from a string representation. Return value can be any
+   type. This method does nothing in :class:`BaseCookie` --- it exists so it can be
+   overridden.
 
 
 .. method:: BaseCookie.value_encode(val)
 
-   エンコードした値を返します。元の値はどのような型でもかまいませんが、戻
-   り値は必ず文字列となります。このメソッドは :class:`BaseCookie` において何も実行せず、オーバーライドされるためにだけ存在します。
+   Return an encoded value. *val* can be any type, but return value must be a
+   string. This method does nothing in :class:`BaseCookie` --- it exists so it can
+   be overridden.
 
-   通常 :meth:`value_encode` と :meth:`value_decode` はともに
-   *value_decode* の処理内容から逆算した範囲に収まっていなければなりません。
+   In general, it should be the case that :meth:`value_encode` and
+   :meth:`value_decode` are inverses on the range of *value_decode*.
 
 
 .. method:: BaseCookie.output([attrs[, header[, sep]]])
 
-   HTTPヘッダ形式の文字列表現を返します。 *attrs* と *header* はそれ
-   ぞれ :class:`Morsel` の :meth:`output` メソッドに送られます。 *sep*
-   はヘッダの連結に用いられる文字で、デフォルトは ``'\r\n'`` (CRLF)となっています。
+   Return a string representation suitable to be sent as HTTP headers. *attrs* and
+   *header* are sent to each :class:`Morsel`'s :meth:`output` method. *sep* is used
+   to join the headers together, and is by default the combination ``'\r\n'``
+   (CRLF).
 
    .. versionchanged:: 2.5
-      デフォルトのセパレータを ``'\n'`` 　から、クッキーの使用にあわせた.
-
-
-.. method:: BaseCookie.output([attrs[, header[, sep]]])
-
-   HTTPヘッダ形式の文字列表現を返します。
+      The default separator has been changed from ``'\n'`` to match the cookie
+      specification.
 
 
 .. method:: BaseCookie.js_output([attrs])
 
-   ブラウザがJavaScriptをサポートしている場合、HTTPヘッダを送信した場合と同様に動作する埋め込み可能なJavaScript
-   snippetを返します。
+   Return an embeddable JavaScript snippet, which, if run on a browser which
+   supports JavaScript, will act the same as if the HTTP headers was sent.
 
-   *attrs* の意味は :meth:`output` と同じです。
+   The meaning for *attrs* is the same as in :meth:`output`.
 
 
 .. method:: BaseCookie.load(rawdata)
 
-   *rawdata* が文字列であれば、 ``HTTP_COOKIE`` として処理し、その値
-   を :class:`Morsel` として追加します。辞書の場合は次と同様の処理をおこないます。 ::
+   If *rawdata* is a string, parse it as an ``HTTP_COOKIE`` and add the values
+   found there as :class:`Morsel`\ s. If it is a dictionary, it is equivalent to::
 
       for k, v in rawdata.items():
           cookie[k] = v
@@ -137,15 +153,16 @@ Cookieオブジェクト
 
 .. _morsel-objects:
 
-Morselオブジェクト
-------------------
+Morsel Objects
+--------------
 
 
 .. class:: Morsel
 
-   :rfc:`2109` の属性をキーと値で保持するabstractクラスです。
+   Abstract a key/value pair, which has some :rfc:`2109` attributes.
 
-   Morselは辞書風のオブジェクトで、キーは次のような :rfc:`2109` 準拠の定数となっています。
+   Morsels are dictionary-like objects, whose set of keys is constant --- the valid
+   :rfc:`2109` attributes, which are
 
    * ``expires``
    * ``path``
@@ -156,68 +173,71 @@ Morselオブジェクト
    * ``version``
    * ``httponly``
 
-   :attr:`httponly` 属性は、 cookie が HTTP リクエストでのみ送信されて、
-   JavaScript からのはアクセスできない事を示します。これはいくつかの
-   クロスサイトスクリプティングの脅威を和らげることを意図しています。
+   The attribute :attr:`httponly` specifies that the cookie is only transfered
+   in HTTP requests, and is not accessible through JavaScript. This is intended
+   to mitigate some forms of cross-site scripting.
 
-   キーの大小文字は区別されません。
+   The keys are case-insensitive.
 
    .. versionadded:: 2.6
-      :attr:`httponly` 属性が追加されました。
+      The :attr:`httponly` attribute was added.
 
 
 .. attribute:: Morsel.value
 
-   クッキーの値。
+   The value of the cookie.
 
 
 .. attribute:: Morsel.coded_value
 
-   実際に送信する形式にエンコードされたcookieの値。
+   The encoded value of the cookie --- this is what should be sent.
 
 
 .. attribute:: Morsel.key
 
-   cookieの名前。
+   The name of the cookie.
 
 
 .. method:: Morsel.set(key, value, coded_value)
 
-   メンバ *key* 、 *value* 、 *coded_value* に値をセットします。
+   Set the *key*, *value* and *coded_value* attributes.
 
 
 .. method:: Morsel.isReservedKey(K)
 
-   *K* が :class:`Morsel` のキーであるかどうかを判定します。
+   Whether *K* is a member of the set of keys of a :class:`Morsel`.
 
 
 .. method:: Morsel.output([attrs[, header]])
 
-   MoselをHTTPヘッダ形式の文字列表現にして返します。 *attrs* を指定しない場合、デフォルトですべての属性を含めます。 *attrs* を指定する場合、
-   属性をリストで渡さなければなりません。 *header* のデフォルトは ``"Set-Cookie:"`` です。
+   Return a string representation of the Morsel, suitable to be sent as an HTTP
+   header. By default, all the attributes are included, unless *attrs* is given, in
+   which case it should be a list of attributes to use. *header* is by default
+   ``"Set-Cookie:"``.
 
 
 .. method:: Morsel.js_output([attrs])
 
-   ブラウザがJavaScriptをサポートしている場合、HTTPヘッダを送信した場合と同様に動作する埋め込み可能なJavaScript
-   snippetを返します。
+   Return an embeddable JavaScript snippet, which, if run on a browser which
+   supports JavaScript, will act the same as if the HTTP header was sent.
 
-   *attrs* の意味は :meth:`output` と同じです。
+   The meaning for *attrs* is the same as in :meth:`output`.
 
 
 .. method:: Morsel.OutputString([attrs])
 
-   Moselの文字列表現をHTTPやJavaScriptで囲まずに出力します。
+   Return a string representing the Morsel, without any surrounding HTTP or
+   JavaScript.
 
-   *attrs* の意味は :meth:`output` と同じです。
+   The meaning for *attrs* is the same as in :meth:`output`.
 
 
 .. _cookie-example:
 
-例
---
+Example
+-------
 
-次の例は :mod:`Cookie` の使い方を示したものです。
+The following example demonstrates how to use the :mod:`Cookie` module.
 
 .. doctest::
    :options: +NORMALIZE_WHITESPACE
@@ -266,8 +286,8 @@ Morselオブジェクト
    >>> print C
    Set-Cookie: number=7
    Set-Cookie: string=seven
-   >>> # SerialCookie と SmartCookie は非推奨です。
-   >>> # これらを使うとセキュリティーホールができることがあります。
+   >>> # SerialCookie and SmartCookie are deprecated
+   >>> # using it can cause security loopholes in your code.
    >>> C = Cookie.SerialCookie()
    >>> C["number"] = 7
    >>> C["string"] = "seven"

@@ -1,50 +1,46 @@
-
-:mod:`ic` --- Mac OS X インターネット設定へのアクセス
-=====================================================
+:mod:`ic` --- Access to the Mac OS X Internet Config
+====================================================
 
 .. module:: ic
    :platform: Mac
-   :synopsis: Mac OS X インターネット設定へのアクセス。
+   :synopsis: Access to the Mac OS X Internet Config.
    :deprecated:
 
 
-このモジュールでは、 :program:`システム設定` や :program:`Finder`
-で設定したインターネット関連の設定へのアクセス機能を提供しています。
+This module provides access to various internet-related preferences set through
+:program:`System Preferences` or the :program:`Finder`.
 
 .. note::
 
-   このモジュールは Python 3.x で削除されました。
+   This module has been removed in Python 3.x.
 
 
 .. index:: module: icglue
 
-このモジュールには、 :mod:`icglue` という低水準の関連モジュールがあり、
-インターネット設定への基本的なアクセス機能を提供しています。
-この低水準のモジュールはドキュメント化されていませんが、各ルーチンの
-docstring にはパラメタの説明があり、ルーチン名には Internet
-Config に対する Pascal や C のインタフェースと同じ名前を使っているので、
-このモジュールが必要な場合には標準の IC プログラマドキュメントを利用できます。
+There is a low-level companion module :mod:`icglue` which provides the basic
+Internet Config access functionality.  This low-level module is not documented,
+but the docstrings of the routines document the parameters and the routine names
+are the same as for the Pascal or C API to Internet Config, so the standard IC
+programmers' documentation can be used if this module is needed.
 
-:mod:`ic` モジュールでは、例外 :exc:`error` と、インターネット設定\
-から生じる全てのエラーコードに対するシンボル名を定義しています。詳しくは\
-ソースコードを参照してください。
+The :mod:`ic` module defines the :exc:`error` exception and symbolic names for
+all error codes Internet Config can produce; see the source for details.
 
 
 .. exception:: error
 
-   :mod:`ic` モジュール内部でエラーが生じたときに送出される例外です。
+   Exception raised on errors in the :mod:`ic` module.
 
-:mod:`ic` モジュールは以下のクラスと関数を定義しています：
+The :mod:`ic` module defines the following class and function:
 
 
 .. class:: IC([signature[, ic]])
 
-   インターネット設定オブジェクトを作成します。
-   *signature* は、IC の設定に影響を及ぼす可能性のある現在のアプリケーションを表す
-   4 文字のクリエータコード (デフォルトは ``'Pyth'``) です。
-   オプションの引数 *ic* は低水準モジュールであらかじめ作成しておいた
-   ``icglue.icinstance`` で、別の設定ファイルなどから設定を得る場合に\
-   便利です。
+   Create an Internet Config object. The signature is a 4-character creator code of
+   the current application (default ``'Pyth'``) which may influence some of ICs
+   settings. The optional *ic* argument is a low-level ``icglue.icinstance``
+   created beforehand, this may be useful if you want to get preferences from a
+   different config file, etc.
 
 
 .. function:: launchurl(url[, hint])
@@ -53,84 +49,76 @@ Config に対する Pascal や C のインタフェースと同じ名前を使�
               maptypecreator(type, creator[, filename])
               settypecreator(file)
 
-   これらの関数は、後述する同名のメソッドへの「ショートカット」です。
+   These functions are "shortcuts" to the methods of the same name, described
+   below.
 
 
-IC オブジェクト
----------------
+IC Objects
+----------
 
-:class:`IC` オブジェクトはマップ型のインターフェースを持っているので、
-メールアドレスの取得は単に ``ic['MailAddress']``
-でできます。値の代入もでき、設定ファイルのオプションを変更できます。
+:class:`IC` objects have a mapping interface, hence to obtain the mail address
+you simply get ``ic['MailAddress']``. Assignment also works, and changes the
+option in the configuration file.
 
-このモジュールは各種のデータ型を知っていて、IC内部の表現を「論理的な」
-Python データ構造に変換します。 :mod:`ic`
-モジュールを単体で実行すると、テストプログラムが実行されて IC
-データベースにある全てのキーと値のペアをリスト表示するので、文書代わりになります。
+The module knows about various datatypes, and converts the internal IC
+representation to a "logical" Python data structure. Running the :mod:`ic`
+module standalone will run a test program that lists all keys and values in your
+IC database, this will have to serve as documentation.
 
-モジュールがデータの表現方法を推測できなかった場合、
-:attr:`data` 属性に生のデータが入った ``ICOpaqueData``
-型のインスタンスを返します。この型のオブジェクトも代入に利用できます。
+If the module does not know how to represent the data it returns an instance of
+the ``ICOpaqueData`` type, with the raw data in its :attr:`data` attribute.
+Objects of this type are also acceptable values for assignment.
 
-:class:`IC` には辞書型のインターフェースの他にも以下のようなメソッドが\
-あります。
+Besides the dictionary interface, :class:`IC` objects have the following
+methods:
 
 
 .. method:: IC.launchurl(url[, hint])
 
-   与えられたURLを解析し、適切なアプリケーションを起動してURLを渡します。省\
-   略可能な *hint* は、 ``'mailto:'`` などのスキーム名で、不完全なURLはこ\
-   のスキームにあわせて補完します。 *hint* を指定していない場合、
-   不完全なURLは無効になります。
+   Parse the given URL, launch the correct application and pass it the URL. The
+   optional *hint* can be a scheme name such as ``'mailto:'``, in which case
+   incomplete URLs are completed with this scheme.  If *hint* is not provided,
+   incomplete URLs are invalid.
 
 
 .. method:: IC.parseurl(data[, start[, end[, hint]]])
 
-   *data* の中からURLを検索し、URLの開始位置、終了位置、URLそのものを\
-   返します。オプションの引数 *start* と *end* を使うと検索範囲を制限\
-   できます。例えば、ユーザーが長いテキストフィールドをクリックした場合に、
-   このルーチンにテキストフィールド全体とクリック位置 *start* を渡すことで、
-   ユーザーがクリックした場所にある URL 全体を返させられます。
-   先に述べたように、 *hint* はオプションで、不完全なURLを補完するための\
-   スキームです。
+   Find an URL somewhere in *data* and return start position, end position and the
+   URL. The optional *start* and *end* can be used to limit the search, so for
+   instance if a user clicks in a long text field you can pass the whole text field
+   and the click-position in *start* and this routine will return the whole URL in
+   which the user clicked.  As above, *hint* is an optional scheme used to complete
+   incomplete URLs.
 
 
 .. method:: IC.mapfile(file)
 
-   *file* に対するマッピングエントリを返します。
-   *file* にはファイル名か :func:`FSSpec` の戻り値を渡せます。実在\
-   しないファイルであってもかまいません。
+   Return the mapping entry for the given *file*, which can be passed as either a
+   filename or an :func:`FSSpec` result, and which need not exist.
 
-   マッピングエントリは
-   ``(version, type, creator, postcreator, flags, extension, appname,
-   postappname, mimetype, entryname)`` からなるタプルで返されます。
-   *version* はエントリーのバージョン番号、
-   *type* は4文字のファイルタイプ、
-   *creator* は 4 文字のクリエータタイプ、
-   *postcreator* はファイルのダウンロード後にオプションとして起動され、
-   後処理を行うアプリケーションの 4 文字のクリエータコードです。
-   *flags* は、転送をバイナリで行うかアスキー\
-   で行うか、などの様々なフラグビットからなる値です。
-   *extension* はこのファイルタイプに対するファイル名の拡張子、
-   *appname* はファイルが属するアプリケーションの印字可能な名前、
-   *postappname* は後処理用アプリケーション、
-   *mimetype* はこのファイルのMIMEタイプ、最後の
-   *entryname* はこのエントリの名前です。
+   The mapping entry is returned as a tuple ``(version, type, creator, postcreator,
+   flags, extension, appname, postappname, mimetype, entryname)``, where *version*
+   is the entry version number, *type* is the 4-character filetype, *creator* is
+   the 4-character creator type, *postcreator* is the 4-character creator code of
+   an optional application to post-process the file after downloading, *flags* are
+   various bits specifying whether to transfer in binary or ascii and such,
+   *extension* is the filename extension for this file type, *appname* is the
+   printable name of the application to which this file belongs, *postappname* is
+   the name of the postprocessing application, *mimetype* is the MIME type of this
+   file and *entryname* is the name of this entry.
 
 
 .. method:: IC.maptypecreator(type, creator[, filename])
 
-   4文字の *type* と *creator* コードを持つファイルに対するマッピン\
-   グエントリを返します。(クリエータが ``'????'`` であるような場合に)
-   正しいエントリが見つかりやすいようにオプションの *filename* を指定\
-   できます。
+   Return the mapping entry for files with given 4-character *type* and *creator*
+   codes. The optional *filename* may be specified to further help finding the
+   correct entry (if the creator code is ``'????'``, for instance).
 
-   マッピングエントリーは *mapfile* と同じフォーマットで返されます。
+   The mapping entry is returned in the same format as for *mapfile*.
 
 
 .. method:: IC.settypecreator(file)
 
-   実在のファイル *file* に対して、拡張子に基づいて適切なクリエータと\
-   タイプを設定します。 *file* の指定は、ファイル名でも
-   :func:`FSSpec` の戻り値でもかまいません。変更は Finder に\
-   通知されるので、Finder 上のアイコンは即座に更新されます。
+   Given an existing *file*, specified either as a filename or as an :func:`FSSpec`
+   result, set its creator and type correctly based on its extension.  The finder
+   is told about the change, so the finder icon will be updated quickly.

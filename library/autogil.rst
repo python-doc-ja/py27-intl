@@ -1,36 +1,35 @@
 
-:mod:`autoGIL` --- イベントループ中のグローバルインタープリタの取り扱い
-=======================================================================
+:mod:`autoGIL` --- Global Interpreter Lock handling in event loops
+==================================================================
 
 .. module:: autoGIL
    :platform: Mac
-   :synopsis: イベントループ中のグローバルインタープリタの取り扱い
+   :synopsis: Global Interpreter Lock handling in event loops.
    :deprecated:
 .. moduleauthor:: Just van Rossum <just@letterror.com>
 
 
-:mod:`autoGIL` モジュールは、自動的にイベントループを実行する場合、
-Python のグローバルインタープリタロック(:term:`Global Interpreter Lock`)
-をロックしたり、ロックの解除をしたりするための関数 :func:`installAutoGIL`
-を提供します。
+The :mod:`autoGIL` module provides a function :func:`installAutoGIL` that
+automatically locks and unlocks Python's :term:`Global Interpreter Lock` when
+running an event loop.
 
 .. note::
 
-   このモジュールは Python 3.x で削除されました。
+   This module has been removed in Python 3.x.
 
 
 .. exception:: AutoGILError
 
-   例えば現在のスレッドがループしていないなど、オブザーバにコールバックが\
-   できない場合に発生します。
+   Raised if the observer callback cannot be installed, for example because the
+   current thread does not have a run loop.
 
 
 .. function:: installAutoGIL()
 
-   現在のスレッドのイベントループ(CFRunLoop)中のオブザーバにコールバッ\
-   クを行ない、適切な時にグローバルインタープリタロック(GIL)を、イ\
-   ベントループが使用されていない間、他の Python スレッドの起動がで\
-   きるようにロックしたり、ロックの解除をしたりします。
+   Install an observer callback in the event loop (CFRunLoop) for the current
+   thread, that will lock and unlock the Global Interpreter Lock (GIL) at
+   appropriate times, allowing other Python threads to run while the event loop is
+   idle.
 
-   有効性：OS X 10.1 以降
+   Availability: OSX 10.1 or later.
 

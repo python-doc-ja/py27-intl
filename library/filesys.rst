@@ -1,13 +1,14 @@
 
 .. _filesys:
 
-**********************************
-ファイルとディレクトリへのアクセス
-**********************************
+*************************
+File and Directory Access
+*************************
 
-この章で説明されるモジュールはディスクのファイルやディレクトリを扱います。
-たとえば、ファイルの属性を読むためのモジュール、ファイルパスを移植可能な方式で操作する、
-テンポラリファイルを作成するためのモジュールです。この章の完全な一覧は:
+The modules described in this chapter deal with disk files and directories.  For
+example, there are modules for reading the properties of files, manipulating
+paths in a portable way, and creating temporary files.  The full list of modules
+in this chapter is:
 
 
 .. toctree::
@@ -29,9 +30,9 @@
 .. seealso::
 
    Section :ref:`bltin-file-objects`
-      Python組み込みのファイルオブジェクト。
+      A description of Python's built-in file objects.
 
    Module :mod:`os`
-      オペレーティングシステムのインタフェース、
-      組み込みのファイルオブジェクトより低レベルでのファイル操作を含む。
+      Operating system interfaces, including functions to work with files at a lower
+      level than the built-in file object.
 

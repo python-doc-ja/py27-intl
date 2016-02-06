@@ -1,94 +1,99 @@
-:mod:`gdbm` --- GNU による dbm の再実装
-=======================================
+:mod:`gdbm` --- GNU's reinterpretation of dbm
+=============================================
 
 .. module:: gdbm
    :platform: Unix
-   :synopsis: GNU による dbm の再実装。
+   :synopsis: GNU's reinterpretation of dbm.
 
 .. note::
-   .. The :mod:`gdbm` module has been renamed to :mod:`dbm.gnu` in Python 3.0.  The
-      :term:`2to3` tool will automatically adapt imports when converting your
-      sources to 3.0.
-
-   :mod:`gdbm` モジュールはPython 3.0で :mod:`dbm.gnu` にリネームされました。
-   :term:`2to3` ツールがimportを自動的に修正します。
+   The :mod:`gdbm` module has been renamed to :mod:`dbm.gnu` in Python 3.  The
+   :term:`2to3` tool will automatically adapt imports when converting your
+   sources to Python 3.
 
 
 .. index:: module: dbm
 
-このモジュールは :mod:`dbm` モジュールによく似ていますが、 ``gdbm`` を使っていくつかの追加機能を提供しています。 ``gdbm`` と
-``dbm`` では生成されるファイル形式に互換性がないので注意してください。
+This module is quite similar to the :mod:`dbm` module, but uses ``gdbm`` instead
+to provide some additional functionality.  Please note that the file formats
+created by ``gdbm`` and ``dbm`` are incompatible.
 
-:mod:`gdbm` モジュールでは GNU DBM ライブラリへのインタフェースを提供します。 ``gdbm`` オブジェクトはキーと値が常に文字列である
-ことを除き、マップ型 (辞書型) と同じように動作します。 ``gdbm`` オブジェクトに対して :keyword:`print` を適用しても
-キーや値を印字することはなく、 :meth:`items` 及び :meth:`values` メソッドはサポートされていません。
+The :mod:`gdbm` module provides an interface to the GNU DBM library.  ``gdbm``
+objects behave like mappings (dictionaries), except that keys and values are
+always strings. Printing a ``gdbm`` object doesn't print the keys and values,
+and the :meth:`items` and :meth:`values` methods are not supported.
 
-このモジュールでは以下の定数および関数を定義しています:
+The module defines the following constant and functions:
 
 
 .. exception:: error
 
-   I/O エラーのような ``gdbm`` 特有のエラーで送出されます。誤ったキーの指定のように、一般的なマップ型のエラーに対しては
-   :exc:`KeyError` が送出されます。
+   Raised on ``gdbm``\ -specific errors, such as I/O errors. :exc:`KeyError` is
+   raised for general mapping errors like specifying an incorrect key.
 
 
 .. function:: open(filename, [flag, [mode]])
 
-   ``gdbm`` データベースを開いて ``gdbm`` オブジェクトを返します。 *filename* 引数はデータベースファイルの名前です。
+   Open a ``gdbm`` database and return a ``gdbm`` object.  The *filename* argument
+   is the name of the database file.
 
-   オプションの *flag* は、
+   The optional *flag* argument can be:
 
-   +---------+----------------------------------------------------------------------------------+
-   | 値      | 意味                                                                             |
-   +=========+==================================================================================+
-   | ``'r'`` | 既存のデータベースを読み込み専用で開きます(デフォルト)                           |
-   +---------+----------------------------------------------------------------------------------+
-   | ``'w'`` | 既存のデータベースを読み書き用に開きます                                         |
-   +---------+----------------------------------------------------------------------------------+
-   | ``'c'`` | データベースを読み書き用に開きます。まだ存在しない場合は作成します。             |
-   +---------+----------------------------------------------------------------------------------+
-   | ``'n'`` | 常に新しい、空のデータベースを、読み書き用に開きます。                           |
-   +---------+----------------------------------------------------------------------------------+
+   +---------+-------------------------------------------+
+   | Value   | Meaning                                   |
+   +=========+===========================================+
+   | ``'r'`` | Open existing database for reading only   |
+   |         | (default)                                 |
+   +---------+-------------------------------------------+
+   | ``'w'`` | Open existing database for reading and    |
+   |         | writing                                   |
+   +---------+-------------------------------------------+
+   | ``'c'`` | Open database for reading and writing,    |
+   |         | creating it if it doesn't exist           |
+   +---------+-------------------------------------------+
+   | ``'n'`` | Always create a new, empty database, open |
+   |         | for reading and writing                   |
+   +---------+-------------------------------------------+
 
-   .. The following additional characters may be appended to the flag to control
-      how the database is opened:
+   The following additional characters may be appended to the flag to control
+   how the database is opened:
 
-   以下の追加の文字を flag に追加して、データベースの開きかたを制御することができます。
+   +---------+--------------------------------------------+
+   | Value   | Meaning                                    |
+   +=========+============================================+
+   | ``'f'`` | Open the database in fast mode.  Writes    |
+   |         | to the database will not be synchronized.  |
+   +---------+--------------------------------------------+
+   | ``'s'`` | Synchronized mode. This will cause changes |
+   |         | to the database to be immediately written  |
+   |         | to the file.                               |
+   +---------+--------------------------------------------+
+   | ``'u'`` | Do not lock database.                      |
+   +---------+--------------------------------------------+
 
-   +---------+----------------------------------------------------------------------------------+
-   | 値      | 意味                                                                             |
-   +=========+==================================================================================+
-   | ``'f'`` | データベースを高速モードで開きます。書き込みが同期されません。                   |
-   +---------+----------------------------------------------------------------------------------+
-   | ``'s'`` | 同期モード。データベースへの変更がすぐにファイルに書き込まれます。               |
-   +---------+----------------------------------------------------------------------------------+
-   | ``'u'`` | データベースをロックしません。                                                   |
-   +---------+----------------------------------------------------------------------------------+
+   Not all flags are valid for all versions of ``gdbm``.  The module constant
+   :const:`open_flags` is a string of supported flag characters.  The exception
+   :exc:`error` is raised if an invalid flag is specified.
 
-   .. Not all flags are valid for all versions of ``gdbm``.  The module constant
-      :const:`open_flags` is a string of supported flag characters.  The exception
-      :exc:`error` is raised if an invalid flag is specified.
+   The optional *mode* argument is the Unix mode of the file, used only when the
+   database has to be created.  It defaults to octal ``0666``.
 
-   全てのバージョンの ``gdbm`` で全てのフラグが有効とは限りません。モジュール定数
-   :const:`open_flags` はサポートされているフラグ文字からなる文字列です。
-   無効なフラグが指定された場合、例外 :exc:`error` が送出されます。
-
-   オプションの *mode* 引数は、新たにデータベースを作成しなければならない場合に使われる Unix のファイルモードです。標準の値は 8 進数の
-   ``0666`` です。
-
-辞書型形式のメソッドに加えて、 ``gdbm`` オブジェクトには以下のメソッドがあります:
+In addition to the dictionary-like methods, ``gdbm`` objects have the following
+methods:
 
 
 .. function:: firstkey()
 
-   このメソッドと :meth:`next` メソッドを使って、データベースの全てのキーにわたってループ処理を行うことができます。探索は ``gdbm`` の
-   内部ハッシュ値の順番に行われ、キーの値に順に並んでいるとは限りません。このメソッドは最初のキーを返します。
+   It's possible to loop over every key in the database using this method  and the
+   :meth:`nextkey` method.  The traversal is ordered by ``gdbm``'s internal hash
+   values, and won't be sorted by the key values.  This method returns the starting
+   key.
 
 
 .. function:: nextkey(key)
 
-   データベースの順方向探索において、 *key* よりも後に来るキーを返します。以下のコードはデータベース ``db`` に
-   ついて、キー全てを含むリストをメモリ上に生成することなく全てのキーを出力します::
+   Returns the key that follows *key* in the traversal.  The following code prints
+   every key in the database ``db``, without having to create a list in memory that
+   contains them all::
 
       k = db.firstkey()
       while k != None:
@@ -98,21 +103,29 @@
 
 .. function:: reorganize()
 
-   大量の削除を実行した後、 ``gdbm`` ファイルの占めるスペースを削減したい場合、このルーチンはデータベースを再組織化します。この再組織化を使う以外に
-   ``gdbm`` はデータベースファイルの大きさを短くすることはありません; そうでない場合、削除された部分のファイルスペースは保持され、新たな
-   (キー、値の) ペアが追加される際に再利用されます。
+   If you have carried out a lot of deletions and would like to shrink the space
+   used by the ``gdbm`` file, this routine will reorganize the database.  ``gdbm``
+   will not shorten the length of a database file except by using this
+   reorganization; otherwise, deleted file space will be kept and reused as new
+   (key, value) pairs are added.
 
 
 .. function:: sync()
 
-   データベースが高速モードで開かれていた場合、このメソッドはディスクにまだ書き込まれていないデータを全て書き込ませます。
+   When the database has been opened in fast mode, this method forces any
+   unwritten data to be written to the disk.
+
+
+.. function:: close()
+
+   Close the ``gdbm`` database.
 
 
 .. seealso::
 
    Module :mod:`anydbm`
-      ``dbm`` 形式のデータベースへの汎用インタフェース。
+      Generic interface to ``dbm``\ -style databases.
 
    Module :mod:`whichdb`
-      既存のデータベースがどの形式のデータベースか判定するユーティリティモジュール。
+      Utility module used to determine the type of an existing database.
 

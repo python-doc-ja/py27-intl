@@ -1,132 +1,127 @@
-
-:mod:`gl` --- *Graphics Library* インターフェース
-=================================================
+:mod:`gl` --- *Graphics Library* interface
+==========================================
 
 .. module:: gl
    :platform: IRIX
-   :synopsis: Silicon Graphics のGraphics Library の関数。
+   :synopsis: Functions from the Silicon Graphics Graphics Library.
    :deprecated:
 
 
 .. deprecated:: 2.6
-    :mod:`gl` モジュールは Python 3.0 での削除に向けて非推奨になりました。
+    The :mod:`gl` module has been removed in Python 3.
 
 
-このモジュールは Silicon Graphics の *Graphics Library* へのアクセスを提供します。
-Silicon Graphics マシン上だけで利用可能です。
+This module provides access to the Silicon Graphics *Graphics Library*. It is
+available only on Silicon Graphics machines.
 
 .. warning::
 
-   GL ライブラリの不適切な呼び出しによっては、Python インタープリタがコアを\
-   吐き出すことがあります。
-   特に、GL のほとんどの関数では最初のウィンドウを開く前に呼び出すのは安全で\
-   はありません。
+   Some illegal calls to the GL library cause the Python interpreter to dump
+   core.  In particular, the use of most GL calls is unsafe before the first
+   window is opened.
 
-このモジュールはとても大きいので、ここに全てを記述することはできません\
-が、以下の説明で出発点としては十分でしょう。
-C の関数のパラメータは、以下のような決まりに従って Python に翻訳されます：
+The module is too large to document here in its entirety, but the following
+should help you to get started. The parameter conventions for the C functions
+are translated to Python as follows:
 
-* 全て（short、long、unsigned）の整数値（int）は Python の整数に相当します。
+* All (short, long, unsigned) int values are represented by Python integers.
 
-* 全ての浮動小数点数と倍精度浮動小数点数は Python の浮動小数点数に相当します。
-  たいていの場合、Python の整数も使えます。
+* All float and double values are represented by Python floating point numbers.
+  In most cases, Python integers are also allowed.
 
-* 全ての配列は Python の一次元のリストに相当します。
-  たいていの場合、タプルも使えます。
+* All arrays are represented by one-dimensional Python lists. In most cases,
+  tuples are also allowed.
 
-* 全ての文字列と文字の引数は、Python の文字列に相当します。
-  例えば、 ``winopen('Hi There!')`` と ``rotate(900, 'z')`` 。
+* All string and character arguments are represented by Python strings, for
+  instance, ``winopen('Hi There!')`` and ``rotate(900, 'z')``.
 
-* 配列である引数の長さを特定するためだけに使われる全て
-  （short、long、unsigned）の整数値の引数あるいは返り値は、無視されます。
-  例えば、Cの呼び出しで、 ::
+* All (short, long, unsigned) integer arguments or return values that are only
+  used to specify the length of an array argument are omitted. For example, the C
+  call ::
 
      lmdef(deftype, index, np, props)
 
-  これは Python では、こうなります。 ::
+  is translated to Python as ::
 
      lmdef(deftype, index, props)
 
-* 出力のための引数は、引数のリストから省略されています；
-  代わりにこれらは関数の返り値として渡されます。
-  もし１つ以上の値が返されるのなら、返り値はタプルです。
-  もし C の関数が通常の返り値（先のルールによって省略されません）と、出力の\
-  ための引数の両方を取るなら、返り値はタプルの最初に来ます。
-  例：Cの呼び出しで、 ::
+* Output arguments are omitted from the argument list; they are transmitted as
+  function return values instead. If more than one value must be returned, the
+  return value is a tuple. If the C function has both a regular return value (that
+  is not omitted because of the previous rule) and an output argument, the return
+  value comes first in the tuple. Examples: the C call ::
 
      getmcolor(i, &red, &green, &blue)
 
-  これは Python ではこうなります。 ::
+  is translated to Python as ::
 
      red, green, blue = getmcolor(i)
 
-以下の関数は一般的でないか、引数に特別な決まりを持っています：
+The following functions are non-standard or have special argument conventions:
 
 
 .. function:: varray(argument)
 
-   ``v3d()`` の呼び出しに相当しますが、それよりも速いです。
-   *argument* は座標のリスト（あるいはタプル）です。
-   各座標は ``(x, y, z)`` あるいは ``(x, y)`` のタプルでなければなりません。
-   座標は２次元あるいは３次元が可能ですが、全て同次元でなければなりません。
-   ですが、浮動小数点数と整数を混合して使えます。
-   座標は（マニュアルページにあるように）必要であれば ``z = 0.0`` と
-   仮定して、常に３次元の精密な座標に変換され、各座標について ``v3d()`` が呼び出されます。
+   Equivalent to but faster than a number of ``v3d()`` calls. The *argument* is a
+   list (or tuple) of points. Each point must be a tuple of coordinates ``(x, y,
+   z)`` or ``(x, y)``. The points may be 2- or 3-dimensional but must all have the
+   same dimension. Float and int values may be mixed however. The points are always
+   converted to 3D double precision points by assuming ``z = 0.0`` if necessary (as
+   indicated in the man page), and for each point ``v3d()`` is called.
 
    .. XXX the argument-argument added
 
 
 .. function:: nvarray()
 
-   ``n3f`` と ``v3f`` の呼び出しに相当しますが、それらよりも速いです。
-   引数は法線と座標とのペアからなるシーケンス（リストあるいはタプル）です。
-   各ペアは座標と、その座標からの法線とのタプルです。各座標と各法線は
-   ``(x, y, z)`` からなるタプルでなければなりません。
-   ３つの座標が渡されなければなりません。浮動小数点数と整数を混合して使えます。
-   各ペアについて、法線に対して ``n3f()`` が呼び出され、座標に対して
-   ``v3f()`` が呼び出されます。
+   Equivalent to but faster than a number of ``n3f`` and ``v3f`` calls. The
+   argument is an array (list or tuple) of pairs of normals and points. Each pair
+   is a tuple of a point and a normal for that point. Each point or normal must be
+   a tuple of coordinates ``(x, y, z)``. Three coordinates must be given. Float and
+   int values may be mixed. For each pair, ``n3f()`` is called for the normal, and
+   then ``v3f()`` is called for the point.
 
 
 .. function:: vnarray()
 
-   ``nvarray()`` と似ていますが、各ペアは始めに座標を、２番目に法線を持っています。
+   Similar to  ``nvarray()`` but the pairs have the point first and the normal
+   second.
 
 
 .. function:: nurbssurface(s_k, t_k, ctl, s_ord, t_ord, type)
 
-   nurbs（非均一有理Bスプライン）曲面を定義します。
-   ``ctl[][]`` の次元は以下のように計算されます： ``[len(s_k) - s_ord]`` 、
-   ``[len(t_k) - t_ord]`` 。
+   Defines a nurbs surface. The dimensions of ``ctl[][]`` are computed as follows:
+   ``[len(s_k) - s_ord]``, ``[len(t_k) - t_ord]``.
 
    .. XXX s_k[], t_k[], ctl[][]
 
 
 .. function:: nurbscurve(knots, ctlpoints, order, type)
 
-   nurbs（非均一有理Bスプライン）曲線を定義します。
-   ctlpointsの長さは、 ``len(knots) - order`` です。
+   Defines a nurbs curve. The length of ctlpoints is ``len(knots) - order``.
 
 
 .. function:: pwlcurve(points, type)
 
-   区分線形曲線（piecewise-linear curve）を定義します。
-   *points* は座標のリストです。
-   *type* は ``N_ST`` でなければなりません。
+   Defines a piecewise-linear curve. *points* is a list of points. *type* must be
+   ``N_ST``.
 
 
 .. function:: pick(n)
               select(n)
 
-   これらの関数はただ一つの引数を取り、pick/select に使うバッファのサイズを設定します。
+   The only argument to these functions specifies the desired size of the pick or
+   select buffer.
 
 
 .. function:: endpick()
               endselect()
 
-   これらの関数は引数を取りません。 pick/select に使われているバッファの大きさを\
-   示す整数のリストを返します。バッファがあふれているのを検出するメソッドはありません。
+   These functions have no arguments. They return a list of integers representing
+   the used part of the pick/select buffer. No method is provided to detect buffer
+   overrun.
 
-小さいですが完全なPythonのGLプログラムの例をここに挙げます： ::
+Here is a tiny but complete example GL program in Python::
 
    import gl, GL, time
 
@@ -153,50 +148,46 @@ C の関数のパラメータは、以下のような決まりに従って Pytho
 
 .. seealso::
 
-   `PyOpenGL: PythonのOpenGLとの結合 <http://pyopengl.sourceforge.net/>`_
+   `PyOpenGL: The Python OpenGL Binding <http://pyopengl.sourceforge.net/>`_
       .. index::
          single: OpenGL
          single: PyOpenGL
 
-      OpenGL へのインタフェースが利用できます；詳しくは **PyOpenGL** プロジェクト
-      http://pyopengl.sourceforge.net/ から情報を入手できます。
-      これは、SGI のハードウェアが1996年頃より前である必要がないので、
-      OpenGL の方が良い選択かもしれません。
+      An interface to OpenGL is also available; see information about the **PyOpenGL**
+      project online at http://pyopengl.sourceforge.net/.  This may be a better option
+      if support for SGI hardware from before about 1996 is not required.
 
 
-:mod:`DEVICE` --- :mod:`gl` モジュールで使われる定数
-====================================================
+:mod:`DEVICE` --- Constants used with the :mod:`gl` module
+==========================================================
 
 .. module:: DEVICE
    :platform: IRIX
-   :synopsis: glモジュールで使われる定数。
+   :synopsis: Constants used with the gl module.
    :deprecated:
 
 
 .. deprecated:: 2.6
-    :mod:`DEVICE` モジュールは Python 3.0 での削除に向けて非推奨になりました。
+    The :mod:`DEVICE` module has been removed in Python 3.
 
 
-このモジュールには、Silicon Graphics の *Graphics Library* で使われる\
-定数が定義されています。これらはCのプログラマーがヘッダーファイル
-``<gl/device.h>`` の中から使っているものです。
-詳しくはモジュールのソースファイルをご覧ください。
+This modules defines the constants used by the Silicon Graphics *Graphics
+Library* that C programmers find in the header file ``<gl/device.h>``. Read the
+module source file for details.
 
 
-:mod:`GL` --- :mod:`gl` モジュールで使われる定数
-================================================
+:mod:`GL` --- Constants used with the :mod:`gl` module
+======================================================
 
 .. module:: GL
    :platform: IRIX
-   :synopsis: glモジュールで使われる定数。
+   :synopsis: Constants used with the gl module.
    :deprecated:
 
 
 .. deprecated:: 2.6
-    :mod:`GL` モジュールは Python 3.0 での削除に向けて非推奨になりました。
+    The :mod:`GL` module has been removed in Python 3.
 
-
-このモジュールには Silicon Graphics の *Graphics Library* で使われる
-C のヘッダーファイル ``<gl/gl.h>`` の定数が定義されています。
-詳しくはモジュールのソースファイルをご覧ください。
+This module contains constants used by the Silicon Graphics *Graphics Library*
+from the C header file ``<gl/gl.h>``. Read the module source file for details.
 

@@ -1,201 +1,206 @@
-:mod:`_winreg` -- Windows レジストリへのアクセス
-================================================
+:mod:`_winreg` -- Windows registry access
+=========================================
 
 .. module:: _winreg
    :platform: Windows
-   :synopsis: Windows レジストリを操作するためのルーチンおよびオブジェクト。
+   :synopsis: Routines and objects for manipulating the Windows registry.
 .. sectionauthor:: Mark Hammond <MarkH@ActiveState.com>
 
 .. note::
-
-   :mod:`_winreg` モジュールは Python 3.0 では :mod:`winreg` にリネームされました。
-   ソースコードを3.0用に変換するときは、 :term:`2to3` ツールが自動的に import を修正します。
+   The :mod:`_winreg` module has been renamed to :mod:`winreg` in Python 3.
+   The :term:`2to3` tool will automatically adapt imports when converting your
+   sources to Python 3.
 
 
 .. versionadded:: 2.0
 
-これらの関数は Windows レジストリ API を Python から使えるようにします。
-プログラマがレジストリハンドルのクローズを失念した場合でも、確実にハンドルが
-クローズされるようにするために、整数値をレジストリハンドルとして使う代わりに
-:ref:`ハンドルオブジェクト <handle-object>` が使われます。
+These functions expose the Windows registry API to Python.  Instead of using an
+integer as the registry handle, a :ref:`handle object <handle-object>` is used
+to ensure that the handles are closed correctly, even if the programmer neglects
+to explicitly close them.
 
-このモジュールでは以下の関数を提供します:
+This module offers the following functions:
 
 
 .. function:: CloseKey(hkey)
 
-   以前開かれたレジストリキーを閉じます。 *hkey* 引数には以前開かれた
-   レジストリキーを特定します。
+   Closes a previously opened registry key.  The *hkey* argument specifies a
+   previously opened key.
 
    .. note::
-
-      このメソッドを使って (または :meth:`handle.Close` によって) *hkey* が
-      閉じられなかった場合、Python が *hkey* オブジェクトを破壊する際に閉じられます。
+      If *hkey* is not closed using this method (or via :meth:`hkey.Close() <PyHKEY.Close>`),
+      it is closed when the *hkey* object is destroyed by Python.
 
 
 .. function:: ConnectRegistry(computer_name, key)
 
-   他の計算機上にある既定のレジストリハンドル接続を確立し、
-   :ref:`ハンドルオブジェクト <handle-object>` を返します。
+   Establishes a connection to a predefined registry handle on another computer,
+   and returns a :ref:`handle object <handle-object>`.
 
-   *computer_name* はリモートコンピュータの名前で、 ``r"\\computername"``
-   の形式をとります。 ``None`` の場合、ローカルの計算機が使われます。
+   *computer_name* is the name of the remote computer, of the form
+   ``r"\\computername"``.  If ``None``, the local computer is used.
 
-   *key* は接続したい既定のハンドルです。
+   *key* is the predefined handle to connect to.
 
-   戻り値は開かれたキーのハンドルです。関数が失敗した場合、 :exc:`WindowsError`
-   例外が送出されます。
+   The return value is the handle of the opened key. If the function fails, a
+   :exc:`WindowsError` exception is raised.
 
 
 .. function:: CreateKey(key, sub_key)
 
-   特定のキーを生成するか開き、 :ref:`ハンドルオブジェクト <handle-object>`
-   を返します。
+   Creates or opens the specified key, returning a
+   :ref:`handle object <handle-object>`.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *sub_key* はこのメソッドが開く、または新規作成するキーの名前です。
+   *sub_key* is a string that names the key this method opens or creates.
 
-   *key* が既定のキーの一つなら、 *sub_key* は ``None``  でかまいません。この場合、返されるハンドルは関数に渡されたのと
-   同じキーハンドルです。
+   If *key* is one of the predefined keys, *sub_key* may be ``None``. In that
+   case, the handle returned is the same key handle passed in to the function.
 
-   キーがすでに存在する場合、この関数は既に存在するキーを開きます。
+   If the key already exists, this function opens the existing key.
 
-   戻り値は開かれたキーのハンドルです。この関数が失敗した場合、 :exc:`WindowsError` 例外が送出されます。
+   The return value is the handle of the opened key. If the function fails, a
+   :exc:`WindowsError` exception is raised.
 
 
 .. function:: CreateKeyEx(key, sub_key[, res[, sam]])
 
-   指定された key を作成するか開いて、 :ref:`ハンドルオブジェクト <handle-object>`
-   を返します。
+   Creates or opens the specified key, returning a
+   :ref:`handle object <handle-object>`.
 
-   *key* はすでに開かれた key か、定義済みの :ref:`HKEY_* 定数 <hkey-constants>` です。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *sub_key* はこのメソッドが開くまたは作成するキーの名前を表す文字列です。
+   *sub_key* is a string that names the key this method opens or creates.
 
-   *res* は予約された整数で、 0 でなくてはなりません。デフォルト値は 0 です。
+   *res* is a reserved integer, and must be zero. The default is zero.
 
-   *sam* は、 key に対して想定するセキュリティアクセスを示すアクセスマスクを
-   指定します。デフォルトは :const:`KEY_ALL_ACCESS` です。
-   利用可能な値については :ref:`アクセス権 <access-rights>` を参照してください。
+   *sam* is an integer that specifies an access mask that describes the desired
+   security access for the key.  Default is :const:`KEY_ALL_ACCESS`.  See
+   :ref:`Access Rights <access-rights>` for other allowed values.
 
 
-   *key* が定義済みのキーのどれかの場合、 *sub_key* には ``None`` も指定できます。
-   この場合、戻り値のハンドルはこの関数に渡されたキーのハンドルと同じです。
+   If *key* is one of the predefined keys, *sub_key* may be ``None``. In that
+   case, the handle returned is the same key handle passed in to the function.
 
-   key がすでに存在する場合は、この関数はそのキーを開きます。
+   If the key already exists, this function opens the existing key.
 
-   戻り値は開いた key のハンドルです。失敗した場合、 :exc:`WindowsError`
-   例外を発生させます。
+   The return value is the handle of the opened key. If the function fails, a
+   :exc:`WindowsError` exception is raised.
 
 .. versionadded:: 2.7
 
 
 .. function:: DeleteKey(key, sub_key)
 
-   特定のキーを削除します。
+   Deletes the specified key.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or any one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *sub_key*  は文字列で、 *key* パラメタによって特定されたキーのサブキーでなければなりません。この値は ``None`` で
-   あってはならず、キーはサブキーを持っていてはなりません。
+   *sub_key* is a string that must be a subkey of the key identified by the *key*
+   parameter.  This value must not be ``None``, and the key may not have subkeys.
 
-   *このメソッドはサブキーをもつキーを削除することはできません。*
+   *This method can not delete keys with subkeys.*
 
-   このメソッドの実行が成功すると、キー全体が、その値すべてを含めて削除されます。このメソッドが失敗した場合、 :exc:`WindowsError`
-   例外が送出されます。
+   If the method succeeds, the entire key, including all of its values, is removed.
+   If the method fails, a :exc:`WindowsError` exception is raised.
 
 
 .. function:: DeleteKeyEx(key, sub_key[, sam[, res]])
 
-   指定された key を削除します。
+   Deletes the specified key.
 
    .. note::
+      The :func:`DeleteKeyEx` function is implemented with the RegDeleteKeyEx
+      Windows API function, which is specific to 64-bit versions of Windows.
+      See the `RegDeleteKeyEx documentation
+      <http://msdn.microsoft.com/en-us/library/ms724847%28VS.85%29.aspx>`__.
 
-      :func:`DeleteKeyEx` 関数は RegDeleteKeyEx Windows API 関数を使って実装
-      されています。このAPIは 64bit 版Windowsにしかありません。
-      `RegDeleteKeyEx のドキュメント
-      <http://msdn.microsoft.com/en-us/library/ms724847%28VS.85%29.aspx>`__
-      を参照してください。
+   *key* is an already open key, or any one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *key* は開いたキーか、定義済みの :ref:`HKEY_* 定数 <hkey-constants>` のどれかです。
+   *sub_key* is a string that must be a subkey of the key identified by the
+   *key* parameter. This value must not be ``None``, and the key may not have
+   subkeys.
 
-   *sub_key* は *key* 引数によって指定された key の subkey でなければなりません。
-   この値は ``None`` であってはなりません。また、 key は subkey を持たないかもしれません。
+   *res* is a reserved integer, and must be zero. The default is zero.
 
-   *res* は予約済みの整数で、 0 でなければなりません。デフォルトは 0 です。
-
-   *sam* は、 key に対して想定するセキュリティアクセスを示すアクセスマスクを
-   指定します。デフォルトは :const:`KEY_WOW64_64KEY` です。
-   利用可能な値については :ref:`アクセス権 <access-rights>` を参照してください。
+   *sam* is an integer that specifies an access mask that describes the desired
+   security access for the key.  Default is :const:`KEY_WOW64_64KEY`.  See
+   :ref:`Access Rights <access-rights>` for other allowed values.
 
 
-   *このメソッドはサブキーをもつキーを削除することはできません。*
+   *This method can not delete keys with subkeys.*
 
-   このメソッドの実行が成功すると、キー全体が、その値すべてを含めて削除されます。
-   このメソッドが失敗した場合、 :exc:`WindowsError` 例外を発生させます。
+   If the method succeeds, the entire key, including all of its values, is
+   removed. If the method fails, a :exc:`WindowsError` exception is raised.
 
-   サポートされていない Windows バージョンでは、 :exc:`NotImplementedError` 例外を
-   発生させます。
+   On unsupported Windows versions, :exc:`NotImplementedError` is raised.
 
 .. versionadded:: 2.7
 
 
 .. function:: DeleteValue(key, value)
 
-   レジストリキーから指定された名前つきの値を削除します。
+   Removes a named value from a registry key.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *value* は削除したい値を指定するための文字列です。
+   *value* is a string that identifies the value to remove.
 
 
 .. function:: EnumKey(key, index)
 
-   開かれているレジストリキーのサブキーを列挙し、文字列で返します。
+   Enumerates subkeys of an open registry key, returning a string.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or any one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *index* は整数値で、取得するキーのインデクスを特定します。
+   *index* is an integer that identifies the index of the key to retrieve.
 
-   この関数は呼び出されるたびに一つのサブキーの名前を取得します。この関数は通常、これ以上サブキーがないことを示す :exc:`WindowsError`
-   例外が送出されるまで繰り返し呼び出されます。
+   The function retrieves the name of one subkey each time it is called.  It is
+   typically called repeatedly until a :exc:`WindowsError` exception is
+   raised, indicating, no more values are available.
 
 
 .. function:: EnumValue(key, index)
 
-   開かれているレジストリキーの値を列挙し、タプルで返します。
+   Enumerates values of an open registry key, returning a tuple.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or any one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *index* は整数値で、取得する値のインデクスを特定します。
+   *index* is an integer that identifies the index of the value to retrieve.
 
-   この関数は呼び出されるたびに一つの値の名前を取得します。この関数は通常、これ以上値がないことを示す :exc:`WindowsError`
-   例外が送出されるまで繰り返し呼び出されます。
+   The function retrieves the name of one subkey each time it is called. It is
+   typically called repeatedly, until a :exc:`WindowsError` exception is
+   raised, indicating no more values.
 
-   結果は 3 要素のタプルになります:
+   The result is a tuple of 3 items:
 
-   +-------+-----------------------------------------------------------------------------------+
-   | Index | Meaning                                                                           |
-   +=======+===================================================================================+
-   | ``0`` | 値の名前を特定する文字列                                                          |
-   +-------+-----------------------------------------------------------------------------------+
-   | ``1`` | 値のデータを保持するためのオブジェクトで、その型は背後のレジストリ型に依存します  |
-   +-------+-----------------------------------------------------------------------------------+
-   | ``2`` | 値のデータ型を特定する整数です (:meth:`SetValueEx` のドキュメント内のテーブルを   |
-   |       | 参照してください。                                                                |
-   +-------+-----------------------------------------------------------------------------------+
+   +-------+--------------------------------------------+
+   | Index | Meaning                                    |
+   +=======+============================================+
+   | ``0`` | A string that identifies the value name    |
+   +-------+--------------------------------------------+
+   | ``1`` | An object that holds the value data, and   |
+   |       | whose type depends on the underlying       |
+   |       | registry type                              |
+   +-------+--------------------------------------------+
+   | ``2`` | An integer that identifies the type of the |
+   |       | value data (see table in docs for          |
+   |       | :meth:`SetValueEx`)                        |
+   +-------+--------------------------------------------+
 
 
 .. function:: ExpandEnvironmentStrings(unicode)
 
-   :const:`REG_EXPAND_SZ` のように、環境変数プレースホルダ ``%NAME%`` を
-   Unicode 文字列で展開します。 ::
+   Expands environment variable placeholders ``%NAME%`` in unicode strings like
+   :const:`REG_EXPAND_SZ`::
 
       >>> ExpandEnvironmentStrings(u"%windir%")
       u"C:\\Windows"
@@ -205,447 +210,390 @@
 
 .. function:: FlushKey(key)
 
-   キーのすべての属性をレジストリに書き込みます。
+   Writes all the attributes of a key to the registry.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   キーを変更するために :func:`RegFlushKey` を呼ぶ必要はありません。
-   レジストリの変更は怠惰なフラッシュ機構 (lazy flusher) を使ってフラッシュ
-   されます。また、システムの遮断時にもディスクにフラッシュされます。
-   :func:`CloseKey` と違って、 :func:`FlushKey` メソッドはレジストリに全ての
-   データを書き終えたときにのみ返ります。アプリケーションは、レジストリへの
-   変更を絶対に確実にディスク上に反映させる必要がある場合にのみ、
-   :func:`FlushKey` を呼ぶべきです。
+   It is not necessary to call :func:`FlushKey` to change a key. Registry changes are
+   flushed to disk by the registry using its lazy flusher.  Registry changes are
+   also flushed to disk at system shutdown.  Unlike :func:`CloseKey`, the
+   :func:`FlushKey` method returns only when all the data has been written to the
+   registry. An application should only call :func:`FlushKey` if it requires
+   absolute certainty that registry changes are on disk.
 
    .. note::
 
-      :func:`FlushKey` を呼び出す必要があるかどうか分からない場合、
-      おそらくその必要はありません。
+      If you don't know whether a :func:`FlushKey` call is required, it probably
+      isn't.
 
 
 .. function:: LoadKey(key, sub_key, file_name)
 
-   指定されたキーの下にサブキーを生成し、サブキーに指定されたファイルのレジストリ情報を記録します。
+   Creates a subkey under the specified key and stores registration information
+   from a specified file into that subkey.
 
-   *key* は :func:`ConnectRegistry` が返したハンドルか、定数 :const:`HKEY_USERS` と
-   :const:`HKEY_LOCAL_MACHINE` のどちらかです。
+   *key* is a handle returned by :func:`ConnectRegistry` or one of the constants
+   :const:`HKEY_USERS` or :const:`HKEY_LOCAL_MACHINE`.
 
-   *sub_key* は記録先のサブキーを指定する文字列です。
+   *sub_key* is a string that identifies the subkey to load.
 
-   *file_name* はレジストリデータを読み出すためのファイル名です。このファイルは :func:`SaveKey` 関数で生成されたファイルでなくては
-   なりません。ファイル割り当てテーブル (FAT) ファイルシステム下では、ファイル名は拡張子を持っていてはなりません。
+   *file_name* is the name of the file to load registry data from. This file must
+   have been created with the :func:`SaveKey` function. Under the file allocation
+   table (FAT) file system, the filename may not have an extension.
 
-   この関数を呼び出しているプロセスが :const:`SE_RESTORE_PRIVILEGE` 特権を
-   持たない場合には :func:`LoadKey` は失敗します。
-   この特権はファイル許可とは違うので注意してください - 詳細は `RegLoadKey documentation
-   <http://msdn.microsoft.com/en-us/library/ms724889%28v=VS.85%29.aspx>`__
-   を参照してください。
+   A call to :func:`LoadKey` fails if the calling process does not have the
+   :const:`SE_RESTORE_PRIVILEGE` privilege.  Note that privileges are different
+   from permissions -- see the `RegLoadKey documentation
+   <http://msdn.microsoft.com/en-us/library/ms724889%28v=VS.85%29.aspx>`__ for
+   more details.
 
-   *key* が :func:`ConnectRegistry` によって返されたハンドルの場合、 *fileName*
-   に指定されたパスは遠隔計算機に対する相対パス名になります。
+   If *key* is a handle returned by :func:`ConnectRegistry`, then the path
+   specified in *file_name* is relative to the remote computer.
 
 
 .. function:: OpenKey(key, sub_key[, res[, sam]])
 
-   指定されたキーを開き、 :ref:`ハンドルオブジェクト <handle-object>` を返します。
+   Opens the specified key, returning a :ref:`handle object <handle-object>`.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or any one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *sub_key* は開きたいサブキーを特定する文字列です。
+   *sub_key* is a string that identifies the sub_key to open.
 
-   *res* 予約されている整数値で、ゼロでなくてはなりません。標準の値はゼロです。
+   *res* is a reserved integer, and must be zero.  The default is zero.
 
-   *sam* は必要なキーへのセキュリティアクセスを記述する、アクセスマスクを
-   指定する整数です。標準の値は :const:`KEY_READ` です。
-   その他の利用できる値については :ref:`アクセス権限 <access-rights>`
-   を参照してください。
+   *sam* is an integer that specifies an access mask that describes the desired
+   security access for the key.  Default is :const:`KEY_READ`.  See
+   :ref:`Access Rights <access-rights>` for other allowed values.
 
-   指定されたキーへの新しいハンドルが返されます。
+   The result is a new handle to the specified key.
 
-   この関数が失敗すると、 :exc:`WindowsError` が送出されます。
+   If the function fails, :exc:`WindowsError` is raised.
 
 
 .. function:: OpenKeyEx()
 
-   :func:`OpenKeyEx` の機能は :func:`OpenKey` を標準の引数で使うことで
-   提供されています。
+   The functionality of :func:`OpenKeyEx` is provided via :func:`OpenKey`,
+   by the use of default arguments.
 
 
 .. function:: QueryInfoKey(key)
 
-   キーに関数情報をタプルとして返します。
+   Returns information about a key, as a tuple.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   結果は以下の 3 要素からなるタプルです:
+   The result is a tuple of 3 items:
 
-   +------------+-------------------------------------------------------------------------+
-   | インデクス | 意味                                                                    |
-   +============+=========================================================================+
-   | ``0``      | このキーが持つサブキーの数を表す整数。                                  |
-   +------------+-------------------------------------------------------------------------+
-   | ``1``      | このキーが持つ値の数を表す整数。                                        |
-   +------------+-------------------------------------------------------------------------+
-   | ``2``      | 最後のキーの変更が (あれば) いつだったかを表す長整数で、 1600 年 1 月 1 |
-   |            | 日からの 100 ナノ秒単位で数えたもの。                                   |
-   +------------+-------------------------------------------------------------------------+
+   +-------+---------------------------------------------+
+   | Index | Meaning                                     |
+   +=======+=============================================+
+   | ``0`` | An integer giving the number of sub keys    |
+   |       | this key has.                               |
+   +-------+---------------------------------------------+
+   | ``1`` | An integer giving the number of values this |
+   |       | key has.                                    |
+   +-------+---------------------------------------------+
+   | ``2`` | A long integer giving when the key was last |
+   |       | modified (if available) as 100's of         |
+   |       | nanoseconds since Jan 1, 1601.              |
+   +-------+---------------------------------------------+
 
 
 .. function:: QueryValue(key, sub_key)
 
-   キーに対する、名前付けられていない値を文字列で取得します。
+   Retrieves the unnamed value for a key, as a string.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *sub_key* は値が関連付けられているサブキーの名前を保持する文字列です。この引数が ``None`` または空文字列の場合、この関数は *key*
-   で特定されるキーに対して :func:`SetValue` メソッドで設定された値を取得します。
+   *sub_key* is a string that holds the name of the subkey with which the value is
+   associated.  If this parameter is ``None`` or empty, the function retrieves the
+   value set by the :func:`SetValue` method for the key identified by *key*.
 
-   レジストリ中の値は名前、型、およびデータから構成されています。
-   このメソッドはあるキーのデータ中で、名前 NULL をもつ最初の値を取得します。
-   しかし背後のAPI 呼び出しは型情報を返しません。
-   なので、可能ならいつでも :func:`QueryValueEx` を使うべきです。
+   Values in the registry have name, type, and data components. This method
+   retrieves the data for a key's first value that has a NULL name. But the
+   underlying API call doesn't return the type, so always use
+   :func:`QueryValueEx` if possible.
 
 
 .. function:: QueryValueEx(key, value_name)
 
-   開かれたレジストリキーに関連付けられている、指定した名前の値に対して、型およびデータを取得します。
+   Retrieves the type and data for a specified value name associated with
+   an open registry key.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *value_name* は要求する値を指定する文字列です。
+   *value_name* is a string indicating the value to query.
 
-   結果は 2 つの要素からなるタプルです:
+   The result is a tuple of 2 items:
 
-   +------------+---------------------------------------------------------------------+
-   | インデクス | 意味                                                                |
-   +============+=====================================================================+
-   | ``0``      | レジストリ要素の値。                                                |
-   +------------+---------------------------------------------------------------------+
-   | ``1``      | この値のレジストリ型を表す整数。                                    |
-   |            | (:meth:`SetValueEx` のドキュメント内のテーブルを参照してください。) |
-   +------------+---------------------------------------------------------------------+
+   +-------+-----------------------------------------+
+   | Index | Meaning                                 |
+   +=======+=========================================+
+   | ``0`` | The value of the registry item.         |
+   +-------+-----------------------------------------+
+   | ``1`` | An integer giving the registry type for |
+   |       | this value (see table in docs for       |
+   |       | :meth:`SetValueEx`)                     |
+   +-------+-----------------------------------------+
 
 
 .. function:: SaveKey(key, file_name)
 
-   指定されたキーと、そのサブキー全てを指定したファイルに保存します。
+   Saves the specified key, and all its subkeys to the specified file.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *file_name* はレジストリデータを保存するファイルの名前です、このファイルはすでに存在していてはいけません。このファイル名が
-   拡張子を含んでいる場合、 :meth:`LoadKey` メソッドは、FAT ファイルシステムを
-   使うことができません。
+   *file_name* is the name of the file to save registry data to.  This file
+   cannot already exist. If this filename includes an extension, it cannot be
+   used on file allocation table (FAT) file systems by the :meth:`LoadKey`
+   method.
 
-   *key* が遠隔の計算機上にあるキーを表す場合、 *file_name* で記述されているパスは遠隔の計算機に対して相対的なパスになります。
-   このメソッドの呼び出し側は :const:`SeBackupPrivilege`  セキュリティ特権を保有していなければなりません。この特権は
-   ファイルパーミッションとは異なります - 詳細は
+   If *key* represents a key on a remote computer, the path described by
+   *file_name* is relative to the remote computer. The caller of this method must
+   possess the :const:`SeBackupPrivilege` security privilege.  Note that
+   privileges are different than permissions -- see the
    `Conflicts Between User Rights and Permissions documentation
    <http://msdn.microsoft.com/en-us/library/ms724878%28v=VS.85%29.aspx>`__
-   を参照してください。
+   for more details.
 
-   この関数は *security_attributes* を NULL にして API に渡します。
+   This function passes NULL for *security_attributes* to the API.
 
 
 .. function:: SetValue(key, sub_key, type, value)
 
-   値を指定したキーに関連付けます。
+   Associates a value with a specified key.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *sub_key* は値が関連付けられているサブキーの名前を表す文字列です。
+   *sub_key* is a string that names the subkey with which the value is associated.
 
-   *type* はデータの型を指定する整数です。現状では、この値は :const:`REG_SZ` でなければならず、これは文字列だけが
-   サポートされていることを示します。他のデータ型をサポートするには :func:`SetValueEx` を使ってください。
+   *type* is an integer that specifies the type of the data. Currently this must be
+   :const:`REG_SZ`, meaning only strings are supported.  Use the :func:`SetValueEx`
+   function for support for other data types.
 
-   *value* は新たな値を指定する文字列です。
+   *value* is a string that specifies the new value.
 
-   *sub_key* 引数で指定されたキーが存在しなければ、 SetValue 関数で生成されます。
+   If the key specified by the *sub_key* parameter does not exist, the SetValue
+   function creates it.
 
-   値の長さは利用可能なメモリによって制限されます。(2048 バイト以上の) 長い値はファイルに保存して、そのファイル名を設定レジストリに保存
-   するべきです。そうすればレジストリを効率的に動作させる役に立ちます。
+   Value lengths are limited by available memory. Long values (more than 2048
+   bytes) should be stored as files with the filenames stored in the configuration
+   registry.  This helps the registry perform efficiently.
 
-   *key* 引数に指定されたキーは :const:`KEY_SET_VALUE` アクセスで開かれていなければなりません。
+   The key identified by the *key* parameter must have been opened with
+   :const:`KEY_SET_VALUE` access.
 
 
 .. function:: SetValueEx(key, value_name, reserved, type, value)
 
-   開かれたレジストリキーの値フィールドにデータを記録します。
+   Stores data in the value field of an open registry key.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *value_name* は値が関連付けられているサブキーの名前を表す文字列です。
+   *value_name* is a string that names the subkey with which the value is
+   associated.
 
-   *type* はデータの型を指定する整数です。 利用できる型については
-   :ref:`値の型 <value-types>` を参照してください。
+   *type* is an integer that specifies the type of the data. See
+   :ref:`Value Types <value-types>` for the available types.
 
-   *reserved* は何もしません - API には常にゼロが渡されます。
+   *reserved* can be anything -- zero is always passed to the API.
 
-   *value* は新たな値を指定する文字列です。
+   *value* is a string that specifies the new value.
 
-   このメソッドではまた、指定されたキーに対して、さらに別の値や型情報を設定することができます。 *key* 引数で指定されたキーは
-   :const:`KEY_SET_VALUE` アクセスで開かれていなければなりません。
+   This method can also set additional value and type information for the specified
+   key.  The key identified by the key parameter must have been opened with
+   :const:`KEY_SET_VALUE` access.
 
-   キーを開くには、 :func:`CreateKey` または :func:`OpenKey`  メソッドを使ってください。
+   To open the key, use the :func:`CreateKey` or :func:`OpenKey` methods.
 
-   値の長さは利用可能なメモリによって制限されます。(2048 バイト以上の) 長い値はファイルに保存して、そのファイル名を設定レジストリに保存
-   するべきです。そうすればレジストリを効率的に動作させる役に立ちます。
+   Value lengths are limited by available memory. Long values (more than 2048
+   bytes) should be stored as files with the filenames stored in the configuration
+   registry.  This helps the registry perform efficiently.
 
 
 .. function:: DisableReflectionKey(key)
 
-   .. Disables registry reflection for 32-bit processes running on a 64-bit
-      operating system.
+   Disables registry reflection for 32-bit processes running on a 64-bit
+   operating system.
 
-   64ビット OS上で動作している 32bit プロセスに対するレジストリリフレクションを
-   無効にします。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   .. *key* is an already open key, or one of the predefined
-      :ref:`HKEY_* constants <hkey-constants>`.
+   Will generally raise :exc:`NotImplemented` if executed on a 32-bit
+   operating system.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   If the key is not on the reflection list, the function succeeds but has no
+   effect. Disabling reflection for a key does not affect reflection of any
+   subkeys.
 
-   .. Will generally raise :exc:`NotImplemented` if executed on a 32-bit
-      operating system.
-
-   32bit OS上では一般的に :exc:`NotImplemented` 例外を発生させます。
-
-   .. If the key is not on the reflection list, the function succeeds but has no
-      effect. Disabling reflection for a key does not affect reflection of any
-      subkeys.
-
-   key がリフレクションリストに無い場合は、この関数は成功しますが効果は
-   ありません。あるキーのリフレクションを無効にしても、その全てのサブキーの
-   リフレクションには影響しません。
 
 .. function:: EnableReflectionKey(key)
 
-   .. Restores registry reflection for the specified disabled key.
+   Restores registry reflection for the specified disabled key.
 
-   指定された、リフレクションが無効にされたキーのリフレクションを
-   再び有効にします。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   Will generally raise :exc:`NotImplemented` if executed on a 32-bit
+   operating system.
 
-   32bit OS上では一般的に :exc:`NotImplemented` 例外を発生させます。
-
-   あるキーのリフレクションを再開しても、その全てのサブキーには影響しません。
+   Restoring reflection for a key does not affect reflection of any subkeys.
 
 
 .. function:: QueryReflectionKey(key)
 
-   .. Determines the reflection state for the specified key.
+   Determines the reflection state for the specified key.
 
-   指定されたキーのリフレクション状態を確認します。
+   *key* is an already open key, or one of the predefined
+   :ref:`HKEY_* constants <hkey-constants>`.
 
-   .. *key* is an already open key, or one of the predefined
-      :ref:`HKEY_* constants <hkey-constants>`.
+   Returns ``True`` if reflection is disabled.
 
-   *key* はすでに開かれたキーか、既定の :ref:`HKEY_* 定数 <hkey-constants>`
-   のうちの一つです。
+   Will generally raise :exc:`NotImplemented` if executed on a 32-bit
+   operating system.
 
-   .. Returns ``True`` if reflection is disabled.
-
-   リフレクションが無効になっている場合、 ``True`` を返します。
-
-   .. Will generally raise :exc:`NotImplemented` if executed on a 32-bit
-      operating system.
-
-   32bit OS上では一般的に :exc:`NotImplemented` 例外を発生させます。
 
 .. _constants:
 
-定数
+Constants
 ------------------
 
-.. The following constants are defined for use in many :mod:`_winreg` functions.
-
-:mod:`_winreg` の多くの関数で利用するために以下の定数が定義されています。
+The following constants are defined for use in many :mod:`_winreg` functions.
 
 .. _hkey-constants:
 
-HKEY_* 定数
-+++++++++++++
+HKEY_* Constants
+++++++++++++++++
 
 .. data:: HKEY_CLASSES_ROOT
 
-   .. Registry entries subordinate to this key define types (or classes) of
-      documents and the properties associated with those types. Shell and
-      COM applications use the information stored under this key.
+   Registry entries subordinate to this key define types (or classes) of
+   documents and the properties associated with those types. Shell and
+   COM applications use the information stored under this key.
 
-   このキー以下のレジストリエントリは、ドキュメントのタイプ（またはクラス）や、
-   それに関連付けられたプロパティを定義しています。
-   シェルと COM アプリケーションがこの情報を利用します。
 
 .. data:: HKEY_CURRENT_USER
 
-   .. Registry entries subordinate to this key define the preferences of
-      the current user. These preferences include the settings of
-      environment variables, data about program groups, colors, printers,
-      network connections, and application preferences.
-
-   このキー以下のレジストリエントリは、現在のユーザーの設定を定義します。
-   この設定には、環境変数、プログラムグループに関するデータ、カラー、
-   プリンター、ネットワーク接続、アプリケーション設定などが含まれます。
+   Registry entries subordinate to this key define the preferences of
+   the current user. These preferences include the settings of
+   environment variables, data about program groups, colors, printers,
+   network connections, and application preferences.
 
 .. data:: HKEY_LOCAL_MACHINE
 
-   .. Registry entries subordinate to this key define the physical state
-      of the computer, including data about the bus type, system memory,
-      and installed hardware and software.
-
-   このキー以下のレジストリエントリは、コンピュータの物理的な状態を定義します。
-   これには、バスタイプ、システムメモリ、インストールされているソフトウェアや
-   ハードウェアが含まれます。
+   Registry entries subordinate to this key define the physical state
+   of the computer, including data about the bus type, system memory,
+   and installed hardware and software.
 
 .. data:: HKEY_USERS
 
-   .. Registry entries subordinate to this key define the default user
-      configuration for new users on the local computer and the user
-      configuration for the current user.
-
-   このキー以下のレジストリエントリは、ローカルコンピュータの新規ユーザーの
-   ためのデフォルト設定や、現在のユーザーの設定を定義しています。
+   Registry entries subordinate to this key define the default user
+   configuration for new users on the local computer and the user
+   configuration for the current user.
 
 .. data:: HKEY_PERFORMANCE_DATA
 
-   .. Registry entries subordinate to this key allow you to access
-      performance data. The data is not actually stored in the registry;
-      the registry functions cause the system to collect the data from
-      its source.
-
-   このキー以下のレジストリエントリは、パフォーマンスデータへのアクセスを
-   可能にしています。実際にはデータはレジストリには格納されていません。
-   レジストリ関数がシステムにソースからデータを集めさせます。
+   Registry entries subordinate to this key allow you to access
+   performance data. The data is not actually stored in the registry;
+   the registry functions cause the system to collect the data from
+   its source.
 
 
 .. data:: HKEY_CURRENT_CONFIG
 
-   .. Contains information about the current hardware profile of the
-      local computer system.
-
-   ローカルコンピュータシステムの現在のハードウェアプロファイルに
-   関する情報を含みます。
+   Contains information about the current hardware profile of the
+   local computer system.
 
 .. data:: HKEY_DYN_DATA
 
-   ..This key is not used in versions of Windows after 98.
+   This key is not used in versions of Windows after 98.
 
-   このキーは Windows の 98 以降のバージョンでは利用されていません。
 
 .. _access-rights:
 
-アクセス権限
+Access Rights
 +++++++++++++
 
-より詳しい情報については、 `Registry Key Security and Access
-<http://msdn.microsoft.com/en-us/library/ms724878%28v=VS.85%29.aspx>`__
-を参照してください。
+For more information, see `Registry Key Security and Access
+<http://msdn.microsoft.com/en-us/library/ms724878%28v=VS.85%29.aspx>`__.
 
 .. data:: KEY_ALL_ACCESS
 
-   .. Combines the STANDARD_RIGHTS_REQUIRED, :const:`KEY_QUERY_VALUE`,
-      :const:`KEY_SET_VALUE`, :const:`KEY_CREATE_SUB_KEY`,
-      :const:`KEY_ENUMERATE_SUB_KEYS`, :const:`KEY_NOTIFY`,
-      and :const:`KEY_CREATE_LINK` access rights.
-
-   STANDARD_RIGHTS_REQUIRED (:const:`KEY_QUERY_VALUE`,
+   Combines the STANDARD_RIGHTS_REQUIRED, :const:`KEY_QUERY_VALUE`,
    :const:`KEY_SET_VALUE`, :const:`KEY_CREATE_SUB_KEY`,
    :const:`KEY_ENUMERATE_SUB_KEYS`, :const:`KEY_NOTIFY`,
-   :const:`KEY_CREATE_LINK`) アクセス権限の組み合わせ。
-
+   and :const:`KEY_CREATE_LINK` access rights.
 
 .. data:: KEY_WRITE
 
-   STANDARD_RIGHTS_WRITE (:const:`KEY_SET_VALUE`,
-   :const:`KEY_CREATE_SUB_KEY`) アクセス権限の組み合わせ。
+   Combines the STANDARD_RIGHTS_WRITE, :const:`KEY_SET_VALUE`, and
+   :const:`KEY_CREATE_SUB_KEY` access rights.
 
 .. data:: KEY_READ
 
-   STANDARD_RIGHTS_READ (:const:`KEY_QUERY_VALUE`,
-   :const:`KEY_ENUMERATE_SUB_KEYS`, :const:`KEY_NOTIFY`)
-   アクセス権限の組み合わせ。
+   Combines the STANDARD_RIGHTS_READ, :const:`KEY_QUERY_VALUE`,
+   :const:`KEY_ENUMERATE_SUB_KEYS`, and :const:`KEY_NOTIFY` values.
 
 .. data:: KEY_EXECUTE
 
-   :const:`KEY_READ` と同じ
+   Equivalent to :const:`KEY_READ`.
 
 .. data:: KEY_QUERY_VALUE
 
-   .. Required to query the values of a registry key.
-
-   レジストリキーの値を問い合わせるのに必要
+   Required to query the values of a registry key.
 
 .. data:: KEY_SET_VALUE
 
-   .. Required to create, delete, or set a registry value.
-
-   レジストリの値を作成、削除、設定するのに必要
+   Required to create, delete, or set a registry value.
 
 .. data:: KEY_CREATE_SUB_KEY
 
-   .. Required to create a subkey of a registry key.
-
-   レジストリキーのサブキーを作るのに必要
+   Required to create a subkey of a registry key.
 
 .. data:: KEY_ENUMERATE_SUB_KEYS
 
-   .. Required to enumerate the subkeys of a registry key.
-
-   レジストリキーのサブキーを列挙するのに必要
+   Required to enumerate the subkeys of a registry key.
 
 .. data:: KEY_NOTIFY
 
-   .. Required to request change notifications for a registry key or for
-      subkeys of a registry key.
-
-   レジストリキーやそのサブキーに対する変更通知を要求するのに必要
+   Required to request change notifications for a registry key or for
+   subkeys of a registry key.
 
 .. data:: KEY_CREATE_LINK
 
-   .. Reserved for system use.
-
-   システムでの利用のために予約されている
+   Reserved for system use.
 
 
 .. _64-bit-access-rights:
 
-64-bit 特有のアクセス権
-************************
+64-bit Specific
+***************
 
-より詳しい情報については、 `Accesing an Alternate Registry View
-<http://msdn.microsoft.com/en-us/library/aa384129(v=VS.85).aspx>`__
-を参照してください。
+For more information, see `Accesing an Alternate Registry View
+<http://msdn.microsoft.com/en-us/library/aa384129(v=VS.85).aspx>`__.
 
 .. data:: KEY_WOW64_64KEY
 
-   .. Indicates that an application on 64-bit Windows should operate on
-      the 64-bit registry view.
-
-   64 bit Windows 上のアプリケーションが、 64 bit のレジストリビュー上で
-   操作する事を示します。
+   Indicates that an application on 64-bit Windows should operate on
+   the 64-bit registry view.
 
 .. data:: KEY_WOW64_32KEY
 
-   .. Indicates that an application on 64-bit Windows should operate on
-      the 32-bit registry view.
-
-   64 bit Windows 上のアプリケーションが、 32 bit のレジストリビュー上で
-   操作する事を示します。
+   Indicates that an application on 64-bit Windows should operate on
+   the 32-bit registry view.
 
 
 .. _value-types:
 
-値の型
+Value Types
 +++++++++++
 
 For more information, see `Registry Value Types
@@ -653,120 +601,116 @@ For more information, see `Registry Value Types
 
 .. data:: REG_BINARY
 
-   何らかの形式のバイナリデータ
+   Binary data in any form.
 
 .. data:: REG_DWORD
 
-   32 ビットの数
+   32-bit number.
 
 .. data:: REG_DWORD_LITTLE_ENDIAN
 
-   32 ビットのリトルエンディアン形式の数。
+   A 32-bit number in little-endian format.
 
 .. data:: REG_DWORD_BIG_ENDIAN
 
-   32 ビットのビッグエンディアン形式の数。
+   A 32-bit number in big-endian format.
 
 .. data:: REG_EXPAND_SZ
 
-   環境変数を参照している、ヌル文字で終端された文字列。 (``%PATH%``)。
+   Null-terminated string containing references to environment
+   variables (``%PATH%``).
 
 .. data:: REG_LINK
 
-   Unicode のシンボリックリンク。
+   A Unicode symbolic link.
 
 .. data:: REG_MULTI_SZ
 
-   .. A sequence of null-terminated strings, terminated by two null characters.
-      (Python handles this termination automatically.)
-
-   ヌル文字で終端された文字列からなり、二つのヌル文字で終端されている配列 (Python
-   はこの終端の処理を自動的に行います)。
+   A sequence of null-terminated strings, terminated by two null characters.
+   (Python handles this termination automatically.)
 
 .. data:: REG_NONE
 
-   .. No defined value type.
-
-   定義されていない値の形式。
+   No defined value type.
 
 .. data:: REG_RESOURCE_LIST
 
-   .. A device-driver resource list.
-
-   デバイスドライバリソースのリスト。
+   A device-driver resource list.
 
 .. data:: REG_FULL_RESOURCE_DESCRIPTOR
 
-   .. A hardware setting.
-
-   ハードウェアセッティング
+   A hardware setting.
 
 .. data:: REG_RESOURCE_REQUIREMENTS_LIST
 
-   .. A hardware resource list.
-
-   ハードウェアリソースリスト
+   A hardware resource list.
 
 .. data:: REG_SZ
 
-   ヌル文字で終端された文字列。
+   A null-terminated string.
 
 
 .. _handle-object:
 
-レジストリハンドルオブジェクト
-------------------------------
+Registry Handle Objects
+-----------------------
 
-このオブジェクトは Windows の HKEY オブジェクトをラップし、オブジェクトが破壊されたときに自動的にハンドルを閉じます。オブジェクトの
-:meth:`Close` メソッドと :func:`CloseKey` 関数のどちらも、後始末がきちんと行われることを保証するために呼び出す
-ことができます。
+This object wraps a Windows HKEY object, automatically closing it when the
+object is destroyed.  To guarantee cleanup, you can call either the
+:meth:`~PyHKEY.Close` method on the object, or the :func:`CloseKey` function.
 
-このモジュールのレジストリ関数は全て、これらのハンドルオブジェクトの一つを返します。
+All registry functions in this module return one of these objects.
 
-このモジュールのレジストリ関数でハンドルオブジェクトを受理するものは全て整数も受理しますが、ハンドルオブジェクトを利用することを推奨します。
+All registry functions in this module which accept a handle object also accept
+an integer, however, use of the handle object is encouraged.
 
-ハンドルオブジェクトは :meth:`__nonzero__` の意味構成を持ちます - すなわち、  ::
+Handle objects provide semantics for :meth:`__nonzero__` -- thus::
 
    if handle:
        print "Yes"
 
-は、ハンドルが現在有効な (閉じられたり切り離されたりしていない) 場合には ``Yes`` となります。
+will print ``Yes`` if the handle is currently valid (has not been closed or
+detached).
 
-ハンドルオブジェクトはまた、比較の意味構成もサポートしています。このため、背後の Windows ハンドル値が同じものを複数のハンドルオブジェクト
-が参照している場合、それらの比較は真になります。
+The object also support comparison semantics, so handle objects will compare
+true if they both reference the same underlying Windows handle value.
 
-ハンドルオブジェクトは (例えば組み込みの :func:`int` 関数を使って) 整数に変換することができます。この場合、背後の Windows
-ハンドル値が返されます、また、 :meth:`Detach` メソッドを使って整数のハンドル値を返させると同時に、ハンドルオブジェクトから Windows
-ハンドルを切り離すこともできます。
+Handle objects can be converted to an integer (e.g., using the built-in
+:func:`int` function), in which case the underlying Windows handle value is
+returned.  You can also use the :meth:`~PyHKEY.Detach` method to return the
+integer handle, and also disconnect the Windows handle from the handle object.
 
 
 .. method:: PyHKEY.Close()
 
-   背後の Windows ハンドルを閉じます。
+   Closes the underlying Windows handle.
 
-   ハンドルがすでに閉じられていてもエラーは送出されません。
+   If the handle is already closed, no error is raised.
 
 
 .. method:: PyHKEY.Detach()
 
-   ハンドルオブジェクトから Windows ハンドルを切り離します。
+   Detaches the Windows handle from the handle object.
 
-   切り離される以前にそのハンドルを保持していた整数 (または 64 ビット  Windows の場合には長整数) オブジェクトが返されます。
-   ハンドルがすでに切り離されていたり閉じられていたりした場合、ゼロが返されます。
+   The result is an integer (or long on 64 bit Windows) that holds the value of the
+   handle before it is detached.  If the handle is already detached or closed, this
+   will return zero.
 
-   この関数を呼び出した後、ハンドルは確実に無効化されますが、閉じられるわけではありません。背後の Win32 ハンドルがハンドル
-   オブジェクトよりも長く維持される必要がある場合にはこの関数を呼び出すとよいでしょう。
+   After calling this function, the handle is effectively invalidated, but the
+   handle is not closed.  You would call this function when you need the
+   underlying Win32 handle to exist beyond the lifetime of the handle object.
 
 .. method:: PyHKEY.__enter__()
             PyHKEY.__exit__(\*exc_info)
 
-   HKEY オブジェクトは :meth:`__enter__`, :meth:`__exit__` メソッドを実装していて、
-   :keyword:`with` 文のためのコンテキストプロトコルをサポートしています。 ::
+   The HKEY object implements :meth:`~object.__enter__` and
+   :meth:`~object.__exit__` and thus supports the context protocol for the
+   :keyword:`with` statement::
 
       with OpenKey(HKEY_LOCAL_MACHINE, "foo") as key:
-          # ... key を使った処理 ...
+          ...  # work with key
 
-   このコードは、 :keyword:`with` ブロックから抜けるときに自動的に *key* を閉じます。
+   will automatically close *key* when control leaves the :keyword:`with` block.
 
    .. versionadded:: 2.6
 

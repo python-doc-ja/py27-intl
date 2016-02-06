@@ -1,89 +1,107 @@
 
-:mod:`imageop` --- 生の画像データを操作する
-===========================================
+:mod:`imageop` --- Manipulate raw image data
+============================================
 
 .. module:: imageop
-   :synopsis: 生の画像データを操作する。
+   :synopsis: Manipulate raw image data.
    :deprecated:
 
 .. deprecated:: 2.6
-    :mod:`imageop` モジュールは Python 3.0 では削除されます。
+    The :mod:`imageop` module has been removed in Python 3.
 
+The :mod:`imageop` module contains some useful operations on images. It operates
+on images consisting of 8 or 32 bit pixels stored in Python strings.  This is
+the same format as used by :func:`gl.lrectwrite` and the :mod:`imgfile` module.
 
-:mod:`imageop` モジュールは画像に関する便利な演算がふくまれています。Python文字列に保存されている8または32ビットのピクセルから構成される画像を操作します。これは :func:`gl.lrectwrite` と :mod:`imgfile` モジュールが使用しているものと同じフォーマットです。
-
-モジュールは次の変数と関数を定義しています:
+The module defines the following variables and functions:
 
 
 .. exception:: error
 
-   この例外はピクセル当りの未知のビット数などのすべてのエラーで発生させられます。
+   This exception is raised on all errors, such as unknown number of bits per
+   pixel, etc.
 
 
 .. function:: crop(image, psize, width, height, x0, y0, x1, y1)
 
-   *image* の選択された部分を返します。
-   *image* は *width* × *height* の大きさで、 *psize* バイトのピクセルから構成されなければなりません。
-   *x0*, *y0*, *x1* および *y1* は :func:`gl.lrectread` パラメータと同様です。
-   すなわち、境界は新画像に含まれます。新しい境界は画像の内部である必要はありません。
-   旧画像の外側になるピクセルは値をゼロに設定されます。
-   *x0* が *x1* より大きければ、新画像は鏡像反転されます。y軸についても同じことが適用されます。
+   Return the selected part of *image*, which should be *width* by *height* in size
+   and consist of pixels of *psize* bytes. *x0*, *y0*, *x1* and *y1* are like the
+   :func:`gl.lrectread` parameters, i.e. the boundary is included in the new image.
+   The new boundaries need not be inside the picture.  Pixels that fall outside the
+   old image will have their value set to zero.  If *x0* is bigger than *x1* the
+   new image is mirrored.  The same holds for the y coordinates.
 
 
 .. function:: scale(image, psize, width, height, newwidth, newheight)
 
-   *image* を大きさ *newwidth* × *newheight* に伸縮させて返します。補間は行われません。ばかばかしいほど単純なピクセルの複製と間引きを行い伸縮させます。そのため、コンピュータで作った画像やディザ処理された画像は伸縮した後見た目が良くありません。
+   Return *image* scaled to size *newwidth* by *newheight*. No interpolation is
+   done, scaling is done by simple-minded pixel duplication or removal.  Therefore,
+   computer-generated images or dithered images will not look nice after scaling.
 
 
 .. function:: tovideo(image, psize, width, height)
 
-   垂直ローパスフィルタ処理を画像全体に行います。それぞれの目標ピクセルを垂直に並んだ二つの元ピクセルから計算することで行います。このルーチンの主な用途としては、画像がインターレース走査のビデオ装置に表示された場合に極端なちらつきを抑えるために用います。そのため、この名前があります。
+   Run a vertical low-pass filter over an image.  It does so by computing each
+   destination pixel as the average of two vertically-aligned source pixels.  The
+   main use of this routine is to forestall excessive flicker if the image is
+   displayed on a video device that uses interlacing, hence the name.
 
 
 .. function:: grey2mono(image, width, height, threshold)
 
-   全ピクセルを二値化することによって、深さ8ビットのグレースケール画像を深さ1ビットの画像へ変換します。処理後の画像は隙間なく詰め込まれ、おそらく :func:`mono2grey` の引数としてしか使い道がないでしょう。
+   Convert a 8-bit deep greyscale image to a 1-bit deep image by thresholding all
+   the pixels.  The resulting image is tightly packed and is probably only useful
+   as an argument to :func:`mono2grey`.
 
 
 .. function:: dither2mono(image, width, height)
 
-   (ばかばかしいほど単純な)ディザ処理アルゴリズムを用いて、8ビットグレースケール画像を1ビットのモノクロ画像に変換します。
+   Convert an 8-bit greyscale image to a 1-bit monochrome image using a
+   (simple-minded) dithering algorithm.
 
 
 .. function:: mono2grey(image, width, height, p0, p1)
 
-   1ビットモノクロが象画像を8ビットのグレースケールまたはカラー画像に変換します。入力で値ゼロの全てのピクセルは出力では値 *p0* を取り、値0の入力ピクセルは出力では値 *p1* を取ります。白黒のモノクロ画像をグレースケールへ変換するためには、値 ``0`` と ``255`` をそれぞれ渡してください。
+   Convert a 1-bit monochrome image to an 8 bit greyscale or color image. All
+   pixels that are zero-valued on input get value *p0* on output and all one-value
+   input pixels get value *p1* on output.  To convert a monochrome black-and-white
+   image to greyscale pass the values ``0`` and ``255`` respectively.
 
 
 .. function:: grey2grey4(image, width, height)
 
-   ディザ処理を行わずに、8ビットグレースケール画像を4ビットグレースケール画像へ変換します。
+   Convert an 8-bit greyscale image to a 4-bit greyscale image without dithering.
 
 
 .. function:: grey2grey2(image, width, height)
 
-   ディザ処理を行わずに、8ビットグレースケール画像を2ビットグレースケール画像に変換します。
+   Convert an 8-bit greyscale image to a 2-bit greyscale image without dithering.
 
 
 .. function:: dither2grey2(image, width, height)
 
-   ディザ処理を行い、8ビットグレースケール画像を2ビットグレースケール画像へ変換します。 :func:`dither2mono` については、ディザ処理アルゴリズムは現在とても単純です。
+   Convert an 8-bit greyscale image to a 2-bit greyscale image with dithering.  As
+   for :func:`dither2mono`, the dithering algorithm is currently very simple.
 
 
 .. function:: grey42grey(image, width, height)
 
-   4ビットグレースケール画像を8ビットグレースケール画像へ変換します。
+   Convert a 4-bit greyscale image to an 8-bit greyscale image.
 
 
 .. function:: grey22grey(image, width, height)
 
-   2ビットグレースケール画像を8ビットグレースケール画像へ変換します。
+   Convert a 2-bit greyscale image to an 8-bit greyscale image.
 
 
 .. data:: backward_compatible
 
-   0 にセットすると、このモジュールの関数は、リトルエンディアンのシステムで以前のバージョンと互換性のない方法でマルチバイトピクセル値を表現
-   するようになります。このモジュールはもともと SGI 向けに書かれたのですが、SGI はビッグエンディアンのシステムであり、この変数を設定しても
-   何の影響もありません。とはいえ、このコードはもともとどこでも動作するように考えて作られたわけではないので、バイトオーダに関する
-   仮定が相互利用向けではありませんでした。この変数を 0 にすると、リトルエンディアンのシステムではバイトオーダを反転して、ビッグエンディアンと同じにします。
+   If set to 0, the functions in this module use a non-backward compatible way
+   of representing multi-byte pixels on little-endian systems.  The SGI for
+   which this module was originally written is a big-endian system, so setting
+   this variable will have no effect. However, the code wasn't originally
+   intended to run on anything else, so it made assumptions about byte order
+   which are not universal.  Setting this variable to 0 will cause the byte
+   order to be reversed on little-endian systems, so that it then is the same as
+   on big-endian systems.
 

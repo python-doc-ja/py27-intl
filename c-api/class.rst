@@ -2,64 +2,64 @@
 
 .. _classobjects:
 
-クラスとインスタンスオブジェクト
---------------------------------
+Class and Instance Objects
+--------------------------
 
 .. index:: object: class
 
-ここで説明されているクラスオブジェクトは旧スタイルクラスのもので、
-Python 3 では削除されることに注意してください。
-新スタイルクラス(type)を拡張モジュールで作成する場合は、 type オブジェクトを
-扱うべきです。 (:ref:`typeobjects` を参照)
+Note that the class objects described here represent old-style classes, which
+will go away in Python 3. When creating new types for extension modules, you
+will want to work with type objects (section :ref:`typeobjects`).
+
 
 .. c:type:: PyClassObject
 
-   ビルトインクラスを表すためのオブジェクトの構造体
+   The C structure of the objects used to describe built-in classes.
 
 
 .. c:var:: PyObject* PyClass_Type
 
    .. index:: single: ClassType (in module types)
 
-   クラスオブジェクトのための type オブジェクト。
-   Python レイヤーの、 ``types.ClassType`` と同じオブジェクト。
+   This is the type object for class objects; it is the same object as
+   ``types.ClassType`` in the Python layer.
 
 
 .. c:function:: int PyClass_Check(PyObject *o)
 
-   *o* が、標準のクラスオブジェクトから派生した type のインスタンスだった場合を含めて、
-   クラスオブジェクトだった場合に真を返します。
-   それ以外の場合は偽を返します。
+   Return true if the object *o* is a class object, including instances of types
+   derived from the standard class object.  Return false in all other cases.
 
 
 .. c:function:: int PyClass_IsSubclass(PyObject *klass, PyObject *base)
 
-   *klass* が *base* のサブクラスだった場合に真を返します。
-   それ以外の場合は偽を返します。
+   Return true if *klass* is a subclass of *base*. Return false in all other cases.
+
 
 .. index:: object: instance
 
-インスタンスオブジェクト固有の関数はきわめてわずかです。
+There are very few functions specific to instance objects.
 
 
 .. c:var:: PyTypeObject PyInstance_Type
 
-   クラスインスタンスの型オブジェクトです。
+   Type object for class instances.
 
 
 .. c:function:: int PyInstance_Check(PyObject *obj)
 
-   *obj* がインスタンスの場合に真を返します。
+   Return true if *obj* is an instance.
 
 
 .. c:function:: PyObject* PyInstance_New(PyObject *class, PyObject *arg, PyObject *kw)
 
-   特定クラスの新たなインスタンスを生成します。パラメタ *arg*  および *kw* はそれぞれオブジェクトのコンストラクタに渡す
-   実引数およびキーワードパラメタとして使われます。
+   Create a new instance of a specific class.  The parameters *arg* and *kw* are
+   used as the positional and keyword parameters to the object's constructor.
 
 
 .. c:function:: PyObject* PyInstance_NewRaw(PyObject *class, PyObject *dict)
 
-   特定クラスの新たなインスタンスを、コンストラクタを呼ばずに生成します。 *class* は新たに作成するオブジェクトのクラスです。 *dict* パラメタは
-   オブジェクトの :attr:`__dict__` に使われます; *dict* が *NULL* なら、インスタンス用に新たな辞書が作成されます。
-
+   Create a new instance of a specific class without calling its constructor.
+   *class* is the class of new object.  The *dict* parameter will be used as the
+   object's :attr:`__dict__`; if *NULL*, a new dictionary will be created for the
+   instance.

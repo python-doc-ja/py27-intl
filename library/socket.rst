@@ -1,129 +1,142 @@
-
-:mod:`socket` --- 低レベルネットワークインターフェース
-======================================================
+:mod:`socket` --- Low-level networking interface
+================================================
 
 .. module:: socket
-   :synopsis: 低レベルネットワークインターフェース。
+   :synopsis: Low-level networking interface.
 
 
-このモジュールは、PythonでBSD *ソケット(socket)* インターフェースを利用するために使用します。
-最近のUnixシステム、Windows, Max OS X, BeOS, OS/2など、多くのプラットフォームで利用可能です。
+This module provides access to the BSD *socket* interface. It is available on
+all modern Unix systems, Windows, Mac OS X, BeOS, OS/2, and probably additional
+platforms.
 
 .. note::
 
-   いくつかの振る舞いはプラットフォームに依存します。
-   オペレーティングシステムのソケットAPIを呼び出しているためです。
+   Some behavior may be platform dependent, since calls are made to the operating
+   system socket APIs.
 
-C言語によるソケットプログラミングの基礎については、以下の資料を参照してください。 An Introductory 4.3BSD Interprocess
-Communication Tutorial (Stuart Sechrest), An Advanced 4.3BSD Interprocess
-Communication Tutorial (Samuel J. Leffler他), UNIX Programmer's Manual,
-Supplementary Documents 1(PS1:7章 PS1:8章)。ソケットの詳細については、
-各プラットフォームのソケット関連システムコールに関するドキュメント(Unix では
-マニュアルページ、WindowsではWinSock(またはWinSock2)仕様書)も参照してください。
-IPv6対応のAPIについては、 :rfc:`3493` "Basic Socket Interface Extensions for IPv6" を参照してください。
+For an introduction to socket programming (in C), see the following papers: An
+Introductory 4.3BSD Interprocess Communication Tutorial, by Stuart Sechrest and
+An Advanced 4.3BSD Interprocess Communication Tutorial, by Samuel J.  Leffler et
+al, both in the UNIX Programmer's Manual, Supplementary Documents 1 (sections
+PS1:7 and PS1:8).  The platform-specific reference material for the various
+socket-related system calls are also a valuable source of information on the
+details of socket semantics.  For Unix, refer to the manual pages; for Windows,
+see the WinSock (or Winsock 2) specification. For IPv6-ready APIs, readers may
+want to refer to :rfc:`3493` titled Basic Socket Interface Extensions for IPv6.
 
 .. index:: object: socket
 
-Pythonインターフェースは、Unixのソケット用システムコールとライブラリを、
-そのままPythonのオブジェクト指向スタイルに変換したものです。
-各種ソケット関連のシステムコールは、 :func:`socket` 関数で生成する
-:dfn:`ソケットオブジェクト` のメソッドとして実装されています。
-メソッドのパラメータはCのインターフェースよりも多少高水準で、例えば
-:meth:`read` や :meth:`write` メソッドではファイルオブジェクトと同様、
-受信時のバッファ確保や送信時の出力サイズなどは自動的に処理されます。
+The Python interface is a straightforward transliteration of the Unix system
+call and library interface for sockets to Python's object-oriented style: the
+:func:`.socket` function returns a :dfn:`socket object` whose methods implement
+the various socket system calls.  Parameter types are somewhat higher-level than
+in the C interface: as with :meth:`read` and :meth:`write` operations on Python
+files, buffer allocation on receive operations is automatic, and buffer length
+is implicit on send operations.
 
-ソケットのアドレスは以下のように指定します:単一の文字列は、 :const:`AF_UNIX` アドレスファミリを示します。
-``(host, port)`` のペアは :const:`AF_INET` アドレスファミリを示し、 *host*
-は ``'daring.cwi.nl'`` のようなインターネットドメイン形式または
-``'100.50.200.5'`` のようなIPv4アドレスを文字列で、 *port* はポート
-番号を整数で指定します。 :const:`AF_INET6` アドレスファミリは ``(host, port, flowinfo, scopeid)`` の長さ4の
-タプルで示し、 *flowinfo* と *scopeid* にはそれぞれCの :const:`struct sockaddr_in6`
-における ``sin6_flowinfo`` と
-``sin6_scope_id`` の値を指定します。後方互換性のため、 :mod:`socket`
-モジュールのメソッドでは ``sin6_flowinfo`` と ``sin6_scope_id``
-を省略する事ができますが、
-*scopeid* を省略するとスコープを持ったIPv6アドレスの処理で問題が発生する場合があります。
-現在サポートされているアドレスファミリは以上です。
-ソケットオブジェクトで利用する事のできるアドレス形式は、ソケットオブジェクトの作成時に指定したアドレスファミリで決まります。
+Socket addresses are represented as follows: A single string is used for the
+:const:`AF_UNIX` address family. A pair ``(host, port)`` is used for the
+:const:`AF_INET` address family, where *host* is a string representing either a
+hostname in Internet domain notation like ``'daring.cwi.nl'`` or an IPv4 address
+like ``'100.50.200.5'``, and *port* is an integer. For
+:const:`AF_INET6` address family, a four-tuple ``(host, port, flowinfo,
+scopeid)`` is used, where *flowinfo* and *scopeid* represents ``sin6_flowinfo``
+and ``sin6_scope_id`` member in :const:`struct sockaddr_in6` in C. For
+:mod:`socket` module methods, *flowinfo* and *scopeid* can be omitted just for
+backward compatibility. Note, however, omission of *scopeid* can cause problems
+in manipulating scoped IPv6 addresses. Other address families are currently not
+supported. The address format required by a particular socket object is
+automatically selected based on the address family specified when the socket
+object was created.
 
-IPv4アドレスのホストアドレスが空文字列の場合、 :const:`INADDR_ANY` として処理されます。また、 ``'<broadcast>'`` の場合は
-:const:`INADDR_BROADCAST` として処理されます。
-IPv6では後方互換性のためこの機能は用意されていませんので、IPv6をサポートするPythonプログラムでは利用しないで下さい。
+For IPv4 addresses, two special forms are accepted instead of a host address:
+the empty string represents :const:`INADDR_ANY`, and the string
+``'<broadcast>'`` represents :const:`INADDR_BROADCAST`. The behavior is not
+available for IPv6 for backward compatibility, therefore, you may want to avoid
+these if you intend to support IPv6 with your Python programs.
 
-IPv4/v6ソケットの *host* 部にホスト名を指定すると、処理結果が一定ではない場合があります。
-これはPythonはDNSから取得したアドレスのうち最初のアドレスを使用するので、
-DNSの処理やホストの設定によって異なるIPv4/6アドレスを取得する場合があるためです。常に同じ結果が必要であれば、 *host*
-に数値のアドレスを指定してください。
+If you use a hostname in the *host* portion of IPv4/v6 socket address, the
+program may show a nondeterministic behavior, as Python uses the first address
+returned from the DNS resolution.  The socket address will be resolved
+differently into an actual IPv4/v6 address, depending on the results from DNS
+resolution and/or the host configuration.  For deterministic behavior use a
+numeric address in *host* portion.
 
 .. versionadded:: 2.5
-   AF_NETLINK ソケットが ``pid, groups`` のペアで表現されます.
+   AF_NETLINK sockets are represented as  pairs ``pid, groups``.
 
 .. versionadded:: 2.6
-   Linuxのみ、 :const:`AF_TIPC` アドレスファミリを使って TIPC を利用することができます。
-   TIPCはオープンで、IPベースではないクラスターコンピューター環境向けのネットワークプロトコルです。
-   アドレスはタプルで表現され、その中身はアドレスタイプに依存します。
-   一般的なタプルの形は ``(addr_type, v1, v2, v3 [, scope])`` で、
+   Linux-only support for TIPC is also available using the :const:`AF_TIPC`
+   address family. TIPC is an open, non-IP based networked protocol designed
+   for use in clustered computer environments.  Addresses are represented by a
+   tuple, and the fields depend on the address type. The general tuple form is
+   ``(addr_type, v1, v2, v3 [, scope])``, where:
 
-   - *addr_type* は TIPC_ADDR_NAMESEQ, TIPC_ADDR_NAME, TIPC_ADDR_ID のうちのどれかです。
-   - *scope* は TIPC_ZONE_SCOPE, TIPC_CLUSTER_SCOPE, TIPC_NODE_SCOPE のうちのどれかです。
-   - *addr_type* が TIPC_ADDR_NAME の場合、 *v1* はサーバータイプ、 *v2*
-     はポートID (the port identifier)、そして *v3* は 0 であるべきです。
+   - *addr_type* is one of :const:`TIPC_ADDR_NAMESEQ`, :const:`TIPC_ADDR_NAME`,
+     or :const:`TIPC_ADDR_ID`.
+   - *scope* is one of :const:`TIPC_ZONE_SCOPE`, :const:`TIPC_CLUSTER_SCOPE`,
+     and :const:`TIPC_NODE_SCOPE`.
+   - If *addr_type* is :const:`TIPC_ADDR_NAME`, then *v1* is the server type, *v2* is
+     the port identifier, and *v3* should be 0.
 
-     *addr_type* が TIPC_ADDR_NAMESEQ の場合、 *v1* はサーバータイプ、 *v2*
-     はポート番号下位(lower port number)、 *v3* はポート番号上位(upper port number)
-     です。
+     If *addr_type* is :const:`TIPC_ADDR_NAMESEQ`, then *v1* is the server type, *v2*
+     is the lower port number, and *v3* is the upper port number.
 
-     *addr_type* が TIPC_ADDR_ID の場合、 *v1* はノード、 *v2* は参照、
-     *v3* は0であるべきです。
+     If *addr_type* is :const:`TIPC_ADDR_ID`, then *v1* is the node, *v2* is the
+     reference, and *v3* should be set to 0.
 
 
-エラー時には例外が発生します。引数型のエラーやメモリ不足の場合には通常の例外が発生し、ソケットやアドレス関連のエラーの場合は
-:exc:`socket.error` が発生します。
+All errors raise exceptions.  The normal exceptions for invalid argument types
+and out-of-memory conditions can be raised; errors related to socket or address
+semantics raise the error :exc:`socket.error`.
 
-:meth:`~socket.setblocking` メソッドで、非ブロッキングモードを使用することがで
-きます。また、より汎用的に :meth:`~socket.settimeout` メソッドでタイムアウトを指定する事ができます。
+Non-blocking mode is supported through :meth:`~socket.setblocking`.  A
+generalization of this based on timeouts is supported through
+:meth:`~socket.settimeout`.
 
-:mod:`socket` モジュールでは、以下の定数と関数を提供しています。
+The module :mod:`socket` exports the following constants and functions:
 
 
 .. exception:: error
 
    .. index:: module: errno
 
-   この例外は、ソケット関連のエラーが発生した場合に送出されます。例外の値は障害の内容を示す文字列か、または :exc:`os.error` と同様な
-   ``(errno, string)`` のペアとなります。オペレーティングシステムで定義されているエラーコードについては :mod:`errno`
-   を参照してください。
-
-   ..
-      .. versionchanged:: 2.6
-         :exc:`socket.error` is now a child class of :exc:`IOError`.
+   This exception is raised for socket-related errors. The accompanying value is
+   either a string telling what went wrong or a pair ``(errno, string)``
+   representing an error returned by a system call, similar to the value
+   accompanying :exc:`os.error`. See the module :mod:`errno`, which contains names
+   for the error codes defined by the underlying operating system.
 
    .. versionchanged:: 2.6
-      :exc:`socket.error` は :exc:`IOError` の子クラスになりました。
+      :exc:`socket.error` is now a child class of :exc:`IOError`.
 
 
 .. exception:: herror
 
-   この例外は、C APIの :func:`gethostbyname_ex` や
-   :func:`gethostbyaddr` などで、 *h_errno* のようなアドレス関連のエラーが発生した場合に送出されます。
+   This exception is raised for address-related errors, i.e. for functions that use
+   *h_errno* in the C API, including :func:`gethostbyname_ex` and
+   :func:`gethostbyaddr`.
 
-   例外の値は ``(h_errno, string)`` のペアで、ライブラリの呼び
-   出し結果を返します。 *string* はC関数 :c:func:`hstrerror` で取得した、 *h_errno* の意味を示す文字列です。
+   The accompanying value is a pair ``(h_errno, string)`` representing an error
+   returned by a library call. *string* represents the description of *h_errno*, as
+   returned by the :c:func:`hstrerror` C function.
 
 
 .. exception:: gaierror
 
-   この例外は :func:`getaddrinfo` と :func:`getnameinfo` でアドレス関連のエラーが発生した場合に送出されます。
-
-   例外の値は ``(error, string)`` のペアで、ライブラリの呼び出
-   し結果を返します。 *string* はC関数 :c:func:`gai_strerror` で取得した、 *h_errno* の意味を示す文字列です。
-   *error* の値は、このモジュールで定義される :const:`EAI_\*` 定数の何れかとなります。
+   This exception is raised for address-related errors, for :func:`getaddrinfo` and
+   :func:`getnameinfo`. The accompanying value is a pair ``(error, string)``
+   representing an error returned by a library call. *string* represents the
+   description of *error*, as returned by the :c:func:`gai_strerror` C function. The
+   *error* value will match one of the :const:`EAI_\*` constants defined in this
+   module.
 
 
 .. exception:: timeout
 
-   この例外は、あらかじめ :meth:`settimeout` を呼び出してタイムアウトを有効にしてあるソケットでタイムアウトが生じた際に送出されます。
-   例外に付属する値は文字列で、その内容は現状では常に "timed out" となります。
+   This exception is raised when a timeout occurs on a socket which has had
+   timeouts enabled via a prior call to :meth:`settimeout`.  The accompanying value
+   is a string whose value is currently always "timed out".
 
    .. versionadded:: 2.3
 
@@ -132,9 +145,9 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
           AF_INET
           AF_INET6
 
-   アドレス（およびプロトコル）ファミリを示す定数で、 :func:`socket` の
-   最初の引数に指定することができます。 :const:`AF_UNIX` ファミリをサポート
-   しないプラットフォームでは、 :const:`AF_UNIX` は未定義となります。
+   These constants represent the address (and protocol) families, used for the
+   first argument to :func:`.socket`.  If the :const:`AF_UNIX` constant is not
+   defined then this protocol is unsupported.
 
 
 .. data:: SOCK_STREAM
@@ -143,8 +156,9 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
           SOCK_RDM
           SOCK_SEQPACKET
 
-   ソケットタイプを示す定数で、 :func:`socket` の2番目の引数に指定することができます。(ほとんどの場合、 :const:`SOCK_STREAM` と
-   :const:`SOCK_DGRAM` 以外は必要ありません。)
+   These constants represent the socket types, used for the second argument to
+   :func:`socket`. (Only :const:`SOCK_STREAM` and :const:`SOCK_DGRAM` appear to be
+   generally useful.)
 
 
 .. data:: SO_*
@@ -161,625 +175,709 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
           NI_*
           TCP_*
 
-   Unixのソケット・IPプロトコルのドキュメントで定義されている各種定数。
-   ソケットオブジェクトの :meth:`setsockopt` や :meth:`getsockopt` で使用
-   します。ほとんどのシンボルはUnixのヘッダファイルに従っています。一部のシンボルには、デフォルト値を定義してあります。
+   Many constants of these forms, documented in the Unix documentation on sockets
+   and/or the IP protocol, are also defined in the socket module. They are
+   generally used in arguments to the :meth:`setsockopt` and :meth:`getsockopt`
+   methods of socket objects.  In most cases, only those symbols that are defined
+   in the Unix header files are defined; for a few symbols, default values are
+   provided.
 
 .. data:: SIO_*
           RCVALL_*
 
-   ..
-      Constants for Windows' WSAIoctl(). The constants are used as arguments to the
-      :meth:`ioctl` method of socket objects.
-
-   WindowsのWSAIoctl()のための定数です。
-   この定数はソケットオブジェクトの :meth:`ioctl` メソッドに引数として渡されます。
+   Constants for Windows' WSAIoctl(). The constants are used as arguments to the
+   :meth:`~socket.socket.ioctl` method of socket objects.
 
    .. versionadded:: 2.6
 
 .. data:: TIPC_*
 
-   .. TIPC related constants, matching the ones exported by the C socket API. See
-      the TIPC documentation for more information.
-
-   TIPC関連の定数で、CのソケットAPIが公開しているものにマッチします。
-   詳しい情報はTIPCのドキュメントを参照してください。
+   TIPC related constants, matching the ones exported by the C socket API. See
+   the TIPC documentation for more information.
 
    .. versionadded:: 2.6
 
 .. data:: has_ipv6
 
-  現在のプラットフォームでIPv6がサポートされているか否かを示す真偽値。
+   This constant contains a boolean value which indicates if IPv6 is supported on
+   this platform.
 
-  .. versionadded:: 2.3
+   .. versionadded:: 2.3
 
 
 .. function:: create_connection(address[, timeout[, source_address]])
 
-   便利関数。
-   *address* (``(host, port)`` の形のタプル) に接続してソケットオブジェクトを返します。
-   オプションの *timeout* 引数を指定すると、接続を試みる前にソケットオブジェクトのタイムアウトを設定します。
+   Connect to a TCP service listening on the Internet *address* (a 2-tuple
+   ``(host, port)``), and return the socket object.  This is a higher-level
+   function than :meth:`socket.connect`: if *host* is a non-numeric hostname,
+   it will try to resolve it for both :data:`AF_INET` and :data:`AF_INET6`,
+   and then try to connect to all possible addresses in turn until a
+   connection succeeds.  This makes it easy to write clients that are
+   compatible to both IPv4 and IPv6.
 
-   *source_address* は接続する前にバインドするソースアドレスを指定するオプション引数で、
-   指定する場合は ``(host, port)`` の2要素タプルでなければなりません。
-   host や port が '' か 0 だった場合は、OSのデフォルトの動作になります。
+   Passing the optional *timeout* parameter will set the timeout on the
+   socket instance before attempting to connect.  If no *timeout* is
+   supplied, the global default timeout setting returned by
+   :func:`getdefaulttimeout` is used.
+
+   If supplied, *source_address* must be a 2-tuple ``(host, port)`` for the
+   socket to bind to as its source address before connecting.  If host or port
+   are '' or 0 respectively the OS default behavior will be used.
 
    .. versionadded:: 2.6
 
    .. versionchanged:: 2.7
-      *source_address* が追加されました.
+      *source_address* was added.
 
 
-.. function:: getaddrinfo(host, port, family=0, socktype=0, proto=0, flags=0)
+.. function:: getaddrinfo(host, port[, family[, socktype[, proto[, flags]]]])
 
-   *host* / *port* 引数の指すアドレス情報を、そのサービスに接続された
-   ソケットを作成するために必要な全ての引数が入った 5 要素のタプルに変換します。
-   *host* はドメイン名、IPv4/v6アドレスの文字列、または ``None`` です。
-   *port* は ``'http'`` のようなサービス名文字列、ポート番号を表す数値、または ``None`` です。
-   *host* と *port* に ``None`` を指定すると C APIに ``NULL`` を渡せます。
+   Translate the *host*/*port* argument into a sequence of 5-tuples that contain
+   all the necessary arguments for creating a socket connected to that service.
+   *host* is a domain name, a string representation of an IPv4/v6 address
+   or ``None``. *port* is a string service name such as ``'http'``, a numeric
+   port number or ``None``.  By passing ``None`` as the value of *host*
+   and *port*, you can pass ``NULL`` to the underlying C API.
 
-   オプションの *family* 、 *socktype* 、 *proto* 引数を指定すると、
-   返されるアドレスのリストを絞り込むことができます。
-   これらの引数の値として 0 を渡すと絞る込まない結果を返します。
-   *flags* 引数には ``AI_*`` 定数のうち 1 つ以上が指定でき、結果の取り方を変えることができます。
-   例えば、 :const:`AI_NUMERICHOST` を指定するとドメイン名解決を行わないようにし、 *host* がドメイン名だった場合には例外を送出します。
+   The *family*, *socktype* and *proto* arguments can be optionally specified
+   in order to narrow the list of addresses returned.  By default, their value
+   is ``0``, meaning that the full range of results is selected.
+   The *flags* argument can be one or several of the ``AI_*`` constants,
+   and will influence how results are computed and returned.  Its default value
+   is ``0``.  For example, :const:`AI_NUMERICHOST` will disable domain name
+   resolution and will raise an error if *host* is a domain name.
 
-   この関数は以下の構造をとる 5 要素のタプルのリストを返します:
+   The function returns a list of 5-tuples with the following structure:
 
    ``(family, socktype, proto, canonname, sockaddr)``
 
-   このタプルにある *family*, *socktype*, *proto* は、 :func:`socket` 関数を呼び出す際に指定する値と同じ整数です。
-   :const:`AI_CANONNAME` を含んだ *flags* を指定した場合、 *canonname* は *host* の規準名(canonical name)を示す文字列です; そうでない場合は *canonname* は空文字列です。
-   *sockaddr* は、ソケットアドレスを *family* に依存した形式で表すタプルで、
-   ( :const:`AF_INET` の場合は 2 要素のタプル ``(address, port)`` 、 :const:`AF_INET6` の場合は 4 要素のタプル ``(address, port, flow info, scope id)`` )
-   :meth:`socket.connect` に渡すためのものです。
+   In these tuples, *family*, *socktype*, *proto* are all integers and are
+   meant to be passed to the :func:`.socket` function.  *canonname* will be
+   a string representing the canonical name of the *host* if
+   :const:`AI_CANONNAME` is part of the *flags* argument; else *canonname*
+   will be empty.  *sockaddr* is a tuple describing a socket address, whose
+   format depends on the returned *family* (a ``(address, port)`` 2-tuple for
+   :const:`AF_INET`, a ``(address, port, flow info, scope id)`` 4-tuple for
+   :const:`AF_INET6`), and is meant to be passed to the :meth:`socket.connect`
+   method.
 
-   次の例では ``www.python.org`` の 80 番ポートポートへの TCP 接続を得るためのアドレス情報を取得しようとしています。
-   (結果は IPv6 をサポートしているかどうかで変わります)::
+   The following example fetches address information for a hypothetical TCP
+   connection to ``example.org`` on port 80 (results may differ on your
+   system if IPv6 isn't enabled)::
 
-      >>> socket.getaddrinfo("www.python.org", 80, 0, 0, socket.SOL_TCP)
-      [(2, 1, 6, '', ('82.94.164.162', 80)),
-       (10, 1, 6, '', ('2001:888:2000:d::a2', 80, 0, 0))]
+      >>> socket.getaddrinfo("example.org", 80, 0, 0, socket.IPPROTO_TCP)
+      [(10, 1, 6, '', ('2606:2800:220:1:248:1893:25c8:1946', 80, 0, 0)),
+       (2, 1, 6, '', ('93.184.216.34', 80))]
 
    .. versionadded:: 2.2
 
 
 .. function:: getfqdn([name])
 
-   *name* の完全修飾ドメイン名を返します。 *name* が空または省略された場合、ローカルホストを指定したとみなします。完全修飾ドメイン名の取得には
-   まず :func:`gethostbyaddr` でチェックし、次に可能であればエイリアスを調べ、名前にピリオドを含む最初の名前を値として返します。完全修飾ドメイ
-   ン名を取得できない場合、 :func:`gethostname` で返されるホスト名を返します。
+   Return a fully qualified domain name for *name*. If *name* is omitted or empty,
+   it is interpreted as the local host.  To find the fully qualified name, the
+   hostname returned by :func:`gethostbyaddr` is checked, followed by aliases for the
+   host, if available.  The first name which includes a period is selected.  In
+   case no fully qualified domain name is available, the hostname as returned by
+   :func:`gethostname` is returned.
 
    .. versionadded:: 2.0
 
 
 .. function:: gethostbyname(hostname)
 
-   ホスト名を ``'100.50.200.5'`` のようなIPv4形式のアドレスに変換します。
-   ホスト名としてIPv4アドレスを指定した場合、その値は変換せずにそのまま返ります。 :func:`gethostbyname`
-   APIへのより完全なインターフェースが必要であれば、 :func:`gethostbyname_ex` を参照してください。
-   :func:`gethostbyname` は、IPv6名前解決をサポートしていません。IPv4/
-   v6のデュアルスタックをサポートする場合は :func:`getaddrinfo` を使用します。
+   Translate a host name to IPv4 address format.  The IPv4 address is returned as a
+   string, such as  ``'100.50.200.5'``.  If the host name is an IPv4 address itself
+   it is returned unchanged.  See :func:`gethostbyname_ex` for a more complete
+   interface. :func:`gethostbyname` does not support IPv6 name resolution, and
+   :func:`getaddrinfo` should be used instead for IPv4/v6 dual stack support.
 
 
 .. function:: gethostbyname_ex(hostname)
 
-   ホスト名から、IPv4形式の各種アドレス情報を取得します。戻り値は ``(hostname, aliaslist, ipaddrlist)``
-   のタプルで、 *hostname* は *ip_address* で指定したホストの正式名、 *aliaslist* は同じアドレス
-   の別名のリスト(空の場合もある)、 *ipaddrlist* は同じホスト上の同一インターフェースのIPv4アドレスのリスト(ほとんどの場合は単一のアドレスのみ)
-   を示します。 :func:`gethostbyname` は、IPv6名前解決をサポートしていません。IPv4/v6のデュアルスタックをサポートする場合は
-   :func:`getaddrinfo` を使用します。
+   Translate a host name to IPv4 address format, extended interface. Return a
+   triple ``(hostname, aliaslist, ipaddrlist)`` where *hostname* is the primary
+   host name responding to the given *ip_address*, *aliaslist* is a (possibly
+   empty) list of alternative host names for the same address, and *ipaddrlist* is
+   a list of IPv4 addresses for the same interface on the same host (often but not
+   always a single address). :func:`gethostbyname_ex` does not support IPv6 name
+   resolution, and :func:`getaddrinfo` should be used instead for IPv4/v6 dual
+   stack support.
 
 
 .. function:: gethostname()
 
-   Pythonインタープリタを現在実行中のマシンのホスト名を示す文字列を取得します。
+   Return a string containing the hostname of the machine where  the Python
+   interpreter is currently executing.
 
-   実行中マシンのIPアドレスが必要であれば、
-   ``gethostbyname(gethostname())`` を使用してください。
-   この処理は実行中ホストのアドレス-ホスト名変換が可能であることを前提としていますが、常に変換可能であるとは限りません。
+   If you want to know the current machine's IP address, you may want to use
+   ``gethostbyname(gethostname())``. This operation assumes that there is a
+   valid address-to-host mapping for the host, and the assumption does not
+   always hold.
 
-   注意: :func:`gethostname` は完全修飾ドメイン名を返すとは限りません。完全修飾ドメイン名が必要であれば、
-   ``gethostbyaddr(gethostname())`` としてください(下記参照)。
+   Note: :func:`gethostname` doesn't always return the fully qualified domain
+   name; use ``getfqdn()`` (see above).
 
 
 .. function:: gethostbyaddr(ip_address)
 
-   ``(hostname, aliaslist, ipaddrlist)`` のタプルを返
-   し、 *hostname* は *ip_address* で指定したホストの正式名、 ``aliaslist`` は同じアドレスの別名のリスト(空の場合もある)、
-   ``ipaddrlist`` は同じホスト上の同一インターフェースのIPv4アドレスのリ
-   スト(ほとんどの場合は単一のアドレスのみ)を示します。完全修飾ドメイン名が必要であれば、 :func:`getfqdn` を使用してください。
-   :func:`gethostbyaddr` は、IPv4/IPv6の両方をサポートしています。
+   Return a triple ``(hostname, aliaslist, ipaddrlist)`` where *hostname* is the
+   primary host name responding to the given *ip_address*, *aliaslist* is a
+   (possibly empty) list of alternative host names for the same address, and
+   *ipaddrlist* is a list of IPv4/v6 addresses for the same interface on the same
+   host (most likely containing only a single address). To find the fully qualified
+   domain name, use the function :func:`getfqdn`. :func:`gethostbyaddr` supports
+   both IPv4 and IPv6.
 
 
 .. function:: getnameinfo(sockaddr, flags)
 
-   ソケットアドレス *sockaddr* から、 ``(host, port)`` のタプルを取得します。 *flags* の設定に従い、 *host* は完全修飾ドメイン
-   名または数値形式アドレスとなります。同様に、 *port* は文字列のポート名または数値のポート番号となります。
+   Translate a socket address *sockaddr* into a 2-tuple ``(host, port)``. Depending
+   on the settings of *flags*, the result can contain a fully-qualified domain name
+   or numeric address representation in *host*.  Similarly, *port* can contain a
+   string port name or a numeric port number.
 
    .. versionadded:: 2.2
 
 
 .. function:: getprotobyname(protocolname)
 
-   ``'icmp'`` のようなインターネットプロトコル名を、 :func:`socket` の
-   第三引数として指定する事ができる定数に変換します。これは主にソケットを"
-   raw"モード(:const:`SOCK_RAW`)でオープンする場合には必要ですが、通常の
-   ソケットモードでは第三引数に0を指定するか省略すれば正しいプロトコルが自動的に選択されます。
+   Translate an Internet protocol name (for example, ``'icmp'``) to a constant
+   suitable for passing as the (optional) third argument to the :func:`.socket`
+   function.  This is usually only needed for sockets opened in "raw" mode
+   (:const:`SOCK_RAW`); for the normal socket modes, the correct protocol is chosen
+   automatically if the protocol is omitted or zero.
 
 
 .. function:: getservbyname(servicename[, protocolname])
 
-   インターネットサービス名とプロトコルから、そのサービスのポート番号を取得します。省略可能なプロトコル名として、 ``'tcp'`` か ``'udp'`` のどちら
-   かを指定することができます。指定がなければどちらのプロトコルにもマッチします。
+   Translate an Internet service name and protocol name to a port number for that
+   service.  The optional protocol name, if given, should be ``'tcp'`` or
+   ``'udp'``, otherwise any protocol will match.
 
 
 .. function:: getservbyport(port[, protocolname])
 
-   インターネットポート番号とプロトコル名から、サービス名を取得します。省略可能なプロトコル名として、 ``'tcp'`` か ``'udp'`` のどちら
-   かを指定することができます。指定がなければどちらのプロトコルにもマッチします。
+   Translate an Internet port number and protocol name to a service name for that
+   service.  The optional protocol name, if given, should be ``'tcp'`` or
+   ``'udp'``, otherwise any protocol will match.
 
 
 .. function:: socket([family[, type[, proto]]])
 
-   アドレスファミリ、ソケットタイプ、プロトコル番号を指定してソケットを作成します。アドレスファミリには :const:`AF_INET` \
-   (デフォルト値)・ :const:`AF_INET6` ・ :const:`AF_UNIX` を指定することができます。ソケットタイプには
-   :const:`SOCK_STREAM` \ (デフォルト値)・ :const:`SOCK_DGRAM` ・または他の
-   ``SOCK_`` 定数の何れかを指定します。プロトコル番号は通常省略するか、または0を指定します。
+   Create a new socket using the given address family, socket type and protocol
+   number.  The address family should be :const:`AF_INET` (the default),
+   :const:`AF_INET6` or :const:`AF_UNIX`.  The socket type should be
+   :const:`SOCK_STREAM` (the default), :const:`SOCK_DGRAM` or perhaps one of the
+   other ``SOCK_`` constants.  The protocol number is usually zero and may be
+   omitted in that case.
 
 
 .. function:: socketpair([family[, type[, proto]]])
 
-   指定されたアドレスファミリ、ソケットタイプ、プロトコル番号から、接続されたソケットのペアを作成します。  アドレスファミリ、ソケットタイプ、プロトコル番号は
-   :func:`socket` 関数と同様に指定します。デフォルトのアドレスファミリは、プラットフォームで定義されていれば
-   :const:`AF_UNIX` 、そうでなければ :const:`AF_INET` が使われます。
-
-   利用可能: Unix.
+   Build a pair of connected socket objects using the given address family, socket
+   type, and protocol number.  Address family, socket type, and protocol number are
+   as for the :func:`.socket` function above. The default family is :const:`AF_UNIX`
+   if defined on the platform; otherwise, the default is :const:`AF_INET`.
+   Availability: Unix.
 
    .. versionadded:: 2.4
 
 
 .. function:: fromfd(fd, family, type[, proto])
 
-   ファイルディスクリプタ (ファイルオブジェクトの :meth:`fileno` で返る整数) *fd* を複製して、ソケットオブジェクトを構築します。アドレス
-   ファミリとプロトコル番号は :func:`socket` と同様に指定します。ファイルディスクリプタ
-   はソケットを指していなければなりませんが、実際にソケットであるかどうかのチェックは行っていません。このため、ソケット以外のファイルディスクリプタ
-   を指定するとその後の処理が失敗する場合があります。この関数が必要な事はあまりありませんが、Unixのinetデーモンのようにソケットを標準入力や標準
-   出力として使用するプログラムで使われます。この関数で使用するソケットは、ブロッキングモードと想定しています。利用可能:Unix
+   Duplicate the file descriptor *fd* (an integer as returned by a file object's
+   :meth:`fileno` method) and build a socket object from the result.  Address
+   family, socket type and protocol number are as for the :func:`.socket` function
+   above. The file descriptor should refer to a socket, but this is not checked ---
+   subsequent operations on the object may fail if the file descriptor is invalid.
+   This function is rarely needed, but can be used to get or set socket options on
+   a socket passed to a program as standard input or output (such as a server
+   started by the Unix inet daemon).  The socket is assumed to be in blocking mode.
+   Availability: Unix.
 
 
 .. function:: ntohl(x)
 
-   32ビットの正の整数のバイトオーダを、ネットワークバイトオーダからホストバイトオーダに変換します。
-   ホストバイトオーダとネットワークバイトオーダが一致するマシンでは、この関数は何もしません。
-   それ以外の場合は4バイトのスワップを行います。
+   Convert 32-bit positive integers from network to host byte order.  On machines
+   where the host byte order is the same as network byte order, this is a no-op;
+   otherwise, it performs a 4-byte swap operation.
 
 
 .. function:: ntohs(x)
 
-   16ビットの正の整数のバイトオーダを、ネットワークバイトオーダからホストバイトオーダに変換します。
-   ホストバイトオーダとネットワークバイトオーダが一致するマシンでは、この関数は何もしません。
-   それ以外の場合は2バイトのスワップを行います。
+   Convert 16-bit positive integers from network to host byte order.  On machines
+   where the host byte order is the same as network byte order, this is a no-op;
+   otherwise, it performs a 2-byte swap operation.
 
 
 .. function:: htonl(x)
 
-   32ビットの正の整数のバイトオーダを、ホストバイトオーダからネットワークバイトオーダに変換します。
-   ホストバイトオーダとネットワークバイトオーダが一致するマシンでは、この関数は何もしません。
-   それ以外の場合は4バイトのスワップを行います。
+   Convert 32-bit positive integers from host to network byte order.  On machines
+   where the host byte order is the same as network byte order, this is a no-op;
+   otherwise, it performs a 4-byte swap operation.
 
 
 .. function:: htons(x)
 
-   16ビットの正の整数のバイトオーダを、ホストバイトオーダからネットワークバイトオーダに変換します。
-   ホストバイトオーダとネットワークバイトオーダが一致するマシンでは、この関数は何もしません。
-   それ以外の場合は2バイトのスワップを行います。
+   Convert 16-bit positive integers from host to network byte order.  On machines
+   where the host byte order is the same as network byte order, this is a no-op;
+   otherwise, it performs a 2-byte swap operation.
 
 
 .. function:: inet_aton(ip_string)
 
-   ドット記法によるIPv4アドレス(``'123.45.67.89'`` など)を32ビットにパックしたバイナリ形式に変換し、
-   長さ4の文字列として返します。この関数が返す値は、標準Cライブラリの :c:type:`struct in_addr`
-   型を使用する関数に渡す事ができます。
+   Convert an IPv4 address from dotted-quad string format (for example,
+   '123.45.67.89') to 32-bit packed binary format, as a string four characters in
+   length.  This is useful when conversing with a program that uses the standard C
+   library and needs objects of type :c:type:`struct in_addr`, which is the C type
+   for the 32-bit packed binary this function returns.
 
-   :func:`inet_aton` はドットが 3 個以下の文字列も受け取ります;
-   詳細については Unix のマニュアル :manpage:`inet(3)` を参照してください。
+   :func:`inet_aton` also accepts strings with less than three dots; see the
+   Unix manual page :manpage:`inet(3)` for details.
 
-   IPv4アドレス文字列が不正であれば、 :exc:`socket.error` が発生します。このチェックは、この関数で使用しているCの実装
-   :c:func:`inet_aton` で行われます。
+   If the IPv4 address string passed to this function is invalid,
+   :exc:`socket.error` will be raised. Note that exactly what is valid depends on
+   the underlying C implementation of :c:func:`inet_aton`.
 
-   :func:`inet_aton` は、IPv6をサポートしません。IPv4/v6のデュアルスタックをサポートする場合は
-   :func:`inet_pton` を使用します。
+   :func:`inet_aton` does not support IPv6, and :func:`inet_pton` should be used
+   instead for IPv4/v6 dual stack support.
 
 
 .. function:: inet_ntoa(packed_ip)
 
-   32ビットにパックしたバイナリ形式のIPv4アドレスを、ドット記法による文字列
-   (``'123.45.67.89'`` など)に変換します。
-   この関数が返す値は、標準Cライブラリの :c:type:`struct in_addr` 型を使用する関数に渡す事ができます。
+   Convert a 32-bit packed IPv4 address (a string four characters in length) to its
+   standard dotted-quad string representation (for example, '123.45.67.89').  This
+   is useful when conversing with a program that uses the standard C library and
+   needs objects of type :c:type:`struct in_addr`, which is the C type for the
+   32-bit packed binary data this function takes as an argument.
 
-   この関数に渡す文字列の長さが4バイト以外であれば、 :exc:`socket.error` が発生します。
-   :func:`inet_ntoa` は、IPv6をサポートしません。IPv4/v6のデュアルスタ
-   ックをサポートする場合は :func:`inet_pton` を使用します。
+   If the string passed to this function is not exactly 4 bytes in length,
+   :exc:`socket.error` will be raised. :func:`inet_ntoa` does not support IPv6, and
+   :func:`inet_ntop` should be used instead for IPv4/v6 dual stack support.
 
 
 .. function:: inet_pton(address_family, ip_string)
 
-   IPアドレスを、アドレスファミリ固有の文字列からパックしたバイナリ形式に変換します。
-   :func:`inet_pton` は、 :c:type:`struct in_addr` 型
-   (:func:`inet_aton` と同様)や :c:type:`struct in6_addr` を使用するライブ
-   ラリやネットワークプロトコルを呼び出す際に使用することができます。
+   Convert an IP address from its family-specific string format to a packed, binary
+   format. :func:`inet_pton` is useful when a library or network protocol calls for
+   an object of type :c:type:`struct in_addr` (similar to :func:`inet_aton`) or
+   :c:type:`struct in6_addr`.
 
-   現在サポートされている *address_family* は、 :const:`AF_INET` と
-   :const:`AF_INET6` です。 *ip_string* に不正なIPアドレス文字列を指定す
-   ると、 :exc:`socket.error` が発生します。有効な *ip_string* は、
-   *address_family* と :c:func:`inet_pton` の実装によって異なります。
+   Supported values for *address_family* are currently :const:`AF_INET` and
+   :const:`AF_INET6`. If the IP address string *ip_string* is invalid,
+   :exc:`socket.error` will be raised. Note that exactly what is valid depends on
+   both the value of *address_family* and the underlying implementation of
+   :c:func:`inet_pton`.
 
-   利用可能: Unix (サポートしていないプラットフォームもあります)
+   Availability: Unix (maybe not all platforms).
 
    .. versionadded:: 2.3
 
 
 .. function:: inet_ntop(address_family, packed_ip)
 
-   パックしたIPアドレス(数文字の文字列)を、 ``'7.10.0.5'`` や ``'5aef:2b::8'`` などの標準的な、アドレスファミリ固有の文字列形式に変
-   換します。 :func:`inet_ntop` は(:func:`inet_ntoa` と同様に) :c:type:`struct
-   in_addr` 型や :c:type:`struct in6_addr` 型のオブジェクトを返すライブラリやネットワークプロトコル等で使用することができます。
+   Convert a packed IP address (a string of some number of characters) to its
+   standard, family-specific string representation (for example, ``'7.10.0.5'`` or
+   ``'5aef:2b::8'``) :func:`inet_ntop` is useful when a library or network protocol
+   returns an object of type :c:type:`struct in_addr` (similar to :func:`inet_ntoa`)
+   or :c:type:`struct in6_addr`.
 
-   現在サポートされている *address_family* は、 :const:`AF_INET` と
-   :const:`AF_INET6` です。 *packed_ip* の長さが指定したアドレスファミリ
-   で適切な長さでなければ、 :exc:`ValueError` が発生します。
-   :func:`inet_ntop` でエラーとなると、 :exc:`socket.error` が発生します。
+   Supported values for *address_family* are currently :const:`AF_INET` and
+   :const:`AF_INET6`. If the string *packed_ip* is not the correct length for the
+   specified address family, :exc:`ValueError` will be raised.  A
+   :exc:`socket.error` is raised for errors from the call to :func:`inet_ntop`.
 
-   利用可能: Unix (サポートしていないプラットフォームもあります)
+   Availability: Unix (maybe not all platforms).
 
    .. versionadded:: 2.3
 
 
 .. function:: getdefaulttimeout()
 
-   新規に生成されたソケットオブジェクトの、デフォルトのタイムアウト値を浮動小数点形式の秒数で返します。タイプアウトを使用しない場合には ``None``
-   を返します。最初にsocketモジュールがインポートされた時の初期値は ``None`` です。
+   Return the default timeout in seconds (float) for new socket objects. A value
+   of ``None`` indicates that new socket objects have no timeout. When the socket
+   module is first imported, the default is ``None``.
 
    .. versionadded:: 2.3
 
 
 .. function:: setdefaulttimeout(timeout)
 
-   新規に生成されたソケットオブジェクトの、デフォルトのタイムアウト値を浮動小数点形式の秒数で指定します。タイムアウトを使用しない場合には
-   ``None`` を指定します。最初にsocketモジュールがインポートされた時の初期値は ``None`` です。
+   Set the default timeout in seconds (float) for new socket objects. A value of
+   ``None`` indicates that new socket objects have no timeout. When the socket
+   module is first imported, the default is ``None``.
 
    .. versionadded:: 2.3
 
 
 .. data:: SocketType
 
-   ソケットオブジェクトの型を示す型オブジェクト。 ``type(socket(...))`` と同じです。
+   This is a Python type object that represents the socket object type. It is the
+   same as ``type(socket(...))``.
 
 
 .. seealso::
 
    Module :mod:`SocketServer`
-      ネットワークサーバの開発を省力化するためのクラス群。
+      Classes that simplify writing network servers.
 
    Module :mod:`ssl`
-      ソケットオブジェクトに対する TLS/SSL ラッパー.
+      A TLS/SSL wrapper for socket objects.
 
 
 .. _socket-objects:
 
-socket オブジェクト
--------------------
+Socket Objects
+--------------
 
-ソケットオブジェクトは以下のメソッドを持ちます。 :meth:`makefile` 以外のメソッドは、Unixのソケット用システムコールに対応しています。
+Socket objects have the following methods.  Except for :meth:`makefile` these
+correspond to Unix system calls applicable to sockets.
 
 
 .. method:: socket.accept()
 
-   接続を受け付けます。ソケットはアドレスにbind済みで、listen中である必要があります。戻り値は ``(conn,
-   address)`` のペアで、 *conn* は接続を通じてデータの送受信を行うための *新しい* ソケットオブジェク
-   ト、 *address* は接続先でソケットにbindしているアドレスを示します。
+   Accept a connection. The socket must be bound to an address and listening for
+   connections. The return value is a pair ``(conn, address)`` where *conn* is a
+   *new* socket object usable to send and receive data on the connection, and
+   *address* is the address bound to the socket on the other end of the connection.
 
 
 .. method:: socket.bind(address)
 
-   ソケットを *address* にbindします。bind済みのソケットを再バインドする
-   事はできません。 *address* のフォーマットはアドレスファミリによって異なります(前述)。
+   Bind the socket to *address*.  The socket must not already be bound. (The format
+   of *address* depends on the address family --- see above.)
 
    .. note::
 
-      本来、このメソッドは単一のタプルのみを引数として受け付けますが、以前は :const:`AF_INET` アドレスを示す二つの値を指定する事ができました。
-      これは本来の仕様ではなく、Python 2.0以降では使用することはできません。
+      This method has historically accepted a pair of parameters for :const:`AF_INET`
+      addresses instead of only a tuple.  This was never intentional and is no longer
+      available in Python 2.0 and later.
 
 
 .. method:: socket.close()
 
-   ソケットをクローズします。以降、このソケットでは全ての操作が失敗します。リモート端点ではキューに溜まったデータがフラッシュされた後はそれ以上の
-   データを受信しません。ソケットはガベージコレクション時に自動的にクローズされます。
+   Close the socket.  All future operations on the socket object will fail. The
+   remote end will receive no more data (after queued data is flushed). Sockets are
+   automatically closed when they are garbage-collected.
 
    .. note::
 
-      :meth:`close` は接続に関連付けられたリソースを解放しますが、
-      接続をすぐに切断するとは限りません。接続を即座に切断したい場合は、
-      :meth:`close` の前に :meth:`shutdown` を呼び出してください。
+      :meth:`close()` releases the resource associated with a connection but
+      does not necessarily close the connection immediately.  If you want
+      to close the connection in a timely fashion, call :meth:`shutdown()`
+      before :meth:`close()`.
 
 
 .. method:: socket.connect(address)
 
-   *address* で示されるリモートソケットに接続します。 *address* のフォーマットはアドレスファミリによって異なります(前述)。
+   Connect to a remote socket at *address*. (The format of *address* depends on the
+   address family --- see above.)
 
    .. note::
 
-      本来、このメソッドは単一のタプルのみを引数として受け付けますが、以前は :const:`AF_INET` アドレスを示す二つの値を指定する事ができました。
-      これは本来の仕様ではなく、Python 2.0以降では使用することはできません。
+      This method has historically accepted a pair of parameters for :const:`AF_INET`
+      addresses instead of only a tuple.  This was never intentional and is no longer
+      available in Python 2.0 and later.
 
 
 .. method:: socket.connect_ex(address)
 
-   ``connect(address)`` と同様ですが、C言語の :c:func:`connect`
-   関数の呼び出しでエラーが発生した場合には例外を送出せずにエラーを戻り値として返します。(これ以外の、"host not
-   found,"等のエラーの場合には例外が発生します。)処理が正常に終了した場合には ``0`` を返し、エラー時には
-   :c:data:`errno` の値を返します。この関数は、非同期接続をサポートする場合などに使用することができます。
+   Like ``connect(address)``, but return an error indicator instead of raising an
+   exception for errors returned by the C-level :c:func:`connect` call (other
+   problems, such as "host not found," can still raise exceptions).  The error
+   indicator is ``0`` if the operation succeeded, otherwise the value of the
+   :c:data:`errno` variable.  This is useful to support, for example, asynchronous
+   connects.
 
    .. note::
 
-      本来、このメソッドは単一のタプルのみを引数として受け付けますが、以前は :const:`AF_INET` アドレスを示す二つの値を指定する事ができました。
-      これは本来の仕様ではなく、Python 2.0以降では使用することはできません。
+      This method has historically accepted a pair of parameters for :const:`AF_INET`
+      addresses instead of only a tuple. This was never intentional and is no longer
+      available in Python 2.0 and later.
 
 
 .. method:: socket.fileno()
 
-   ソケットのファイルディスクリプタを整数型で返します。ファイルディスクリプタは、 :func:`select.select` などで使用します。
+   Return the socket's file descriptor (a small integer).  This is useful with
+   :func:`select.select`.
 
-   Windowsではこのメソッドで返された小整数をファイルディスクリプタを扱う箇所(:func:`os.fdopen` など)で利用できません。 Unix
-   にはこの制限はありません。
+   Under Windows the small integer returned by this method cannot be used where a
+   file descriptor can be used (such as :func:`os.fdopen`).  Unix does not have
+   this limitation.
 
 
 .. method:: socket.getpeername()
 
-   ソケットが接続しているリモートアドレスを返します。この関数は、リモート IPv4/v6ソケットのポート番号を調べる場合などに使用します。 *address* の
-   フォーマットはアドレスファミリによって異なります(前述)。この関数をサポートしていないシステムも存在します。
+   Return the remote address to which the socket is connected.  This is useful to
+   find out the port number of a remote IPv4/v6 socket, for instance. (The format
+   of the address returned depends on the address family --- see above.)  On some
+   systems this function is not supported.
 
 
 .. method:: socket.getsockname()
 
-   ソケット自身のアドレスを返します。この関数は、IPv4/v6ソケットのポート番号を調べる場合などに使用します。 *address* のフォーマットはアドレスフ
-   ァミリによって異なります(前述)。
+   Return the socket's own address.  This is useful to find out the port number of
+   an IPv4/v6 socket, for instance. (The format of the address returned depends on
+   the address family --- see above.)
 
 
 .. method:: socket.getsockopt(level, optname[, buflen])
 
-   .. index:: module: struct
-
-   ソケットに指定されたオプションを返します(Unixのマニュアルページ
-   :manpage:`getsockopt(2)` を参照)。 :const:`SO_\*` 等のシンボルは、このモジ
-   ュールで定義しています。 *buflen* を省略した場合、取得するオブションは整数とみなし、整数型の値を戻り値とします。 *buflen* を指定した場合、長
-   さ *buflen* のバッファでオプションを受け取り、このバッファを文字列として返します。このバッファは、呼び出し元プログラムで :mod:`struct`
-   モジュール等を利用して内容を読み取ることができます。
+   Return the value of the given socket option (see the Unix man page
+   :manpage:`getsockopt(2)`).  The needed symbolic constants (:const:`SO_\*` etc.)
+   are defined in this module.  If *buflen* is absent, an integer option is assumed
+   and its integer value is returned by the function.  If *buflen* is present, it
+   specifies the maximum length of the buffer used to receive the option in, and
+   this buffer is returned as a string.  It is up to the caller to decode the
+   contents of the buffer (see the optional built-in module :mod:`struct` for a way
+   to decode C structures encoded as strings).
 
 
 .. method:: socket.ioctl(control, option)
 
    :platform: Windows
 
-   .. The :meth:`ioctl` method is a limited interface to the WSAIoctl system
-      interface. Please refer to the MSDN documentation for more information.
+   The :meth:`ioctl` method is a limited interface to the WSAIoctl system
+   interface.  Please refer to the `Win32 documentation
+   <http://msdn.microsoft.com/en-us/library/ms741621%28VS.85%29.aspx>`_ for more
+   information.
 
-   :meth:`ioctl` メソッドは WSAIoctl システムインタフェースへの制限されたインタフェースです。
-   詳しい情報については、 `Win32 documentation <http://msdn.microsoft.com/en-us/library/ms741621%28VS.85%29.aspx>`_ を参照してください。
-
-   他のプラットフォームでは一般的な :func:`fcntl.fcntl` と :func:`fcntl.ioctl` が使われるでしょう; これらの関数は第 1 引数としてソケットオブジェクトを取ります。
+   On other platforms, the generic :func:`fcntl.fcntl` and :func:`fcntl.ioctl`
+   functions may be used; they accept a socket object as their first argument.
 
    .. versionadded:: 2.6
 
 
 .. method:: socket.listen(backlog)
 
-   ソケットをListenし、接続を待ちます。引数 *backlog* には接続キューの最
-   大の長さ(0以上)を指定します。 *backlog* の最大数はシステムに依存します (通常は5)。
-   最小値は必ず 0 です。
+   Listen for connections made to the socket.  The *backlog* argument specifies the
+   maximum number of queued connections and should be at least 0; the maximum value
+   is system-dependent (usually 5), the minimum value is forced to 0.
 
 
 .. method:: socket.makefile([mode[, bufsize]])
 
    .. index:: single: I/O control; buffering
 
-   ソケットに関連付けられた :dfn:`ファイルオブジェクト` を返します
-   (ファイルオブジェクトについては :ref:`bltin-file-objects` を参照)。
-   ファイルオブジェクトはソケットを :c:func:`dup` したファイルディスクリプタを使用しており、
-   ソケットオブジェクトとファイルオブジェクトは別々にクローズしたりガベージコレクションで破棄したりする事ができます。
-   ソケットはブロッキングモードでなければなりません(タイムアウトを設定することもできません)。
-   オプション引数の *mode* と *bufsize* には、 :func:`file` 組み込み関数と同じ値を指定します。
+   Return a :dfn:`file object` associated with the socket.  (File objects are
+   described in :ref:`bltin-file-objects`.) The file object does not close the
+   socket explicitly when its :meth:`close` method is called, but only removes
+   its reference to the socket object, so that the socket will be closed if it
+   is not referenced from anywhere else.
 
+   The socket must be in blocking mode (it can not have a timeout). The optional
+   *mode* and *bufsize* arguments are interpreted the same way as by the built-in
+   :func:`file` function.
 
    .. note::
 
-      Windows では、 :meth:`makefile` によって作成される file-like オブジェクトは、
-      :meth:`subprocess.Popen` などのファイルディスクリプタのある file オブジェクトを
-      期待している場所で利用することはできません。
+      On Windows, the file-like object created by :meth:`makefile` cannot be
+      used where a file object with a file descriptor is expected, such as the
+      stream arguments of :meth:`subprocess.Popen`.
 
- 
+
 .. method:: socket.recv(bufsize[, flags])
 
-   ソケットからデータを受信し、文字列として返します。受信する最大バイト数は、 *bufsize* で指定します。 *flags* のデフォルト値は0です。
-   値の意味についてはUnixマニュアルページの :manpage:`recv(2)` を参照してください。
+   Receive data from the socket.  The return value is a string representing the
+   data received.  The maximum amount of data to be received at once is specified
+   by *bufsize*.  See the Unix manual page :manpage:`recv(2)` for the meaning of
+   the optional argument *flags*; it defaults to zero.
 
    .. note::
 
-      ハードウェアおよびネットワークの現実に最大限マッチするように、 *bufsize* の値は比較的小さい2の累乗、たとえば 4096、にすべきです。
+      For best match with hardware and network realities, the value of  *bufsize*
+      should be a relatively small power of 2, for example, 4096.
 
 
 .. method:: socket.recvfrom(bufsize[, flags])
 
-   ソケットからデータを受信し、結果をタプル ``(string, address)`` として返します。 *string* は受信データの文字列で、
-   *address* は送信元のアドレスを示します。
-   オプション引数 *flags* については、 Unix のマニュアルページ :manpage:`recv(2)` を参照してください。デフォルトは0です。
-   (*address* のフォーマットはアドレスファミリによって異なります(前述))
+   Receive data from the socket.  The return value is a pair ``(string, address)``
+   where *string* is a string representing the data received and *address* is the
+   address of the socket sending the data.  See the Unix manual page
+   :manpage:`recv(2)` for the meaning of the optional argument *flags*; it defaults
+   to zero. (The format of *address* depends on the address family --- see above.)
 
 
 .. method:: socket.recvfrom_into(buffer[, nbytes[, flags]])
 
-   .. Receive data from the socket, writing it into *buffer* instead of  creating a
-      new string.  The return value is a pair ``(nbytes, address)`` where *nbytes* is
-      the number of bytes received and *address* is the address of the socket sending
-      the data.  See the Unix manual page :manpage:`recv(2)` for the meaning of the
-      optional argument *flags*; it defaults to zero.  (The format of *address*
-      depends on the address family --- see above.)
-
-   ソケットからデータを受信し、そのデータを新しい文字列として返す代わりに *buffer* に書きます。
-   戻り値は ``(nbytes, address)`` のペアで、 *nbytes* は受信したデータのバイト数を、 *address*
-   はデータを送信したソケットのアドレスです。
-   オプション引数 *flags* (デフォルト:0) の意味については、 Unix マニュアルページ :manpage:`recv(2)` を参照してください。
-
-   (*address* のフォーマットは前述のとおりアドレスファミリーに依存します。)
+   Receive data from the socket, writing it into *buffer* instead of  creating a
+   new string.  The return value is a pair ``(nbytes, address)`` where *nbytes* is
+   the number of bytes received and *address* is the address of the socket sending
+   the data.  See the Unix manual page :manpage:`recv(2)` for the meaning of the
+   optional argument *flags*; it defaults to zero.  (The format of *address*
+   depends on the address family --- see above.)
 
    .. versionadded:: 2.5
+
 
 .. method:: socket.recv_into(buffer[, nbytes[, flags]])
 
-   .. Receive up to *nbytes* bytes from the socket, storing the data into a buffer
-      rather than creating a new string.     If *nbytes* is not specified (or 0),
-      receive up to the size available in the given buffer. See the Unix manual page
-      :manpage:`recv(2)` for the meaning of the optional argument *flags*; it defaults
-      to zero.
-
-   *nbytes* バイトまでのデータをソケットから受信して、そのデータを新しい文字列にするのではなく
-   *buffer* に保存します。
-   *nbytes* が指定されない(あるいは0が指定された)場合、 *buffer* の利用可能なサイズまで受信します。
-   受信したバイト数を返り値として返します。
-   オプション引数 *flags* (デフォルト:0) の意味については、 Unix マニュアルページ :manpage:`recv(2)` を参照してください。
+   Receive up to *nbytes* bytes from the socket, storing the data into a buffer
+   rather than creating a new string.  If *nbytes* is not specified (or 0),
+   receive up to the size available in the given buffer.  Returns the number of
+   bytes received.  See the Unix manual page :manpage:`recv(2)` for the meaning
+   of the optional argument *flags*; it defaults to zero.
 
    .. versionadded:: 2.5
 
+
 .. method:: socket.send(string[, flags])
 
-   ソケットにデータを送信します。ソケットはリモートソケットに接続済みでなければなりません。オプション引数 *flags* の意味は、上記 :meth:`recv` と
-   同じです。戻り値として、送信したバイト数を返します。アプリケーションでは、必ず戻り値をチェックし、全てのデータが送られた事を確認する必要があり
-   ます。データの一部だけが送信された場合、アプリケーションで残りのデータを再送信してください。
+   Send data to the socket.  The socket must be connected to a remote socket.  The
+   optional *flags* argument has the same meaning as for :meth:`recv` above.
+   Returns the number of bytes sent. Applications are responsible for checking that
+   all data has been sent; if only some of the data was transmitted, the
+   application needs to attempt delivery of the remaining data. For further
+   information on this concept, consult the :ref:`socket-howto`.
 
 
 .. method:: socket.sendall(string[, flags])
 
-   ソケットにデータを送信します。ソケットはリモートソケットに接続済みでなければなりません。オプション引数 *flags* の意味は、上記 :meth:`recv` と
-   同じです。 :meth:`send` と異なり、このメソッドは *string* の全データを送信するか、エラーが発生するまで処理を継続します。正常終了の場合は
-   ``None`` を返し、エラー発生時には例外が発生します。エラー発生時、送信されたバイト数を調べる事はできません。
+   Send data to the socket.  The socket must be connected to a remote socket.  The
+   optional *flags* argument has the same meaning as for :meth:`recv` above.
+   Unlike :meth:`send`, this method continues to send data from *string* until
+   either all data has been sent or an error occurs.  ``None`` is returned on
+   success.  On error, an exception is raised, and there is no way to determine how
+   much data, if any, was successfully sent.
 
 
-.. method:: socket.sendto(string[, flags], address)
+.. method:: socket.sendto(string, address)
+            socket.sendto(string, flags, address)
 
-   ソケットにデータを送信します。このメソッドでは接続先を *address* で指定するので、接続済みではいけません。オプション引数 *flags* の意味は、
-   上記 :meth:`recv` と同じです。戻り値として、送信したバイト数を返します。 *address* のフォーマットはアドレスファミリによって異なります(前
-   述)。
+   Send data to the socket.  The socket should not be connected to a remote socket,
+   since the destination socket is specified by *address*.  The optional *flags*
+   argument has the same meaning as for :meth:`recv` above.  Return the number of
+   bytes sent. (The format of *address* depends on the address family --- see
+   above.)
 
 
 .. method:: socket.setblocking(flag)
 
-   ソケットのブロッキング・非ブロッキングモードを指定します。 *flag* が0 の場合は非ブロッキングモード、0以外の場合はブロッキングモードとなりま
-   す。全てのソケットは、初期状態ではブロッキングモードです。非ブロッキングモードでは、 :meth:`recv` メソッド呼び出し時に読み込みデータが無かった
-   り :meth:`send` メソッド呼び出し時にデータを処理する事ができないような場合に :exc:`error` 例外が発生します。しかし、ブロッキングモードでは
-   呼び出しは処理が行われるまでブロックされます。 ``s.setblocking(0)`` は
-   ``s.settimeout(0.0)`` と、 ``s.setblocking(1)`` は ``s.settimeout(None)`` とそれぞれ同じ意味を持ちます。
+   Set blocking or non-blocking mode of the socket: if *flag* is 0, the socket is
+   set to non-blocking, else to blocking mode.  Initially all sockets are in
+   blocking mode.  In non-blocking mode, if a :meth:`recv` call doesn't find any
+   data, or if a :meth:`send` call can't immediately dispose of the data, a
+   :exc:`error` exception is raised; in blocking mode, the calls block until they
+   can proceed. ``s.setblocking(0)`` is equivalent to ``s.settimeout(0.0)``;
+   ``s.setblocking(1)`` is equivalent to ``s.settimeout(None)``.
 
 
 .. method:: socket.settimeout(value)
 
-   ソケットのブロッキング処理のタイムアウト値を指定します。 *value* には、正の浮動小数点で秒数を指定するか、もしくは ``None`` を指定します。
-   浮動小数点値を指定した場合、操作が完了する前に *value* で指定した秒数
-   が経過すると :exc:`timeout` が発生します。タイムアウト値に ``None`` を指定すると、ソケットのタイムアウトを無効にします。
-   ``s.settimeout(0.0)`` は ``s.setblocking(0)`` と、
-   ``s.settimeout(None)`` は ``s.setblocking(1)`` とそれぞれ同じ意味を持ちます。
+   Set a timeout on blocking socket operations.  The *value* argument can be a
+   nonnegative float expressing seconds, or ``None``. If a float is given,
+   subsequent socket operations will raise a :exc:`timeout` exception if the
+   timeout period *value* has elapsed before the operation has completed.  Setting
+   a timeout of ``None`` disables timeouts on socket operations.
+   ``s.settimeout(0.0)`` is equivalent to ``s.setblocking(0)``;
+   ``s.settimeout(None)`` is equivalent to ``s.setblocking(1)``.
 
    .. versionadded:: 2.3
 
 
 .. method:: socket.gettimeout()
 
-   ソケットに指定されたタイムアウト値を取得します。タイムアウト値が設定されている場合には浮動小数点型で秒数が、設定されていなければ ``None`` が返
-   ります。この値は、最後に呼び出された :meth:`setblocking` または :meth:`settimeout` によって設定されます。
+   Return the timeout in seconds (float) associated with socket operations, or
+   ``None`` if no timeout is set.  This reflects the last call to
+   :meth:`setblocking` or :meth:`settimeout`.
 
    .. versionadded:: 2.3
 
-ソケットのブロッキングとタイムアウトについて:
-ソケットオブジェクトのモードは、ブロッキング・非ブロッキング・タイムアウトの何れかとなります。
-初期状態では常にブロッキングモードです。ブロッキングモードでは、処理が完了するまで、もしくはシステムが (接続タイムアウトなどの) エラーを返すまでブロックされます。
-非ブロッキングモードでは、処理を行う事ができなければ(不幸にもシステムによって異なる値の)エラーとなります。
-タイムアウトモードでは、ソケットに指定したタイムアウトまで、もしくはシステムがエラーを返すまでに完了しなければ処理は失敗となります。
-:meth:`~socket.setblocking` メソッドは、 :meth:`~socket.settimeout` の省略形式です。
+Some notes on socket blocking and timeouts: A socket object can be in one of
+three modes: blocking, non-blocking, or timeout.  Sockets are always created in
+blocking mode.  In blocking mode, operations block until complete or
+the system returns an error (such as connection timed out).  In
+non-blocking mode, operations fail (with an error that is unfortunately
+system-dependent) if they cannot be completed immediately.  In timeout mode,
+operations fail if they cannot be completed within the timeout specified for the
+socket or if the system returns an error.  The :meth:`~socket.setblocking`
+method is simply a shorthand for certain :meth:`~socket.settimeout` calls.
 
-内部的には、タイムアウトモードではソケットを非ブロッキングモードに設定します。ブロッキングとタイムアウトの設定は、ソケットと同じネットワーク端点
-へ接続するファイルディスクリプタにも反映されます。この結果、 :meth:`~socket.makefile` で作成したファイルオブジェクトはブロッキングモードで
-のみ使用することができます。これは非ブロッキングモードとタイムアウトモードでは、即座に完了しないファイル操作はエラーとなるためです。
+Timeout mode internally sets the socket in non-blocking mode.  The blocking and
+timeout modes are shared between file descriptors and socket objects that refer
+to the same network endpoint.  A consequence of this is that file objects
+returned by the :meth:`~socket.makefile` method must only be used when the
+socket is in blocking mode; in timeout or non-blocking mode file operations
+that cannot be completed immediately will fail.
 
-註: :meth:`~socket.connect` はタイムアウト設定に従います。一般的に、
-:meth:`~socket.settimeout` を :meth:`~socket.connect` の前に呼ぶかタイムアウト値を :meth:`create_connection` に渡すことをおすすめします。
-システムのネットワークスタックは Python のソケットタイムアウトの設定を無視して、自身のコネクションタイムアウトエラーを返すこともあります。
+Note that the :meth:`~socket.connect` operation is subject to the timeout
+setting, and in general it is recommended to call :meth:`~socket.settimeout`
+before calling :meth:`~socket.connect` or pass a timeout parameter to
+:meth:`create_connection`.  The system network stack may return a connection
+timeout error of its own regardless of any Python socket timeout setting.
 
 
 .. method:: socket.setsockopt(level, optname, value)
 
    .. index:: module: struct
 
-   ソケットのオプションを設定します(Unixのマニュアルページ
-   :manpage:`setsockopt(2)` を参照)。 :const:`SO_\*` 等のシンボルは、このモジ
-   ュールで定義しています。 ``value`` には、整数または文字列をバッファとして指定する事ができます。文字列を指定する場合、文字列には適切なビットを設
-   定するようにします。(:mod:`struct` モジュールを利用すれば、Cの構造体を文字列にエンコードする事ができます。)
+   Set the value of the given socket option (see the Unix manual page
+   :manpage:`setsockopt(2)`).  The needed symbolic constants are defined in the
+   :mod:`socket` module (:const:`SO_\*` etc.).  The value can be an integer or a
+   string representing a buffer.  In the latter case it is up to the caller to
+   ensure that the string contains the proper bits (see the optional built-in
+   module :mod:`struct` for a way to encode C structures as strings).
 
 
 .. method:: socket.shutdown(how)
 
-   接続の片方向、または両方向を切断します。 *how* が :const:`SHUT_RD` の場合、以降
-   は受信を行えません。 *how* が :const:`SHUT_WR` の場合、以降は送信を行えません。
-   *how* が ``SHUT_RDWR`` の場合、以降は送受信を行えません。
-   プラットフォームによっては、接続の片方向をシャットダウンすると相手側も
-   閉じられます。(例えば、 Mac OS X では、 ``shutdown(SHUT_WR)`` をすると、
-   接続の相手側はもう read ができなくなります)
+   Shut down one or both halves of the connection.  If *how* is :const:`SHUT_RD`,
+   further receives are disallowed.  If *how* is :const:`SHUT_WR`, further sends
+   are disallowed.  If *how* is :const:`SHUT_RDWR`, further sends and receives are
+   disallowed.  Depending on the platform, shutting down one half of the connection
+   can also close the opposite half (e.g. on Mac OS X, ``shutdown(SHUT_WR)`` does
+   not allow further reads on the other end of the connection).
 
-:meth:`read` メソッドと :meth:`write` メソッドは存在しませんので注意
-してください。代わりに *flags* を省略した :meth:`~socket.recv` と :meth:`~socket.send` を使うことができます。
+Note that there are no methods :meth:`read` or :meth:`write`; use
+:meth:`~socket.recv` and :meth:`~socket.send` without *flags* argument instead.
 
-ソケットオブジェクトには以下の :class:`socket` コンストラクタに渡された値に対応した(読み出し専用)属性があります。
+Socket objects also have these (read-only) attributes that correspond to the
+values given to the :class:`socket` constructor.
 
 
 .. attribute:: socket.family
 
-   ソケットファミリー。
+   The socket family.
 
    .. versionadded:: 2.5
 
 
 .. attribute:: socket.type
 
-   ソケットタイプ。
+   The socket type.
 
    .. versionadded:: 2.5
 
 
 .. attribute:: socket.proto
 
-   ソケットプロトコル。
+   The socket protocol.
 
    .. versionadded:: 2.5
 
 
 .. _socket-example:
 
-例
---
+Example
+-------
 
-以下はTCP/IPプロトコルの簡単なサンプルとして、受信したデータをクライアントにそのまま返送するサーバ(接続可能なクライアントは一件のみ)と、サーバに
-接続するクライアントの例を示します。サーバでは、 :func:`socket` ・
-:meth:`~socket.bind` ・ :meth:`~socket.listen` ・ :meth:`~socket.accept` を実行し(複数のクラ
-イアントからの接続を受け付ける場合、 :meth:`~socket.accept` を複数回呼び出しま
-す)、クライアントでは :func:`socket` と :meth:`~socket.connect` だけを呼び出
-しています。サーバでは :meth:`~socket.send` / :meth:`~socket.recv` メソッドはlisten中
-のソケットで実行するのではなく、 :meth:`~socket.accept` で取得したソケットに対して実行している点にも注意してください。
+Here are four minimal example programs using the TCP/IP protocol: a server that
+echoes all data that it receives back (servicing only one client), and a client
+using it.  Note that a server must perform the sequence :func:`.socket`,
+:meth:`~socket.bind`, :meth:`~socket.listen`, :meth:`~socket.accept` (possibly
+repeating the :meth:`~socket.accept` to service more than one client), while a
+client only needs the sequence :func:`.socket`, :meth:`~socket.connect`.  Also
+note that the server does not :meth:`~socket.sendall`/:meth:`~socket.recv` on
+the socket it is listening on but on the new socket returned by
+:meth:`~socket.accept`.
 
-次のクライアントとサーバは、IPv4のみをサポートしています。 ::
+The first two examples support IPv4 only. ::
 
    # Echo server program
    import socket
 
-   HOST = None                 # Symbolic name meaning all available interfaces
+   HOST = ''                 # Symbolic name meaning all available interfaces
    PORT = 50007              # Arbitrary non-privileged port
    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
    s.bind((HOST, PORT))
@@ -789,7 +887,7 @@ socket オブジェクト
    while 1:
        data = conn.recv(1024)
        if not data: break
-       conn.send(data)
+       conn.sendall(data)
    conn.close()
 
 ::
@@ -801,22 +899,17 @@ socket オブジェクト
    PORT = 50007              # The same port as used by the server
    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
    s.connect((HOST, PORT))
-   s.send('Hello, world')
+   s.sendall('Hello, world')
    data = s.recv(1024)
    s.close()
    print 'Received', repr(data)
 
-..
-   The next two examples are identical to the above two, but support both IPv4 and
-   IPv6. The server side will listen to the first address family available (it
-   should listen to both instead). On most of IPv6-ready systems, IPv6 will take
-   precedence and the server may not accept IPv4 traffic. The client side will try
-   to connect to the all addresses returned as a result of the name resolution, and
-   sends traffic to the first one connected successfully.
-
-次のサンプルは上記のサンプルとほとんど同じですが、IPv4とIPv6の両方をサポートしています。サーバでは、IPv4/v6の両方ではなく、
-利用可能な最初のアドレスファミリだけをlistenしています。ほとんどのIPv6対応システムではIPv6が先に現れるため、サーバはIPv4には応答しません。
-クライアントでは名前解決の結果として取得したアドレスに順次接続を試み、最初に接続に成功したソケットにデータを送信しています。 ::
+The next two examples are identical to the above two, but support both IPv4 and
+IPv6. The server side will listen to the first address family available (it
+should listen to both instead). On most of IPv6-ready systems, IPv6 will take
+precedence and the server may not accept IPv4 traffic. The client side will try
+to connect to the all addresses returned as a result of the name resolution, and
+sends traffic to the first one connected successfully. ::
 
    # Echo server program
    import socket
@@ -829,17 +922,17 @@ socket オブジェクト
                                  socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
        af, socktype, proto, canonname, sa = res
        try:
-          s = socket.socket(af, socktype, proto)
-       except socket.error, msg:
-          s = None
-          continue
+           s = socket.socket(af, socktype, proto)
+       except socket.error as msg:
+           s = None
+           continue
        try:
-          s.bind(sa)
-          s.listen(1)
-       except socket.error, msg:
-          s.close()
-          s = None
-          continue
+           s.bind(sa)
+           s.listen(1)
+       except socket.error as msg:
+           s.close()
+           s = None
+           continue
        break
    if s is None:
        print 'could not open socket'
@@ -864,33 +957,29 @@ socket オブジェクト
    for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
        af, socktype, proto, canonname, sa = res
        try:
-          s = socket.socket(af, socktype, proto)
-       except socket.error, msg:
-          s = None
-          continue
+           s = socket.socket(af, socktype, proto)
+       except socket.error as msg:
+           s = None
+           continue
        try:
-          s.connect(sa)
-       except socket.error, msg:
-          s.close()
-          s = None
-          continue
+           s.connect(sa)
+       except socket.error as msg:
+           s.close()
+           s = None
+           continue
        break
    if s is None:
        print 'could not open socket'
        sys.exit(1)
-   s.send('Hello, world')
+   s.sendall('Hello, world')
    data = s.recv(1024)
    s.close()
    print 'Received', repr(data)
 
-.. The last example shows how to write a very simple network sniffer with raw
-   sockets on Windows. The example requires administrator privileges to modify
-   the interface::
 
-最後の例は、Windowsで raw socket を利用して非常にシンプルなネットワークスニファーを書きます。
-このサンプルを実行するには、インタフェースを操作するための管理者権限が必要です。
-
-::
+The last example shows how to write a very simple network sniffer with raw
+sockets on Windows. The example requires administrator privileges to modify
+the interface::
 
    import socket
 
@@ -912,3 +1001,22 @@ socket オブジェクト
 
    # disabled promiscuous mode
    s.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)
+
+
+Running an example several times with too small delay between executions, could
+lead to this error::
+
+   socket.error: [Errno 98] Address already in use
+
+This is because the previous execution has left the socket in a ``TIME_WAIT``
+state, and can't be immediately reused.
+
+There is a :mod:`socket` flag to set, in order to prevent this,
+:data:`socket.SO_REUSEADDR`::
+
+   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+   s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+   s.bind((HOST, PORT))
+
+the :data:`SO_REUSEADDR` flag tells the kernel to reuse a local socket in
+``TIME_WAIT`` state, without waiting for its natural timeout to expire.

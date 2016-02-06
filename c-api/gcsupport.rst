@@ -2,124 +2,144 @@
 
 .. _supporting-cycle-detection:
 
-循環参照ガベージコレクションをサポートする
-==========================================
+Supporting Cyclic Garbage Collection
+====================================
 
-Python が循環参照を含むガベージの検出とコレクションをサポートするには、他のオブジェクトに対する "コンテナ" (他のオブジェクトには
-他のコンテナも含みます) となるオブジェクト型によるサポートが必要です。他のオブジェクトに対する参照を記憶しないオブジェクトや、 (数値や文字列のような)
-アトム型 (atomic type) への参照だけを記憶するような型では、ガベージコレクションに際して特別これといったサポートを提供する必要はありません。
+Python's support for detecting and collecting garbage which involves circular
+references requires support from object types which are "containers" for other
+objects which may also be containers.  Types which do not store references to
+other objects, or which only store references to atomic types (such as numbers
+or strings), do not need to provide any explicit support for garbage
+collection.
 
-.. ここで説明しているインタフェースの使い方を示した例は、 Python の拡張と埋め込み (XXX reference: ../ext/ext.html) の
-   "循環参照の収集をサポートする (XXX reference: ../ext/example-cycle-support.html)" にあります。
+.. An example showing the use of these interfaces can be found in "Supporting the
+.. Cycle Collector (XXX not found: ../ext/example-cycle-support.html)".
 
-コンテナ型を作るには、型オブジェクトの :attr:`tp_flags` フィールドに :const:`Py_TPFLAGS_HAVE_GC`
-フラグがなくてはならず、 :attr:`tp_traverse` ハンドラの実装を提供しなければなりません。
-実装する型のインスタンスを変更可能なオブジェクトにするなら、 :attr:`tp_clear` の実装も提供しなければなりません。
+To create a container type, the :c:member:`~PyTypeObject.tp_flags` field of the type object must
+include the :const:`Py_TPFLAGS_HAVE_GC` and provide an implementation of the
+:c:member:`~PyTypeObject.tp_traverse` handler.  If instances of the type are mutable, a
+:c:member:`~PyTypeObject.tp_clear` implementation must also be provided.
 
 
 .. data:: Py_TPFLAGS_HAVE_GC
    :noindex:
 
-   このフラグをセットした型のオブジェクトは、この節に述べた規則に適合しなければなりません。簡単のため、このフラグをセットした型の
-   オブジェクトをコンテナオブジェクトと呼びます。
+   Objects with a type with this flag set must conform with the rules
+   documented here.  For convenience these objects will be referred to as
+   container objects.
 
-コンテナ型のコンストラクタは以下の二つの規則に適合しなければなりません:
+Constructors for container types must conform to two rules:
 
-#. オブジェクトのメモリは :c:func:`PyObject_GC_New` または :c:func:`PyObject_GC_NewVar`
-   で確保しなければなりません。
+#. The memory for the object must be allocated using :c:func:`PyObject_GC_New`
+   or :c:func:`PyObject_GC_NewVar`.
 
-#. 一度他のコンテナへの参照が入るかもしれないフィールドが全て初期化されたら、 :c:func:`PyObject_GC_Track` を呼び出さねば
-   なりません。
+#. Once all the fields which may contain references to other containers are
+   initialized, it must call :c:func:`PyObject_GC_Track`.
 
 
 .. c:function:: TYPE* PyObject_GC_New(TYPE, PyTypeObject *type)
 
-   :c:func:`PyObject_New` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
-   のセットされたコンテナオブジェクト用です。
+   Analogous to :c:func:`PyObject_New` but for container objects with the
+   :const:`Py_TPFLAGS_HAVE_GC` flag set.
 
 
 .. c:function:: TYPE* PyObject_GC_NewVar(TYPE, PyTypeObject *type, Py_ssize_t size)
 
-   :c:func:`PyObject_NewVar` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
-   のセットされたコンテナオブジェクト用です。
+   Analogous to :c:func:`PyObject_NewVar` but for container objects with the
+   :const:`Py_TPFLAGS_HAVE_GC` flag set.
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *size*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: TYPE* PyObject_GC_Resize(TYPE, PyVarObject *op, Py_ssize_t newsize)
 
-   :c:func:`PyObject_NewVar` が確保したオブジェクトのメモリをリサイズします。
-   リサイズされたオブジェクトを返します。失敗すると *NULL* を返します。
+   Resize an object allocated by :c:func:`PyObject_NewVar`.  Returns the
+   resized object or *NULL* on failure.
 
    .. versionchanged:: 2.5
-      この関数は以前は *newsize* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *newsize*. This might
+      require changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: void PyObject_GC_Track(PyObject *op)
 
-   ガベージコレクタが追跡しているコンテナオブジェクトの集合にオブジェクト *op* を追加します。ガベージコレクタの動作する
-   回数は予測不能なので、追加対象にするオブジェクトは追跡されている間ずっと有効なオブジェクトでなければなりません。
-   この関数は、通常コンストラクタの最後付近で、 :attr:`tp_traverse` ハンドラ以降の全てのフィールドが有効な値になった時点で呼び出さねば
-   なりません。
+   Adds the object *op* to the set of container objects tracked by the
+   collector.  The collector can run at unexpected times so objects must be
+   valid while being tracked.  This should be called once all the fields
+   followed by the :c:member:`~PyTypeObject.tp_traverse` handler become valid, usually near the
+   end of the constructor.
 
 
 .. c:function:: void _PyObject_GC_TRACK(PyObject *op)
 
-   :c:func:`PyObject_GC_Track` のマクロ版です。拡張モジュールに使ってはなりません。
+   A macro version of :c:func:`PyObject_GC_Track`.  It should not be used for
+   extension modules.
 
-同様に、オブジェクトのメモリ解放関数も以下の二つの規則に適合しなければなりません:
+Similarly, the deallocator for the object must conform to a similar pair of
+rules:
 
-#. 他のコンテナを参照しているフィールドを無効化する前に、 :c:func:`PyObject_GC_UnTrack` を呼び出さねばなりません。
+#. Before fields which refer to other containers are invalidated,
+   :c:func:`PyObject_GC_UnTrack` must be called.
 
-#. オブジェクトのメモリは :c:func:`PyObject_GC_Del` で解放しなければなりません。
+#. The object's memory must be deallocated using :c:func:`PyObject_GC_Del`.
 
 
 .. c:function:: void PyObject_GC_Del(void *op)
 
-   :c:func:`PyObject_GC_New` や :c:func:`PyObject_GC_NewVar` を使って確保されたメモリを解放します。
+   Releases memory allocated to an object using :c:func:`PyObject_GC_New` or
+   :c:func:`PyObject_GC_NewVar`.
 
 
 .. c:function:: void PyObject_GC_UnTrack(void *op)
 
-   ガベージコレクタが追跡しているコンテナオブジェクトの集合からオブジェクト *op* を除去します。再度 :c:func:`PyObject_GC_Track`
-   を呼び出して、除去したオブジェクトを追跡対象セットに追加できることに注意してください。メモリ解放関数 (deallocator,
-   :attr:`tp_dealloc` ハンドラ) は、 :attr:`tp_traverse` ハンドラが使用しているフィールドのいずれかが無効化されるよりも
-   以前にオブジェクトに対して呼び出されていなければなりません。
+   Remove the object *op* from the set of container objects tracked by the
+   collector.  Note that :c:func:`PyObject_GC_Track` can be called again on
+   this object to add it back to the set of tracked objects.  The deallocator
+   (:c:member:`~PyTypeObject.tp_dealloc` handler) should call this for the object before any of
+   the fields used by the :c:member:`~PyTypeObject.tp_traverse` handler become invalid.
 
 
 .. c:function:: void _PyObject_GC_UNTRACK(PyObject *op)
 
-   :c:func:`PyObject_GC_UnTrack` のマクロ版です。拡張モジュールに使ってはなりません。
+   A macro version of :c:func:`PyObject_GC_UnTrack`.  It should not be used for
+   extension modules.
 
-:attr:`tp_traverse` ハンドラは以下の型を持つ関数を引数の一つとしてとります:
+The :c:member:`~PyTypeObject.tp_traverse` handler accepts a function parameter of this type:
 
 
 .. c:type:: int (*visitproc)(PyObject *object, void *arg)
 
-   :attr:`tp_traverse` ハンドラに渡すビジタ関数 (visitor function)  の型です。この関数は追跡すべきオブジェクトを
-   *object* に、 :attr:`tp_traverse` ハンドラの第三引数を *arg* にして呼び出されます。Python
-   のコア部分では、ガベージコレクションの実装に複数のビジタ関数を使っています。ユーザが独自にビジタ関数を書く必要があるとは想定されていません。
+   Type of the visitor function passed to the :c:member:`~PyTypeObject.tp_traverse` handler.
+   The function should be called with an object to traverse as *object* and
+   the third parameter to the :c:member:`~PyTypeObject.tp_traverse` handler as *arg*.  The
+   Python core uses several visitor functions to implement cyclic garbage
+   detection; it's not expected that users will need to write their own
+   visitor functions.
 
-:attr:`tp_traverse` ハンドラは以下の型でなければなりません:
+The :c:member:`~PyTypeObject.tp_traverse` handler must have the following type:
 
 
 .. c:type:: int (*traverseproc)(PyObject *self, visitproc visit, void *arg)
 
-   コンテナオブジェクトのためのトラバーサル関数 (traversal function) です。実装では、 *self*
-   に直接入っている各オブジェクトに対して *visit*  関数を呼び出さねばなりません。このとき、 *visit* へのパラメタは
-   コンテナに入っている各オブジェクトと、このハンドラに渡された *arg* の値です。 *visit* 関数は *NULL* オブジェクトを引数に
-   渡して呼び出してはなりません。 *visit* が非ゼロの値を返す場合、エラーが発生し、戻り値をそのまま返すようににしなければなりません。
+   Traversal function for a container object.  Implementations must call the
+   *visit* function for each object directly contained by *self*, with the
+   parameters to *visit* being the contained object and the *arg* value passed
+   to the handler.  The *visit* function must not be called with a *NULL*
+   object argument.  If *visit* returns a non-zero value that value should be
+   returned immediately.
 
-:attr:`tp_traverse` ハンドラの作成を単純化するため、 :c:func:`Py_VISIT`
-マクロが提供されています。このマクロを使うには、 :attr:`tp_traverse` の実装で、引数を *visit* および *arg*
-という名前にしておかねばなりません:
+To simplify writing :c:member:`~PyTypeObject.tp_traverse` handlers, a :c:func:`Py_VISIT` macro is
+provided.  In order to use this macro, the :c:member:`~PyTypeObject.tp_traverse` implementation
+must name its arguments exactly *visit* and *arg*:
 
 
 .. c:function:: void Py_VISIT(PyObject *o)
 
-   引数 *o* および *arg* を使って *visit* コールバックを呼び出します。 *visit* が非ゼロの値を返した場合、その値をそのまま返します。
-   このマクロを使えば、 :attr:`tp_traverse` ハンドラは以下のようになります::
+   Call the *visit* callback, with arguments *o* and *arg*. If *visit* returns
+   a non-zero value, then return it.  Using this macro, :c:member:`~PyTypeObject.tp_traverse`
+   handlers look like::
 
       static int
       my_traverse(Noddy *self, visitproc visit, void *arg)
@@ -131,14 +151,15 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 
    .. versionadded:: 2.4
 
-:attr:`tp_clear` ハンドラは :c:type:`inquiry` 型にするか、オブジェクトが変更不能の場合には *NULL*
-にしなければなりません。
+The :c:member:`~PyTypeObject.tp_clear` handler must be of the :c:type:`inquiry` type, or *NULL*
+if the object is immutable.
 
 
 .. c:type:: int (*inquiry)(PyObject *self)
 
-   循環参照を形成しているとおぼしき参照群を放棄します。変更不可能なオブジェクトは循環参照を直接形成することが決してない
-   ので、この関数を定義する必要はありません。このメソッドを呼び出した後でもオブジェクトは有効なままでなければならないので注意してください (参照に対して
-   :c:func:`Py_DECREF` を呼ぶだけにしないでください)。ガベージコレクタは、オブジェクトが
-   循環参照を形成していることを検出した際にこのメソッドを呼び出します。
-
+   Drop references that may have created reference cycles.  Immutable objects
+   do not have to define this method since they can never directly create
+   reference cycles.  Note that the object must still be valid after calling
+   this method (don't just call :c:func:`Py_DECREF` on a reference).  The
+   collector will call this method if it detects that this object is involved
+   in a reference cycle.

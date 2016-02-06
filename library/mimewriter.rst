@@ -1,81 +1,85 @@
-:mod:`MimeWriter` --- 汎用 MIME ファイルライター
-================================================
+:mod:`MimeWriter` --- Generic MIME file writer
+==============================================
 
 .. module:: MimeWriter
-   :synopsis: MIME 形式ファイルを書く
+   :synopsis: Write MIME format files.
    :deprecated:
-
 
 .. sectionauthor:: Christopher G. Petrilli <petrilli@amber.org>
 
 
 .. deprecated:: 2.3
-   :mod:`email` パッケージを、 :mod:`MimeWriter` モジュールよりも優先して使用すべきです。このモジュールは、
-   下位互換性維持のためだけに存在します。
+   The :mod:`email` package should be used in preference to the :mod:`MimeWriter`
+   module.  This module is present only to maintain backward compatibility.
 
-このモジュールは、クラス :class:`MimeWriter` を定義します。
-この :class:`MimeWriter` クラスは、MIME
-マルチパートファイルを作成するための基本的なフォーマッタを実装します。
-これは出力ファイル内をあちこち移動することも、
-大量のバッファスペースを使うこともありません。
-あなたは、最終のファイルに現れるであろう順番に、パートを書かなければなりません。
-:class:`MimeWriter` は、あなたが追加するヘッダをバッファして、
-それらの順番を並び替えることができるようにします。
+This module defines the class :class:`MimeWriter`.  The :class:`MimeWriter`
+class implements a basic formatter for creating MIME multi-part files.  It
+doesn't seek around the output file nor does it use large amounts of buffer
+space. You must write the parts out in the order that they should occur in the
+final file. :class:`MimeWriter` does buffer the headers you add, allowing you
+to rearrange their order.
 
 
 .. class:: MimeWriter(fp)
 
-   :class:`MimeWriter` クラスの新しいインスタンスを返します。
-   渡される唯一の引数 *fp* は、書くために使用するファイルオブジェクトです。
-   :class:`StringIO` オブジェクトを使うこともできることに注意して下さい。
+   Return a new instance of the :class:`MimeWriter` class.  The only argument
+   passed, *fp*, is a file object to be used for writing. Note that a
+   :class:`~StringIO.StringIO` object could also be used.
 
 
 .. _mimewriter-objects:
 
-MimeWriter オブジェクト
------------------------
+MimeWriter Objects
+------------------
 
-:class:`MimeWriter` インスタンスには以下のメソッドがあります：
+:class:`MimeWriter` instances have the following methods:
 
 
 .. method:: MimeWriter.addheader(key, value[, prefix])
 
-   MIMEメッセージに新しいヘッダ行を追加します。
-   *key* は、そのヘッダの名前であり、そして *value* で、そのヘッダの値を明示的に\
-   与えます。省略可能な引数 *prefix* は、ヘッダが挿入される場所を決定します;
-   ``0`` は最後に追加することを意味し、 ``1`` は先頭への挿入です。
-   デフォールトは最後に追加することです。
+   Add a header line to the MIME message. The *key* is the name of the header,
+   where the *value* obviously provides the value of the header. The optional
+   argument *prefix* determines where the header  is inserted; ``0`` means append
+   at the end, ``1`` is insert at the start. The default is to append.
 
 
 .. method:: MimeWriter.flushheaders()
 
-   今まで集められたヘッダすべてが書かれ(そして忘れられ)るようにします。これは、もし全く本体が必要でない場合に役に立ちます。例えば、
-   ヘッダのような情報を保管するために(誤って)使用された、型 :mimetype:`message/rfc822` のサブパート用。
+   Causes all headers accumulated so far to be written out (and forgotten). This is
+   useful if you don't need a body part at all, e.g. for a subpart of type
+   :mimetype:`message/rfc822` that's (mis)used to store some header-like
+   information.
 
 
 .. method:: MimeWriter.startbody(ctype[, plist[, prefix]])
 
-   メッセージの本体に書くのに使用できるファイルのようなオブジェクトを返します。コンテント-型は、与えられた *ctype* に設定され、省略可能なパラメータ
-   *plist* は、コンテント-型定義のための追加のパラメータを与えます。 *prefix* は、そのデフォールトが先頭への挿入以外は
-   :meth:`addheader` でのように働きます。
+   Returns a file-like object which can be used to write to the body of the
+   message.  The content-type is set to the provided *ctype*, and the optional
+   parameter *plist* provides additional parameters for the content-type
+   declaration. *prefix* functions as in :meth:`addheader` except that the default
+   is to insert at the start.
 
 
 .. method:: MimeWriter.startmultipartbody(subtype[, boundary[, plist[, prefix]]])
 
-   メッセージ本体を書くのに使うことができるファイルのようなオブジェクトを返します。更に、このメソッドはマルチパートのコードを初期化します。ここで、
-   *subtype* が、そのマルチパートのサブタイプを、 *boundary* がユーザ定義の境界仕様を、そして *plist*
-   が、そのサブタイプ用の省略可能なパラメータを定義します。 *prefix* は、 :meth:`startbody` でのように働きます。サブパートは、
-   :meth:`nextpart` を使って作成するべきです。
+   Returns a file-like object which can be used to write to the body of the
+   message.  Additionally, this method initializes the multi-part code, where
+   *subtype* provides the multipart subtype, *boundary* may provide a user-defined
+   boundary specification, and *plist* provides optional parameters for the
+   subtype. *prefix* functions as in :meth:`startbody`.  Subparts should be created
+   using :meth:`nextpart`.
 
 
 .. method:: MimeWriter.nextpart()
 
-   マルチパートメッセージの個々のパートを表す、 :class:`MimeWriter` の新しいインスタンスを返します。これは、そのパートを書くのにも、
-   また複雑なマルチパートを再帰的に作成するのにも使うことができます。メッセージは、 :meth:`nextpart` を使う前に, 最初
-   :meth:`startmultipartbody` で初期化しなければなりません。
+   Returns a new instance of :class:`MimeWriter` which represents an individual
+   part in a multipart message.  This may be used to write the  part as well as
+   used for creating recursively complex multipart messages. The message must first
+   be initialized with :meth:`startmultipartbody` before using :meth:`nextpart`.
 
 
 .. method:: MimeWriter.lastpart()
 
-   これは、マルチパートメッセージの最後のパートを指定するのに使うことができ、マルチパートメッセージを書くときは *いつでも* 使うべきです。
+   This is used to designate the last part of a multipart message, and should
+   *always* be used when writing multipart messages.
 

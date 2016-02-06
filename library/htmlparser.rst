@@ -1,15 +1,16 @@
 
-:mod:`HTMLParser` --- HTML および XHTML のシンプルなパーザ
-==========================================================
+:mod:`HTMLParser` --- Simple HTML and XHTML parser
+==================================================
 
 .. module:: HTMLParser
-   :synopsis: HTML と XHTML を扱えるシンプルなパーザ。
+   :synopsis: A simple parser that can handle HTML and XHTML.
 
 .. note::
 
-    :mod:`HTMLParser` モジュールは Python 3.0 で :mod:`html.parser`
-    に改名されました。
-    ソースを 3.0 用に移行する際には :term:`2to3` がインポートを自動的に直してくれます。
+   The :mod:`HTMLParser` module has been renamed to :mod:`html.parser` in Python
+   3.  The :term:`2to3` tool will automatically adapt imports when converting
+   your sources to Python 3.
+
 
 .. versionadded:: 2.2
 
@@ -17,201 +18,328 @@
    single: HTML
    single: XHTML
 
-このモジュールでは :class:`HTMLParser` クラスを定義します。
-このクラスは HTML  (ハイパーテキスト記述言語、 HyperText Mark-up Language)
-および XHTML で書式化されているテキストファイルを解釈するための基礎となります。
-:mod:`htmllib` にあるパーザと違って、このパーザは :mod:`sgmllib` の SGML
-パーザに基づいてはいません。
+**Source code:** :source:`Lib/HTMLParser.py`
+
+--------------
+
+This module defines a class :class:`.HTMLParser` which serves as the basis for
+parsing text files formatted in HTML (HyperText Mark-up Language) and XHTML.
+Unlike the parser in :mod:`htmllib`, this parser is not based on the SGML parser
+in :mod:`sgmllib`.
 
 
 .. class:: HTMLParser()
 
-   :class:`HTMLParser` クラスは引数なしでインスタンス化します。
+   An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
+   when start tags, end tags, text, comments, and other markup elements are
+   encountered.  The user should subclass :class:`.HTMLParser` and override its
+   methods to implement the desired behavior.
 
-   :class:`HTMLParser` インスタンスに HTML データが入力されると、
-   タグが開始したとき、及び終了したときに関数を呼び出します。
-   :class:`HTMLParser` クラスは、ユーザが行いたい動作を提供する\
-   ために上書きできるようになっています。
+   The :class:`.HTMLParser` class is instantiated without arguments.
 
-   :mod:`htmllib` のパーザと違い、このパーザは終了タグが開始タグと\
-   一致しているか調べたり、外側のタグ要素が閉じるときに内側で明示的\
-   に閉じられていないタグ要素のタグ終了ハンドラを呼び出したりはしません。
+   Unlike the parser in :mod:`htmllib`, this parser does not check that end tags
+   match start tags or call the end-tag handler for elements which are closed
+   implicitly by closing an outer element.
 
-例外も定義されています:
-
+An exception is defined as well:
 
 .. exception:: HTMLParseError
 
-   パーズ中にエラーに遭遇した場合に :class:`HTMLParser` クラスが送出する例外です。
-   この例外は三つの属性を提供しています:
-   :attr:`msg` はエラーの内容を説明する簡単なメッセージ、
-   :attr:`lineno` は壊れたマークアップ構造を検出した場所の行番号、
-   :attr:`offset` は問題のマークアップ構造の行内での開始位置を示す文字数です。
+   :class:`.HTMLParser` is able to handle broken markup, but in some cases it
+   might raise this exception when it encounters an error while parsing.
+   This exception provides three attributes: :attr:`msg` is a brief
+   message explaining the error, :attr:`lineno` is the number of the line on
+   which the broken construct was detected, and :attr:`offset` is the number of
+   characters into the line at which the construct starts.
 
-:class:`HTMLParser` インスタンスは以下のメソッドを提供します:
+
+Example HTML Parser Application
+-------------------------------
+
+As a basic example, below is a simple HTML parser that uses the
+:class:`.HTMLParser` class to print out start tags, end tags and data
+as they are encountered::
+
+   from HTMLParser import HTMLParser
+
+   # create a subclass and override the handler methods
+   class MyHTMLParser(HTMLParser):
+       def handle_starttag(self, tag, attrs):
+           print "Encountered a start tag:", tag
+       def handle_endtag(self, tag):
+           print "Encountered an end tag :", tag
+       def handle_data(self, data):
+           print "Encountered some data  :", data
+
+   # instantiate the parser and fed it some HTML
+   parser = MyHTMLParser()
+   parser.feed('<html><head><title>Test</title></head>'
+               '<body><h1>Parse me!</h1></body></html>')
+
+The output will then be::
+
+   Encountered a start tag: html
+   Encountered a start tag: head
+   Encountered a start tag: title
+   Encountered some data  : Test
+   Encountered an end tag : title
+   Encountered an end tag : head
+   Encountered a start tag: body
+   Encountered a start tag: h1
+   Encountered some data  : Parse me!
+   Encountered an end tag : h1
+   Encountered an end tag : body
+   Encountered an end tag : html
 
 
-.. method:: HTMLParser.reset()
+:class:`.HTMLParser` Methods
+----------------------------
 
-   インスタンスをリセットします。
-   未処理のデータは全て失われます。
-   インスタンス化の際に非明示的に呼び出されます。
+:class:`.HTMLParser` instances have the following methods:
 
 
 .. method:: HTMLParser.feed(data)
 
-   パーザにテキストを入力します。
-   入力が完全なタグ要素で構成されている場合に限り処理が行われます;
-   不完全なデータであった場合、新たにデータが入力されるか、
-   :meth:`close` が呼び出されるまでバッファされます。
+   Feed some text to the parser.  It is processed insofar as it consists of
+   complete elements; incomplete data is buffered until more data is fed or
+   :meth:`close` is called.  *data* can be either :class:`unicode` or
+   :class:`str`, but passing :class:`unicode` is advised.
 
 
 .. method:: HTMLParser.close()
 
-   全てのバッファされているデータについて、その後にファイル終了マーク\
-   が続いているとみなして強制的に処理を行います。このメソッドは\
-   入力データの終端で行うべき追加処理を定義するために派生クラスで\
-   上書きすることができますが、再定義を行ったクラスでは常に、
-   :class:`HTMLParser` 基底クラスのメソッド :meth:`close`
-   を呼び出さなくてはなりません。
+   Force processing of all buffered data as if it were followed by an end-of-file
+   mark.  This method may be redefined by a derived class to define additional
+   processing at the end of the input, but the redefined version should always call
+   the :class:`.HTMLParser` base class method :meth:`close`.
+
+
+.. method:: HTMLParser.reset()
+
+   Reset the instance.  Loses all unprocessed data.  This is called implicitly at
+   instantiation time.
 
 
 .. method:: HTMLParser.getpos()
 
-   現在の行番号およびオフセット値を返します。
+   Return current line number and offset.
 
 
 .. method:: HTMLParser.get_starttag_text()
 
-   最も最近開かれた開始タグのテキスト部分を返します。
-   このテキストは必ずしも元データを構造化する上で必須ではありませんが、
-   "広く知られている (as deployed)" HTML を扱ったり、
-   入力を最小限の変更で再生成 (属性間の空白をそのままにする、など)
-   したりする場合に便利なことがあります。
+   Return the text of the most recently opened start tag.  This should not normally
+   be needed for structured processing, but may be useful in dealing with HTML "as
+   deployed" or for re-generating input with minimal changes (whitespace between
+   attributes can be preserved, etc.).
+
+
+The following methods are called when data or markup elements are encountered
+and they are meant to be overridden in a subclass.  The base class
+implementations do nothing (except for :meth:`~HTMLParser.handle_startendtag`):
 
 
 .. method:: HTMLParser.handle_starttag(tag, attrs)
 
-   このメソッドはタグの開始部分を処理するために呼び出されます。
-   派生クラスで上書きするためのメソッドです;
-   基底クラスの実装では何も行いません。
+   This method is called to handle the start of a tag (e.g. ``<div id="main">``).
 
-   *tag* 引数はタグの名前で、小文字に変換されています。
-   *attrs* 引数は ``(name, value)`` のペアからなるリストで、タグの
-   ``<>`` 括弧内にある属性が収められています。
-   *name* は小文字に変換され、
-   *value* 内の引用符は取り除かれ、文字参照とエンティティ参照は置換されます。
-   例えば、タグ ``<A HREF="http://www.cwi.nl/">``
-   を処理する場合、このメソッドは
-   ``handle_starttag('a', [('href', 'http://www.cwi.nl/')])``
-   として呼び出されます。
+   The *tag* argument is the name of the tag converted to lower case. The *attrs*
+   argument is a list of ``(name, value)`` pairs containing the attributes found
+   inside the tag's ``<>`` brackets.  The *name* will be translated to lower case,
+   and quotes in the *value* have been removed, and character and entity references
+   have been replaced.
+
+   For instance, for the tag ``<A HREF="http://www.cwi.nl/">``, this method
+   would be called as ``handle_starttag('a', [('href', 'http://www.cwi.nl/')])``.
 
    .. versionchanged:: 2.6
-      属性中の :mod:`htmlentitydefs` の全てのエンティティ参照が\
-      置換されるようになりました。
-
-
-.. method:: HTMLParser.handle_startendtag(tag, attrs)
-
-   :meth:`handle_starttag` と似ていますが、パーザが XHTML 形式の空タグ
-   (``<a .../>``) に遭遇した場合に呼び出されます。
-   この特定の語彙情報 (lexical information) が必要な場合、
-   このメソッドをサブクラスで上書きすることができます;
-   標準の実装では、単に :meth:`handle_starttag` および
-   :meth:`handle_endtag` を呼ぶだけです。
+      All entity references from :mod:`htmlentitydefs` are now replaced in the
+      attribute values.
 
 
 .. method:: HTMLParser.handle_endtag(tag)
 
-   このメソッドはあるタグ要素の終了タグを処理するために呼び出されます。
-   派生クラスで上書きするためのメソッドです; 基底クラスの実装では何も行いません。
-   *tag* 引数はタグの名前で、小文字に変換されています。
+   This method is called to handle the end tag of an element (e.g. ``</div>``).
+
+   The *tag* argument is the name of the tag converted to lower case.
+
+
+.. method:: HTMLParser.handle_startendtag(tag, attrs)
+
+   Similar to :meth:`handle_starttag`, but called when the parser encounters an
+   XHTML-style empty tag (``<img ... />``).  This method may be overridden by
+   subclasses which require this particular lexical information; the default
+   implementation simply calls :meth:`handle_starttag` and :meth:`handle_endtag`.
 
 
 .. method:: HTMLParser.handle_data(data)
 
-   このメソッドは、他のメソッドに当てはまらない任意のデータを処理するために\
-   呼び出されます。
-   派生クラスで上書きするためのメソッドです; 基底クラスの実装では何も行いません。
-
-
-.. method:: HTMLParser.handle_charref(ref)
-
-   このメソッドはタグ外の ``&#ref;`` 形式の文字参照 (character reference)
-   を処理するために呼び出されます。
-   *ref* には、先頭の ``&#`` および末尾の ``;`` は含まれません。
-   派生クラスで上書きするためのメソッドです; 基底クラスの実装では何も行いません。
+   This method is called to process arbitrary data (e.g. text nodes and the
+   content of ``<script>...</script>`` and ``<style>...</style>``).
 
 
 .. method:: HTMLParser.handle_entityref(name)
 
-   このメソッドはタグ外の ``&name;`` 形式の一般のエンティティ参照
-   (entity reference) *name* を処理するために呼び出されます。
-   *name* には、先頭の ``&`` および末尾の ``;`` は含まれません。
-   派生クラスで上書きするためのメソッドです; 基底クラスの実装では何も行いません。
+   This method is called to process a named character reference of the form
+   ``&name;`` (e.g. ``&gt;``), where *name* is a general entity reference
+   (e.g. ``'gt'``).
+
+
+.. method:: HTMLParser.handle_charref(name)
+
+   This method is called to process decimal and hexadecimal numeric character
+   references of the form ``&#NNN;`` and ``&#xNNN;``.  For example, the decimal
+   equivalent for ``&gt;`` is ``&#62;``, whereas the hexadecimal is ``&#x3E;``;
+   in this case the method will receive ``'62'`` or ``'x3E'``.
 
 
 .. method:: HTMLParser.handle_comment(data)
 
-   このメソッドはコメントに遭遇した場合に呼び出されます。
-   *comment* 引数は文字列で、 ``--`` および ``--`` デリミタ間の、
-   デリミタ自体を除いたテキストが収められています。
-   例えば、コメント ``<!--text-->`` があると、このメソッドは引数
-   ``'text'`` で呼び出されます。
-   派生クラスで上書きするためのメソッドです;  基底クラスの実装では何も行いません。
+   This method is called when a comment is encountered (e.g. ``<!--comment-->``).
+
+   For example, the comment ``<!-- comment -->`` will cause this method to be
+   called with the argument ``' comment '``.
+
+   The content of Internet Explorer conditional comments (condcoms) will also be
+   sent to this method, so, for ``<!--[if IE 9]>IE9-specific content<![endif]-->``,
+   this method will receive ``'[if IE 9]>IE9-specific content<![endif]'``.
 
 
 .. method:: HTMLParser.handle_decl(decl)
 
-   パーザが SGML の ``doctype`` 宣言を読み出した際に呼び出されるメソッドです。
-   *decl* パラメタは ``<!...>`` 記述内の宣言内容全体になります。
-   派生クラスで上書きするためのメソッドです; 基底クラスの実装では何も行いません。
+   This method is called to handle an HTML doctype declaration (e.g.
+   ``<!DOCTYPE html>``).
 
-
-.. method:: HTMLParser.unknown_decl(data)
-
-   パーザが認識できない SGML 宣言を読み出した際に呼び出されるメソッドです。
-   *data* パラメタは ``<!...>`` 記述内の宣言内容全体になります。
-   派生クラスで上書きすると良いかもしれません。
-   基底クラスの実装では :exc:`HTMLParseError` を送出します。
+   The *decl* parameter will be the entire contents of the declaration inside
+   the ``<!...>`` markup (e.g. ``'DOCTYPE html'``).
 
 
 .. method:: HTMLParser.handle_pi(data)
 
-   処理指令に遭遇した場合に呼び出されます。
-   *data* には、処理指令全体が含まれ、例えば ``<?proc color='red'>``
-   という処理指令の場合、 ``handle_pi("proc color='red'")`` のように呼び出されます。
-   このメソッドは派生クラスで上書きするためのメソッドです;
-   基底クラスの実装では何も行いません。
+   This method is called when a processing instruction is encountered.  The *data*
+   parameter will contain the entire processing instruction.  For example, for the
+   processing instruction ``<?proc color='red'>``, this method would be called as
+   ``handle_pi("proc color='red'")``.
 
    .. note::
 
-      The :class:`HTMLParser` クラスでは、処理指令に SGML の構文を使用します。
-      末尾に ``'?'`` がある XHTML の処理指令では、 ``'?'`` が *data*
-      に含まれることになります。
+      The :class:`.HTMLParser` class uses the SGML syntactic rules for processing
+      instructions.  An XHTML processing instruction using the trailing ``'?'`` will
+      cause the ``'?'`` to be included in *data*.
 
 
-.. exception:: HTMLParseError
+.. method:: HTMLParser.unknown_decl(data)
 
-   HTML の構文に沿わないパターンを発見したときに送出される例外です。
-   HTML 構文法上の全てのエラーを発見できるわけではないので注意してください。
+   This method is called when an unrecognized declaration is read by the parser.
+
+   The *data* parameter will be the entire contents of the declaration inside
+   the ``<![...]>`` markup.  It is sometimes useful to be overridden by a
+   derived class.
 
 
-.. _htmlparser-example:
+.. _htmlparser-examples:
 
-HTML パーザアプリケーションの例
--------------------------------
+Examples
+--------
 
-基礎的な例として、 :class:`HTMLParser` クラスを使い、
-発見したタグを出力する、非常に基礎的な HTML パーザを以下に示します。 ::
+The following class implements a parser that will be used to illustrate more
+examples::
 
    from HTMLParser import HTMLParser
+   from htmlentitydefs import name2codepoint
 
    class MyHTMLParser(HTMLParser):
-
        def handle_starttag(self, tag, attrs):
-           print "Encountered the beginning of a %s tag" % tag
-
+           print "Start tag:", tag
+           for attr in attrs:
+               print "     attr:", attr
        def handle_endtag(self, tag):
-           print "Encountered the end of a %s tag" % tag
+           print "End tag  :", tag
+       def handle_data(self, data):
+           print "Data     :", data
+       def handle_comment(self, data):
+           print "Comment  :", data
+       def handle_entityref(self, name):
+           c = unichr(name2codepoint[name])
+           print "Named ent:", c
+       def handle_charref(self, name):
+           if name.startswith('x'):
+               c = unichr(int(name[1:], 16))
+           else:
+               c = unichr(int(name))
+           print "Num ent  :", c
+       def handle_decl(self, data):
+           print "Decl     :", data
 
+   parser = MyHTMLParser()
+
+Parsing a doctype::
+
+   >>> parser.feed('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" '
+   ...             '"http://www.w3.org/TR/html4/strict.dtd">')
+   Decl     : DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
+
+Parsing an element with a few attributes and a title::
+
+   >>> parser.feed('<img src="python-logo.png" alt="The Python logo">')
+   Start tag: img
+        attr: ('src', 'python-logo.png')
+        attr: ('alt', 'The Python logo')
+   >>>
+   >>> parser.feed('<h1>Python</h1>')
+   Start tag: h1
+   Data     : Python
+   End tag  : h1
+
+The content of ``script`` and ``style`` elements is returned as is, without
+further parsing::
+
+   >>> parser.feed('<style type="text/css">#python { color: green }</style>')
+   Start tag: style
+        attr: ('type', 'text/css')
+   Data     : #python { color: green }
+   End tag  : style
+   >>>
+   >>> parser.feed('<script type="text/javascript">'
+   ...             'alert("<strong>hello!</strong>");</script>')
+   Start tag: script
+        attr: ('type', 'text/javascript')
+   Data     : alert("<strong>hello!</strong>");
+   End tag  : script
+
+Parsing comments::
+
+   >>> parser.feed('<!-- a comment -->'
+   ...             '<!--[if IE 9]>IE-specific content<![endif]-->')
+   Comment  :  a comment
+   Comment  : [if IE 9]>IE-specific content<![endif]
+
+Parsing named and numeric character references and converting them to the
+correct char (note: these 3 references are all equivalent to ``'>'``)::
+
+   >>> parser.feed('&gt;&#62;&#x3E;')
+   Named ent: >
+   Num ent  : >
+   Num ent  : >
+
+Feeding incomplete chunks to :meth:`~HTMLParser.feed` works, but
+:meth:`~HTMLParser.handle_data` might be called more than once::
+
+   >>> for chunk in ['<sp', 'an>buff', 'ered ', 'text</s', 'pan>']:
+   ...     parser.feed(chunk)
+   ...
+   Start tag: span
+   Data     : buff
+   Data     : ered
+   Data     : text
+   End tag  : span
+
+Parsing invalid HTML (e.g. unquoted attributes) also works::
+
+   >>> parser.feed('<p><a class=link href=#main>tag soup</p ></a>')
+   Start tag: p
+   Start tag: a
+        attr: ('class', 'link')
+        attr: ('href', '#main')
+   Data     : tag soup
+   End tag  : p
+   End tag  : a

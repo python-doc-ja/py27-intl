@@ -1,9 +1,9 @@
 
-:mod:`sets` --- ユニークな要素の順序なしコレクション
-====================================================
+:mod:`sets` --- Unordered collections of unique elements
+========================================================
 
 .. module:: sets
-   :synopsis: ユニークな要素の集合の実装
+   :synopsis: Implementation of sets of unique elements.
    :deprecated:
 .. moduleauthor:: Greg V. Wilson <gvwilson@nevex.com>
 .. moduleauthor:: Alex Martelli <aleax@aleax.it>
@@ -14,147 +14,183 @@
 .. versionadded:: 2.3
 
 .. deprecated:: 2.6
-   組み込みの :class:`set`/:class:`frozenset` 型がこのモジュールを置き換えます。
+   The built-in :class:`set`/:class:`frozenset` types replace this module.
 
-:mod:`sets` モジュールは、ユニークな要素の順序なしコレクションを構築し、操作するためのクラスを提供します。
-帰属関係のテストやシーケンスから重複を取り除いたり、積集合・和集合・差集合・対称差集合のような標準的な数学操作などを含みます。
+The :mod:`sets` module provides classes for constructing and manipulating
+unordered collections of unique elements.  Common uses include membership
+testing, removing duplicates from a sequence, and computing standard math
+operations on sets such as intersection, union, difference, and symmetric
+difference.
 
-他のコレクションのように、 ``x in set``, ``len(set)``, ``for x in set`` をサポートします。
-順序なしコレクションは、挿入の順序や要素位置を記録しません。
-従って、インデックス・スライス・他のシーケンス的な振舞いをサポートしません。
+Like other collections, sets support ``x in set``, ``len(set)``, and ``for x in
+set``.  Being an unordered collection, sets do not record element position or
+order of insertion.  Accordingly, sets do not support indexing, slicing, or
+other sequence-like behavior.
 
-ほとんどの集合のアプリケーションは、 :meth:`__hash__` を除いてすべての集合のメソッドを提供する :class:`Set` クラスを使用します。
-ハッシュを要求する高度なアプリケーションについては、 :class:`ImmutableSet` クラスが :meth:`__hash__` メソッドを加えているが、
-集合の内容を変更するメソッドは省略されます。 :class:`Set` と :class:`ImmutableSet` は、
-何が集合(``isinstance(obj, BaseSet)``)であるか決めるのに役立つ抽象クラス :class:`BaseSet` から派生します。
+Most set applications use the :class:`Set` class which provides every set method
+except for :meth:`__hash__`. For advanced applications requiring a hash method,
+the :class:`ImmutableSet` class adds a :meth:`__hash__` method but omits methods
+which alter the contents of the set. Both :class:`Set` and :class:`ImmutableSet`
+derive from :class:`BaseSet`, an abstract class useful for determining whether
+something is a set: ``isinstance(obj, BaseSet)``.
 
-集合クラスは辞書を使用して実装されます。このことから、集合の要素にするには辞書のキーと同様の要件を満たさなければなりません。具体的には、要素になるものには
-:meth:`__eq__` と :meth:`__hash__` が定義されているという条件です。
-その結果、集合はリストや辞書のような変更可能な要素を含むことができません。
-しかしそれらは、タプルや :class:`ImmutableSet` のインスタンスのような不変コレクションを含むことができます。
-集合の集合の実装中の便宜については、内部集合が自動的に変更不可能な形式に変換されます。
-例えば、 ``Set([Set(['dog'])])`` は ``Set([ImmutableSet(['dog'])])`` へ変換されます。
+The set classes are implemented using dictionaries.  Accordingly, the
+requirements for set elements are the same as those for dictionary keys; namely,
+that the element defines both :meth:`__eq__` and :meth:`__hash__`. As a result,
+sets cannot contain mutable elements such as lists or dictionaries. However,
+they can contain immutable collections such as tuples or instances of
+:class:`ImmutableSet`.  For convenience in implementing sets of sets, inner sets
+are automatically converted to immutable form, for example,
+``Set([Set(['dog'])])`` is transformed to ``Set([ImmutableSet(['dog'])])``.
 
 
 .. class:: Set([iterable])
 
-   新しい空の :class:`Set` オブジェクトを構築します。もしオプション *iterable* が与えられたら、イタレータから得られた
-   要素を備えた集合として更新します。 *iterable* 中の全ての要素は、変更不可能であるか、または :ref:`immutable-transforms` で記述されたプロトコルを使って変更不可能なものに変換可能であるべきです。
+   Constructs a new empty :class:`Set` object.  If the optional *iterable*
+   parameter is supplied, updates the set with elements obtained from iteration.
+   All of the elements in *iterable* should be immutable or be transformable to an
+   immutable using the protocol described in section :ref:`immutable-transforms`.
 
 
 .. class:: ImmutableSet([iterable])
 
-   新しい空の :class:`ImmutableSet` オブジェクトを構築します。もしオプション *iterable* が与えられたら、イタレータから得られた
-   要素を備えた集合として更新します。 *iterable* 中の全ての要素は、変更不可能であるか、または :ref:`immutable-transforms` で記述されたプロトコルを使って変更不可能なものに変換可能であるべきです。
+   Constructs a new empty :class:`ImmutableSet` object.  If the optional *iterable*
+   parameter is supplied, updates the set with elements obtained from iteration.
+   All of the elements in *iterable* should be immutable or be transformable to an
+   immutable using the protocol described in section :ref:`immutable-transforms`.
 
-   :class:`ImmutableSet` オブジェクトは :meth:`__hash__` メソッドを備えているので、
-   集合要素または辞書キーとして使用することができます。 :class:`ImmutableSet` オブジェクトは要素を加えたり取り除いたりするメソッドを
-   持っていません。したがって、コンストラクタが呼ばれたとき要素はすべて知られていなければなりません。
+   Because :class:`ImmutableSet` objects provide a :meth:`__hash__` method, they
+   can be used as set elements or as dictionary keys.  :class:`ImmutableSet`
+   objects do not have methods for adding or removing elements, so all of the
+   elements must be known when the constructor is called.
 
 
 .. _set-objects:
 
-Set オブジェクト
-----------------
+Set Objects
+-----------
 
-:class:`Set` と :class:`ImmutableSet` のインスタンスはともに、以下の操作を備えています:
+Instances of :class:`Set` and :class:`ImmutableSet` both provide the following
+operations:
 
-+-------------------------------+------------+---------------------------------------------------+
-| 演算                          | 等価な演算 | 結果                                              |
-+===============================+============+===================================================+
-| ``len(s)``                    |            | 集合 *s* の濃度 (cardinality)                     |
-+-------------------------------+------------+---------------------------------------------------+
-| ``x in s``                    |            | *x* が *s* に帰属していれば真を返す               |
-+-------------------------------+------------+---------------------------------------------------+
-| ``x not in s``                |            | *x* が *s* に帰属していなければ真を返す           |
-+-------------------------------+------------+---------------------------------------------------+
-| ``s.issubset(t)``             | ``s <= t`` | *s* のすべての要素が *t* に帰属していれば真を返す |
-+-------------------------------+------------+---------------------------------------------------+
-| ``s.issuperset(t)``           | ``s >= t`` | *t* のすべての要素が *s* に帰属していれば真を返す |
-+-------------------------------+------------+---------------------------------------------------+
-| ``s.union(t)``                | ``s | t``  | *s* と *t* の両方の要素からなる新しい集合         |
-+-------------------------------+------------+---------------------------------------------------+
-| ``s.intersection(t)``         | ``s & t``  | *s* と *t* で共通する要素からなる新しい集合       |
-+-------------------------------+------------+---------------------------------------------------+
-| ``s.difference(t)``           | ``s - t``  | *s* にあるが *t* にない要素からなる新しい集合     |
-+-------------------------------+------------+---------------------------------------------------+
-| ``s.symmetric_difference(t)`` | ``s ^ t``  | *s* と *t* のどちらか一方に属する要素からなる集合 |
-+-------------------------------+------------+---------------------------------------------------+
-| ``s.copy()``                  |            | *s* の浅いコピーからなる集合                      |
-+-------------------------------+------------+---------------------------------------------------+
++-------------------------------+------------+---------------------------------+
+| Operation                     | Equivalent | Result                          |
++===============================+============+=================================+
+| ``len(s)``                    |            | cardinality of set *s*          |
++-------------------------------+------------+---------------------------------+
+| ``x in s``                    |            | test *x* for membership in *s*  |
++-------------------------------+------------+---------------------------------+
+| ``x not in s``                |            | test *x* for non-membership in  |
+|                               |            | *s*                             |
++-------------------------------+------------+---------------------------------+
+| ``s.issubset(t)``             | ``s <= t`` | test whether every element in   |
+|                               |            | *s* is in *t*                   |
++-------------------------------+------------+---------------------------------+
+| ``s.issuperset(t)``           | ``s >= t`` | test whether every element in   |
+|                               |            | *t* is in *s*                   |
++-------------------------------+------------+---------------------------------+
+| ``s.union(t)``                | ``s | t``  | new set with elements from both |
+|                               |            | *s* and *t*                     |
++-------------------------------+------------+---------------------------------+
+| ``s.intersection(t)``         | ``s & t``  | new set with elements common to |
+|                               |            | *s* and *t*                     |
++-------------------------------+------------+---------------------------------+
+| ``s.difference(t)``           | ``s - t``  | new set with elements in *s*    |
+|                               |            | but not in *t*                  |
++-------------------------------+------------+---------------------------------+
+| ``s.symmetric_difference(t)`` | ``s ^ t``  | new set with elements in either |
+|                               |            | *s* or *t* but not both         |
++-------------------------------+------------+---------------------------------+
+| ``s.copy()``                  |            | new set with a shallow copy of  |
+|                               |            | *s*                             |
++-------------------------------+------------+---------------------------------+
 
-演算子を使わない書き方である :meth:`union`, :meth:`intersection`,
-:meth:`difference`, および :meth:`symmetric_difference` は任意の
-イテレート可能オブジェクトを引数として受け取るのに対し、演算子を使った書き方の方では引数は集合型でなければならないので注意してください。
-これはエラーの元となる ``Set('abc') & 'cbs'`` のような書き方を
-排除し、より可読性のある ``Set('abc').intersection('cbs')`` を選ばせるための仕様です。
-
-.. versionchanged:: 2.3.1
-   以前は全ての引数が集合型でなければなりませんでした。
-
-加えて、 :class:`Set` と :class:`ImmutableSet` は集合間の比較をサポートしています。
-二つの集合は、各々の集合のすべての要素が他方に含まれて (各々が他方の部分集合) いる場合、かつその場合に限り等価になります。
-ある集合は、他方の集合の真の部分集合 (proper subset、部分集合であるが非等価) である場合、かつその場合に限り、他方の集合より小さくなります。
-ある集合は、他方の集合の真の上位集合 (proper superset、上位集合であるが非等価)
-である場合、かつその場合に限り、他方の集合より大きくなります。
-
-部分集合比較やと等値比較では、完全な順序決定関数を一般化できません。たとえば、互いに素な 2 つの集合は等しくありませんし、互いの部
-分集合でもないので、 ``a<b``, ``a==b``, ``a>b`` は *すべて* ``False`` を返します。したがって集合は
-:meth:`__cmp__` メソッドを実装しません。
-
-集合は一部の順序（部分集合の関係）を定義するだけなので、集合のリストにおいて :meth:`list.sort` メソッドの出力は未定義です。
-
-以下は :class:`ImmutableSet` で利用可能であるが :class:`Set` にはない操作です:
-
-+-------------+------------------------+
-| 演算        | 結果                   |
-+=============+========================+
-| ``hash(s)`` | *s* のハッシュ値を返す |
-+-------------+------------------------+
-
-以下は :class:`Set` で利用可能であるが :class:`ImmutableSet` にはない操作です:
-
-+--------------------------------------+-------------+-----------------------------------------------------+
-| 演算                                 | 等価な演算  | 結果                                                |
-+======================================+=============+=====================================================+
-| ``s.update(t)``                      | *s* \|= *t* | *t* を加えた要素からなる集合 *s* を返します         |
-+--------------------------------------+-------------+-----------------------------------------------------+
-| ``s.intersection_update(t)``         | *s* &= *t*  | *t* でも見つかった要素だけを持つ集合 *s* を返します |
-+--------------------------------------+-------------+-----------------------------------------------------+
-| ``s.difference_update(t)``           | *s* -= *t*  | *t* にあった要素を取り除いた後の集合 *s* を返します |
-+--------------------------------------+-------------+-----------------------------------------------------+
-| ``s.symmetric_difference_update(t)`` | *s* ^= *t*  | *s* と *t* のどちらか一方に属する要素からなる集合   |
-|                                      |             | *s* を返します                                      |
-+--------------------------------------+-------------+-----------------------------------------------------+
-| ``s.add(x)``                         |             | 要素 *x* を集合 *s* に加えます                      |
-+--------------------------------------+-------------+-----------------------------------------------------+
-| ``s.remove(x)``                      |             | 要素 *x* を集合 *s* から取り除きます;               |
-|                                      |             | *x* がなければ :exc:`KeyError` を送出します         |
-+--------------------------------------+-------------+-----------------------------------------------------+
-| ``s.discard(x)``                     |             | 要素 *x* が存在すれば、集合 *s* から取り除きます    |
-+--------------------------------------+-------------+-----------------------------------------------------+
-| ``s.pop()``                          |             | *s* から要素を取り除き、それを返します;             |
-|                                      |             | 集合が空なら :exc:`KeyError` を送出します           |
-+--------------------------------------+-------------+-----------------------------------------------------+
-| ``s.clear()``                        |             | 集合 *s* からすべての要素を取り除きます             |
-+--------------------------------------+-------------+-----------------------------------------------------+
-
-演算子を使わない書き方である :meth:`update`,
-:meth:`intersection_update`, :meth:`difference_update`,
-および :meth:`symmetric_difference_update` は任意のイテレート可能オブジェクトを引数として受け取るので注意してください。
+Note, the non-operator versions of :meth:`union`, :meth:`intersection`,
+:meth:`difference`, and :meth:`symmetric_difference` will accept any iterable as
+an argument. In contrast, their operator based counterparts require their
+arguments to be sets.  This precludes error-prone constructions like
+``Set('abc') & 'cbs'`` in favor of the more readable
+``Set('abc').intersection('cbs')``.
 
 .. versionchanged:: 2.3.1
-   以前は全ての引数が集合型でなければなりませんでした。
+   Formerly all arguments were required to be sets.
 
-もう一つ注意を述べますが、このモジュールでは :meth:`union_update` が :meth:`update` の別名として含まれています。
-このメソッドは後方互換性のために残されているものです。プログラマは組み込みの :class:`set()` および :class:`frozenset()`
-でサポートされている :meth:`update` を選ぶべきです。
+In addition, both :class:`Set` and :class:`ImmutableSet` support set to set
+comparisons.  Two sets are equal if and only if every element of each set is
+contained in the other (each is a subset of the other). A set is less than
+another set if and only if the first set is a proper subset of the second set
+(is a subset, but is not equal). A set is greater than another set if and only
+if the first set is a proper superset of the second set (is a superset, but is
+not equal).
+
+The subset and equality comparisons do not generalize to a complete ordering
+function.  For example, any two disjoint sets are not equal and are not subsets
+of each other, so *all* of the following return ``False``:  ``a<b``, ``a==b``,
+or ``a>b``. Accordingly, sets do not implement the :meth:`__cmp__` method.
+
+Since sets only define partial ordering (subset relationships), the output of
+the :meth:`list.sort` method is undefined for lists of sets.
+
+The following table lists operations available in :class:`ImmutableSet` but not
+found in :class:`Set`:
+
++-------------+------------------------------+
+| Operation   | Result                       |
++=============+==============================+
+| ``hash(s)`` | returns a hash value for *s* |
++-------------+------------------------------+
+
+The following table lists operations available in :class:`Set` but not found in
+:class:`ImmutableSet`:
+
++--------------------------------------+-------------+---------------------------------+
+| Operation                            | Equivalent  | Result                          |
++======================================+=============+=================================+
+| ``s.update(t)``                      | *s* \|= *t* | return set *s* with elements    |
+|                                      |             | added from *t*                  |
++--------------------------------------+-------------+---------------------------------+
+| ``s.intersection_update(t)``         | *s* &= *t*  | return set *s* keeping only     |
+|                                      |             | elements also found in *t*      |
++--------------------------------------+-------------+---------------------------------+
+| ``s.difference_update(t)``           | *s* -= *t*  | return set *s* after removing   |
+|                                      |             | elements found in *t*           |
++--------------------------------------+-------------+---------------------------------+
+| ``s.symmetric_difference_update(t)`` | *s* ^= *t*  | return set *s* with elements    |
+|                                      |             | from *s* or *t* but not both    |
++--------------------------------------+-------------+---------------------------------+
+| ``s.add(x)``                         |             | add element *x* to set *s*      |
++--------------------------------------+-------------+---------------------------------+
+| ``s.remove(x)``                      |             | remove *x* from set *s*; raises |
+|                                      |             | :exc:`KeyError` if not present  |
++--------------------------------------+-------------+---------------------------------+
+| ``s.discard(x)``                     |             | removes *x* from set *s* if     |
+|                                      |             | present                         |
++--------------------------------------+-------------+---------------------------------+
+| ``s.pop()``                          |             | remove and return an arbitrary  |
+|                                      |             | element from *s*; raises        |
+|                                      |             | :exc:`KeyError` if empty        |
++--------------------------------------+-------------+---------------------------------+
+| ``s.clear()``                        |             | remove all elements from set    |
+|                                      |             | *s*                             |
++--------------------------------------+-------------+---------------------------------+
+
+Note, the non-operator versions of :meth:`update`, :meth:`intersection_update`,
+:meth:`difference_update`, and :meth:`symmetric_difference_update` will accept
+any iterable as an argument.
+
+.. versionchanged:: 2.3.1
+   Formerly all arguments were required to be sets.
+
+Also note, the module also includes a :meth:`union_update` method which is an
+alias for :meth:`update`.  The method is included for backwards compatibility.
+Programmers should prefer the :meth:`update` method because it is supported by
+the built-in :class:`set()` and :class:`frozenset()` types.
 
 
 .. _set-example:
 
-使用例
-------
+Example
+-------
 
    >>> from sets import Set
    >>> engineers = Set(['John', 'Jane', 'Jack', 'Janice'])
@@ -168,7 +204,7 @@ Set オブジェクト
    Set(['Jane', 'Marvin', 'Janice', 'John', 'Jack'])
    >>> employees.issuperset(engineers)     # superset test
    False
-   >>> employees.union_update(engineers)   # update from another set
+   >>> employees.update(engineers)         # update from another set
    >>> employees.issuperset(engineers)
    True
    >>> for group in [engineers, programmers, managers, employees]: # doctest: +SKIP
@@ -183,57 +219,68 @@ Set オブジェクト
 
 .. _immutable-transforms:
 
-不変に自動変換するためのプロトコル
-----------------------------------
+Protocol for automatic conversion to immutable
+----------------------------------------------
 
-集合は変更不可能な要素だけを含むことできます。都合上、変更可能な :class:`Set` オブジェクトは、集合要素として加えられる前に、
-自動的に :class:`ImmutableSet` へコピーします。そのメカニズムはハッシュ可能な(:term:`hashable`)要素を常に加えることですが、
-もしハッシュ不可能な場合は、その要素は変更不可能な等価物を返す :meth:`__as_immutable__` メソッドを持っているかどうかチェックされます。
+Sets can only contain immutable elements.  For convenience, mutable :class:`Set`
+objects are automatically copied to an :class:`ImmutableSet` before being added
+as a set element.
 
-:class:`Set` オブジェクトは、 :class:`ImmutableSet` のインスタンスを返す
-:meth:`__as_immutable__` メソッドを持っているので、集合の集合を構築することが可能です。
+The mechanism is to always add a :term:`hashable` element, or if it is not
+hashable, the element is checked to see if it has an :meth:`__as_immutable__`
+method which returns an immutable equivalent.
 
-集合内のメンバーであることをチェックするために、要素をハッシュする必要がある :meth:`__contains__` メソッドと
-:meth:`remove` メソッドが、同様のメカニズムを必要としています。これらのメソッドは要素がハッシュできるかチェックします。もし出来なければ--\
-:meth:`__hash__`, :meth:`__eq__`, :meth:`__ne__`
-のための一時的なメソッドを備えたクラスによってラップされた要素を返すメソッド--
-:meth:`__as_temporarily_immutable__` メソッドをチェックします。
+Since :class:`Set` objects have a :meth:`__as_immutable__` method returning an
+instance of :class:`ImmutableSet`, it is possible to construct sets of sets.
 
-代理メカニズムは、オリジナルの可変オブジェクトから分かれたコピーを組み上げる手間を助けてくれます。
+A similar mechanism is needed by the :meth:`__contains__` and :meth:`remove`
+methods which need to hash an element to check for membership in a set.  Those
+methods check an element for hashability and, if not, check for a
+:meth:`__as_temporarily_immutable__` method which returns the element wrapped by
+a class that provides temporary methods for :meth:`__hash__`, :meth:`__eq__`,
+and :meth:`__ne__`.
 
-:class:`Set` オブジェクトは、新しいクラス :class:`_TemporarilyImmutableSet`
-によってラップされた :class:`Set` オブジェクトを返す、 :meth:`__as_temporarily_immutable__` メソッドを実装します。
+The alternate mechanism spares the need to build a separate copy of the original
+mutable object.
 
-ハッシュ可能を与えるための2つのメカニズムは通常ユーザーに見えません。しかしながら、マルチスレッド環境下においては、
-:class:`_TemporarilyImmutableSet` によって一時的にラップされたものを
-持っているスレッドがあるときに、もう一つのスレッドが集合を更新することで、衝突を発生させることができます。
-言いかえれば、変更可能な集合の集合はスレッドセーフではありません。
+:class:`Set` objects implement the :meth:`__as_temporarily_immutable__` method
+which returns the :class:`Set` object wrapped by a new class
+:class:`_TemporarilyImmutableSet`.
+
+The two mechanisms for adding hashability are normally invisible to the user;
+however, a conflict can arise in a multi-threaded environment where one thread
+is updating a set while another has temporarily wrapped it in
+:class:`_TemporarilyImmutableSet`.  In other words, sets of mutable sets are not
+thread-safe.
 
 
 .. _comparison-to-builtin-set:
 
-組み込み :class:`set` 型との比較
---------------------------------
+Comparison to the built-in :class:`set` types
+---------------------------------------------
 
-組み込みの :class:`set` および :class:`frozenset` 型はこの :mod:`sets` で
-学んだことを生かして設計されています。主な違いは次の通りです。
+The built-in :class:`set` and :class:`frozenset` types were designed based on
+lessons learned from the :mod:`sets` module.  The key differences are:
 
-* :class:`Set` と :class:`ImmutableSet` は :class:`set` と :class:`frozenset`
-  に改名されました。
+* :class:`Set` and :class:`ImmutableSet` were renamed to :class:`set` and
+  :class:`frozenset`.
 
-* :class:`BaseSet` に相当するものはありません。代わりに ``isinstance(x, (set, frozenset))``
-  を使って下さい。
+* There is no equivalent to :class:`BaseSet`.  Instead, use ``isinstance(x,
+  (set, frozenset))``.
 
-* 組み込みのものに使われているハッシュアルゴリズムは、多くのデータ集合に対してずっと良い性能(少ない衝突)を実現します。
+* The hash algorithm for the built-ins performs significantly better (fewer
+  collisions) for most datasets.
 
-* 組み込みのものはより空間効率良く pickle 化できます。
+* The built-in versions have more space efficient pickles.
 
-* 組み込みのものには :meth:`union_update` メソッドがありません。代わりに同じ機能の :meth:`update`
-  メソッドを使って下さい。
+* The built-in versions do not have a :meth:`union_update` method. Instead, use
+  the :meth:`update` method which is equivalent.
 
-* 組み込みのものには `_repr(sorted=True)` メソッドがありません。代わりに組み込み関数の :func:`repr` と
-  :func:`sorted` を使って ``repr(sorted(s))`` として下さい。
+* The built-in versions do not have a ``_repr(sorted=True)`` method.
+  Instead, use the built-in :func:`repr` and :func:`sorted` functions:
+  ``repr(sorted(s))``.
 
-* 組み込みのものは変更不可能なものに自動で変換するプロトコルがありません。この機能は多くの人が困惑を覚えるわりに、コミュニティの誰からも実際的な
-  使用例の報告がありませんでした。
+* The built-in version does not have a protocol for automatic conversion to
+  immutable.  Many found this feature to be confusing and no one in the community
+  reported having found real uses for it.
 

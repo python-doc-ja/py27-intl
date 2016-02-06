@@ -1,56 +1,57 @@
 
 .. _restricted:
 
-*******************************
-制限実行 (restricted execution)
-*******************************
+********************
+Restricted Execution
+********************
 
 .. warning::
 
-   Python 2.3 で、既知の容易に修正できないセキュリティーホールのために、
-   これらのモジュールは無効にされています。 :mod:`rexec` や
-   :mod:`Bastion` モジュールを使った古いコードを読むときに助けになるよう、
-   モジュールのドキュメントだけは残されています。
+   In Python 2.3 these modules have been disabled due to various known and not
+   readily fixable security holes.  The modules are still documented here to help
+   in reading old code that uses the :mod:`rexec` and :mod:`Bastion` modules.
 
-*制限実行 (restricted execution)* とは、信頼できるコードと信頼できないコードを区別できるようにするための Python における基本的なフレームワークです。
-このフレームワークは、信頼できる Python コード (*スーパバイザ (supervisor)*) が、
-パーミッションに制限のかけられた "拘束セル (padded cell)" を生成し、
-このセル中で信頼のおけないコードを実行するという概念に基づいています。
-信頼のおけないコードはこの拘束セルを破ることができず、信頼されたコードで提供され、
-管理されたインタフェースを介してのみ、
-傷つきやすいシステムリソースとやりとりすることができます。
-"制限実行" という用語は、"安全な Python (safe-Python)" を裏から支えるものです。
-というのは、真の安全を定義することは難しく、
-制限された環境を生成する方法によって決められるからです。
-制限された環境は入れ子にすることができ、
-このとき内側のセルはより縮小されることはあるが決して拡大されることのない特権を持ったサブセルを生成します。
+*Restricted execution* is the basic framework in Python that allows for the
+segregation of trusted and untrusted code.  The framework is based on the notion
+that trusted Python code (a *supervisor*) can create a "padded cell' (or
+environment) with limited permissions, and run the untrusted code within this
+cell.  The untrusted code cannot break out of its cell, and can only interact
+with sensitive system resources through interfaces defined and managed by the
+trusted code.  The term "restricted execution" is favored over "safe-Python"
+since true safety is hard to define, and is determined by the way the restricted
+environment is created.  Note that the restricted environments can be nested,
+with inner cells creating subcells of lesser, but never greater, privilege.
 
-Python の制限実行モデルの興味深い側面は、信頼されないコードに提供されるインタフェースが、
-信頼されるコードに提供されるそれらと同じ名前を持つということです。
-このため、制限された環境で動作するよう設計されたコードを書く上で特殊なインタフェースを学ぶ必要がありません。
-また、拘束セルの厳密な性質はスーパバイザによって決められるため、
-アプリケーションによって異なる制限を課すことができます。
-例えば、信頼されないコードが指定したディレクトリ内の何らかのファイルを読み出すが決して書き込まないということが "安全" と考えられるかもしれません。
-この場合、スーパバイザは組み込みの :func:`open` 関数について、
-*mode* パラメタが ``'w'`` の時に例外を送出するように再定義できます。
-また例えば、"安全" とは、
-*filename* パラメタに対して :c:func:`chroot` に似た操作を施して、
-ルートパスがファイルシステム上の何らかの安全な "砂場 (sandbox)" 領域に対する相対パスになるようにすることかもしれません。
-この場合でも、信頼されないコードは依然として、もとの呼び出しインタフェースを持ったままの組み込みの :func:`open` 関数を制限環境中に見出します。
-ここでは、関数に対する意味付け (semantics) は同じですが、許可されないパラメタが使われようとしているとスーパバイザが判断した場合には :exc:`IOError` が送出されます。
+An interesting aspect of Python's restricted execution model is that the
+interfaces presented to untrusted code usually have the same names as those
+presented to trusted code.  Therefore no special interfaces need to be learned
+to write code designed to run in a restricted environment.  And because the
+exact nature of the padded cell is determined by the supervisor, different
+restrictions can be imposed, depending on the application.  For example, it
+might be deemed "safe" for untrusted code to read any file within a specified
+directory, but never to write a file.  In this case, the supervisor may redefine
+the built-in :func:`open` function so that it raises an exception whenever the
+*mode* parameter is ``'w'``.  It might also perform a :c:func:`chroot`\ -like
+operation on the *filename* parameter, such that root is always relative to some
+safe "sandbox" area of the filesystem.  In this case, the untrusted code would
+still see an built-in :func:`open` function in its environment, with the same
+calling interface.  The semantics would be identical too, with :exc:`IOError`\ s
+being raised when the supervisor determined that an unallowable parameter is
+being used.
 
-Python のランタイムシステムは、特定のコードブロックが制限実行モードかどうかを、
-グローバル変数の中の ``__builtins__`` オブジェクトの一意性をもとに判断します:
-オブジェクトが標準の :mod:`__builtin__` モジュール (の辞書) の場合、
-コードは非制限下にあるとみなされます。
-それ以外は制限下にあるとみなされます。
+The Python run-time determines whether a particular code block is executing in
+restricted execution mode based on the identity of the ``__builtins__`` object
+in its global variables: if this is (the dictionary of) the standard
+:mod:`__builtin__` module, the code is deemed to be unrestricted, else it is
+deemed to be restricted.
 
-制限実行モードで動作する Python コードは、
-拘束セルから侵出しないように設計された数多くの制限に直面します。
-例えば、関数オブジェクト属性 :attr:`func_globals` や、
-クラスおよびインスタンスオブジェクトの属性 :attr:`__dict__` は利用できません。
+Python code executing in restricted mode faces a number of limitations that are
+designed to prevent it from escaping from the padded cell. For instance, the
+function object attribute :attr:`func_globals` and the class and instance object
+attribute :attr:`__dict__` are unavailable.
 
-二つのモジュールが、制限実行環境を立ち上げるためのフレームワークを提供しています:
+Two modules provide the framework for setting up restricted execution
+environments:
 
 
 .. toctree::
@@ -61,8 +62,7 @@ Python のランタイムシステムは、特定のコードブロックが制�
 .. seealso::
 
    `Grail Home Page <http://grail.sourceforge.net/>`_
-      Python で書かれたインターネットブラウザ Grail です。Python
-      で書かれたアプレットをサポートするために、上記のモジュールを使っています。
-      Grail における Python 制限実行モードの利用に関する詳しい情報は、Web
-      サイトで入手することができます。
+      Grail, an Internet browser written in Python, uses these modules to support
+      Python applets.  More information on the use of Python's restricted execution
+      mode in Grail is available on the Web site.
 

@@ -1,78 +1,94 @@
-:mod:`copy` --- 浅いコピーおよび深いコピー操作
-==============================================
+:mod:`copy` --- Shallow and deep copy operations
+================================================
 
 .. module:: copy
-   :synopsis: 浅いコピーおよび深いコピー操作。
+   :synopsis: Shallow and deep copy operations.
+
+Assignment statements in Python do not copy objects, they create bindings
+between a target and an object. For collections that are mutable or contain
+mutable items, a copy is sometimes needed so one can change one copy without
+changing the other. This module provides generic shallow and deep copy
+operations (explained below).
 
 
-このモジュールでは汎用の (浅い／深い) コピー操作を提供しています。
-
-以下にインタフェースをまとめます:
+Interface summary:
 
 .. function:: copy(x)
 
-   *x* の浅い (shallow) コピーを返します。
+   Return a shallow copy of *x*.
 
 
 .. function:: deepcopy(x)
 
-   *x* の深い (deep) コピーを返します。
+   Return a deep copy of *x*.
 
 
 .. exception:: error
 
-   モジュール特有のエラーを送出します。
+   Raised for module specific errors.
 
 
-浅い (shallow) コピーと深い (deep) コピーの違いが関係するのは、複合オブジェクト (リストやクラスインスタンスのような他のオブジェクトを
-含むオブジェクト) だけです:
+The difference between shallow and deep copying is only relevant for compound
+objects (objects that contain other objects, like lists or class instances):
 
-* *浅いコピー (shallow copy)* は新たな複合オブジェクトを作成し、その後 (可能な限り) 元のオブジェクト中に見つかったオブジェクトに対する
-  *参照* を挿入します。
+* A *shallow copy* constructs a new compound object and then (to the extent
+  possible) inserts *references* into it to the objects found in the original.
 
-* *深いコピー (deep copy)* は新たな複合オブジェクトを作成し、その後元のオブジェクト中に見つかったオブジェクトの *コピー* を挿入します。
+* A *deep copy* constructs a new compound object and then, recursively, inserts
+  *copies* into it of the objects found in the original.
 
-深いコピー操作には、しばしば浅いコピー操作の時には存在しない 2 つの問題がついてまわります:
+Two problems often exist with deep copy operations that don't exist with shallow
+copy operations:
 
-* 再帰的なオブジェクト (直接、間接に関わらず、自分自身に対する参照を持つ複合オブジェクト) は再帰ループを引き起こします。
+* Recursive objects (compound objects that, directly or indirectly, contain a
+  reference to themselves) may cause a recursive loop.
 
-* 深いコピーでは、 *何もかも* をコピーするため、例えば複数のコピー間で共有されるべき管理データ構造までも、余分にコピーしてしまいます。
+* Because deep copy copies *everything* it may copy too much, e.g.,
+  administrative data structures that should be shared even between copies.
 
-:func:`deepcopy` 関数では、これらの問題を以下のようにして回避しています:
+The :func:`deepcopy` function avoids these problems by:
 
-* 現在のコピー過程ですでにコピーされたオブジェクトからなる、 "メモ" 辞書を保持します; かつ
+* keeping a "memo" dictionary of objects already copied during the current
+  copying pass; and
 
-* ユーザ定義のクラスでコピー操作やコピーされる内容の集合を上書きできるようにします。
+* letting user-defined classes override the copying operation or the set of
+  components copied.
 
-このモジュールでは、モジュール、メソッド、スタックトレース、スタックフレーム、ファイル、ソケット、ウィンドウ、アレイ、その他これらに
-類似の型をコピーしません。このモジュールでは元のオブジェクトを変更せずに返すことで関数とクラスを (浅くまたは深く)「コピー」します。これは
-:mod:`pickle` モジュールでの扱われかたと同じです。
+This module does not copy types like module, method, stack trace, stack frame,
+file, socket, window, array, or any similar types.  It does "copy" functions and
+classes (shallow and deeply), by returning the original object unchanged; this
+is compatible with the way these are treated by the :mod:`pickle` module.
 
-辞書型の浅いコピーは :meth:`dict.copy` で、リストの浅いコピーはリスト全体を指す
-スライス (例えば ``copy_list = original_list[:]``) でできます。
+Shallow copies of dictionaries can be made using :meth:`dict.copy`, and
+of lists by assigning a slice of the entire list, for example,
+``copied_list = original_list[:]``.
 
 .. versionchanged:: 2.5
-   関数コピーの追加.
+   Added copying functions.
 
 .. index:: module: pickle
 
-クラスでは、pickle 化を制御するためのインタフェースと同じインタフェースをコピーの制御に使うことができます。これらのメソッドに関する情報は
-:mod:`pickle` モジュールの記述を参照してください。 :mod:`copy` モジュールは pickle 用関数登録モジュール
-:mod:`copy_reg` を使いません。
+Classes can use the same interfaces to control copying that they use to control
+pickling.  See the description of module :mod:`pickle` for information on these
+methods.  The :mod:`copy` module does not use the :mod:`copy_reg` registration
+module.
 
 .. index::
    single: __copy__() (copy protocol)
    single: __deepcopy__() (copy protocol)
 
-クラス独自のコピー実装を定義するために、特殊メソッド :meth:`__copy__` および :meth:`__deepcopy__`
-を定義することができます。前者は浅いコピー操作を実装するために使われます; 追加の引数はありません。後者は深いコピー操作を実現するために呼び出されます;
-この関数には単一の引数としてメモ辞書が渡されます。 :meth:`__deepcopy__`
-の実装で、内容のオブジェクトに対して深いコピーを生成する必要がある場合、 :func:`deepcopy` を呼び出し、最初の引数にそのオブジェクトを、
-メモ辞書を二つ目の引数に与えなければなりません。
+In order for a class to define its own copy implementation, it can define
+special methods :meth:`__copy__` and :meth:`__deepcopy__`.  The former is called
+to implement the shallow copy operation; no additional arguments are passed.
+The latter is called to implement the deep copy operation; it is passed one
+argument, the memo dictionary.  If the :meth:`__deepcopy__` implementation needs
+to make a deep copy of a component, it should call the :func:`deepcopy` function
+with the component as first argument and the memo dictionary as second argument.
 
 
 .. seealso::
 
    Module :mod:`pickle`
-      オブジェクト状態の取得と復元をサポートするために使われる特殊メソッドについて議論されています。
+      Discussion of the special methods used to support object state retrieval and
+      restoration.
 

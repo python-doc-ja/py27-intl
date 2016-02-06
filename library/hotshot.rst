@@ -1,121 +1,134 @@
 
-:mod:`hotshot` --- ハイパフォーマンス・ロギング・プロファイラ
-=============================================================
+:mod:`hotshot` --- High performance logging profiler
+====================================================
 
 .. module:: hotshot
-   :synopsis: コードの大半が C で書かれたハイパフォーマンス・ロギング・プロファイラ
+   :synopsis: High performance logging profiler, mostly written in C.
 .. moduleauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 .. sectionauthor:: Anthony Baxter <anthony@interlink.com.au>
 
 
 .. versionadded:: 2.2
 
-このモジュールは :mod:`_hotshot` C モジュールへのより良いインターフェースを提供します。Hotshot は既存の
-:mod:`profile` に置き換わるものです。その大半が C で書かれているため、 :mod:`profile` に比べパフォー
-マンス上の影響がはるかに少なく済みます。
+This module provides a nicer interface to the :mod:`_hotshot` C module. Hotshot
+is a replacement for the existing :mod:`profile` module. As it's written mostly
+in C, it should result in a much smaller performance impact than the existing
+:mod:`profile` module.
 
 .. note::
 
-   :mod:`hotshot` は C モジュールでプロファイル中のオーバーヘッドを極力小さくすることに焦点を絞っており、その代わりに後処理時間の長さという
-   つけを払います。通常の使用法についてはこのモジュールではなく :mod:`cProfile` を使うことを推奨します。 :mod:`hotshot` は保守され
-   ておらず、将来的には標準ライブラリから外されるかもしれません。
+   The :mod:`hotshot` module focuses on minimizing the overhead while profiling, at
+   the expense of long data post-processing times. For common usage it is
+   recommended to use :mod:`cProfile` instead. :mod:`hotshot` is not maintained and
+   might be removed from the standard library in the future.
 
 .. versionchanged:: 2.5
-   以前より意味のある結果が得られているはずです。かつては時間計測の中核部分に致命的なバグがありました.
+   The results should be more meaningful than in the past: the timing core
+   contained a critical bug.
 
 .. note::
 
-   :mod:`hotshot` プロファイラはまだスレッド環境ではうまく動作しません。測定したいコード上でプロファイラを実行するためにスレッドを使わない版の
-   スクリプトを使う方法が有用です。
+   The :mod:`hotshot` profiler does not yet work well with threads. It is useful to
+   use an unthreaded script to run the profiler over the code you're interested in
+   measuring if at all possible.
 
 
 .. class:: Profile(logfile[, lineevents[, linetimings]])
 
-   プロファイラ・オブジェクト。引数 *logfile* はプロファイル・データのログを保存するファイル名です。引数 *lineevents* はソースコー
-   ドの1 行ごとにイベントを発生させるか、関数の呼び出し/リターンのときだけ発生させるかを指定します。デフォルトの値は ``0`` (関数の呼び出し/
-   リターンのときだけログを残す)です。引数 *linetimings* は時間情報を記録するかどうかを指定します。デフォルトの値は ``1`` (時間情報を記
-   録する)です。
+   The profiler object. The argument *logfile* is the name of a log file to use for
+   logged profile data. The argument *lineevents* specifies whether to generate
+   events for every source line, or just on function call/return. It defaults to
+   ``0`` (only log function call/return). The argument *linetimings* specifies
+   whether to record timing information. It defaults to ``1`` (store timing
+   information).
 
 
 .. _hotshot-objects:
 
-プロファイル・オブジェクト
---------------------------
+Profile Objects
+---------------
 
-プロファイル・オブジェクトは以下のメソッドを持っています。
+Profile objects have the following methods:
 
 
 .. method:: Profile.addinfo(key, value)
 
-   プロファイル出力の際、任意のラベル名を追加します。
+   Add an arbitrary labelled value to the profile output.
 
 
 .. method:: Profile.close()
 
-   ログファイルを閉じ、プロファイラを終了します。
+   Close the logfile and terminate the profiler.
 
 
 .. method:: Profile.fileno()
 
-   プロファイラのログファイルのファイル・ディスクリプタを返します。
+   Return the file descriptor of the profiler's log file.
 
 
 .. method:: Profile.run(cmd)
 
-   スクリプト環境で :keyword:`exec` 互換文字列のプロファイルをおこないます。 :mod:`__main__`
-   モジュールのグローバル変数は、スクリプトのグローバル変数、ローカル変数の両方に使われます。
+   Profile an :keyword:`exec`\ -compatible string in the script environment. The
+   globals from the :mod:`__main__` module are used as both the globals and locals
+   for the script.
 
 
 .. method:: Profile.runcall(func, *args, **keywords)
 
-   単一の呼び出し可能オブジェクトのプロファイルをおこないます。位置依存引数やキーワード引数を追加して呼び出すオブジェクトに渡すこともできます。
-   呼び出しの結果はそのまま返されます。例外が発生したときはプロファイリングが無効になり、例外をそのまま伝えるようになっています。
+   Profile a single call of a callable. Additional positional and keyword arguments
+   may be passed along; the result of the call is returned, and exceptions are
+   allowed to propagate cleanly, while ensuring that profiling is disabled on the
+   way out.
 
 
 .. method:: Profile.runctx(cmd, globals, locals)
 
-   指定した環境で :keyword:`exec` 互換文字列の評価をおこないます。文字列のコンパイルはプロファイルを開始する前におこなわれます。
+   Evaluate an :keyword:`exec`\ -compatible string in a specific environment. The
+   string is compiled before profiling begins.
 
 
 .. method:: Profile.start()
 
-   プロファイラを開始します。
+   Start the profiler.
 
 
 .. method:: Profile.stop()
 
-   プロファイラを停止します。
+   Stop the profiler.
 
 
-hotshot データの利用
---------------------
+Using hotshot data
+------------------
 
 .. module:: hotshot.stats
-   :synopsis: Hotshot の統計分析
+   :synopsis: Statistical analysis for Hotshot
 
 
 .. versionadded:: 2.2
 
-このモジュールは hotshot プロファイル・データを標準の :mod:`pstats` オブジェクトにロードします。
+This module loads hotshot profiling data into the standard :mod:`pstats` Stats
+objects.
 
 
 .. function:: load(filename)
 
-   *filename* から hotshot データを読み込み、 :class:`pstats.Stats` クラスのインスタンスを返します。
+   Load hotshot data from *filename*. Returns an instance of the
+   :class:`pstats.Stats` class.
 
 
 .. seealso::
 
    Module :mod:`profile`
-      :mod:`profile` モジュールの :class:`Stats` クラス
+      The :mod:`profile` module's :class:`Stats` class
 
 
 .. _hotshot-example:
 
-使用例
-------
+Example Usage
+-------------
 
-これは Python の"ベンチマーク" pystone を使った例です。実行にはやや時間がかかり、巨大な出力ファイルを生成するので注意してください。 ::
+Note that this example runs the Python "benchmark" pystones.  It can take some
+time to run, and will produce large output files. ::
 
    >>> import hotshot, hotshot.stats, test.pystone
    >>> prof = hotshot.Profile("stones.prof")

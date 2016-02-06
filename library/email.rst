@@ -1,9 +1,9 @@
-:mod:`email` --- 電子メールと MIME 処理のためのパッケージ
-=========================================================
+:mod:`email` --- An email and MIME handling package
+===================================================
 
 .. module:: email
-   :synopsis: 電子メールのメッセージを解析、操作および生成を支援するパッケージ。
-    これには MIME 文書もふくまれる。
+   :synopsis: Package supporting the parsing, manipulating, and generating email messages,
+              including MIME documents.
 .. moduleauthor:: Barry A. Warsaw <barry@python.org>
 .. sectionauthor:: Barry A. Warsaw <barry@python.org>
 .. Copyright (C) 2001-2007 Python Software Foundation
@@ -11,46 +11,45 @@
 
 .. versionadded:: 2.2
 
-:mod:`email` パッケージは電子メールのメッセージを管理するライブラリです。
-これには MIME やそれ以外の :rfc:`2822` ベースのメッセージ文書もふくまれます。
-このパッケージはいくつかの古い標準パッケージ、 :mod:`rfc822`, :mod:`mimetools`,
-:mod:`multifile` などにふくまれていた機能のほとんどを持ち、くわえて標準ではなかった
-:mod:`mimecntl` などの機能もふくんでいます。
-このパッケージは、とくに電子メールのメッセージを SMTP (:rfc:`2821`)、
-NNTP、その他のサーバに送信するために作られているというわけでは *ありません* 。
-それは :mod:`smtplib`, :mod:`nntplib` モジュールなどの機能です。
-:mod:`email` パッケージは :rfc:`2822` に加えて、
-:rfc:`2045`, :rfc:`2046`, :rfc:`2047` および :rfc:`2231` など MIME 関連の
-RFC をサポートしており、できるかぎり RFC に準拠することをめざしています。
+The :mod:`email` package is a library for managing email messages, including
+MIME and other :rfc:`2822`\ -based message documents.  It subsumes most of the
+functionality in several older standard modules such as :mod:`rfc822`,
+:mod:`mimetools`, :mod:`multifile`, and other non-standard packages such as
+:mod:`mimecntl`.  It is specifically *not* designed to do any sending of email
+messages to SMTP (:rfc:`2821`), NNTP, or other servers; those are functions of
+modules such as :mod:`smtplib` and :mod:`nntplib`. The :mod:`email` package
+attempts to be as RFC-compliant as possible, supporting in addition to
+:rfc:`2822`, such MIME-related RFCs as :rfc:`2045`, :rfc:`2046`, :rfc:`2047`,
+and :rfc:`2231`.
 
-:mod:`email` パッケージの一番の特徴は、電子メールの内部表現である
-*オブジェクトモデル* と、電子メールメッセージの解析および生成とを分離していることです。
-:mod:`email` パッケージを使うアプリケーションは基本的にはオブジェクトを\
-処理することができます。メッセージに子オブジェクトを追加したり、メッセージから\
-子オブジェクトを削除したり、内容を完全に並べかえたり、といったことができます。
-フラットなテキスト文書からオブジェクトモデルへの変換、またそこからフラットな文書へと\
-戻す変換はそれぞれ別々の解析器 (パーサ) と生成器 (ジェネレータ) が担当しています。
-また、一般的な MIME オブジェクトタイプのいくつかについては手軽なサブクラスが存在しており、\
-メッセージフィールド値を抽出したり解析したり、
-RFC 準拠の日付を生成したりなどのよくおこわれるタスクについてはいくつかの\
-雑用ユーティリティもついています。
+The primary distinguishing feature of the :mod:`email` package is that it splits
+the parsing and generating of email messages from the internal *object model*
+representation of email.  Applications using the :mod:`email` package deal
+primarily with objects; you can add sub-objects to messages, remove sub-objects
+from messages, completely re-arrange the contents, etc.  There is a separate
+parser and a separate generator which handles the transformation from flat text
+to the object model, and then back to flat text again.  There are also handy
+subclasses for some common MIME object types, and a few miscellaneous utilities
+that help with such common tasks as extracting and parsing message field values,
+creating RFC-compliant dates, etc.
 
-以下の節では :mod:`email` パッケージの機能を説明します。
-説明の順序は多くのアプリケーションで一般的な使用順序にもとづいています。
-まず、電子メールメッセージをファイルあるいはその他のソースからフラットな\
-テキスト文書として読み込み、つぎにそのテキストを解析して電子メールの\
-オブジェクト構造を作成し、その構造を操作して、最後にオブジェクトツリーを\
-フラットなテキストに戻す、という順序になっています。
+The following sections describe the functionality of the :mod:`email` package.
+The ordering follows a progression that should be common in applications: an
+email message is read as flat text from a file or other source, the text is
+parsed to produce the object structure of the email message, this structure is
+manipulated, and finally, the object tree is rendered back into flat text.
 
-このオブジェクト構造は、まったくのゼロから作りだしたものであってもいっこうにかまいません。
-この場合も上と似たような作業順序になるでしょう。
+It is perfectly feasible to create the object structure out of whole cloth ---
+i.e. completely from scratch.  From there, a similar progression can be taken as
+above.
 
-またここには :mod:`email` パッケージが提供するすべてのクラスおよび\
-モジュールに関する説明と、 :mod:`email` パッケージを使っていくうえで\
-遭遇するかもしれない例外クラス、いくつかの補助ユーティリティ、そして少々の\
-サンプルも含まれています。
-古い :mod:`mimelib` や前バージョンの :mod:`email` パッケージのユーザのために、
-現行バージョンとの違いと移植についての節も設けてあります。
+Also included are detailed specifications of all the classes and modules that
+the :mod:`email` package provides, the exception classes you might encounter
+while using the :mod:`email` package, some auxiliary utilities, and a few
+examples.  For users of the older :mod:`mimelib` package, or previous versions
+of the :mod:`email` package, a section on differences and porting is provided.
+
+Contents of the :mod:`email` package documentation:
 
 .. toctree::
 
@@ -70,270 +69,278 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
 .. seealso::
 
    Module :mod:`smtplib`
-      SMTP プロトコルクライアント
+      SMTP protocol client
 
    Module :mod:`nntplib`
-      NNTP プロトコルクライアント
-
-
+      NNTP protocol client
 
 
 .. _email-pkg-history:
 
-パッケージの履歴
-----------------
-
-このテーブルは email パッケージのリリース履歴を表しています。
-それぞれのバージョンと、それが同梱された Python のバージョンとの関連が示されています。
-このドキュメントでの、追加/変更されたバージョンの表記は email パッケージのバージョン
-*ではなく* 、Pythonのバージョンです。
-このテーブルは Python の各バージョン間の email パッケージの互換性も示しています。
-
-+------------------+------------------------------+--------------------------+
-| email バージョン | 配布                         | 互換                     |
-+==================+==============================+==========================+
-| :const:`1.x`     | Python 2.2.0 to Python 2.2.1 | *もうサポートされません* |
-+------------------+------------------------------+--------------------------+
-| :const:`2.5`     | Python 2.2.2+ and Python 2.3 | Python 2.1 から 2.5      |
-+------------------+------------------------------+--------------------------+
-| :const:`3.0`     | Python 2.4                   | Python 2.3 から 2.5      |
-+------------------+------------------------------+--------------------------+
-| :const:`4.0`     | Python 2.5                   | Python 2.3 から 2.5      |
-+------------------+------------------------------+--------------------------+
-
-以下は :mod:`email` バージョン4と3の間のおもな差分です。
-
-* 全モジュールが :pep:`8` 標準にあわせてリネームされました。
-  たとえば、version 3 でのモジュール :mod:`email.Message` は
-  version 4 では :mod:`email.message` になりました。
-
-* 新しいサブパッケージ :mod:`email.mime` が追加され、
-  version 3 の :mod:`email.MIME*` は、
-  :mod:`email.mime` のサブパッケージにまとめられました。
-  たとえば、version 3 での :mod:`email.MIMEText` は、
-  :mod:`email.mime.text` になりました。
-
-  *Python 2.6までは version 3 の名前も有効です。*
-
-* :mod:`email.mime.application` モジュールが追加されました。これは
-  :class:`MIMEApplication` クラスを含んでいます。
-
-* version 3 で推奨されないとされた機能は削除されました。
-  これらは :meth:`Generator.__call__`,
-  :meth:`Message.get_type`, :meth:`Message.get_main_type`,
-  :meth:`Message.get_subtype` を含みます。
-
-* :rfc:`2331` サポートの修正が追加されました。
-  これは :func:`Message.get_param` などの関数の返り値を変更します。
-  いくつかの環境では、3つ組のタプルで返されていた値が1つの文字列で返されます
-  (とくに、全ての拡張パラメータセグメントがエンコードされていな\
-  かった場合、予測されていた language や charset の指定がないと、
-  返り値は単純な文字列になります)。過去の版では % デコードが\
-  エンコードされているセグメントおよびエンコードされていないセグメントに対して行われました\
-  が、エンコードされたセグメントのみで行われるようになりました。
-
-:mod:`email` バージョン 3 とバージョン 2 との違いは以下のようなものです:
-
-* :class:`FeedParser` クラスが新しく導入され、 :class:`Parser` クラスは :class:`FeedParser`
-  を使って実装されるようになりました。このパーザは non-strict なものであり、解析はベストエフォート方式でおこなわれ
-  解析中に例外を発生させることはありません。解析中に発見された問題は
-  そのメッセージの *defect* (障害) 属性に保存されます。
-
-* バージョン 2 で :exc:`DeprecationWarning` を発生していた API は
-  すべて撤去されました。以下のものが含まれています:
-  :class:`MIMEText` コンストラクタに渡す引数 *_encoder* 、
-  :meth:`Message.add_payload` メソッド、
-  :func:`Utils.dump_address_pair` 関数、そして :func:`Utils.decode` と
-  :func:`Utils.encode` です。
-
-* 新しく以下の関数が :exc:`DeprecationWarning` を発生するようになりました:
-  :meth:`Generator.__call__`,
-  :meth:`Message.get_type`, :meth:`Message.get_main_type`,
-  :meth:`Message.get_subtype`, そして :class:`Parser` クラスに対する
-  *strict* 引数です。これらは email の将来のバージョンで撤去される予定です。
-
-* Python 2.3 以前はサポートされなくなりました。
-
-:mod:`email` バージョン 2 とバージョン 1 との違いは以下のようなものです:
-
-* :mod:`email.Header` モジュールおよび :mod:`email.Charset` モジュールが
-  追加されています。
-
-* :class:`Message` インスタンスの Pickle 形式が変わりました。
-  が、これは正式に定義されたことは一度もないので (そしてこれからも)、
-  この変更は互換性の欠如とはみなされていません。ですがもし\
-  お使いのアプリケーションが :class:`Message` インスタンスを pickle あるいは
-  unpickle しているなら、現在 :mod:`email` バージョン 2 では
-  プライベート変数 *_charset* および
-  *_default_type* を含むようになったということに注意してください。
-
-* :class:`Message` クラス中のいくつかのメソッドは推奨されなくなったか、
-  あるいは呼び出し形式が変更になっています。また、多くの新しいメソッドが\
-  追加されています。詳しくは :class:`Message` クラスの文書を参照してください。
-  これらの変更は完全に下位互換になっているはずです。
-
-* :mimetype:`message/rfc822` 形式のコンテナは、
-  見た目上のオブジェクト構造が変わりました。
-  :mod:`email` バージョン 1 では
-  この content type はスカラー形式のペイロードとして表現されていました。
-  つまり、コンテナメッセージの
-  :meth:`is_multipart` は false を返し、
-  :meth:`get_payload` はリストオブジェクトではなく単一の
-  :class:`Message` インスタンスを直接返すようになっていたのです。
+Package History
+---------------
+
+This table describes the release history of the email package, corresponding to
+the version of Python that the package was released with.  For purposes of this
+document, when you see a note about change or added versions, these refer to the
+Python version the change was made in, *not* the email package version.  This
+table also describes the Python compatibility of each version of the package.
+
++---------------+------------------------------+-----------------------+
+| email version | distributed with             | compatible with       |
++===============+==============================+=======================+
+| :const:`1.x`  | Python 2.2.0 to Python 2.2.1 | *no longer supported* |
++---------------+------------------------------+-----------------------+
+| :const:`2.5`  | Python 2.2.2+ and Python 2.3 | Python 2.1 to 2.5     |
++---------------+------------------------------+-----------------------+
+| :const:`3.0`  | Python 2.4                   | Python 2.3 to 2.5     |
++---------------+------------------------------+-----------------------+
+| :const:`4.0`  | Python 2.5                   | Python 2.3 to 2.5     |
++---------------+------------------------------+-----------------------+
+
+Here are the major differences between :mod:`email` version 4 and version 3:
+
+* All modules have been renamed according to :pep:`8` standards.  For example,
+  the version 3 module :mod:`email.Message` was renamed to :mod:`email.message` in
+  version 4.
+
+* A new subpackage :mod:`email.mime` was added and all the version 3
+  :mod:`email.MIME\*` modules were renamed and situated into the :mod:`email.mime`
+  subpackage.  For example, the version 3 module :mod:`email.MIMEText` was renamed
+  to :mod:`email.mime.text`.
+
+  *Note that the version 3 names will continue to work until Python 2.6*.
+
+* The :mod:`email.mime.application` module was added, which contains the
+  :class:`~email.mime.application.MIMEApplication` class.
+
+* Methods that were deprecated in version 3 have been removed.  These include
+  :meth:`Generator.__call__`, :meth:`Message.get_type`,
+  :meth:`Message.get_main_type`, :meth:`Message.get_subtype`.
+
+* Fixes have been added for :rfc:`2231` support which can change some of the
+  return types for :func:`Message.get_param <email.message.Message.get_param>`
+  and friends.  Under some
+  circumstances, values which used to return a 3-tuple now return simple strings
+  (specifically, if all extended parameter segments were unencoded, there is no
+  language and charset designation expected, so the return type is now a simple
+  string).  Also, %-decoding used to be done for both encoded and unencoded
+  segments; this decoding is now done only for encoded segments.
+
+Here are the major differences between :mod:`email` version 3 and version 2:
+
+* The :class:`~email.parser.FeedParser` class was introduced, and the
+  :class:`~email.parser.Parser` class was implemented in terms of the
+  :class:`~email.parser.FeedParser`.  All parsing therefore is
+  non-strict, and parsing will make a best effort never to raise an exception.
+  Problems found while parsing messages are stored in the message's *defect*
+  attribute.
+
+* All aspects of the API which raised :exc:`DeprecationWarning`\ s in version 2
+  have been removed.  These include the *_encoder* argument to the
+  :class:`~email.mime.text.MIMEText` constructor, the
+  :meth:`Message.add_payload` method, the :func:`Utils.dump_address_pair`
+  function, and the functions :func:`Utils.decode` and :func:`Utils.encode`.
+
+* New :exc:`DeprecationWarning`\ s have been added to:
+  :meth:`Generator.__call__`, :meth:`Message.get_type`,
+  :meth:`Message.get_main_type`, :meth:`Message.get_subtype`, and the *strict*
+  argument to the :class:`~email.parser.Parser` class.  These are expected to
+  be removed in future versions.
+
+* Support for Pythons earlier than 2.3 has been removed.
+
+Here are the differences between :mod:`email` version 2 and version 1:
+
+* The :mod:`email.Header` and :mod:`email.Charset` modules have been added.
+
+* The pickle format for :class:`~email.message.Message` instances has changed.
+  Since this was never (and still isn't) formally defined, this isn't
+  considered a backward incompatibility.  However if your application pickles
+  and unpickles :class:`~email.message.Message` instances, be aware that in
+  :mod:`email` version 2, :class:`~email.message.Message` instances now have
+  private variables *_charset* and *_default_type*.
+
+* Several methods in the :class:`~email.message.Message` class have been
+  deprecated, or their signatures changed.  Also, many new methods have been
+  added.  See the documentation for the :class:`~email.message.Message` class
+  for details.  The changes should be completely backward compatible.
+
+* The object structure has changed in the face of :mimetype:`message/rfc822`
+  content types.  In :mod:`email` version 1, such a type would be represented
+  by a scalar payload, i.e. the container message's
+  :meth:`~email.message.Message.is_multipart` returned false,
+  :meth:`~email.message.Message.get_payload` was not a list object, but a
+  single :class:`~email.message.Message` instance.
+
+  This structure was inconsistent with the rest of the package, so the object
+  representation for :mimetype:`message/rfc822` content types was changed.  In
+  :mod:`email` version 2, the container *does* return ``True`` from
+  :meth:`~email.message.Message.is_multipart`, and
+  :meth:`~email.message.Message.get_payload` returns a list containing a single
+  :class:`~email.message.Message` item.
 
-  この構造はパッケージ中のほかの部分と整合がとれていなかったため、
-  :mimetype:`message/rfc822` 形式のオブジェクト表現形式が
-  変更されました。 :mod:`email` バージョン 2 では、コンテナは
-  :meth:`is_multipart` に *True を返し* ます。また
-  :meth:`get_payload` はひとつの :class:`Message` インスタンスを
-  要素とするリストを返すようになりました。
+  Note that this is one place that backward compatibility could not be
+  completely maintained.  However, if you're already testing the return type of
+  :meth:`~email.message.Message.get_payload`, you should be fine.  You just need
+  to make sure your code doesn't do a :meth:`~email.message.Message.set_payload`
+  with a :class:`~email.message.Message` instance on a container with a content
+  type of :mimetype:`message/rfc822`.
 
-  注意: ここは下位互換が完全には成りたたなくなっている部分のひとつです。
-  けれどもあらかじめ :meth:`get_payload` が返すタイプをチェックするように\
-  なっていれば問題にはなりません。ただ :mimetype:`message/rfc822` 形式のコンテナを
-  :class:`Message` インスタンスにじかに :meth:`set_payload`
-  しないようにさえすればよいのです。
+* The :class:`~email.parser.Parser` constructor's *strict* argument was added,
+  and its :meth:`~email.parser.Parser.parse` and
+  :meth:`~email.parser.Parser.parsestr` methods grew a *headersonly* argument.
+  The *strict* flag was also added to functions :func:`email.message_from_file`
+  and :func:`email.message_from_string`.
 
-* :class:`Parser` コンストラクタに *strict* 引数が追加され、
-  :meth:`parse` および :meth:`parsestr`
-  メソッドには *headersonly* 引数がつきました。
-  *strict* フラグはまた :func:`email.message_from_file` と
-  :func:`email.message_from_string` にも追加されています。
+* :meth:`Generator.__call__` is deprecated; use :meth:`Generator.flatten
+  <email.generator.Generator.flatten>` instead.  The
+  :class:`~email.generator.Generator` class has also grown the
+  :meth:`~email.generator.Generator.clone` method.
 
-* :meth:`Generator.__call__` はもはや推奨されなくなりました。
-  かわりに :meth:`Generator.flatten` を使ってください。また、
-  :class:`Generator` クラスには :meth:`clone` メソッドが追加されています。
+* The :class:`~email.generator.DecodedGenerator` class in the
+  :mod:`email.generator` module was added.
 
-* :mod:`email.generator` モジュールに :class:`DecodedGenerator` クラスが\
-  加わりました。
+* The intermediate base classes
+  :class:`~email.mime.nonmultipart.MIMENonMultipart` and
+  :class:`~email.mime.multipart.MIMEMultipart` have been added, and interposed
+  in the class hierarchy for most of the other MIME-related derived classes.
 
-* 中間的な基底クラスである :class:`MIMENonMultipart` および :class:`MIMEMultipart`
-  がクラス階層の中に追加され、ほとんどの MIME 関係の派生クラスがこれを介するようになっています。
+* The *_encoder* argument to the :class:`~email.mime.text.MIMEText` constructor
+  has been deprecated.  Encoding  now happens implicitly based on the
+  *_charset* argument.
 
-* :class:`MIMEText` コンストラクタの *_encoder* 引数は推奨されなくなりました。
-  いまやエンコーダは *_charset* 引数にもとづいて暗黙のうちに決定されます。
+* The following functions in the :mod:`email.Utils` module have been deprecated:
+  :func:`dump_address_pairs`, :func:`decode`, and :func:`encode`.  The following
+  functions have been added to the module: :func:`make_msgid`,
+  :func:`decode_rfc2231`, :func:`encode_rfc2231`, and :func:`decode_params`.
 
-* :mod:`email.utils` モジュールにおける以下の関数は推奨されなくなりました:
-  :func:`dump_address_pairs`, :func:`decode`, および :func:`encode` 。
-  また、このモジュールには以下の関数が追加されています:
-  :func:`make_msgid`, :func:`decode_rfc2231`, :func:`encode_rfc2231` そして
-  :func:`decode_params` 。
+* The non-public function :func:`email.Iterators._structure` was added.
 
-* Public ではない関数 :func:`email.iterators._structure` が追加されました。
 
+Differences from :mod:`mimelib`
+-------------------------------
 
-:mod:`mimelib` との違い
------------------------
+The :mod:`email` package was originally prototyped as a separate library called
+`mimelib <http://mimelib.sourceforge.net/>`_. Changes have been made so that method names
+are more consistent, and some methods or modules have either been added or
+removed.  The semantics of some of the methods have also changed.  For the most
+part, any functionality available in :mod:`mimelib` is still available in the
+:mod:`email` package, albeit often in a different way.  Backward compatibility
+between the :mod:`mimelib` package and the :mod:`email` package was not a
+priority.
 
-:mod:`email` パッケージはもともと `mimelib <http://mimelib.sf.net/>`_ と
-呼ばれる個別のライブラリからつくられたものです。その後変更が加えられ、
-メソッド名がより一貫したものになり、いくつかのメソッドやモジュールが\
-加えられたりはずされたりしました。いくつかのメソッドでは、
-その意味も変更されています。しかしほとんどの部分において、 :mod:`mimelib`
-パッケージで使うことのできた機能は、ときどきその方法が変わってはいるものの
-:mod:`email` パッケージでも使用可能です。 :mod:`mimelib`
-パッケージと :mod:`email` パッケージの間の下位互換性はあまり優先はされませんでした。
+Here is a brief description of the differences between the :mod:`mimelib` and
+the :mod:`email` packages, along with hints on how to port your applications.
 
-以下では :mod:`mimelib` パッケージと :mod:`email` パッケージにおける\
-違いを簡単に説明し、それに沿ってアプリケーションを移植するさいの\
-指針を述べています。
+Of course, the most visible difference between the two packages is that the
+package name has been changed to :mod:`email`.  In addition, the top-level
+package has the following differences:
 
-おそらく 2つのパッケージのもっとも明らかな違いは、パッケージ名が
-:mod:`email` に変更されたことでしょう。
-さらにトップレベルのパッケージが以下のように変更されました:
+* :func:`messageFromString` has been renamed to :func:`message_from_string`.
 
-* :func:`messageFromString` は :func:`message_from_string` に名前が変更されました。
+* :func:`messageFromFile` has been renamed to :func:`message_from_file`.
 
-* :func:`messageFromFile` は :func:`message_from_file` に名前が変更されました。
+The :class:`~email.message.Message` class has the following differences:
 
-:class:`Message` クラスでは、以下のような違いがあります:
+* The method :meth:`asString` was renamed to
+  :meth:`~email.message.Message.as_string`.
 
-* :meth:`asString` メソッドは :meth:`as_string` に名前が変更されました。
+* The method :meth:`ismultipart` was renamed to
+  :meth:`~email.message.Message.is_multipart`.
 
-* :meth:`ismultipart` メソッドは :meth:`is_multipart` に名前が変更されました。
+* The :meth:`~email.message.Message.get_payload` method has grown a *decode*
+  optional argument.
 
-* :meth:`get_payload` メソッドはオプション引数として *decode* をとるようになりました。
+* The method :meth:`getall` was renamed to
+  :meth:`~email.message.Message.get_all`.
 
-* :meth:`getall` メソッドは :meth:`get_all` に名前が変更されました。
+* The method :meth:`addheader` was renamed to
+  :meth:`~email.message.Message.add_header`.
 
-* :meth:`addheader` メソッドは :meth:`add_header` に名前が変更されました。
+* The method :meth:`gettype` was renamed to :meth:`get_type`.
 
-* :meth:`gettype` メソッドは :meth:`get_type` に名前が変更されました。
+* The method :meth:`getmaintype` was renamed to :meth:`get_main_type`.
 
-* :meth:`getmaintype` メソッドは :meth:`get_main_type` に名前が変更されました。
+* The method :meth:`getsubtype` was renamed to :meth:`get_subtype`.
 
-* :meth:`getsubtype` メソッドは :meth:`get_subtype` に名前が変更されました。
+* The method :meth:`getparams` was renamed to
+  :meth:`~email.message.Message.get_params`. Also, whereas :meth:`getparams`
+  returned a list of strings, :meth:`~email.message.Message.get_params` returns
+  a list of 2-tuples, effectively the key/value pairs of the parameters, split
+  on the ``'='`` sign.
 
-* :meth:`getparams` メソッドは :meth:`get_params` に名前が変更されました。
-  また、従来の :meth:`getparams` は文字列のリストを返していましたが、
-  :meth:`get_params` は 2-タプルのリストを返すようになっています。
-  これはそのパラメータのキーと値の組が、 ``'='`` 記号によって分離されたものです。
+* The method :meth:`getparam` was renamed to
+  :meth:`~email.message.Message.get_param`.
 
-* :meth:`getparam` メソッドは :meth:`get_param`.
+* The method :meth:`getcharsets` was renamed to
+  :meth:`~email.message.Message.get_charsets`.
 
-* :meth:`getcharsets` メソッドは :meth:`get_charsets` に名前が変更されました。
+* The method :meth:`getfilename` was renamed to
+  :meth:`~email.message.Message.get_filename`.
 
-* :meth:`getfilename` メソッドは :meth:`get_filename` に名前が変更されました。
+* The method :meth:`getboundary` was renamed to
+  :meth:`~email.message.Message.get_boundary`.
 
-* :meth:`getboundary` メソッドは :meth:`get_boundary` に名前が変更されました。
+* The method :meth:`setboundary` was renamed to
+  :meth:`~email.message.Message.set_boundary`.
 
-* :meth:`setboundary` メソッドは :meth:`set_boundary` に名前が変更されました。
+* The method :meth:`getdecodedpayload` was removed.  To get similar
+  functionality, pass the value 1 to the *decode* flag of the
+  :meth:`~email.message.Message.get_payload` method.
 
-* :meth:`getdecodedpayload` メソッドは廃止されました。
-  これと同様の機能は :meth:`get_payload` メソッドの
-  *decode* フラグに 1 を渡すことで実現できます。
+* The method :meth:`getpayloadastext` was removed.  Similar functionality is
+  supported by the :class:`~email.generator.DecodedGenerator` class in the
+  :mod:`email.generator` module.
 
-* :meth:`getpayloadastext` メソッドは廃止されました。
-  これと同様の機能は :mod:`email.Generator` モジュールの
-  :class:`DecodedGenerator` クラスによって提供されます。
+* The method :meth:`getbodyastext` was removed.  You can get similar
+  functionality by creating an iterator with
+  :func:`~email.iterators.typed_subpart_iterator` in the :mod:`email.iterators`
+  module.
 
-* :meth:`getbodyastext` メソッドは廃止されました。
-  これと同様の機能は :mod:`email.iterators` モジュールにある
-  :func:`typed_subpart_iterator` を使ってイテレータを作ることにより実現できます。
+The :class:`~email.parser.Parser` class has no differences in its public
+interface. It does have some additional smarts to recognize
+:mimetype:`message/delivery-status` type messages, which it represents as a
+:class:`~email.message.Message` instance containing separate
+:class:`~email.message.Message` subparts for each header block in the delivery
+status notification [#]_.
 
-:class:`Parser` クラスは、その public なインターフェイスは変わっていませんが、
-これはより一層かしこくなって :mimetype:`message/delivery-status` 形式のメッセージを\
-認識するようになりました。これは配送状態通知  [#]_
-において、各ヘッダブロックを表す独立した :class:`Message` パートを含む\
-ひとつの :class:`Message` インスタンスとして表現されます。
+The :class:`~email.generator.Generator` class has no differences in its public
+interface.  There is a new class in the :mod:`email.generator` module though,
+called :class:`~email.generator.DecodedGenerator` which provides most of the
+functionality previously available in the :meth:`Message.getpayloadastext`
+method.
 
-:class:`Generator` クラスは、その public なインターフェイスは変わっていませんが、
-:mod:`email.generator` モジュールに新しいクラスが加わりました。
-:class:`DecodedGenerator` と呼ばれるこのクラスは以前
-:meth:`Message.getpayloadastext` メソッドで使われていた\
-機能のほとんどを提供します。
+The following modules and classes have been changed:
 
-また、以下のモジュールおよびクラスが変更されています:
+* The :class:`~email.mime.base.MIMEBase` class constructor arguments *_major*
+  and *_minor* have changed to *_maintype* and *_subtype* respectively.
 
-* :class:`MIMEBase` クラスのコンストラクタ引数 *_major* と *_minor* は、
-  それぞれ *_maintype* と *_subtype* に変更されています。
+* The ``Image`` class/module has been renamed to ``MIMEImage``.  The *_minor*
+  argument has been renamed to *_subtype*.
 
-* ``Image`` クラスおよびモジュールは ``MIMEImage`` に名前が変更されました。
-  *_minor* 引数も *_subtype* に名前が変更されています。
+* The ``Text`` class/module has been renamed to ``MIMEText``.  The *_minor*
+  argument has been renamed to *_subtype*.
 
-* ``Text`` クラスおよびモジュールは ``MIMEText`` に名前が変更されました。
-  *_minor* 引数も *_subtype* に名前が変更されています。
+* The ``MessageRFC822`` class/module has been renamed to ``MIMEMessage``.  Note
+  that an earlier version of :mod:`mimelib` called this class/module ``RFC822``,
+  but that clashed with the Python standard library module :mod:`rfc822` on some
+  case-insensitive file systems.
 
-* ``MessageRFC822`` クラスおよびモジュールは ``MIMEMessage`` に名前が変更されました。
-  注意: 従来バージョンの :mod:`mimelib` では、このクラスおよびモジュールは
-  ``RFC822`` という名前でしたが、これは大文字小文字を区別しないファイルシステムでは
-  Python の標準ライブラリモジュール :mod:`rfc822` と名前がかち合ってしまっていました。
+  Also, the :class:`~email.mime.message.MIMEMessage` class now represents any
+  kind of MIME message
+  with main type :mimetype:`message`.  It takes an optional argument *_subtype*
+  which is used to set the MIME subtype.  *_subtype* defaults to
+  :mimetype:`rfc822`.
 
-  また、 :class:`MIMEMessage` クラスはいまや :mimetype:`message`
-  main type をもつあらゆる種類の MIME メッセージを表現できるようになりました。
-  これはオプション引数として、MIME subtype を指定する *_subtype* 引数をとることができる\
-  ようになっています。デフォルトでは、 *_subtype* は :mimetype:`rfc822` になります。
+:mod:`mimelib` provided some utility functions in its :mod:`address` and
+:mod:`date` modules.  All of these functions have been moved to the
+:mod:`email.utils` module.
 
-:mod:`mimelib` では、 :mod:`address` および :mod:`date` モジュールで\
-いくつかのユーティリティ関数が提供されていました。これらの関数はすべて
-:mod:`email.utils` モジュールの中に移されています。
+The ``MsgReader`` class/module has been removed.  Its functionality is most
+closely supported in the :func:`~email.iterators.body_line_iterator` function
+in the :mod:`email.iterators` module.
 
-``MsgReader`` クラスおよびモジュールは廃止されました。
-これにもっとも近い機能は :mod:`email.iterators` モジュール中の
-:func:`body_line_iterator` 関数によって提供されています。
+.. rubric:: Footnotes
 
-
-.. rubric:: 注記
-
-.. [#] 配送状態通知 (Delivery Status Notifications, DSN) は :rfc:`1894` によって定義されています。
-
+.. [#] Delivery Status Notifications (DSN) are defined in :rfc:`1894`.

@@ -1,213 +1,200 @@
-:mod:`email.message`: 電子メールメッセージの表現
-------------------------------------------------
+:mod:`email.message`: Representing an email message
+---------------------------------------------------
 
 .. module:: email.message
-   :synopsis: 電子メールのメッセージを表現する基底クラス
+   :synopsis: The base class representing email messages.
 
 
-:class:`Message` クラスは、 :mod:`email` パッケージの中心となるクラスです。
-これは :mod:`email` オブジェクトモデルの基底クラスになっています。
-:class:`Message` はヘッダフィールドを検索したりメッセージ本体にアクセスするための
-核となる機能を提供します。
+The central class in the :mod:`email` package is the :class:`Message` class,
+imported from the :mod:`email.message` module.  It is the base class for the
+:mod:`email` object model.  :class:`Message` provides the core functionality for
+setting and querying header fields, and for accessing message bodies.
 
-概念的には、(:mod:`email.message` モジュールからインポートされる)
-:class:`Message` オブジェクトには *ヘッダ* と *ペイロード* が\
-格納されています。ヘッダは、 :rfc:`2822` 形式のフィールド名およびフィールド値が\
-コロンで区切られたものです。コロンはフィールド名またはフィールド値の\
-どちらにも含まれません。
+Conceptually, a :class:`Message` object consists of *headers* and *payloads*.
+Headers are :rfc:`2822` style field names and values where the field name and
+value are separated by a colon.  The colon is not part of either the field name
+or the field value.
 
-ヘッダは大文字小文字を区別した形式で保存されますが、
-ヘッダ名が一致するかどうかの検査は大文字小文字を区別せずにおこなうことができます。
-*Unix-From* ヘッダまたは ``From_`` ヘッダとして知られる\
-エンベロープヘッダがひとつ存在することもあります。
-ペイロードは、単純なメッセージオブジェクトの場合は単なる文字列ですが、
-MIME コンテナ文書 (:mimetype:`multipart/\*` または
-:mimetype:`message/rfc822` など) の場合は :class:`Message` オブジェクトの\
-リストになっています。
+Headers are stored and returned in case-preserving form but are matched
+case-insensitively.  There may also be a single envelope header, also known as
+the *Unix-From* header or the ``From_`` header.  The payload is either a string
+in the case of simple message objects or a list of :class:`Message` objects for
+MIME container documents (e.g. :mimetype:`multipart/\*` and
+:mimetype:`message/rfc822`).
 
-:class:`Message` オブジェクトは、メッセージヘッダにアクセスするための\
-マップ (辞書) 形式のインタフェイスと、ヘッダおよびペイロードの両方に\
-アクセスするための明示的なインタフェイスを提供します。
-これにはメッセージオブジェクトツリーからフラットなテキスト文書を\
-生成したり、一般的に使われるヘッダのパラメータにアクセスしたり、また\
-オブジェクトツリーを再帰的にたどったりするための便利なメソッドを含みます。
+:class:`Message` objects provide a mapping style interface for accessing the
+message headers, and an explicit interface for accessing both the headers and
+the payload.  It provides convenience methods for generating a flat text
+representation of the message object tree, for accessing commonly used header
+parameters, and for recursively walking over the object tree.
 
-:class:`Message` クラスのメソッドは以下のとおりです:
+Here are the methods of the :class:`Message` class:
 
 
 .. class:: Message()
 
-   コンストラクタは引数をとりません。
+   The constructor takes no arguments.
 
 
    .. method:: as_string([unixfrom])
 
-      メッセージ全体をフラットな文字列として返します。オプション *unixfrom* が
-      ``True`` の場合、返される文字列にはエンベロープヘッダも含まれます。
-      *unixfrom* のデフォルトは ``False`` です。
-      もし、文字列への変換を完全に行うためにデフォルト値を埋める必要がある場合、
-      メッセージのフラット化は :class:`Message` の変更を引き起こす可能性があります
-      (例えば、MIME の境界が生成される、変更される等)。
+      Return the entire message flattened as a string.  When optional *unixfrom*
+      is ``True``, the envelope header is included in the returned string.
+      *unixfrom* defaults to ``False``.  Flattening the message may trigger
+      changes to the :class:`Message` if defaults need to be filled in to
+      complete the transformation to a string (for example, MIME boundaries may
+      be generated or modified).
 
-      このメソッドは手軽に利用する事ができますが、必ずしも期待通りにメッセージを\
-      フォーマットするとは限りません。たとえば、これはデフォルトでは ``From`` で\
-      始まる行を変更してしまいます。以下の例のように :class:`~email.generator.Generator`
-      のインスタンスを生成して :meth:`flatten` メソッドを直接呼び出せば\
-      より柔軟な処理を行う事ができます。 ::
+      Note that this method is provided as a convenience and may not always
+      format the message the way you want.  For example, by default it mangles
+      lines that begin with ``From``.  For more flexibility, instantiate a
+      :class:`~email.generator.Generator` instance and use its
+      :meth:`~email.generator.Generator.flatten` method directly.  For example::
 
          from cStringIO import StringIO
-      	 from email.generator import Generator
-      	 fp = StringIO()
-      	 g = Generator(fp, mangle_from_=False, maxheaderlen=60)
-      	 g.flatten(msg)
-      	 text = fp.getvalue()
+         from email.generator import Generator
+         fp = StringIO()
+         g = Generator(fp, mangle_from_=False, maxheaderlen=60)
+         g.flatten(msg)
+         text = fp.getvalue()
 
 
    .. method:: __str__()
 
-      :meth:`as_string(unixfrom=True)` と同じです。
+      Equivalent to ``as_string(unixfrom=True)``.
 
 
    .. method:: is_multipart()
 
-      メッセージのペイロードが子 :class:`Message` オブジェクトからなる\
-      リストであれば ``True`` を返し、そうでなければ ``False``
-      を返します。 :meth:`is_multipart` が False を返した場合は、ペイロードは\
-      文字列オブジェクトである必要があります。
+      Return ``True`` if the message's payload is a list of sub-\
+      :class:`Message` objects, otherwise return ``False``.  When
+      :meth:`is_multipart` returns ``False``, the payload should be a string object.
 
 
    .. method:: set_unixfrom(unixfrom)
 
-      メッセージのエンベロープヘッダを *unixfrom* に設定します。
-      これは文字列である必要があります。
+      Set the message's envelope header to *unixfrom*, which should be a string.
 
 
    .. method:: get_unixfrom()
 
-      メッセージのエンベロープヘッダを返します。
-      エンベロープヘッダが設定されていない場合は ``None`` が返されます。
+      Return the message's envelope header.  Defaults to ``None`` if the
+      envelope header was never set.
 
 
    .. method:: attach(payload)
 
-      与えられた *payload* を現在のペイロードに追加します。
-      この時点でのペイロードは ``None`` か、あるいは :class:`Message`
-      オブジェクトのリストである必要があります。
-      このメソッドの実行後、ペイロードは必ず :class:`Message`
-      オブジェクトのリストになります。ペイロードに\
-      スカラーオブジェクト (文字列など) を格納したい場合は、かわりに :meth:`set_payload`
-      を使ってください。
+      Add the given *payload* to the current payload, which must be ``None`` or
+      a list of :class:`Message` objects before the call. After the call, the
+      payload will always be a list of :class:`Message` objects.  If you want to
+      set the payload to a scalar object (e.g. a string), use
+      :meth:`set_payload` instead.
 
 
    .. method:: get_payload([i[, decode]])
 
-      現在のペイロードへの参照を返します。これは :meth:`is_multipart` が
-      ``True`` の場合 :class:`Message` オブジェクトのリストになり、
-      :meth:`is_multipart` が ``False`` の場合は文字列になります。
-      ペイロードがリストの場合、
-      リストを変更することはそのメッセージのペイロードを変更することになります。
+      Return the current payload, which will be a list of
+      :class:`Message` objects when :meth:`is_multipart` is ``True``, or a
+      string when :meth:`is_multipart` is ``False``.  If the payload is a list
+      and you mutate the list object, you modify the message's payload in place.
 
-      オプション引数の *i* がある場合、
-      :meth:`is_multipart` が ``True`` ならば :meth:`get_payload` は\
-      ペイロード中で 0 から数えて *i* 番目の要素を返します。
-      *i* が 0 より小さい場合、あるいはペイロードの個数以上の場合は
-      :exc:`IndexError` が発生します。
-      ペイロードが文字列 (つまり :meth:`is_multipart` が ``False``)
-      にもかかわらず *i* が与えられたときは :exc:`TypeError` が発生します。
+      With optional argument *i*, :meth:`get_payload` will return the *i*-th
+      element of the payload, counting from zero, if :meth:`is_multipart` is
+      ``True``.  An :exc:`IndexError` will be raised if *i* is less than 0 or
+      greater than or equal to the number of items in the payload.  If the
+      payload is a string (i.e.  :meth:`is_multipart` is ``False``) and *i* is
+      given, a :exc:`TypeError` is raised.
 
-      オプションの *decode* はそのペイロードが
-      :mailheader:`Content-Transfer-Encoding` ヘッダに従って\
-      デコードされるべきかどうかを指示するフラグです。
-      この値が ``True`` でメッセージが multipart ではない場合、
-      ペイロードはこのヘッダの値が ``quoted-printable`` または ``base64``
-      のときにかぎりデコードされます。これ以外のエンコーディングが\
-      使われている場合、 :mailheader:`Content-Transfer-Encoding` ヘッダが\
-      ない場合、あるいは曖昧なbase64データが含まれる場合は、ペイロードはそのまま
-      (デコードされずに) 返されます。もしメッセージが multipart で
-      *decode* フラグが ``True`` の場合は ``None`` が返されます。
-      *decode* のデフォルト値は ``False`` です。
+      Optional *decode* is a flag indicating whether the payload should be
+      decoded or not, according to the :mailheader:`Content-Transfer-Encoding`
+      header. When ``True`` and the message is not a multipart, the payload will
+      be decoded if this header's value is ``quoted-printable`` or ``base64``.
+      If some other encoding is used, or :mailheader:`Content-Transfer-Encoding`
+      header is missing, or if the payload has bogus base64 data, the payload is
+      returned as-is (undecoded).  If the message is a multipart and the
+      *decode* flag is ``True``, then ``None`` is returned.  The default for
+      *decode* is ``False``.
 
 
    .. method:: set_payload(payload[, charset])
 
-      メッセージ全体のオブジェクトのペイロードを *payload* に設定します。
-      ペイロードの形式をととのえるのは呼び出し側の責任です。オプションの
-      *charset* はメッセージのデフォルト文字セットを設定します。
-      詳しくは :meth:`set_charset` を参照してください。
+      Set the entire message object's payload to *payload*.  It is the client's
+      responsibility to ensure the payload invariants.  Optional *charset* sets
+      the message's default character set; see :meth:`set_charset` for details.
 
       .. versionchanged:: 2.2.2
-         *charset* 引数の追加.
+         *charset* argument added.
 
 
    .. method:: set_charset(charset)
 
-      ペイロードの文字セットを *charset* に変更します。
-      ここには :class:`~email.charset.Charset` インスタンス (:mod:`email.charset` 参照)、
-      文字セット名をあらわす文字列、あるいは ``None`` のいずれかが指定できます。
-      文字列を指定した場合、これは :class:`~email.charset.Charset` インスタンスに変換されます。
-      *charset* が ``None`` の場合、 ``charset`` パラメータは
-      :mailheader:`Content-Type` ヘッダから除去されます
-      (それ以外にメッセージの変形は行われません)。
-      これ以外のものを文字セットとして指定した場合、 :exc:`TypeError`
-      が発生します。
+      Set the character set of the payload to *charset*, which can either be a
+      :class:`~email.charset.Charset` instance (see :mod:`email.charset`), a
+      string naming a character set, or ``None``.  If it is a string, it will
+      be converted to a :class:`~email.charset.Charset` instance.  If *charset*
+      is ``None``, the ``charset`` parameter will be removed from the
+      :mailheader:`Content-Type` header (the message will not be otherwise
+      modified).  Anything else will generate a :exc:`TypeError`.
 
-      :mailheader:`MIME-Version` ヘッダが存在しなければ、追加されます。
-      :mailheader:`Content-Type` ヘッダが存在しなければ、
-      :mimetype:`text/plain` を値として追加されます。
-      :mailheader:`Content-Type` が存在していてもいなくても、
-      ``charset`` パラメタは *charset.output_charset* に設定されます。
-      *charset.input_charset* と *charset.output_charset* が異なるなら、
-      ペイロードは *output_charset* に再エンコードされます。
-      :mailheader:`Content-Transfer-Encoding` ヘッダが存在しなければ、
-      ペイロードは、必要なら指定された :class:`~email.charset.Charset` 
-      を使って transfer エンコードされ、適切な値のヘッダが追加されます。
-      :mailheader:`Content-Transfer-Encoding` ヘッダがすでに存在すれば、
-      ペイロードはすでにその :mailheader:`Content-Transfer-Encoding` によって
-      正しくエンコードされたものと見なされ、変形されません。
+      If there is no existing :mailheader:`MIME-Version` header one will be
+      added.  If there is no existing :mailheader:`Content-Type` header, one
+      will be added with a value of :mimetype:`text/plain`.  Whether the
+      :mailheader:`Content-Type` header already exists or not, its ``charset``
+      parameter will be set to *charset.output_charset*.   If
+      *charset.input_charset* and *charset.output_charset* differ, the payload
+      will be re-encoded to the *output_charset*.  If there is no existing
+      :mailheader:`Content-Transfer-Encoding` header, then the payload will be
+      transfer-encoded, if needed, using the specified
+      :class:`~email.charset.Charset`, and a header with the appropriate value
+      will be added.  If a :mailheader:`Content-Transfer-Encoding` header
+      already exists, the payload is assumed to already be correctly encoded
+      using that :mailheader:`Content-Transfer-Encoding` and is not modified.
 
-      ここでいうメッセージとは、unicode 文字列か *charset.input_charset* でエンコードされた
-      ペイロードを持つ :mimetype:`text/\*` 形式のものを仮定しています。これは、もし必要とあらば\
-      プレーンテキスト形式を変換するさいに *charset.output_charset* の
-      トランスファーエンコードに変換されます。MIME ヘッダ (:mailheader:`MIME-Version`,
-      :mailheader:`Content-Type`,
-      :mailheader:`Content-Transfer-Encoding`) は必要に応じて追加されます。
+      The message will be assumed to be of type :mimetype:`text/\*`, with the
+      payload either in unicode or encoded with *charset.input_charset*.
+      It will be encoded or converted to *charset.output_charset*
+      and transfer encoded properly, if needed, when generating the plain text
+      representation of the message.  MIME headers (:mailheader:`MIME-Version`,
+      :mailheader:`Content-Type`, :mailheader:`Content-Transfer-Encoding`) will
+      be added as needed.
 
       .. versionadded:: 2.2.2
 
 
    .. method:: get_charset()
 
-      そのメッセージ中のペイロードの :class:`~email.charset.Charset` インスタンスを返します。
+      Return the :class:`~email.charset.Charset` instance associated with the
+      message's payload.
 
       .. versionadded:: 2.2.2
 
-   以下のメソッドは、メッセージの :rfc:`2822` ヘッダにアクセスするための\
-   マップ (辞書) 形式のインタフェイスを実装したものです。
-   これらのメソッドと、通常のマップ (辞書) 型はまったく同じ意味をもつわけでは\
-   ないことに注意してください。たとえば辞書型では、同じキーが複数あることは\
-   許されていませんが、ここでは同じメッセージヘッダが複数ある場合があります。\
-   また、辞書型では :meth:`keys` で返されるキーの順序は保証されていませんが、
-   :class:`Message` オブジェクト内のヘッダはつねに元のメッセージ中に\
-   現れた順序、あるいはそのあとに追加された順序で返されます。削除され、その後\
-   ふたたび追加されたヘッダはリストの一番最後に現れます。
+   The following methods implement a mapping-like interface for accessing the
+   message's :rfc:`2822` headers.  Note that there are some semantic differences
+   between these methods and a normal mapping (i.e. dictionary) interface.  For
+   example, in a dictionary there are no duplicate keys, but here there may be
+   duplicate message headers.  Also, in dictionaries there is no guaranteed
+   order to the keys returned by :meth:`keys`, but in a :class:`Message` object,
+   headers are always returned in the order they appeared in the original
+   message, or were added to the message later.  Any header deleted and then
+   re-added are always appended to the end of the header list.
 
-   こういった意味のちがいは意図的なもので、最大の利便性をもつようにつくられています。
+   These semantic differences are intentional and are biased toward maximal
+   convenience.
 
-   注意: どんな場合も、メッセージ中のエンベロープヘッダはこのマップ形式の\
-   インタフェイスには含まれません。
+   Note that in all cases, any envelope header present in the message is not
+   included in the mapping interface.
 
 
    .. method:: __len__()
 
-      複製されたものもふくめてヘッダ数の合計を返します。
+      Return the total number of headers, including duplicates.
 
 
    .. method:: __contains__(name)
 
-      メッセージオブジェクトが *name* という名前のフィールドを持っていれば
-      true を返します。この検査では名前の大文字小文字は区別されません。
-      *name* は最後にコロンをふくんでいてはいけません。このメソッドは以下のように
-      ``in`` 演算子で使われます::
+      Return true if the message object has a field named *name*. Matching is
+      done case-insensitively and *name* should not include the trailing colon.
+      Used for the ``in`` operator, e.g.::
 
          if 'message-id' in myMessage:
              print 'Message-ID:', myMessage['message-id']
@@ -215,433 +202,402 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
    .. method:: __getitem__(name)
 
-      指定された名前のヘッダフィールドの値を返します。
-      *name* は最後にコロンをふくんでいてはいけません。そのヘッダがない場合は ``None``
-      が返され、 :exc:`KeyError` 例外は発生しません。
+      Return the value of the named header field.  *name* should not include the
+      colon field separator.  If the header is missing, ``None`` is returned; a
+      :exc:`KeyError` is never raised.
 
-      注意: 指定された名前のフィールドがメッセージのヘッダに2回以上現れている場合、
-      どちらの値が返されるかは未定義です。ヘッダに存在するフィールドの値をすべて\
-      取り出したい場合は :meth:`get_all` メソッドを使ってください。
+      Note that if the named field appears more than once in the message's
+      headers, exactly which of those field values will be returned is
+      undefined.  Use the :meth:`get_all` method to get the values of all the
+      extant named headers.
 
 
    .. method:: __setitem__(name, val)
 
-      メッセージヘッダに *name* という名前の *val* という値をもつ\
-      フィールドをあらたに追加します。このフィールドは現在メッセージに\
-      存在するフィールドのいちばん後に追加されます。
+      Add a header to the message with field name *name* and value *val*.  The
+      field is appended to the end of the message's existing fields.
 
-      注意: このメソッドでは、すでに同一の名前で存在するフィールドは\
-      上書き *されません* 。もしメッセージが名前 *name* をもつ\
-      フィールドをひとつしか持たないようにしたければ、最初にそれを除去してください。
-      たとえば::
+      Note that this does *not* overwrite or delete any existing header with the same
+      name.  If you want to ensure that the new header is the only one present in the
+      message with field name *name*, delete the field first, e.g.::
 
          del msg['subject']
-      	 msg['subject'] = 'PythonPythonPython!'
+         msg['subject'] = 'Python roolz!'
 
 
    .. method:: __delitem__(name)
 
-      メッセージのヘッダから、 *name* という名前をもつフィールドをすべて除去します。
-      たとえこの名前をもつヘッダが存在していなくても例外は発生しません。
+      Delete all occurrences of the field with name *name* from the message's
+      headers.  No exception is raised if the named field isn't present in the headers.
 
 
    .. method:: has_key(name)
 
-      メッセージが *name* という名前をもつヘッダフィールドを持っていれば真を、\
-      そうでなければ偽を返します。
+      Return true if the message contains a header field named *name*, otherwise
+      return false.
 
 
    .. method:: keys()
 
-      メッセージ中にあるすべてのヘッダのフィールド名のリストを返します。
+      Return a list of all the message's header field names.
 
 
    .. method:: values()
 
-      メッセージ中にあるすべてのフィールドの値のリストを返します。
+      Return a list of all the message's field values.
 
 
    .. method:: items()
 
-      メッセージ中にあるすべてのヘッダのフィールド名とその値を
-      2-タプルのリストとして返します。
+      Return a list of 2-tuples containing all the message's field headers and
+      values.
 
 
    .. method:: get(name[, failobj])
 
-      指定された名前をもつフィールドの値を返します。
-      これは指定された名前がないときにオプション引数の *failobj*
-      (デフォルトでは ``None``) を返すことをのぞけば、
-      :meth:`__getitem__` と同じです。
+      Return the value of the named header field.  This is identical to
+      :meth:`__getitem__` except that optional *failobj* is returned if the
+      named header is missing (defaults to ``None``).
 
-   さらに、役に立つメソッドをいくつか紹介します:
+   Here are some additional useful methods:
 
 
    .. method:: get_all(name[, failobj])
 
-      *name* の名前をもつフィールドのすべての値からなるリストを返します。
-      該当する名前のヘッダがメッセージ中に含まれていない場合は *failobj*
-      (デフォルトでは ``None``) が返されます。
+      Return a list of all the values for the field named *name*. If there are
+      no such named headers in the message, *failobj* is returned (defaults to
+      ``None``).
 
 
    .. method:: add_header(_name, _value, **_params)
 
-      拡張ヘッダ設定。このメソッドは :meth:`__setitem__` と似ていますが、
-      追加のヘッダ・パラメータをキーワード引数で指定できるところが違っています。
-      *_name* に追加するヘッダフィールドを、 *_value* にそのヘッダの
-      *最初の* 値を渡します。
+      Extended header setting.  This method is similar to :meth:`__setitem__`
+      except that additional header parameters can be provided as keyword
+      arguments.  *_name* is the header field to add and *_value* is the
+      *primary* value for the header.
 
-      キーワード引数辞書 *_params* の各項目ごとに、
-      そのキーがパラメータ名として扱われ、キー名にふくまれる\
-      アンダースコアはハイフンに置換されます
-      (なぜならハイフンは通常の Python 識別子としては使えないからです)。
-      ふつう、パラメータの値が ``None`` 以外のときは、
-      ``key="value"`` の形で追加されます。
-      パラメータの値が ``None`` のときはキーのみが追加されます。
-      値が非 ASCII 文字を含むなら、それは ``(CHARSET, LANGUAGE, VALUE)`` の
-      形式の 3 タプルでなくてはなりません。
-      ここで ``CHARSET`` はその値をエンコードするのに使われる文字セットを
-      指名する文字列で、 ``LANGUAGE`` は通常 ``None`` か空文字列にでき
-      (その他の可能性は :RFC:`2231` を参照してください)、 ``VALUE`` は
-      非 ASCII コードポイントを含む文字列値です。
-      
+      For each item in the keyword argument dictionary *_params*, the key is
+      taken as the parameter name, with underscores converted to dashes (since
+      dashes are illegal in Python identifiers).  Normally, the parameter will
+      be added as ``key="value"`` unless the value is ``None``, in which case
+      only the key will be added.  If the value contains non-ASCII characters,
+      it must be specified as a three tuple in the format
+      ``(CHARSET, LANGUAGE, VALUE)``, where ``CHARSET`` is a string naming the
+      charset to be used to encode the value, ``LANGUAGE`` can usually be set
+      to ``None`` or the empty string (see :RFC:`2231` for other possibilities),
+      and ``VALUE`` is the string value containing non-ASCII code points.
 
-      例を示しましょう::
+      Here's an example::
 
          msg.add_header('Content-Disposition', 'attachment', filename='bud.gif')
 
-      こうするとヘッダには以下のように追加されます。 ::
+      This will add a header that looks like ::
 
          Content-Disposition: attachment; filename="bud.gif"
 
-      非 ASCII 文字を使った例::
+      An example with non-ASCII characters::
 
          msg.add_header('Content-Disposition', 'attachment',
                         filename=('iso-8859-1', '', 'Fußballer.ppt'))
 
-      は、以下のようになります::
+      Which produces ::
 
          Content-Disposition: attachment; filename*="iso-8859-1''Fu%DFballer.ppt"
 
 
    .. method:: replace_header(_name, _value)
 
-      ヘッダの置換。
-      *_name* と一致するヘッダで最初に見つかったものを置き換えます。
-      このときヘッダの順序とフィールド名の大文字小文字は保存されます。
-      一致するヘッダがない場合、 :exc:`KeyError` が発生します。
+      Replace a header.  Replace the first header found in the message that
+      matches *_name*, retaining header order and field name case.  If no
+      matching header was found, a :exc:`KeyError` is raised.
 
       .. versionadded:: 2.2.2
 
 
    .. method:: get_content_type()
 
-      そのメッセージの content-type を返します。
-      返された文字列は強制的に小文字で :mimetype:`maintype/subtype`
-      の形式に変換されます。
-      メッセージ中に :mailheader:`Content-Type` ヘッダがない場合、
-      デフォルトの content-type は :meth:`get_default_type`
-      が返す値によって与えられます。 :rfc:`2045` によればメッセージはつねにデフォルトの
-      content-type をもっているので、 :meth:`get_content_type`
-      はつねになんらかの値を返すはずです。
+      Return the message's content type.  The returned string is coerced to
+      lower case of the form :mimetype:`maintype/subtype`.  If there was no
+      :mailheader:`Content-Type` header in the message the default type as given
+      by :meth:`get_default_type` will be returned.  Since according to
+      :rfc:`2045`, messages always have a default type, :meth:`get_content_type`
+      will always return a value.
 
-      :rfc:`2045` はメッセージのデフォルト content-type を、
-      それが :mimetype:`multipart/digest`
-      コンテナに現れているとき以外は :mimetype:`text/plain` に規定しています。
-      あるメッセージが
-      :mimetype:`multipart/digest` コンテナ中にある場合、その content-type は
-      :mimetype:`message/rfc822` になります。
-      もし :mailheader:`Content-Type` ヘッダが適切でない
-      content-type 書式だった場合、 :rfc:`2045` はそれのデフォルトを
-      :mimetype:`text/plain` として扱うよう定めています。
+      :rfc:`2045` defines a message's default type to be :mimetype:`text/plain`
+      unless it appears inside a :mimetype:`multipart/digest` container, in
+      which case it would be :mimetype:`message/rfc822`.  If the
+      :mailheader:`Content-Type` header has an invalid type specification,
+      :rfc:`2045` mandates that the default type be :mimetype:`text/plain`.
 
       .. versionadded:: 2.2.2
 
 
-   .. method:: Message.get_content_maintype()
+   .. method:: get_content_maintype()
 
-      そのメッセージの主 content-type を返します。
-      これは :meth:`get_content_type` によって返される文字列の
-      :mimetype:`maintype` 部分です。
+      Return the message's main content type.  This is the :mimetype:`maintype`
+      part of the string returned by :meth:`get_content_type`.
 
       .. versionadded:: 2.2.2
 
 
-   .. method:: Message.get_content_subtype()
+   .. method:: get_content_subtype()
 
-      そのメッセージの副 content-type (sub content-type、subtype) を返します。
-      これは :meth:`get_content_type` によって返される文字列の
-      :mimetype:`subtype` 部分です。
+      Return the message's sub-content type.  This is the :mimetype:`subtype`
+      part of the string returned by :meth:`get_content_type`.
 
       .. versionadded:: 2.2.2
 
 
    .. method:: get_default_type()
 
-      デフォルトの content-type を返します。
-      ほどんどのメッセージではデフォルトの content-type は
-      :mimetype:`text/plain` ですが、メッセージが :mimetype:`multipart/digest`
-      コンテナに含まれているときだけ例外的に :mimetype:`message/rfc822` になります。
+      Return the default content type.  Most messages have a default content
+      type of :mimetype:`text/plain`, except for messages that are subparts of
+      :mimetype:`multipart/digest` containers.  Such subparts have a default
+      content type of :mimetype:`message/rfc822`.
 
       .. versionadded:: 2.2.2
 
 
    .. method:: set_default_type(ctype)
 
-      デフォルトの content-type を設定します。
-      *ctype* は :mimetype:`text/plain` あるいは
-      :mimetype:`message/rfc822` である必要がありますが、強制ではありません。
-      デフォルトの content-type はヘッダの
-      :mailheader:`Content-Type` には格納されません。
+      Set the default content type.  *ctype* should either be
+      :mimetype:`text/plain` or :mimetype:`message/rfc822`, although this is not
+      enforced.  The default content type is not stored in the
+      :mailheader:`Content-Type` header.
 
       .. versionadded:: 2.2.2
 
 
    .. method:: get_params([failobj[, header[, unquote]]])
 
-      メッセージの :mailheader:`Content-Type` パラメータをリストとして返します。
-      返されるリストはキー/値の組からなる2要素タプルが連なったものであり、
-      これらは ``'='`` 記号で分離されています。
-      ``'='`` の左側はキーになり、右側は値になります。パラメータ中に
-      ``'='`` がなかった場合、値の部分は空文字列になり、そうでなければその値は
-      :meth:`get_param` で説明されている形式になります。
-      また、オプション引数 *unquote* が ``True`` (デフォルト) である場合、
-      この値は unquote されます。
+      Return the message's :mailheader:`Content-Type` parameters, as a list.
+      The elements of the returned list are 2-tuples of key/value pairs, as
+      split on the ``'='`` sign.  The left hand side of the ``'='`` is the key,
+      while the right hand side is the value.  If there is no ``'='`` sign in
+      the parameter the value is the empty string, otherwise the value is as
+      described in :meth:`get_param` and is unquoted if optional *unquote* is
+      ``True`` (the default).
 
-      オプション引数 *failobj* は、 :mailheader:`Content-Type` ヘッダが\
-      存在しなかった場合に返すオブジェクトです。オプション引数
-      *header* には :mailheader:`Content-Type` のかわりに検索すべきヘッダを\
-      指定します。
+      Optional *failobj* is the object to return if there is no
+      :mailheader:`Content-Type` header.  Optional *header* is the header to
+      search instead of :mailheader:`Content-Type`.
 
       .. versionchanged:: 2.2.2
-         *unquote* が追加されました.
+         *unquote* argument added.
 
 
    .. method:: get_param(param[, failobj[, header[, unquote]]])
 
-      メッセージの :mailheader:`Content-Type` ヘッダ中のパラメータ *param* を\
-      文字列として返します。そのメッセージ中に
-      :mailheader:`Content-Type` ヘッダが存在しなかった場合、
-      *failobj*  (デフォルトは ``None``) が返されます。
+      Return the value of the :mailheader:`Content-Type` header's parameter
+      *param* as a string.  If the message has no :mailheader:`Content-Type`
+      header or if there is no such parameter, then *failobj* is returned
+      (defaults to ``None``).
 
-      オプション引数 *header* が与えられた場合、 :mailheader:`Content-Type`
-      のかわりにそのヘッダが使用されます。
+      Optional *header* if given, specifies the message header to use instead of
+      :mailheader:`Content-Type`.
 
-      パラメータのキー比較は常に大文字小文字を区別しません。
-      返り値は文字列か 3 要素のタプルで、タプルになるのはパラメータが :rfc:`2231`
-      エンコードされている場合です。3 要素タプルの場合、各要素の値は
-      ``(CHARSET, LANGUAGE, VALUE)`` の形式になっています。
-      ``CHARSET`` と ``LAGUAGE`` は ``None`` になることがあり、
-      その場合 ``VALUE`` は ``us-ascii`` 文字セットでエンコードされているとみなさねば\
-      ならないので注意してください。普段は ``LANGUAGE`` を無視できます。
+      Parameter keys are always compared case insensitively.  The return value
+      can either be a string, or a 3-tuple if the parameter was :rfc:`2231`
+      encoded.  When it's a 3-tuple, the elements of the value are of the form
+      ``(CHARSET, LANGUAGE, VALUE)``.  Note that both ``CHARSET`` and
+      ``LANGUAGE`` can be ``None``, in which case you should consider ``VALUE``
+      to be encoded in the ``us-ascii`` charset.  You can usually ignore
+      ``LANGUAGE``.
 
-      この関数を使うアプリケーションが、パラメータが :rfc:`2231` 形式で\
-      エンコードされているかどうかを気にしないのであれば、
-      :func:`email.utils.collapse_rfc2231_value` に
-      :meth:`get_param` の返り値を渡して呼び出すことで、
-      このパラメータをひとつにまとめることができます。
-      この値がタプルならばこの関数は適切にデコードされた Unicode 文字列を返し、
-      そうでない場合は unquote された元の文字列を返します。たとえば::
+      If your application doesn't care whether the parameter was encoded as in
+      :rfc:`2231`, you can collapse the parameter value by calling
+      :func:`email.utils.collapse_rfc2231_value`, passing in the return value
+      from :meth:`get_param`.  This will return a suitably decoded Unicode
+      string when the value is a tuple, or the original string unquoted if it
+      isn't.  For example::
 
          rawparam = msg.get_param('foo')
          param = email.utils.collapse_rfc2231_value(rawparam)
 
-      いずれの場合もパラメータの値は (文字列であれ3要素タプルの ``VALUE`` 項目であれ)
-      つねに unquote されます。ただし、
-      *unquote* が ``False`` に指定されている場合は unquote されません。
+      In any case, the parameter value (either the returned string, or the
+      ``VALUE`` item in the 3-tuple) is always unquoted, unless *unquote* is set
+      to ``False``.
 
       .. versionchanged:: 2.2.2
-         *unquote* 引数の追加、3要素タプルが返り値になる可能性あり。
+         *unquote* argument added, and 3-tuple return value possible.
 
 
    .. method:: set_param(param, value[, header[, requote[, charset[, language]]]])
 
-      :mailheader:`Content-Type` ヘッダ中のパラメータを設定します。
-      指定されたパラメータがヘッダ中にすでに存在する場合、その値は
-      *value* に置き換えられます。
-      :mailheader:`Content-Type` ヘッダがまだこのメッセージ中に存在していない場合、
-      :rfc:`2045` にしたがいこの値には :mimetype:`text/plain`
-      が設定され、新しいパラメータ値が末尾に追加されます。
+      Set a parameter in the :mailheader:`Content-Type` header.  If the
+      parameter already exists in the header, its value will be replaced with
+      *value*.  If the :mailheader:`Content-Type` header as not yet been defined
+      for this message, it will be set to :mimetype:`text/plain` and the new
+      parameter value will be appended as per :rfc:`2045`.
 
-      オプション引数 *header* が与えられた場合、
-      :mailheader:`Content-Type` のかわりにそのヘッダが使用されます。オプション引数
-      *unquote* が ``False`` でない限り、
-      この値は unquote されます (デフォルトは ``True``)。
+      Optional *header* specifies an alternative header to
+      :mailheader:`Content-Type`, and all parameters will be quoted as necessary
+      unless optional *requote* is ``False`` (the default is ``True``).
 
-      オプション引数 *charset* が与えられると、
-      そのパラメータは :rfc:`2231` に従ってエンコードされます。オプション引数
-      *language* は RFC 2231 の言語を指定しますが、
-      デフォルトではこれは空文字列となります。 *charset* と *language*
-      はどちらも文字列である必要があります。
+      If optional *charset* is specified, the parameter will be encoded
+      according to :rfc:`2231`. Optional *language* specifies the RFC 2231
+      language, defaulting to the empty string.  Both *charset* and *language*
+      should be strings.
 
       .. versionadded:: 2.2.2
 
 
    .. method:: del_param(param[, header[, requote]])
 
-      指定されたパラメータを :mailheader:`Content-Type` ヘッダ中から完全に\
-      とりのぞきます。ヘッダはそのパラメータと値がない状態に書き換えられます。
-      *requote* が ``False`` でない限り (デフォルトでは
-      ``True`` です)、すべての値は必要に応じて quote されます。
-      オプション変数 *header* が与えられた場合、
-      :mailheader:`Content-Type` のかわりにそのヘッダが使用されます。
+      Remove the given parameter completely from the :mailheader:`Content-Type`
+      header.  The header will be re-written in place without the parameter or
+      its value.  All values will be quoted as necessary unless *requote* is
+      ``False`` (the default is ``True``).  Optional *header* specifies an
+      alternative to :mailheader:`Content-Type`.
 
       .. versionadded:: 2.2.2
 
 
    .. method:: set_type(type[, header][, requote])
 
-      :mailheader:`Content-Type` ヘッダの maintype と subtype を設定します。
-      *type* は :mimetype:`maintype/subtype` という形の文字列でなければなりません。
-      それ以外の場合は :exc:`ValueError` が発生します。
+      Set the main type and subtype for the :mailheader:`Content-Type`
+      header. *type* must be a string in the form :mimetype:`maintype/subtype`,
+      otherwise a :exc:`ValueError` is raised.
 
-      このメソッドは :mailheader:`Content-Type` ヘッダを置き換えますが、
-      すべてのパラメータはそのままにします。
-      *requote* が ``False`` の場合、
-      これはすでに存在するヘッダを quote せず放置しますが、そうでない場合は\
-      自動的に quote します (デフォルト動作)。
+      This method replaces the :mailheader:`Content-Type` header, keeping all
+      the parameters in place.  If *requote* is ``False``, this leaves the
+      existing header's quoting as is, otherwise the parameters will be quoted
+      (the default).
 
-      オプション変数 *header* が与えられた場合、
-      :mailheader:`Content-Type` のかわりにそのヘッダが使用されます。
-      :mailheader:`Content-Type` ヘッダが設定される場合には、
-      :mailheader:`MIME-Version` ヘッダも同時に付加されます。
+      An alternative header can be specified in the *header* argument. When the
+      :mailheader:`Content-Type` header is set a :mailheader:`MIME-Version`
+      header is also added.
 
       .. versionadded:: 2.2.2
 
 
    .. method:: get_filename([failobj])
 
-      そのメッセージ中の :mailheader:`Content-Disposition` ヘッダにある、
-      ``filename`` パラメータの値を返します。
-      目的のヘッダに ``filename`` パラメータがない場合には
-      :mailheader:`Content-Type` ヘッダにある ``name``
-      パラメータを探します。
-      それも無い場合またはヘッダが無い場合には *failobj* が返されます。
-      返される文字列はつねに :meth:`email.utils.unquote` によって unquote されます。
+      Return the value of the ``filename`` parameter of the
+      :mailheader:`Content-Disposition` header of the message.  If the header
+      does not have a ``filename`` parameter, this method falls back to looking
+      for the ``name`` parameter on the :mailheader:`Content-Type` header.  If
+      neither is found, or the header is missing, then *failobj* is returned.
+      The returned string will always be unquoted as per
+      :func:`email.utils.unquote`.
 
 
    .. method:: get_boundary([failobj])
 
-      そのメッセージ中の :mailheader:`Content-Type` ヘッダにある、
-      ``boundary`` パラメータの値を返します。
-      目的のヘッダが欠けていたり、 ``boundary`` パラメータがない場合には
-      *failobj* が返されます。
-      返される文字列はつねに :meth:`email.utils.unquote` によって unquote されます。
+      Return the value of the ``boundary`` parameter of the
+      :mailheader:`Content-Type` header of the message, or *failobj* if either
+      the header is missing, or has no ``boundary`` parameter.  The returned
+      string will always be unquoted as per :func:`email.utils.unquote`.
 
 
    .. method:: set_boundary(boundary)
 
-      メッセージ中の :mailheader:`Content-Type` ヘッダにある、 ``boundary``
-      パラメータに値を設定します。
-      :meth:`set_boundary` は必要に応じて *boundary* を quote します。
-      そのメッセージが :mailheader:`Content-Type` ヘッダを含んでいない場合、
-      :exc:`HeaderParseError` が発生します。
+      Set the ``boundary`` parameter of the :mailheader:`Content-Type` header to
+      *boundary*.  :meth:`set_boundary` will always quote *boundary* if
+      necessary.  A :exc:`~email.errors.HeaderParseError` is raised if the
+      message object has no :mailheader:`Content-Type` header.
 
-      注意: このメソッドを使うのは、古い :mailheader:`Content-Type` ヘッダを\
-      削除して新しい boundary をもったヘッダを :meth:`add_header` で\
-      足すのとは少し違います。 :meth:`set_boundary` は一連のヘッダ中での
-      :mailheader:`Content-Type` ヘッダの位置を保つからです。しかし、これは元の
-      :mailheader:`Content-Type` ヘッダ中に存在していた\
-      連続する行の順番までは *保ちません* 。
+      Note that using this method is subtly different than deleting the old
+      :mailheader:`Content-Type` header and adding a new one with the new
+      boundary via :meth:`add_header`, because :meth:`set_boundary` preserves
+      the order of the :mailheader:`Content-Type` header in the list of
+      headers. However, it does *not* preserve any continuation lines which may
+      have been present in the original :mailheader:`Content-Type` header.
 
 
    .. method:: get_content_charset([failobj])
 
-      そのメッセージ中の :mailheader:`Content-Type` ヘッダにある、 ``charset``
-      パラメータの値を返します。値はすべて小文字に変換されます。
-      メッセージ中に :mailheader:`Content-Type` がなかったり、このヘッダ中に
-      ``boundary`` パラメータがない場合には *failobj* が返されます。
+      Return the ``charset`` parameter of the :mailheader:`Content-Type` header,
+      coerced to lower case.  If there is no :mailheader:`Content-Type` header, or if
+      that header has no ``charset`` parameter, *failobj* is returned.
 
-      注意: これは :meth:`get_charset` メソッドとは異なります。
-      こちらのほうは文字列のかわりに、そのメッセージボディのデフォルト\
-      エンコーディングの :class:`~email.charset.Charset` インスタンスを返します。
+      Note that this method differs from :meth:`get_charset` which returns the
+      :class:`~email.charset.Charset` instance for the default encoding of the message body.
 
       .. versionadded:: 2.2.2
 
 
    .. method:: get_charsets([failobj])
 
-      メッセージ中に含まれる文字セットの名前をすべてリストにして返します。
-      そのメッセージが :mimetype:`multipart` である場合、返されるリストの\
-      各要素がそれぞれの subpart のペイロードに対応します。それ以外の場合、
-      これは長さ 1 のリストを返します。
+      Return a list containing the character set names in the message.  If the
+      message is a :mimetype:`multipart`, then the list will contain one element
+      for each subpart in the payload, otherwise, it will be a list of length 1.
 
-      リスト中の各要素は文字列であり、これは対応する subpart 中の\
-      それぞれの :mailheader:`Content-Type` ヘッダにある
-      ``charset`` の値です。しかし、その subpart が
-      :mailheader:`Content-Type` をもってないか、
-      ``charset`` がないか、あるいは MIME maintype が :mimetype:`text` でない\
-      いずれかの場合には、リストの要素として *failobj* が返されます。
+      Each item in the list will be a string which is the value of the
+      ``charset`` parameter in the :mailheader:`Content-Type` header for the
+      represented subpart.  However, if the subpart has no
+      :mailheader:`Content-Type` header, no ``charset`` parameter, or is not of
+      the :mimetype:`text` main MIME type, then that item in the returned list
+      will be *failobj*.
 
 
    .. method:: walk()
 
-      :meth:`walk` メソッドは多目的のジェネレータで、
-      これはあるメッセージオブジェクトツリー中のすべての part および subpart を\
-      わたり歩くのに使えます。順序は深さ優先です。おそらく典型的な用法は、
-      :meth:`walk` を ``for`` ループ中でのイテレータとして\
-      使うことでしょう。ループを一回まわるごとに、次の subpart が返されるのです。
+      The :meth:`walk` method is an all-purpose generator which can be used to
+      iterate over all the parts and subparts of a message object tree, in
+      depth-first traversal order.  You will typically use :meth:`walk` as the
+      iterator in a ``for`` loop; each iteration returns the next subpart.
 
-      以下の例は、 multipart メッセージのすべての part において、
-      その MIME タイプを表示していくものです。 ::
+      Here's an example that prints the MIME type of every part of a multipart
+      message structure::
 
          >>> for part in msg.walk():
-      	 ...     print part.get_content_type()
-      	 multipart/report
-      	 text/plain
-      	 message/delivery-status
-      	 text/plain
-      	 text/plain
-      	 message/rfc822
+         ...     print part.get_content_type()
+         multipart/report
+         text/plain
+         message/delivery-status
+         text/plain
+         text/plain
+         message/rfc822
 
    .. versionchanged:: 2.5
-      以前の非推奨メソッド :meth:`get_type` 、 :meth:`get_main_type` 、
-      :meth:`get_subtype` は削除されました。
+      The previously deprecated methods :meth:`get_type`, :meth:`get_main_type`, and
+      :meth:`get_subtype` were removed.
 
-   :class:`Message` オブジェクトはオプションとして 2つのインスタンス属性を\
-   とることができます。これはある MIME メッセージからプレーンテキストを\
-   生成するのに使うことができます。
+   :class:`Message` objects can also optionally contain two instance attributes,
+   which can be used when generating the plain text of a MIME message.
 
 
    .. attribute:: preamble
 
-      MIME ドキュメントの形式では、
-      ヘッダ直後にくる空行と最初の multipart 境界をあらわす文字列のあいだに\
-      いくらかのテキスト (訳注: preamble, 序文) を埋めこむことを許しています。
-      このテキストは標準的な MIME の範疇からはみ出しているので、 MIME
-      形式を認識するメールソフトからこれらは通常まったく見えません。
-      しかしメッセージのテキストを生で見る場合、あるいはメッセージを MIME
-      対応していないメールソフトで見る場合、このテキストは目に見えることになります。
+      The format of a MIME document allows for some text between the blank line
+      following the headers, and the first multipart boundary string. Normally,
+      this text is never visible in a MIME-aware mail reader because it falls
+      outside the standard MIME armor.  However, when viewing the raw text of
+      the message, or when viewing the message in a non-MIME aware reader, this
+      text can become visible.
 
-      *preamble* 属性は MIME ドキュメントに加えるこの最初の MIME
-      範囲外テキストを含んでいます。 :class:`~email.parser.Parser`
-      があるテキストをヘッダ以降に発見したが、それはまだ最初の MIME
-      境界文字列が現れる前だった場合、パーザはそのテキストをメッセージの *preamble*
-      属性に格納します。 :class:`Generator` がある MIME メッセージから\
-      プレーンテキスト形式を生成するとき、これはそのテキストをヘッダと最初の MIME
-      境界の間に挿入します。詳細は :mod:`email.parser` および
-      :mod:`email.Generator` を参照してください。
+      The *preamble* attribute contains this leading extra-armor text for MIME
+      documents.  When the :class:`~email.parser.Parser` discovers some text
+      after the headers but before the first boundary string, it assigns this
+      text to the message's *preamble* attribute.  When the
+      :class:`~email.generator.Generator` is writing out the plain text
+      representation of a MIME message, and it finds the
+      message has a *preamble* attribute, it will write this text in the area
+      between the headers and the first boundary.  See :mod:`email.parser` and
+      :mod:`email.generator` for details.
 
-      注意: そのメッセージに preamble がない場合、
-      *preamble* 属性には ``None`` が格納されます。
+      Note that if the message object has no preamble, the *preamble* attribute
+      will be ``None``.
 
 
    .. attribute:: epilogue
 
-      *epilogue* 属性はメッセージの最後の MIME 境界文字列から\
-      メッセージ末尾までのテキストを含むもので、それ以外は *preamble*
-      属性と同じです。
+      The *epilogue* attribute acts the same way as the *preamble* attribute,
+      except that it contains text that appears between the last boundary and
+      the end of the message.
 
       .. versionchanged:: 2.5
-         :class:`Generator` でファイル終端に改行を出力するため、
-      	 epilogue に空文字列を設定する必要はなくなりました。
+         You do not need to set the epilogue to the empty string in order for the
+         :class:`~email.generator.Generator` to print a newline at the end of the
+         file.
 
 
    .. attribute:: defects
 
-      *defects* 属性はメッセージを解析する途中で検出されたすべての問題点
-      (defect、障害) のリストを保持しています。解析中に発見されうる障害に\
-      ついてのより詳細な説明は :mod:`email.errors` を参照してください。
+      The *defects* attribute contains a list of all the problems found when
+      parsing this message.  See :mod:`email.errors` for a detailed description
+      of the possible parsing defects.
 
       .. versionadded:: 2.4
 

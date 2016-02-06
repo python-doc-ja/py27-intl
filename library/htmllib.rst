@@ -1,69 +1,77 @@
-:mod:`htmllib` --- HTML 文書の解析器
-====================================
+:mod:`htmllib` --- A parser for HTML documents
+==============================================
 
 .. module:: htmllib
-   :synopsis: HTML 文書の解析器。
+   :synopsis: A parser for HTML documents.
    :deprecated:
 
 .. deprecated:: 2.6
-    :mod:`htmllib` モジュールは Python 3.0 で削除されました。
+    The :mod:`htmllib` module has been removed in Python 3.
+    Use :mod:`HTMLParser` instead in Python 2, and the equivalent,
+    :mod:`html.parser`, in Python 3.
 
 
 .. index::
    single: HTML
    single: hypertext
 
-このモジュールでは、ハイパーテキスト記述言語 (HTML, HyperText Mark-up  Language)
-形式で書式化されたテキストファイルを解析するための基盤として役立つクラスを定義しています。このクラスは I/O と直接的には接続されません ---
-このクラスにはメソッドを介して文字列形式の入力を提供する必要があり、出力を生成するには "フォーマッタ (formatter)"
-オブジェクトのメソッドを何度か呼び出さなくてはなりません。
-
 .. index::
    module: sgmllib
    module: formatter
    single: SGMLParser (in module sgmllib)
 
-:class:`HTMLParser` クラスは、機能を追加するために他のクラスの基底クラスとして利用するように設計されており、ほとんどのメソッドが拡張したり
-上書きしたりできるようになっています。さらにこのクラスは :mod:`sgmllib` モジュールで定義されている :class:`SGMLParser`
-クラスから派生しており、その機能を拡張しています。 :class:`HTMLParser` の実装は、 :rfc:`1866` で解説されている HTML
-2.0 記述言語をサポートします。 :mod:`formatter` では 2 つのフォーマッタオブジェクト実装が提供されています;
-フォーマッタのインタフェースについての情報は :mod:`formatter` モジュールのドキュメントを参照してください。
+This module defines a class which can serve as a base for parsing text files
+formatted in the HyperText Mark-up Language (HTML).  The class is not directly
+concerned with I/O --- it must be provided with input in string form via a
+method, and makes calls to methods of a "formatter" object in order to produce
+output.  The :class:`HTMLParser` class is designed to be used as a base class
+for other classes in order to add functionality, and allows most of its methods
+to be extended or overridden.  In turn, this class is derived from and extends
+the :class:`SGMLParser` class defined in module :mod:`sgmllib`.  The
+:class:`HTMLParser` implementation supports the HTML 2.0 language as described
+in :rfc:`1866`.  Two implementations of formatter objects are provided in the
+:mod:`formatter` module; refer to the documentation for that module for
+information on the formatter interface.
 
-以下は :class:`sgmllib.SGMLParser` で定義されているインタフェースの概要です:
+The following is a summary of the interface defined by
+:class:`sgmllib.SGMLParser`:
 
-* インスタンスにデータを与えるためのインタフェースは :meth:`feed` メソッドで、このメソッドは文字列を引数に取ります。
-  このメソッドに一度に与えるテキストは必要に応じて多くも少なくもできます; というのは ``p.feed(a);p.feed(b)`` は
-  ``p.feed(a+b)``  と同じ効果を持つからです。与えられたデータが完全な HTML マークアップ文を含む場合、それらの文は即座に処理されます;
-  不完全なマークアップ構造はバッファに保存されます。全ての未処理データを強制的に処理させるには、 :meth:`close`  メソッドを呼び出します。
+* The interface to feed data to an instance is through the :meth:`feed` method,
+  which takes a string argument.  This can be called with as little or as much
+  text at a time as desired; ``p.feed(a); p.feed(b)`` has the same effect as
+  ``p.feed(a+b)``.  When the data contains complete HTML markup constructs, these
+  are processed immediately; incomplete constructs are saved in a buffer.  To
+  force processing of all unprocessed data, call the :meth:`close` method.
 
-  例えば、ファイルの全内容を解析するには::
+  For example, to parse the entire contents of a file, use::
 
      parser.feed(open('myfile.html').read())
      parser.close()
 
-  のようにします。
+* The interface to define semantics for HTML tags is very simple: derive a class
+  and define methods called :meth:`start_tag`, :meth:`end_tag`, or :meth:`do_tag`.
+  The parser will call these at appropriate moments: :meth:`start_tag` or
+  :meth:`do_tag` is called when an opening tag of the form ``<tag ...>`` is
+  encountered; :meth:`end_tag` is called when a closing tag of the form ``<tag>``
+  is encountered.  If an opening tag requires a corresponding closing tag, like
+  ``<H1>`` ... ``</H1>``, the class should define the :meth:`start_tag` method; if
+  a tag requires no closing tag, like ``<P>``, the class should define the
+  :meth:`do_tag` method.
 
-* HTML タグに対して意味付けを定義するためのインタフェースはとても単純です: サブクラスを派生して、 :meth:`start_tag` 、
-  :meth:`end_tag` 、あるいは :meth:`do_tag` といったメソッドを定義するだけです。
-  パーザはこれらのメソッドを適切なタイミングで呼び出します:  :meth:`start_tag` や :meth:`do_tag` は  ``<tag
-  ...>`` の形式の開始タグに遭遇した時に呼び出されます; :meth:`end_tag` は ``<tag>`` の形式の終了タグに
-  遭遇した時に呼び出されます。 ``<H1>`` ... ``</H1>`` のように開始タグが終了タグと対応している必要がある場合、クラス中で
-  :meth:`start_tag` が定義されていなければなりません; ``<P>`` のように終了タグが必要ない場合、クラス中では
-  :meth:`do_tag` を定義しなければなりません。
-
-このモジュールではパーザクラスと例外を一つづつ定義しています:
+The module defines a parser class and an exception:
 
 
 .. class:: HTMLParser(formatter)
 
-   基底となる HTML パーザクラスです。XHTML 1.0 仕様  (http://www.w3.org/TR/xhtml1)
-   勧告で要求されている全てのエンティティ名をサポートしています。
-   また、全ての HTML 2.0 の要素および HTML 3.0、3.2 の多くの要素のハンドラを定義しています。
+   This is the basic HTML parser class.  It supports all entity names required by
+   the XHTML 1.0 Recommendation (http://www.w3.org/TR/xhtml1).   It also defines
+   handlers for all HTML 2.0 and many HTML 3.0 and 3.2 elements.
 
 
 .. exception:: HTMLParseError
 
-   :class:`HTMLParser` クラスがパーズ処理中にエラーに遭遇した場合に送出する例外です。
+   Exception raised by the :class:`HTMLParser` class when it encounters an error
+   while parsing.
 
    .. versionadded:: 2.4
 
@@ -71,106 +79,122 @@
 .. seealso::
 
    Module :mod:`formatter`
-      抽象化された書式イベントの流れを writer オブジェクト上の特定の出力イベントに変換するためのインターフェース。
+      Interface definition for transforming an abstract flow of formatting events into
+      specific output events on writer objects.
 
    Module :mod:`HTMLParser`
-      HTML パーザのひとつです。やや低いレベルでしか入力を扱えませんが、XHTML を扱うことができるように設計されています。"広く知られている HTML
-      (HTML as deployed)" では使われておらずかつ XHTML では正しくないとされる SGML 構文のいくつかは実装されていません。
+      Alternate HTML parser that offers a slightly lower-level view of the input, but
+      is designed to work with XHTML, and does not implement some of the SGML syntax
+      not used in "HTML as deployed" and which isn't legal for XHTML.
 
    Module :mod:`htmlentitydefs`
-      XHTML 1.0 エンティティに対する置換テキストの定義。
+      Definition of replacement text for XHTML 1.0  entities.
 
    Module :mod:`sgmllib`
-      :class:`HTMLParser` の基底クラス。
+      Base class for :class:`HTMLParser`.
 
 
 .. _html-parser-objects:
 
-HTMLParser オブジェクト
------------------------
+HTMLParser Objects
+------------------
 
-タグメソッドに加えて、 :class:`HTMLParser` クラスではタグメソッドで利用するためのいくつかのメソッドとインスタンス変数を提供しています。
+In addition to tag methods, the :class:`HTMLParser` class provides some
+additional methods and instance variables for use within tag methods.
 
 
 .. attribute:: HTMLParser.formatter
 
-   パーザに関連付けられているフォーマッタインスタンスです。
+   This is the formatter instance associated with the parser.
 
 
 .. attribute:: HTMLParser.nofill
 
-   ブール値のフラグで、空白文字を縮約したくないときには真、縮約するときには偽にします。一般的には、この値を真にするのは、 ``<PRE>`` 要素の
-   中のテキストのように、文字列データが "書式化済みの (preformatted)"  場合だけです。標準の値は偽です。この値は
-   :meth:`handle_data` および :meth:`save_end` の操作に影響します。
+   Boolean flag which should be true when whitespace should not be collapsed, or
+   false when it should be.  In general, this should only be true when character
+   data is to be treated as "preformatted" text, as within a ``<PRE>`` element.
+   The default value is false.  This affects the operation of :meth:`handle_data`
+   and :meth:`save_end`.
 
 
 .. method:: HTMLParser.anchor_bgn(href, name, type)
 
-   このメソッドはアンカー領域の先頭で呼び出されます。引数は  ``<A>`` タグの属性で同じ名前を持つものに対応します。
-   標準の実装では、ドキュメント内のハイパーリンク  (``<A>`` タグの ``HREF`` 属性) を列挙したリスト
-   を維持しています。ハイパーリンクのリストはデータ属性 :attr:`anchorlist` で手に入れることができます。
+   This method is called at the start of an anchor region.  The arguments
+   correspond to the attributes of the ``<A>`` tag with the same names.  The
+   default implementation maintains a list of hyperlinks (defined by the ``HREF``
+   attribute for ``<A>`` tags) within the document.  The list of hyperlinks is
+   available as the data attribute :attr:`anchorlist`.
 
 
 .. method:: HTMLParser.anchor_end()
 
-   このメソッドはアンカー領域の末尾で呼び出されます。標準の実装では、テキストの注釈マーカを追加します。マーカは  :meth:`anchor_bgn`
-   で作られたハイパーリンクリストのインデクス値です。
+   This method is called at the end of an anchor region.  The default
+   implementation adds a textual footnote marker using an index into the list of
+   hyperlinks created by :meth:`anchor_bgn`.
 
 
 .. method:: HTMLParser.handle_image(source, alt[, ismap[, align[, width[, height]]]])
 
-   このメソッドは画像を扱うために呼び出されます。標準の実装では、単に :meth:`handle_data` に *alt* の値を渡すだけです。
+   This method is called to handle images.  The default implementation simply
+   passes the *alt* value to the :meth:`handle_data` method.
 
 
 .. method:: HTMLParser.save_bgn()
 
-   文字列データをフォーマッタオブジェクトに送らずにバッファに保存する操作を開始します。保存されたデータは :meth:`save_end` で取得してください。
-   :meth:`save_bgn` / :meth:`save_end`  のペアを入れ子構造にすることはできません。
+   Begins saving character data in a buffer instead of sending it to the formatter
+   object.  Retrieve the stored data via :meth:`save_end`. Use of the
+   :meth:`save_bgn` / :meth:`save_end` pair may not be nested.
 
 
 .. method:: HTMLParser.save_end()
 
-   文字列データのバッファリングを終了し、以前 :meth:`save_bgn`  を呼び出した時点から保存されている全てのデータを返します。
-   :attr:`nofill` フラグが偽の場合、空白文字は全てスペース文字一文字に置き換えられます。予め :meth:`save_bgn` を呼ばないで
-   このメソッドを呼び出すと :exc:`TypeError` 例外が送出されます。
+   Ends buffering character data and returns all data saved since the preceding
+   call to :meth:`save_bgn`.  If the :attr:`nofill` flag is false, whitespace is
+   collapsed to single spaces.  A call to this method without a preceding call to
+   :meth:`save_bgn` will raise a :exc:`TypeError` exception.
 
 
-:mod:`htmlentitydefs` --- HTML 一般エンティティの定義
-=====================================================
+:mod:`htmlentitydefs` --- Definitions of HTML general entities
+==============================================================
 
 .. module:: htmlentitydefs
-   :synopsis: HTML 一般エンティティの定義。
+   :synopsis: Definitions of HTML general entities.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 .. note::
 
-   Python 3.0 で :mod:`htmlentitydefs` モジュールは :mod:`html.entities`
-   と改名されました。
-   ソースを 3.0 用に変換する際には :term:`2to3` ツールが自動的に import
-   を直してくれます。
+   The :mod:`htmlentitydefs` module has been renamed to :mod:`html.entities` in
+   Python 3.  The :term:`2to3` tool will automatically adapt imports when
+   converting your sources to Python 3.
 
+**Source code:** :source:`Lib/htmlentitydefs.py`
 
-このモジュールでは ``entitydefs`` 、 ``codepoint2name`` 、 ``entitydefs`` の三つの辞書を定義しています。
-``entitydefs`` は :mod:`htmllib` モジュールで :class:`HTMLParser` クラスの :attr:`entitydefs`
-メンバを定義するために使われます。このモジュールでは XHTML 1.0 で定義された全てのエンティティを提供しており、 Latin-1 キャラクタセット
-(ISO-8859-1)の簡単なテキスト置換を行う事ができます。
+--------------
+
+This module defines three dictionaries, ``name2codepoint``, ``codepoint2name``,
+and ``entitydefs``. ``entitydefs`` is used by the :mod:`htmllib` module to
+provide the :attr:`entitydefs` attribute of the :class:`HTMLParser` class.  The
+definition provided here contains all the entities defined by XHTML 1.0  that
+can be handled using simple textual substitution in the Latin-1 character set
+(ISO-8859-1).
 
 
 .. data:: entitydefs
 
-   各 XHTML 1.0 エンティティ定義について、ISO Latin-1 における置換テキストへの対応付けを行っている辞書です。
+   A dictionary mapping XHTML 1.0 entity definitions to their replacement text in
+   ISO Latin-1.
 
 
 .. data:: name2codepoint
 
-   HTMLのエンティティ名をUnicodeのコードポイントに変換するための辞書です。
+   A dictionary that maps HTML entity names to the Unicode code points.
 
    .. versionadded:: 2.3
 
 
 .. data:: codepoint2name
 
-   UnicodeのコードポイントをHTMLのエンティティ名に変換するための辞書です。
+   A dictionary that maps Unicode code points to HTML entity names.
 
    .. versionadded:: 2.3
 

@@ -1,260 +1,253 @@
-:mod:`email.charset`: 文字セットの表現
---------------------------------------
+:mod:`email.charset`: Representing character sets
+-------------------------------------------------
 
 .. module:: email.charset
-   :synopsis: 文字セット
+   :synopsis: Character Sets
 
 
-このモジュールは文字セットを表現する :class:`Charset` クラスと電子メールメッセージにふくまれる文字セット間の変換、および
-文字セットのレジストリとこのレジストリを操作するためのいくつかの便宜的なメソッドを提供します。
-:class:`Charset` インスタンスは
-:mod:`email` パッケージ中にあるほかのいくつかのモジュールで使用されます。
+This module provides a class :class:`Charset` for representing character sets
+and character set conversions in email messages, as well as a character set
+registry and several convenience methods for manipulating this registry.
+Instances of :class:`Charset` are used in several other modules within the
+:mod:`email` package.
 
-このクラスは :mod:`email.charset` モジュールからimportしてください。
+Import this class from the :mod:`email.charset` module.
 
 .. versionadded:: 2.2.2
 
 
 .. class:: Charset([input_charset])
 
-   文字セットを email のプロパティに写像する。 Map character sets to their email properties.
+   Map character sets to their email properties.
 
-   このクラスはある特定の文字セットに対し、電子メールに課される制約の情報を提供します。また、与えられた適用可能な codec
-   をつかって、文字セット間の変換をおこなう便宜的なルーチンも提供します。またこれは、ある文字セットが与えられたときに、
-   その文字セットを電子メールメッセージのなかでどうやって RFC に準拠したやり方で使用するかに関する、できうるかぎりの情報も提供します。
+   This class provides information about the requirements imposed on email for a
+   specific character set.  It also provides convenience routines for converting
+   between character sets, given the availability of the applicable codecs.  Given
+   a character set, it will do its best to provide information on how to use that
+   character set in an email message in an RFC-compliant way.
 
-   文字セットによっては、それらの文字を電子メールのヘッダあるいはメッセージ本体で使う場合は quoted-printable 形式あるいは
-   base64形式でエンコードする必要があります。またある文字セットはむきだしのまま変換する必要があり、電子メールの中では使用できません。
+   Certain character sets must be encoded with quoted-printable or base64 when used
+   in email headers or bodies.  Certain character sets must be converted outright,
+   and are not allowed in email.
 
-   以下ではオプション引数 *input_charset* について説明します。この値はつねに小文字に強制的に変換されます。
-   そして文字セットの別名が正規化されたあと、この値は文字セットのレジストリ内を検索し、ヘッダのエンコーディングと
-   メッセージ本体のエンコーディング、および出力時の変換に使われる codec をみつけるのに使われます。たとえば *input_charset* が
-   ``iso-8859-1`` の場合、ヘッダおよびメッセージ本体は quoted-printable でエンコードされ、出力時の変換用 codec
-   は必要ありません。もし *input_charset* が ``euc-jp`` ならば、ヘッダは base64 でエンコードされ、
-   メッセージ本体はエンコードされませんが、出力されるテキストは ``euc-jp`` 文字セットから ``iso-2022-jp`` 文字セットに変換されます。
+   Optional *input_charset* is as described below; it is always coerced to lower
+   case.  After being alias normalized it is also used as a lookup into the
+   registry of character sets to find out the header encoding, body encoding, and
+   output conversion codec to be used for the character set.  For example, if
+   *input_charset* is ``iso-8859-1``, then headers and bodies will be encoded using
+   quoted-printable and no output conversion codec is necessary.  If
+   *input_charset* is ``euc-jp``, then headers will be encoded with base64, bodies
+   will not be encoded, but output text will be converted from the ``euc-jp``
+   character set to the ``iso-2022-jp`` character set.
 
-   :class:`Charset` インスタンスは以下のようなデータ属性をもっています:
+   :class:`Charset` instances have the following data attributes:
 
 
    .. attribute:: input_charset
 
-      最初に指定される文字セットです。一般に通用している別名は、
-      *正式な* 電子メール用の名前に変換されます (たとえば、 ``latin_1`` は
-      ``iso-8859-1`` に変換されます)。デフォルトは 7-bit の ``us-ascii`` です。
+      The initial character set specified.  Common aliases are converted to
+      their *official* email names (e.g. ``latin_1`` is converted to
+      ``iso-8859-1``).  Defaults to 7-bit ``us-ascii``.
 
 
    .. attribute:: header_encoding
 
-      この文字セットが電子メールヘッダに使われる前にエンコードされる必要がある場合、
-      この属性は ``Charset.QP`` (quoted-printable エンコーディング)、
-      ``Charset.BASE64`` (base64 エンコーディング)、あるいは\
-      最短の QP または BASE64 エンコーディングである ``Charset.SHORTEST`` に\
-      設定されます。そうでない場合、この値は ``None`` になります。
+      If the character set must be encoded before it can be used in an email
+      header, this attribute will be set to ``Charset.QP`` (for
+      quoted-printable), ``Charset.BASE64`` (for base64 encoding), or
+      ``Charset.SHORTEST`` for the shortest of QP or BASE64 encoding. Otherwise,
+      it will be ``None``.
 
 
    .. attribute:: body_encoding
 
-      *header_encoding* と同じですが、この値はメッセージ本体のための\
-      エンコーディングを記述します。これはヘッダ用のエンコーディングとは\
-      違うかもしれません。
-      *body_encoding* では、 ``Charset.SHORTEST`` を使うことはできません。
+      Same as *header_encoding*, but describes the encoding for the mail
+      message's body, which indeed may be different than the header encoding.
+      ``Charset.SHORTEST`` is not allowed for *body_encoding*.
 
 
    .. attribute:: output_charset
 
-      文字セットによっては、電子メールのヘッダあるいはメッセージ本体に\
-      使う前にそれを変換する必要があります。もし *input_charset* が\
-      それらの文字セットのどれかをさしていたら、この *output_charset* 属性は\
-      それが出力時に変換される文字セットの名前をあらわしています。
-      それ以外の場合、この値は ``None`` になります。
+      Some character sets must be converted before they can be used in email headers
+      or bodies.  If the *input_charset* is one of them, this attribute will
+      contain the name of the character set output will be converted to.  Otherwise, it will
+      be ``None``.
 
 
    .. attribute:: input_codec
 
-      *input_charset* を Unicode に変換するための Python 用 codec 名です。
-      変換用の codec が必要ないときは、この値は ``None`` になります。
+      The name of the Python codec used to convert the *input_charset* to
+      Unicode.  If no conversion codec is necessary, this attribute will be
+      ``None``.
 
 
    .. attribute:: output_codec
 
-      Unicode を *output_charset* に変換するための Python 用 codec 名です。
-      変換用の codec が必要ないときは、この値は ``None`` になります。
-      この属性は *input_codec* と同じ値をもつことになるでしょう。
+      The name of the Python codec used to convert Unicode to the
+      *output_charset*.  If no conversion codec is necessary, this attribute
+      will have the same value as the *input_codec*.
 
-   :class:`Charset` インスタンスは、以下のメソッドも持っています:
+   :class:`Charset` instances also have the following methods:
 
 
    .. method:: get_body_encoding()
 
-      メッセージ本体のエンコードに使われる content-transfer-encoding の値を返します。
+      Return the content transfer encoding used for body encoding.
 
-      この値は使用しているエンコーディングの文字列 ``quoted-printable`` または
-      ``base64`` か、あるいは関数のどちらかです。後者の場合、これはエンコードされる
-      Message オブジェクトを単一の引数として取るような関数である必要があります。
-      この関数は変換後 :mailheader:`Content-Transfer-Encoding`
-      ヘッダ自体を、なんであれ適切な値に設定する必要があります。
+      This is either the string ``quoted-printable`` or ``base64`` depending on
+      the encoding used, or it is a function, in which case you should call the
+      function with a single argument, the Message object being encoded.  The
+      function should then set the :mailheader:`Content-Transfer-Encoding`
+      header itself to whatever is appropriate.
 
-      このメソッドは *body_encoding* が ``QP`` の場合 ``quoted-printable``
-      を返し、 *body_encoding* が ``BASE64`` の場合 ``base64`` を返します。
-      それ以外の場合は文字列 ``7bit`` を返します。
+      Returns the string ``quoted-printable`` if *body_encoding* is ``QP``,
+      returns the string ``base64`` if *body_encoding* is ``BASE64``, and
+      returns the string ``7bit`` otherwise.
 
 
    .. method:: convert(s)
 
-      文字列 *s* を *input_codec* から *output_codec* に変換します。
+      Convert the string *s* from the *input_codec* to the *output_codec*.
 
 
-.. method:: Charset.to_splittable(s)
+   .. method:: to_splittable(s)
 
-   おそらくマルチバイトの文字列を、安全に split できる形式に変換します。
-   *s* には split する文字列を渡します。
+      Convert a possibly multibyte string to a safely splittable format. *s* is
+      the string to split.
 
-   これは *input_codec* を使って文字列を Unicode にすることで、
-   文字と文字の境界で (たとえそれがマルチバイト文字であっても) 安全に
-   split できるようにします。
+      Uses the *input_codec* to try and convert the string to Unicode, so it can
+      be safely split on character boundaries (even for multibyte characters).
 
-   *input_charset* の文字列 *s* をどうやって Unicode に変換すればいいかが\
-   不明な場合、このメソッドは与えられた文字列そのものを返します。
+      Returns the string as-is if it isn't known how to convert *s* to Unicode
+      with the *input_charset*.
 
-   Unicode に変換できなかった文字は、Unicode 置換文字
-   (Unicode replacement character) ``'U+FFFD'``
-   に置換されます。
+      Characters that could not be converted to Unicode will be replaced with
+      the Unicode replacement character ``'U+FFFD'``.
 
 
    .. method:: from_splittable(ustr[, to_output])
 
-      split できる文字列をエンコードされた文字列に変換しなおします。
-      *ustr* は "逆split" するための Unicode 文字列です。
+      Convert a splittable string back into an encoded string.  *ustr* is a
+      Unicode string to "unsplit".
 
-      このメソッドでは、文字列を Unicode からべつのエンコード形式に変換するために\
-      適切な codec を使用します。与えられた文字列が Unicode ではなかった場合、
-      あるいはそれをどうやって Unicode から変換するか不明だった場合は、
-      与えられた文字列そのものが返されます。
+      This method uses the proper codec to try and convert the string from
+      Unicode back into an encoded format.  Return the string as-is if it is not
+      Unicode, or if it could not be converted from Unicode.
 
-      Unicode から正しく変換できなかった文字については、
-      適当な文字 (通常は ``'?'``) に置き換えられます。
+      Characters that could not be converted from Unicode will be replaced with
+      an appropriate character (usually ``'?'``).
 
-      *to_output* が ``True`` の場合 (デフォルト)、
-      このメソッドは *output_codec* をエンコードの形式として使用します。
-      *to_output* が ``False`` の場合、これは *input_codec* を使用します。
+      If *to_output* is ``True`` (the default), uses *output_codec* to convert
+      to an encoded format.  If *to_output* is ``False``, it uses *input_codec*.
 
 
    .. method:: get_output_charset()
 
-      出力用の文字セットを返します。
+      Return the output character set.
 
-      これは *output_charset* 属性が ``None`` でなければその値になります。
-      それ以外の場合、この値は *input_charset* と同じです。
+      This is the *output_charset* attribute if that is not ``None``, otherwise
+      it is *input_charset*.
 
 
    .. method:: encoded_header_len()
 
-      エンコードされたヘッダ文字列の長さを返します。
-      これは quoted-printable エンコーディングあるいは base64 エンコーディング\
-      に対しても正しく計算されます。
+      Return the length of the encoded header string, properly calculating for
+      quoted-printable or base64 encoding.
 
 
    .. method:: header_encode(s[, convert])
 
-      文字列 *s* をヘッダ用にエンコードします。
+      Header-encode the string *s*.
 
-      *convert* が ``True`` の場合、
-      文字列は入力用文字セットから出力用文字セットに自動的に変換されます。
-      これは行の長さ問題のあるマルチバイトの文字セットに対しては役に立ちません
-      (マルチバイト文字はバイト境界ではなく、文字ごとの境界で split
-      する必要があります)。
-      これらの問題を扱うには、高水準のクラスである :class:`~email.header.Header` クラスを\
-      使ってください (:mod:`email.header` を参照)。
-      *convert* の値はデフォルトでは ``False`` です。
+      If *convert* is ``True``, the string will be converted from the input
+      charset to the output charset automatically.  This is not useful for
+      multibyte character sets, which have line length issues (multibyte
+      characters must be split on a character, not a byte boundary); use the
+      higher-level :class:`~email.header.Header` class to deal with these issues
+      (see :mod:`email.header`).  *convert* defaults to ``False``.
 
-      エンコーディングの形式 (base64 または quoted-printable) は、
-      *header_encoding* 属性に基づきます。
+      The type of encoding (base64 or quoted-printable) will be based on the
+      *header_encoding* attribute.
 
 
    .. method:: body_encode(s[, convert])
 
-      文字列 *s* をメッセージ本体用にエンコードします。
+      Body-encode the string *s*.
 
-      *convert* が ``True`` の場合 (デフォルト)、
-      文字列は入力用文字セットから出力用文字セットに自動的に変換されます。
-      :meth:`header_encode` とは異なり、メッセージ本体にはふつう\
-      バイト境界の問題やマルチバイト文字セットの問題がないので、
-      これはきわめて安全におこなえます。
+      If *convert* is ``True`` (the default), the string will be converted from
+      the input charset to output charset automatically. Unlike
+      :meth:`header_encode`, there are no issues with byte boundaries and
+      multibyte charsets in email bodies, so this is usually pretty safe.
 
-      エンコーディングの形式 (base64 または quoted-printable) は、
-      *body_encoding* 属性に基づきます。
+      The type of encoding (base64 or quoted-printable) will be based on the
+      *body_encoding* attribute.
 
-   :class:`Charset` クラスには、標準的な演算と組み込み関数をサポートする\
-   いくつかのメソッドがあります。
+   The :class:`Charset` class also provides a number of methods to support
+   standard operations and built-in functions.
 
 
    .. method:: __str__()
 
-      *input_charset* を小文字に変換された文字列型として返します。
-      :meth:`__repr__` は、 :meth:`__str__` の別名となっています。
+      Returns *input_charset* as a string coerced to lower
+      case. :meth:`__repr__` is an alias for :meth:`__str__`.
 
 
    .. method:: __eq__(other)
 
-      このメソッドは、2つの :class:`Charset` インスタンスが同じかどうかを\
-      チェックするのに使います。
+      This method allows you to compare two :class:`Charset` instances for
+      equality.
 
 
    .. method:: __ne__(other)
 
-      このメソッドは、2つの :class:`Charset` インスタンスが異なるかどうかを\
-      チェックするのに使います。
+      This method allows you to compare two :class:`Charset` instances for
+      inequality.
 
-また、 :mod:`email.charset` モジュールには、
-グローバルな文字セット、文字セットの別名(エイリアス) および codec 用のレジストリに\
-新しいエントリを追加する以下の関数もふくまれています:
+The :mod:`email.charset` module also provides the following functions for adding
+new entries to the global character set, alias, and codec registries:
 
 
 .. function:: add_charset(charset[, header_enc[, body_enc[, output_charset]]])
 
-   文字の属性をグローバルなレジストリに追加します。
+   Add character properties to the global registry.
 
-   *charset* は入力用の文字セットで、その文字セットの正式名称を指定する必要があります。
+   *charset* is the input character set, and must be the canonical name of a
+   character set.
 
-   オプション引数 *header_enc* および *body_enc* は quoted-printable
-   エンコーディングをあらわす ``Charset.QP`` か、
-   base64 エンコーディングをあらわす ``Charset.BASE64`` 、
-   最短の quoted-printable または base64 エンコーディングをあらわす
-   ``Charset.SHORTEST`` 、あるいはエンコーディングなしの ``None`` の\
-   どれかになります。 ``SHORTEST`` が使えるのは *header_enc* だけです。
-   デフォルトの値はエンコーディングなしの ``None`` になっています。
+   Optional *header_enc* and *body_enc* is either ``Charset.QP`` for
+   quoted-printable, ``Charset.BASE64`` for base64 encoding,
+   ``Charset.SHORTEST`` for the shortest of quoted-printable or base64 encoding,
+   or ``None`` for no encoding.  ``SHORTEST`` is only valid for
+   *header_enc*. The default is ``None`` for no encoding.
 
-   オプション引数 *output_charset* には出力用の文字セットが入ります。
-   :meth:`Charset.convert` が呼ばれたときの変換は\
-   まず入力用の文字セットを Unicode に変換し、それから出力用の文字セットに\
-   変換されます。デフォルトでは、出力は入力と同じ文字セットになっています。
+   Optional *output_charset* is the character set that the output should be in.
+   Conversions will proceed from input charset, to Unicode, to the output charset
+   when the method :meth:`Charset.convert` is called.  The default is to output in
+   the same character set as the input.
 
-   *input_charset* および *output_charset* は\
-   このモジュール中の文字セット-codec 対応表にある Unicode codec エントリである\
-   必要があります。モジュールがまだ対応していない codec を追加するには、
-   :func:`add_codec` を使ってください。
-   より詳しい情報については :mod:`codecs` モジュールの文書を参照してください。
+   Both *input_charset* and *output_charset* must have Unicode codec entries in the
+   module's character set-to-codec mapping; use :func:`add_codec` to add codecs the
+   module does not know about.  See the :mod:`codecs` module's documentation for
+   more information.
 
-   グローバルな文字セット用のレジストリは、モジュールの global 辞書 ``CHARSETS``
-   内に保持されています。
+   The global character set registry is kept in the module global dictionary
+   ``CHARSETS``.
 
 
 .. function:: add_alias(alias, canonical)
 
-   文字セットの別名 (エイリアス) を追加します。 *alias* はその別名で、
-   たとえば ``latin-1`` のように指定します。 *canonical*
-   はその文字セットの正式名称で、たとえば ``iso-8859-1`` のように指定します。
+   Add a character set alias.  *alias* is the alias name, e.g. ``latin-1``.
+   *canonical* is the character set's canonical name, e.g. ``iso-8859-1``.
 
-   文字セットのグローバルな別名用レジストリは、モジュールの global 辞書 ``ALIASES``
-   内に保持されています。
+   The global charset alias registry is kept in the module global dictionary
+   ``ALIASES``.
 
 
 .. function:: add_codec(charset, codecname)
 
-   与えられた文字セットの文字と Unicode との変換をおこなう codec を追加します。
+   Add a codec that map characters in the given character set to and from Unicode.
 
-   *charset* はある文字セットの正式名称で、 *codecname* は Python 用 codec
-   の名前です。これは組み込み関数 :func:`unicode` の第2引数か、
-   あるいは Unicode 文字列型の :meth:`encode` メソッドに\
-   適した形式になっていなければなりません。
+   *charset* is the canonical name of a character set. *codecname* is the name of a
+   Python codec, as appropriate for the second argument to the :func:`unicode`
+   built-in, or to the :meth:`~unicode.encode` method of a Unicode string.
 

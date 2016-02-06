@@ -1,33 +1,30 @@
-:mod:`email.header`: 国際化されたヘッダ
----------------------------------------
+:mod:`email.header`: Internationalized headers
+----------------------------------------------
 
 .. module:: email.header
-   :synopsis: 非ASCII形式のヘッダを表現する
+   :synopsis: Representing non-ASCII headers
 
 
-:rfc:`2822` は電子メールメッセージの形式を規定する基本規格です。
-これはほとんどの電子メールが ASCII 文字のみで構成されていたころ普及した
-:rfc:`822` 標準から発展したものです。
-:rfc:`2822` は電子メールがすべて 7-bit ASCII
-文字のみから構成されていると仮定して作られた仕様です。
+:rfc:`2822` is the base standard that describes the format of email messages.
+It derives from the older :rfc:`822` standard which came into widespread use at
+a time when most email was composed of ASCII characters only.  :rfc:`2822` is a
+specification written assuming email contains only 7-bit ASCII characters.
 
-もちろん、電子メールが世界的に普及するにつれ、この仕様は国際化されてきました。
-今では電子メールに言語依存の文字セットを使うことができます。
-基本規格では、まだ電子メールメッセージを 7-bit ASCII 文字のみを\
-使って転送するよう要求していますので、多くの RFC でどうやって非ASCII
-の電子メールを :rfc:`2822` 準拠な形式にエンコードするかが\
-記述されています。これらの RFC は以下のものを含みます: :rfc:`2045` 、
-:rfc:`2046` 、 :rfc:`2047` 、および :rfc:`2231` 。
-:mod:`email` パッケージは、 :mod:`email.header` および
-:mod:`email.charset` モジュールでこれらの規格をサポートしています。
+Of course, as email has been deployed worldwide, it has become
+internationalized, such that language specific character sets can now be used in
+email messages.  The base standard still requires email messages to be
+transferred using only 7-bit ASCII characters, so a slew of RFCs have been
+written describing how to encode email containing non-ASCII characters into
+:rfc:`2822`\ -compliant format. These RFCs include :rfc:`2045`, :rfc:`2046`,
+:rfc:`2047`, and :rfc:`2231`. The :mod:`email` package supports these standards
+in its :mod:`email.header` and :mod:`email.charset` modules.
 
-ご自分の電子メールヘッダ、たとえば :mailheader:`Subject` や :mailheader:`To`
-などのフィールドに非ASCII文字を入れたい場合、
-:class:`Header` クラスを使う必要があります。
-:class:`~email.message.Message` オブジェクトの該当フィールドに文字列ではなく、
-:class:`Header` インスタンスを使うのです。
-:class:`Header` クラスは :mod:`email.header` モジュールから\
-インポートしてください。たとえば::
+If you want to include non-ASCII characters in your email headers, say in the
+:mailheader:`Subject` or :mailheader:`To` fields, you should use the
+:class:`Header` class and assign the field in the :class:`~email.message.Message`
+object to an instance of :class:`Header` instead of using a string for the header
+value.  Import the :class:`Header` class from the :mod:`email.header` module.
+For example::
 
    >>> from email.message import Message
    >>> from email.header import Header
@@ -39,132 +36,124 @@
 
 
 
-:mailheader:`Subject` フィールドに非ASCII文字をふくめていることに\
-注目してください。ここでは、含めたいバイト列がエンコードされている\
-文字セットを指定して :class:`Header` インスタンスを作成することによって\
-実現しています。のちにこの :class:`~email.message.Message` インスタンスから\
-フラットなテキストを生成するさいに、この :mailheader:`Subject` フィールドは :rfc:`2047`
-準拠の適切な形式にエンコードされます。MIME 機能のついている\
-メーラなら、このヘッダに埋めこまれた ISO-8859-1 文字をただしく表示するでしょう。
+Notice here how we wanted the :mailheader:`Subject` field to contain a non-ASCII
+character?  We did this by creating a :class:`Header` instance and passing in
+the character set that the byte string was encoded in.  When the subsequent
+:class:`~email.message.Message` instance was flattened, the :mailheader:`Subject`
+field was properly :rfc:`2047` encoded.  MIME-aware mail readers would show this
+header using the embedded ISO-8859-1 character.
 
 .. versionadded:: 2.2.2
 
-以下は :class:`Header` クラスの説明です:
+Here is the :class:`Header` class description:
 
 
 .. class:: Header([s[, charset[, maxlinelen[, header_name[, continuation_ws[, errors]]]]]])
 
-   別の文字セットの文字列をふくむ MIME準拠なヘッダを作成します。
+   Create a MIME-compliant header that can contain strings in different character
+   sets.
 
-   オプション引数 *s* はヘッダの値の初期値です。
-   これが ``None`` の場合 (デフォルト)、ヘッダの初期値は設定されません。
-   この値はあとから :meth:`append` メソッドを呼びだすことによって\
-   追加することができます。 *s* はバイト文字列か、あるいは Unicode
-   文字列でもかまいません。この意味については :meth:`append` の項を参照してください。
+   Optional *s* is the initial header value.  If ``None`` (the default), the
+   initial header value is not set.  You can later append to the header with
+   :meth:`append` method calls.  *s* may be a byte string or a Unicode string, but
+   see the :meth:`append` documentation for semantics.
 
-   オプション引数 *charset* には 2つの目的があります。
-   ひとつは :meth:`append` メソッドにおける *charset* 引数と同じものです。
-   もうひとつの目的は、これ以降 *charset* 引数を省略した :meth:`append`
-   メソッド呼び出しすべてにおける、デフォルト文字セットを決定するものです。
-   コンストラクタに *charset* が与えられない場合 (デフォルト)、
-   初期値の *s* および以後の :meth:`append` 呼び出しにおける文字セットとして
-   ``us-ascii`` が使われます。
+   Optional *charset* serves two purposes: it has the same meaning as the *charset*
+   argument to the :meth:`append` method.  It also sets the default character set
+   for all subsequent :meth:`append` calls that omit the *charset* argument.  If
+   *charset* is not provided in the constructor (the default), the ``us-ascii``
+   character set is used both as *s*'s initial charset and as the default for
+   subsequent :meth:`append` calls.
 
-   行の最大長は *maxlinelen* によって明示的に指定できます。
-   最初の行を (:mailheader:`Subject` などの *s* に含まれない
-   フィールドヘッダの責任をとるため) 短く切りとる場合、
-   *header_name* にそのフィールド名を指定してください。
-   *maxlinelen* のデフォルト値は 76 であり、
-   *header_name* のデフォルト値は ``None`` です。
-   これはその最初の行を長い、切りとられたヘッダとして扱わないことを意味します。
+   The maximum line length can be specified explicitly via *maxlinelen*.  For
+   splitting the first line to a shorter value (to account for the field header
+   which isn't included in *s*, e.g. :mailheader:`Subject`) pass in the name of the
+   field in *header_name*.  The default *maxlinelen* is 76, and the default value
+   for *header_name* is ``None``, meaning it is not taken into account for the
+   first line of a long, split header.
 
-   オプション引数 *continuation_ws* は :rfc:`2822` 準拠の折り返し用余白文字で、
-   ふつうこれは空白か、ハードウェアタブ文字 (hard tab) である必要があります。
-   ここで指定された文字は複数にわたる行の行頭に挿入されます。
-   *continuation_ws* のデフォルト値は1つのスペース文字(" ")です。
+   Optional *continuation_ws* must be :rfc:`2822`\ -compliant folding whitespace,
+   and is usually either a space or a hard tab character. This character will be
+   prepended to continuation lines.  *continuation_ws* defaults to a single
+   space character (" ").
 
-   オプション引数 *errors* は、 :meth:`append` メソッドにそのまま渡されます。
+   Optional *errors* is passed straight through to the :meth:`append` method.
 
 
    .. method:: append(s[, charset[, errors]])
 
-      この MIME ヘッダに文字列 *s* を追加します。
+      Append the string *s* to the MIME header.
 
-      オプション引数 *charset* がもし与えられた場合、これは
-      :class:`~email.charset.Charset` インスタンス (:mod:`email.charset` を参照) か、
-      あるいは文字セットの名前でなければなりません。この場合は :class:`~email.charset.Charset`
-      インスタンスに変換されます。この値が ``None`` の場合 (デフォルト)、
-      コンストラクタで与えられた *charset* が使われます。
+      Optional *charset*, if given, should be a :class:`~email.charset.Charset`
+      instance (see :mod:`email.charset`) or the name of a character set, which
+      will be converted to a :class:`~email.charset.Charset` instance.  A value
+      of ``None`` (the default) means that the *charset* given in the constructor
+      is used.
 
-      *s* はバイト文字列か、Unicode 文字列です。
-      これがバイト文字列 (``isinstance(s, str)`` が真) の場合、
-      *charset* はその文字列のエンコーディングであり、
-      これが与えられた文字セットでうまくデコードできないときは
-      :exc:`UnicodeError` が発生します。
+      *s* may be a byte string or a Unicode string.  If it is a byte string
+      (i.e.  ``isinstance(s, str)`` is true), then *charset* is the encoding of
+      that byte string, and a :exc:`UnicodeError` will be raised if the string
+      cannot be decoded with that character set.
 
-      いっぽう *s* が Unicode 文字列の場合、 *charset* はその文字列の文\
-      字セットを決定するためのヒントとして使われます。この場合、
-      :rfc:`2822` 準拠のヘッダは :rfc:`2047` の規則をもちいて作成され、
-      Unicode 文字列は以下の文字セットを (この優先順位で) 適用してエンコー\
-      ドされます: ``us-ascii`` 、 *charset* で与えられたヒント、それもなけ\
-      れば ``utf-8`` 。最初の文字セットは :exc:`UnicodeError` をなるべくふ\
-      せぐために使われます。
+      If *s* is a Unicode string, then *charset* is a hint specifying the
+      character set of the characters in the string.  In this case, when
+      producing an :rfc:`2822`\ -compliant header using :rfc:`2047` rules, the
+      Unicode string will be encoded using the following charsets in order:
+      ``us-ascii``, the *charset* hint, ``utf-8``.  The first character set to
+      not provoke a :exc:`UnicodeError` is used.
 
-      オプション引数 *errors* は :func:`unicode` 又は :func:`ustr.encode`
-      の呼び出し時に使用し、デフォルト値は "strict" です。
+      Optional *errors* is passed through to any :func:`unicode` or
+      :meth:`unicode.encode` call, and defaults to "strict".
 
 
    .. method:: encode([splitchars])
 
-      メッセージヘッダを RFC に沿ったやり方でエンコードします。
-      おそらく長い行は折り返され、非ASCII部分は base64 または quoted-printable
-      エンコーディングで包含されるでしょう。オプション引数 *splitchars*
-      には長いASCII行を分割する文字の文字列を指定し、
-      :rfc:`2822` の *highest level syntactic breaks* の\
-      大まかなサポートの為に使用します。この引数は
-      :rfc:`2047` でエンコードされた行には影響しません。
+      Encode a message header into an RFC-compliant format, possibly wrapping
+      long lines and encapsulating non-ASCII parts in base64 or quoted-printable
+      encodings.  Optional *splitchars* is a string containing characters to
+      split long ASCII lines on, in rough support of :rfc:`2822`'s *highest
+      level syntactic breaks*.  This doesn't affect :rfc:`2047` encoded lines.
 
-   :class:`Header` クラスは、標準の演算子や組み込み関数を\
-   サポートするためのメソッドもいくつか提供しています。
+   The :class:`Header` class also provides a number of methods to support
+   standard operators and built-in functions.
 
 
    .. method:: __str__()
 
-      :meth:`Header.encode` と同じです。 ``str(aHeader)`` などとすると有用でしょう。
+      A synonym for :meth:`Header.encode`.  Useful for ``str(aHeader)``.
 
 
    .. method:: __unicode__()
 
-      組み込みの :func:`unicode` 関数の補助です。
-      ヘッダを Unicode 文字列として返します。
+      A helper for the built-in :func:`unicode` function.  Returns the header as
+      a Unicode string.
 
 
    .. method:: __eq__(other)
 
-      このメソッドは、ふたつの :class:`Header` インスタンスどうしが等しいかどうか\
-      判定するのに使えます。
+      This method allows you to compare two :class:`Header` instances for
+      equality.
 
 
    .. method:: __ne__(other)
 
-      このメソッドは、ふたつの :class:`Header` インスタンスどうしが異なっているか\
-      どうかを判定するのに使えます。
+      This method allows you to compare two :class:`Header` instances for
+      inequality.
 
-さらに、 :mod:`email.header` モジュールは以下のような便宜的な関数も提供しています。
+The :mod:`email.header` module also provides the following convenient functions.
 
 
 .. function:: decode_header(header)
 
-   文字セットを変換することなしに、メッセージのヘッダをデコードします。
-   ヘッダの値は *header* に渡します。
+   Decode a message header value without converting the character set. The header
+   value is in *header*.
 
-   この関数はヘッダのそれぞれのデコードされた部分ごとに、
-   ``(decoded_string, charset)`` という形式の 2要素タプルからなる\
-   リストを返します。 *charset* はヘッダのエンコードされていない部分に\
-   対しては ``None`` を、それ以外の場合はエンコードされた文字列が\
-   指定している文字セットの名前を小文字からなる文字列で返します。
+   This function returns a list of ``(decoded_string, charset)`` pairs containing
+   each of the decoded parts of the header.  *charset* is ``None`` for non-encoded
+   parts of the header, otherwise a lower case string containing the name of the
+   character set specified in the encoded string.
 
-   以下はこの使用例です::
+   Here's an example::
 
       >>> from email.header import decode_header
       >>> decode_header('=?iso-8859-1?q?p=F6stal?=')
@@ -173,16 +162,14 @@
 
 .. function:: make_header(decoded_seq[, maxlinelen[, header_name[, continuation_ws]]])
 
-   :func:`decode_header` によって返される 2要素タプルのリストから
-   :class:`Header` インスタンスを作成します。
+   Create a :class:`Header` instance from a sequence of pairs as returned by
+   :func:`decode_header`.
 
-   :func:`decode_header` はヘッダの値をとってきて、
-   ``(decoded_string, charset)`` という形式の 2要素タプルからなる\
-   リストを返します。ここで *decoded_string* はデコードされた文字列、
-   *charset* はその文字セットです。
+   :func:`decode_header` takes a header value string and returns a sequence of
+   pairs of the format ``(decoded_string, charset)`` where *charset* is the name of
+   the character set.
 
-   この関数はこれらのリストの項目から、
-   :class:`Header` インスタンスを返します。オプション引数
-   *maxlinelen* 、 *header_name* および *continuation_ws* は :class:`Header`
-   コンストラクタに与えるものと同じです。
+   This function takes one of those sequence of pairs and returns a :class:`Header`
+   instance.  Optional *maxlinelen*, *header_name*, and *continuation_ws* are as in
+   the :class:`Header` constructor.
 

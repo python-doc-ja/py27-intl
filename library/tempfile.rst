@@ -1,180 +1,158 @@
-
-:mod:`tempfile` --- 一時的なファイルやディレクトリの生成
-========================================================
+:mod:`tempfile` --- Generate temporary files and directories
+============================================================
 
 .. sectionauthor:: Zack Weinberg <zack@codesourcery.com>
 
 
 .. module:: tempfile
-   :synopsis: 一時的なファイルやディレクトリを生成。
+   :synopsis: Generate temporary files and directories.
 
 
 .. index::
    pair: temporary; file name
    pair: temporary; file
 
-このモジュールを使うと、一時的なファイルやディレクトリを生成できます。このモジュールはサポートされている全てのプラットフォームで利用可能です。
+**Source code:** :source:`Lib/tempfile.py`
 
-バージョン 2.3 の Python では、このモジュールに対してセキュリティを高める為の見直しが行われました。現在では新たに 3 つの関数、
-:func:`NamedTemporaryFile` 、 :func:`mkstemp` 、および :func:`mkdtemp` が提供されており、安全でない
-:func:`mktemp`  を使いつづける必要をなくしました。このモジュールで生成される一時ファイルはもはやプロセス番号を含みません; その代わり、6
-桁のランダムな文字からなる文字列が使われます。
+--------------
 
-また、ユーザから呼び出し可能な関数は全て、一時ファイルの場所や名前を直接操作できるようにするための追加の引数をとるようになりました。もはや変数
-*tempdir* および *template* を使う必要はありません。以前のバージョンとの互換性を維持するために、引数の順番は多少変です;
-明確さのためにキーワード引数を使うことをお勧めします。
+This module generates temporary files and directories.  It works on all
+supported platforms.
 
-このモジュールではユーザから呼び出し可能な以下の関数を定義しています:
+In version 2.3 of Python, this module was overhauled for enhanced security.  It
+now provides three new functions, :func:`NamedTemporaryFile`, :func:`mkstemp`,
+and :func:`mkdtemp`, which should eliminate all remaining need to use the
+insecure :func:`mktemp` function.  Temporary file names created by this module
+no longer contain the process ID; instead a string of six random characters is
+used.
+
+Also, all the user-callable functions now take additional arguments which
+allow direct control over the location and name of temporary files.  It is
+no longer necessary to use the global *tempdir* and *template* variables.
+To maintain backward compatibility, the argument order is somewhat odd; it
+is recommended to use keyword arguments for clarity.
+
+The module defines the following user-callable functions:
 
 
 .. function:: TemporaryFile([mode='w+b'[, bufsize=-1[, suffix=''[, prefix='tmp'[, dir=None]]]]])
 
-   一時的な記憶領域として使うことができるファイルライク(file-like)オブジェクトを返します。ファイルは :func:`mkstemp` を使って
-   生成されます。このファイルは閉じられると (オブジェクトがガーベジコレクションされた際に、暗黙のうちに閉じられる場合を含みます)
-   すぐに消去されます。Unix環境では、ファイルが生成されるとすぐにそのファイルのディレクトリエントリは除去されてしまいます。一方、他の
-   プラットフォームではこの機能はサポートされていません; 従って、コードを書くときには、この関数で作成した一時ファイルをファイルシステム上で見る
-   ことができる、あるいはできないということをあてにすべきではありません。
+   Return a file-like object that can be used as a temporary storage area.
+   The file is created using :func:`mkstemp`. It will be destroyed as soon
+   as it is closed (including an implicit close when the object is garbage
+   collected).  Under Unix, the directory entry for the file is removed
+   immediately after the file is created.  Other platforms do not support
+   this; your code should not rely on a temporary file created using this
+   function having or not having a visible name in the file system.
 
-   生成されたファイルを一旦閉じなくてもファイルを読み書きできるようにするために、 *mode* パラメタは標準で ``'w+b'`` に設定されています。
-   ファイルに記録するデータが何であるかに関わらず全てのプラットフォームで一貫性のある動作をさせるために、バイナリモードが使われています。 *bufsize*
-   の値は標準で ``-1`` で、これはオペレーティングシステムにおける標準の値を使うことを意味しています。
+   The *mode* parameter defaults to ``'w+b'`` so that the file created can
+   be read and written without being closed.  Binary mode is used so that it
+   behaves consistently on all platforms without regard for the data that is
+   stored.  *bufsize* defaults to ``-1``, meaning that the operating system
+   default is used.
 
-   *dir* 、 *prefix* および *suffix* パラメタは :func:`mkstemp` に渡されます。
+   The *dir*, *prefix* and *suffix* parameters are passed to :func:`mkstemp`.
 
-   .. The returned object is a true file object on POSIX platforms.  On other
-      platforms, it is a file-like object whose :attr:`!file` attribute is the
-      underlying true file object. This file-like object can be used in a
-      :keyword:`with` statement, just like a normal file.
+   The returned object is a true file object on POSIX platforms.  On other
+   platforms, it is a file-like object whose :attr:`!file` attribute is the
+   underlying true file object. This file-like object can be used in a
+   :keyword:`with` statement, just like a normal file.
 
-   返されるオブジェクトは、POSIXプラットフォームでは本物のfileオブジェクトです。
-   それ以外のプラットフォームではファイルライクオブジェクトが返され、
-   :attr:`!file` 属性に本物のfileオブジェクトがあります。
-   このファイルライクオブジェクトは、通常のファイルと同じように :keyword:`with`
-   文で利用することができます。
 
 .. function:: NamedTemporaryFile([mode='w+b'[, bufsize=-1[, suffix=''[, prefix='tmp'[, dir=None[, delete=True]]]]]])
 
-   この関数はファイルがファイルシステム上で見ることができるよう保証されている点を除き、 :func:`TemporaryFile` と全く同じに働きます。
-   (Unixでは、ディレクトリエントリはunlinkされません) ファイル名はファイルオブジェクトの :attr:`name` メンバから
-   取得することができます。このファイル名を使って一時ファイルをもう一度開くとことができるかどうかは、プラットフォームによって異なります。
-   (Unixでは可能でしたが、Windows NT以降では開く事ができません。)
-   *delete* がtrue(デフォルト)の場合、ファイルは閉じられるとすぐに削除されます。
+   This function operates exactly as :func:`TemporaryFile` does, except that
+   the file is guaranteed to have a visible name in the file system (on
+   Unix, the directory entry is not unlinked).  That name can be retrieved
+   from the :attr:`name` attribute of the file object.  Whether the name can be
+   used to open the file a second time, while the named temporary file is
+   still open, varies across platforms (it can be so used on Unix; it cannot
+   on Windows NT or later).  If *delete* is true (the default), the file is
+   deleted as soon as it is closed.
 
-   .. The returned object is always a file-like object whose :attr:`!file`
-      attribute is the underlying true file object. This file-like object can
-      be used in a :keyword:`with` statement, just like a normal file.
-
-   返されるオブジェクトは、常にファイルライクオブジェクトです。
-   このオブジェクトの :attr:`!file` 属性が本物のfileオブジェクトになります。
-   このファイルライクオブジェクトは、通常のファイルと同じように :keyword:`with`
-   文を利用することができます。
+   The returned object is always a file-like object whose :attr:`!file`
+   attribute is the underlying true file object. This file-like object can
+   be used in a :keyword:`with` statement, just like a normal file.
 
    .. versionadded:: 2.3
 
    .. versionadded:: 2.6
-      *delete* 引数
+      The *delete* parameter.
+
 
 .. function:: SpooledTemporaryFile([max_size=0, [mode='w+b'[, bufsize=-1[, suffix=''[, prefix='tmp'[, dir=None]]]]]])
 
-   .. This function operates exactly as :func:`TemporaryFile` does, except that
-      data is spooled in memory until the file size exceeds *max_size*, or
-      until the file's :func:`fileno` method is called, at which point the
-      contents are written to disk and operation proceeds as with
-      :func:`TemporaryFile`.
+   This function operates exactly as :func:`TemporaryFile` does, except that
+   data is spooled in memory until the file size exceeds *max_size*, or
+   until the file's :func:`fileno` method is called, at which point the
+   contents are written to disk and operation proceeds as with
+   :func:`TemporaryFile`.  Also, it's ``truncate`` method does not
+   accept a ``size`` argument.
 
-   この関数は、ファイルサイズが *max_size* を超えるか、 :func:`fileno`
-   メソッドが呼ばれるまでの間メモリ上で処理される以外は、
-   :func:`TemporaryFile` と同じです。
-   *max_size* を超えるか :func:`fileno` が呼ばれたとき、一時ファイルの内容が\
-   ディスクに書き込まれ、その後の処理は :func:`TemporaryFile` で行われます。
+   The resulting file has one additional method, :func:`rollover`, which
+   causes the file to roll over to an on-disk file regardless of its size.
 
-   .. The resulting file has one additional method, :func:`rollover`, which
-      causes the file to roll over to an on-disk file regardless of its size.
-
-   この関数が返すファイルは、追加で1つのメソッド :func:`rollover` を持っています。
-   このメソッドが呼ばれると、(サイズに関係なく)メモリからディスクへのロールオーバーが\
-   実行されます。
-
-   .. The returned object is a file-like object whose :attr:`_file` attribute
-      is either a :class:`StringIO` object or a true file object, depending on
-      whether :func:`rollover` has been called. This file-like object can be
-      used in a :keyword:`with` statement, just like a normal file.
-
-   返されるオブジェクトはファイルライクオブジェクトで、その :attr:`_file`
-   属性は、 :func:`rollover` が呼ばれたかどうかによって、 :class:`StringIO`
-   オブジェクトか、本物のファイルオブジェクトになります。
-   このファイルライクオブジェクトは、通常のファイルオブジェクトと同じように、
-   :keyword:`with` 文で利用することができます。
+   The returned object is a file-like object whose :attr:`_file` attribute
+   is either a :class:`~StringIO.StringIO` object or a true file object, depending on
+   whether :func:`rollover` has been called. This file-like object can be
+   used in a :keyword:`with` statement, just like a normal file.
 
    .. versionadded:: 2.6
 
 
-
 .. function:: mkstemp([suffix=''[, prefix='tmp'[, dir=None[, text=False]]]])
 
-   可能な限り最も安全な手段で一時ファイルを生成します。使用するプラットフォームで :func:`os.open` の :const:`O_EXCL`
-   フラグが正しく実装されている限り、ファイルの生成で競合条件が起こることはありません。このファイルは、ファイルを生成したユーザのユーザ ID
-   からのみ読み書き可能です。使用するプラットフォームにおいて、ファイルを実行可能かどうかを示す許可ビットが使われている場合、
-   ファイルは誰からも実行不可なように設定されます。このファイルのファイル記述子は子プロセスに継承されません。
+   Creates a temporary file in the most secure manner possible.  There are
+   no race conditions in the file's creation, assuming that the platform
+   properly implements the :const:`os.O_EXCL` flag for :func:`os.open`.  The
+   file is readable and writable only by the creating user ID.  If the
+   platform uses permission bits to indicate whether a file is executable,
+   the file is executable by no one.  The file descriptor is not inherited
+   by child processes.
 
-   :func:`TemporaryFile` と違って、 :func:`mkstemp` で生成された
-   ファイルが用済みになったときにファイルを消去するのはユーザの責任です。
+   Unlike :func:`TemporaryFile`, the user of :func:`mkstemp` is responsible
+   for deleting the temporary file when done with it.
 
-   *suffix* が指定された場合、ファイル名は指定されたsuffixで終わります。そうでない場合にはsuffixは付けられません。 :func:`mkstemp`
-   はファイル名とsuffixの間にドットを追加しません; 必要なら、 *suffix* の先頭につけてください。
+   If *suffix* is specified, the file name will end with that suffix,
+   otherwise there will be no suffix.  :func:`mkstemp` does not put a dot
+   between the file name and the suffix; if you need one, put it at the
+   beginning of *suffix*.
 
-   *prefix* が指定された場合、ファイル名は指定されたプレフィクス(接頭文字列) で始まります; そうでない場合、標準のプレフィクスが使われます。
+   If *prefix* is specified, the file name will begin with that prefix;
+   otherwise, a default prefix is used.
 
-   .. If *dir* is specified, the file will be created in that directory;
-      otherwise, a default directory is used.  The default directory is chosen
-      from a platform-dependent list, but the user of the application can
-      control the directory location by setting the *TMPDIR*, *TEMP* or *TMP*
-      environment variables.  There is thus no guarantee that the generated
-      filename will have any nice properties, such as not requiring quoting
-      when passed to external commands via ``os.popen()``.
+   If *dir* is specified, the file will be created in that directory;
+   otherwise, a default directory is used.  The default directory is chosen
+   from a platform-dependent list, but the user of the application can
+   control the directory location by setting the *TMPDIR*, *TEMP* or *TMP*
+   environment variables.  There is thus no guarantee that the generated
+   filename will have any nice properties, such as not requiring quoting
+   when passed to external commands via ``os.popen()``.
 
-   *dir* が指定された場合、一時ファイルは指定されたディレクトリ下に作成されます; そうでない場合、標準のディレクトリが使われます。
-   デフォルトのディレクトリは、プラットフォームごとに異なるリストから選ばれます。
-   しかし、アプリケーションのユーザーは *TMPDIR*, *TEMP*, *TMP* 環境変数を設定することで、その場所を設定することができます。
-   そのため、生成されたファイル名について、クォート無しで ``os.popen()``
-   を使って外部コマンドに渡せるかどうかなどの保証はありません。
+   If *text* is specified, it indicates whether to open the file in binary
+   mode (the default) or text mode.  On some platforms, this makes no
+   difference.
 
-   *text* が指定された場合、ファイルをバイナリモード (標準の設定)  かテキストモードで開くかを示します。使用するプラットフォームによっては
-   この値を設定しても変化はありません。
-
-   :func:`mkstemp` は開かれたファイルを扱うための OS レベルの値とファイルの絶対パス名が順番に並んだタプルを返します。
+   :func:`mkstemp` returns a tuple containing an OS-level handle to an open
+   file (as would be returned by :func:`os.open`) and the absolute pathname
+   of that file, in that order.
 
    .. versionadded:: 2.3
 
 
 .. function:: mkdtemp([suffix=''[, prefix='tmp'[, dir=None]]])
 
-   ..
-       Creates a temporary directory in the most secure manner possible. There
-       are no race conditions in the directory's creation.  The directory is
-       readable, writable, and searchable only by the creating user ID.
+   Creates a temporary directory in the most secure manner possible. There
+   are no race conditions in the directory's creation.  The directory is
+   readable, writable, and searchable only by the creating user ID.
 
-   可能な限り最もセキュアな方法で、一時ディレクトリを作成します。
-   ディレクトリの生成で競合条件は発生しません。
-   作成されたディレクトリは、作成したユーザーIDのみで、読み込み可能で、書き込み可能で、
-   検索可能です。
+   The user of :func:`mkdtemp` is responsible for deleting the temporary
+   directory and its contents when done with it.
 
-   ..
-      The user of :func:`mkdtemp` is responsible for deleting the temporary
-      directory and its contents when done with it.
+   The *prefix*, *suffix*, and *dir* arguments are the same as for
+   :func:`mkstemp`.
 
-   :func:`mkdtemp` によって作られたディレクトリとその内容が用済みになった時に
-   それを消去するのはユーザの責任です。
-
-   ..
-      The *prefix*, *suffix*, and *dir* arguments are the same as for
-      :func:`mkstemp`.
-
-   *prefix*, *suffix*, *dir* 引数は :func:`mkstemp` 関数のものと同じです。
-
-   .. :func:`mkdtemp` returns the absolute pathname of the new directory.
-
-   :func:`mkdtemp` は新たに生成されたディレクトリの絶対パス名を返します。
+   :func:`mkdtemp` returns the absolute pathname of the new directory.
 
    .. versionadded:: 2.3
 
@@ -182,17 +160,19 @@
 .. function:: mktemp([suffix=''[, prefix='tmp'[, dir=None]]])
 
    .. deprecated:: 2.3
-      代わりに :func:`mkstemp` を使って下さい.
+      Use :func:`mkstemp` instead.
 
-   一時ファイルの絶対パス名を返します。このパス名は少なくともこの関数が呼び出された時点ではファイルシステム中に存在しなかったパス名です。
-   *prefix* 、 *prefix* 、 *suffix* 、および *dir* 引数は :func:`mkstemp` のものと同じです。
+   Return an absolute pathname of a file that did not exist at the time the
+   call is made.  The *prefix*, *suffix*, and *dir* arguments are the same
+   as for :func:`mkstemp`.
 
    .. warning::
 
-      この関数を使うとプログラムのセキュリティホールになる可能性があります。この関数が返したファイル名を返した後、あなたがそのファイル名
-      を使って次に何かをしようとする段階に至る前に、誰か他の人間があなたにパンチをくらわせてしまうかもしれません。
-      :func:`mktemp` の利用は、 :func:`NamedTemporaryFile` に ``delete=False``
-      引数を渡すことで、簡単に置き換えることができます。 ::
+      Use of this function may introduce a security hole in your program.  By
+      the time you get around to doing anything with the file name it returns,
+      someone else may have beaten you to the punch.  :func:`mktemp` usage can
+      be replaced easily with :func:`NamedTemporaryFile`, passing it the
+      ``delete=False`` parameter::
 
          >>> f = NamedTemporaryFile(delete=False)
          >>> f
@@ -205,42 +185,48 @@
          >>> os.path.exists(f.name)
          False
 
-このモジュールでは、一時的なファイル名の作成方法を指定する 2 つのグローバル変数を使います。これらの変数は上記のいずれかの関数を最初
-に呼び出した際に初期化されます。関数呼び出しをおこなうユーザはこれらの値を変更することができますが、これはお勧めできません;
-その代わりに関数に適切な引数を指定してください。
+The module uses a global variable that tell it how to construct a
+temporary name.  They are initialized at the first call to any of the
+functions above.  The caller may change them, but this is discouraged; use
+the appropriate function arguments, instead.
 
 
 .. data:: tempdir
 
-   この値が ``None`` 以外に設定された場合、このモジュールで定義されている関数全ての *dir* 引数に対する標準の設定値となります。
+   When set to a value other than ``None``, this variable defines the
+   default value for the *dir* argument to all the functions defined in this
+   module.
 
-   *tempdir* が設定されていないか ``None`` の場合、上記のいずれかの関数を呼び出した際は常に、Python は標準的なディレクトリ候補のリスト
-   を検索し、関数を呼び出しているユーザの権限でファイルを作成できる最初のディレクトリ候補を *tempdir* に設定します。リストは以下の
-   ようになっています:
+   If ``tempdir`` is unset or ``None`` at any call to any of the above
+   functions, Python searches a standard list of directories and sets
+   *tempdir* to the first one which the calling user can create files in.
+   The list is:
 
-   #. 環境変数 :envvar:`TMPDIR` で与えられているディレクトリ名。
+   #. The directory named by the :envvar:`TMPDIR` environment variable.
 
-   #. 環境変数 :envvar:`TEMP` で与えられているディレクトリ名。
+   #. The directory named by the :envvar:`TEMP` environment variable.
 
-   #. 環境変数 :envvar:`TMP` で与えられているディレクトリ名。
+   #. The directory named by the :envvar:`TMP` environment variable.
 
-   #. プラットフォーム依存の場所:
+   #. A platform-specific location:
 
-      * RiscOS では環境変数 :envvar:`Wimp$ScrapDir` で与えられているディレクトリ名。
+      * On RiscOS, the directory named by the :envvar:`Wimp$ScrapDir` environment
+        variable.
 
-      * Windows ではディレクトリ :file:`C:\\TEMP` 、 :file:`C:\\TMP` 、 :file:`\\TEMP` 、および
-              :file:`\\TMP` の順。
+      * On Windows, the directories :file:`C:\\TEMP`, :file:`C:\\TMP`,
+        :file:`\\TEMP`, and :file:`\\TMP`, in that order.
 
-      * その他の全てのプラットフォームでは、 :file:`/tmp` 、 :file:`/var/tmp` 、および :file:`/usr/tmp` の順。
+      * On all other platforms, the directories :file:`/tmp`, :file:`/var/tmp`, and
+        :file:`/usr/tmp`, in that order.
 
-   #. 最後の手段として、現在の作業ディレクトリ。
+   #. As a last resort, the current working directory.
 
 
 .. function:: gettempdir()
 
-   現在選択されている、テンポラリファイルを作成するためのディレクトリを返します。
-   :data:`tempdir` が ``None`` でない場合、単にその内容を返します;
-   そうでない場合には上で記述されている検索が実行され、その結果が返されます。
+   Return the directory currently selected to create temporary files in. If
+   :data:`tempdir` is not ``None``, this simply returns its contents; otherwise,
+   the search described above is performed, and the result returned.
 
    .. versionadded:: 2.3
 
@@ -248,20 +234,23 @@
 .. data:: template
 
    .. deprecated:: 2.0
-      代わりに :func:`gettempprefix` を使ってください。
+      Use :func:`gettempprefix` instead.
 
-   この値に ``None`` 以外の値を設定した場合、 :func:`mktemp` が返すファイル名のディレクトリ部を含まない先頭部分 (プレフィクス) を
-   定義します。ファイル名を一意にするために、 6 つのランダムな文字および数字がこのプレフィクスの後に追加されます。
-   デフォルトのプレフィックスは :file:`tmp` です。
+   When set to a value other than ``None``, this variable defines the prefix of the
+   final component of the filenames returned by :func:`mktemp`.  A string of six
+   random letters and digits is appended to the prefix to make the filename unique.
+   The default prefix is :file:`tmp`.
 
-   このモジュールの古いバージョンでは、 :func:`os.fork` を呼び出した後に ``template`` を ``None``
-   に設定することが必要でした;  この仕様はバージョン 1.5.2 からは必要なくなりました。
+   Older versions of this module used to require that ``template`` be set to
+   ``None`` after a call to :func:`os.fork`; this has not been necessary since
+   version 1.5.2.
 
 
 .. function:: gettempprefix()
 
-   一時ファイルを生成する際に使われるファイル名の先頭部分を返します。この先頭部分にはディレクトリ部は含まれません。変数 *template*
-   を直接読み出すよりもこの関数を使うことを勧めます。
+   Return the filename prefix used to create temporary files.  This does not
+   contain the directory component.  Using this function is preferred over reading
+   the *template* variable directly.
 
    .. versionadded:: 1.5.2
 

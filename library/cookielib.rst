@@ -1,401 +1,445 @@
-:mod:`cookielib` --- HTTP クライアント用の Cookie 処理
-======================================================
+:mod:`cookielib` --- Cookie handling for HTTP clients
+=====================================================
 
 .. module:: cookielib
-   :synopsis: HTTP cookie を自動的に処理するためのクラスライブラリ
+   :synopsis: Classes for automatic handling of HTTP cookies.
 .. moduleauthor:: John J. Lee <jjl@pobox.com>
 .. sectionauthor:: John J. Lee <jjl@pobox.com>
 
-.. .. note::
-   The :mod:`cookielib` module has been renamed to :mod:`http.cookiejar` in
-   Python 3.0.  The :term:`2to3` tool will automatically adapt imports when
-   converting your sources to 3.0.
-
 .. note::
-
-   :mod:`cookielib` モジュールは、Python 3では :mod:`http.cookiejar` にリネームされました。
-   :term:`2to3` ツールは自動的にソースコード内のimportをPython 3用に修正します。
+   The :mod:`cookielib` module has been renamed to :mod:`http.cookiejar` in
+   Python 3.  The :term:`2to3` tool will automatically adapt imports when
+   converting your sources to Python 3.
 
 .. versionadded:: 2.4
 
+**Source code:** :source:`Lib/cookielib.py`
 
+--------------
 
-:mod:`cookielib` モジュールは HTTP クッキーの自動処理をおこなうクラスを定義します。これは小さなデータの断片 --
-:dfn:`クッキー` --  を要求する web サイトにアクセスする際に有用です。クッキーとは web サーバの HTTP
-レスポンスによってクライアントのマシンに設定され、のちの HTTP リクエストをおこなうさいにサーバに返されるものです。
+The :mod:`cookielib` module defines classes for automatic handling of HTTP
+cookies.  It is useful for accessing web sites that require small pieces of data
+-- :dfn:`cookies` -- to be set on the client machine by an HTTP response from a
+web server, and then returned to the server in later HTTP requests.
 
-標準的な Netscape クッキープロトコルおよび :rfc:`2965` で定義されているプロトコルの両方を処理できます。RFC 2965
-の処理はデフォルトではオフになっています。 :rfc:`2109` のクッキーは Netscape クッキーとして解析され、のちに有効な 'ポリシー'
-に従って Netscapeまたは RFC 2965 クッキーとして処理されます。但し、インターネット上の大多数のクッキーは Netscapeクッキーです。
-:mod:`cookielib` はデファクトスタンダードの Netscape クッキープロトコル  (これは元々 Netscape
-が策定した仕様とはかなり異なっています) に従うようになっており、RFC 2109 で導入された ``max-age`` や ``port`` などの
-クッキー属性にも注意を払います。
+Both the regular Netscape cookie protocol and the protocol defined by
+:rfc:`2965` are handled.  RFC 2965 handling is switched off by default.
+:rfc:`2109` cookies are parsed as Netscape cookies and subsequently treated
+either as Netscape or RFC 2965 cookies according to the 'policy' in effect.
+Note that the great majority of cookies on the Internet are Netscape cookies.
+:mod:`cookielib` attempts to follow the de-facto Netscape cookie protocol (which
+differs substantially from that set out in the original Netscape specification),
+including taking note of the ``max-age`` and ``port`` cookie-attributes
+introduced with RFC 2965.
 
 .. note::
 
-   :mailheader:`Set-Cookie` や :mailheader:`Set-Cookie2` ヘッダに現れる多種多様なパラメータの名前
-   (``domain`` や ``expires`` など) は便宜上 :dfn:`属性` と呼ばれますが、ここでは Python
-   の属性と区別するため、かわりに :dfn:`クッキー属性` と呼ぶことにします。
+   The various named parameters found in :mailheader:`Set-Cookie` and
+   :mailheader:`Set-Cookie2` headers (eg. ``domain`` and ``expires``) are
+   conventionally referred to as :dfn:`attributes`.  To distinguish them from
+   Python attributes, the documentation for this module uses the term
+   :dfn:`cookie-attribute` instead.
 
-このモジュールは以下の例外を定義しています:
+
+The module defines the following exception:
 
 
 .. exception:: LoadError
 
-   この例外は :class:`FileCookieJar` インスタンスがファイルからクッキーを読み込むのに失敗した場合に発生します。
+   Instances of :class:`FileCookieJar` raise this exception on failure to load
+   cookies from a file.
 
-以下のクラスが提供されています:
+   .. note::
+
+      For backwards-compatibility with Python 2.4 (which raised an :exc:`IOError`),
+      :exc:`LoadError` is a subclass of :exc:`IOError`.
+
+
+The following classes are provided:
 
 
 .. class:: CookieJar(policy=None)
 
-   *policy* は :class:`CookiePolicy` インターフェイスを実装するオブジェクトです。
+   *policy* is an object implementing the :class:`CookiePolicy` interface.
 
-   :class:`CookieJar` クラスには HTTP クッキーを保管します。これは HTTP リクエストに応じてクッキーを取り出し、それを HTTP
-   レスポンスの中で返します。必要に応じて、 :class:`CookieJar` インスタンスは保管されているクッキーを
-   自動的に破棄します。このサブクラスは、クッキーをファイルやデータベースに格納したり取り出したりする操作をおこなう役割を負っています。
+   The :class:`CookieJar` class stores HTTP cookies.  It extracts cookies from HTTP
+   requests, and returns them in HTTP responses. :class:`CookieJar` instances
+   automatically expire contained cookies when necessary.  Subclasses are also
+   responsible for storing and retrieving cookies from a file or database.
 
 
 .. class:: FileCookieJar(filename, delayload=None, policy=None)
 
-   *policy* は :class:`CookiePolicy` インターフェイスを実装するオブジェクトです。
-   これ以外の引数については、該当する属性の説明を参照してください。
+   *policy* is an object implementing the :class:`CookiePolicy` interface.  For the
+   other arguments, see the documentation for the corresponding attributes.
 
-   :class:`FileCookieJar` はディスク上のファイルからのクッキーの読み込み、
-   もしくは書き込みをサポートします。実際には、 :meth:`load` または  :meth:`revert` のどちらかのメソッドが呼ばれるまでクッキーは
-   指定されたファイルからはロード **されません** 。このクラスのサブクラスは :ref:`file-cookie-jar-classes` 節で説明します。
+   A :class:`CookieJar` which can load cookies from, and perhaps save cookies to, a
+   file on disk.  Cookies are **NOT** loaded from the named file until either the
+   :meth:`load` or :meth:`revert` method is called.  Subclasses of this class are
+   documented in section :ref:`file-cookie-jar-classes`.
 
 
 .. class:: CookiePolicy()
 
-   このクラスは、あるクッキーをサーバから受け入れるべきか、そしてサーバに返すべきかを決定する役割を負っています。
+   This class is responsible for deciding whether each cookie should be accepted
+   from / returned to the server.
 
 
 .. class:: DefaultCookiePolicy( blocked_domains=None, allowed_domains=None, netscape=True, rfc2965=False, rfc2109_as_netscape=None, hide_cookie2=False, strict_domain=False, strict_rfc2965_unverifiable=True, strict_ns_unverifiable=False, strict_ns_domain=DefaultCookiePolicy.DomainLiberal, strict_ns_set_initial_dollar=False, strict_ns_set_path=False )
 
-   コンストラクタはキーワード引数しか取りません。 *blocked_domains* はドメイン名からなるシーケンスで、ここからは
-   決してクッキーを受けとらないし、このドメインにクッキーを返すこともありません。 *allowed_domains* が :const:`None`
-   でない場合、これはこのドメインのみからクッキーを受けとり、返すという指定になります。これ以外の引数については :class:`CookiePolicy`
-   および :class:`DefaultCookiePolicy` オブジェクトの説明をごらんください。
+   Constructor arguments should be passed as keyword arguments only.
+   *blocked_domains* is a sequence of domain names that we never accept cookies
+   from, nor return cookies to. *allowed_domains* if not :const:`None`, this is a
+   sequence of the only domains for which we accept and return cookies.  For all
+   other arguments, see the documentation for :class:`CookiePolicy` and
+   :class:`DefaultCookiePolicy` objects.
 
-   :class:`DefaultCookiePolicy` は Netscape および RFC 2965 クッキーの標準的な許可 /
-   拒絶のルールを実装しています。デフォルトでは、RFC 2109 のクッキー (:mailheader:`Set-Cookie` の version
-   クッキー属性が 1 で受けとられるもの) は RFC 2965 のルールで扱われます。しかし、RFC 2965処理が無効に設定されているか
-   :attr:`rfc2109_as_netscape` が Trueの場合、RFC 2109クッキーは :class:`CookieJar` インスタンスによって
-   :class:`Cookie` のインスタンスの :attr:`version` 属性を 0に設定する事で Netscapeクッキーに「ダウングレード」されます。
-   また :class:`DefaultCookiePolicy` にはいくつかの細かいポリシー設定をおこなうパラメータが用意されています。
+   :class:`DefaultCookiePolicy` implements the standard accept / reject rules for
+   Netscape and RFC 2965 cookies.  By default, RFC 2109 cookies (ie. cookies
+   received in a :mailheader:`Set-Cookie` header with a version cookie-attribute of
+   1) are treated according to the RFC 2965 rules.  However, if RFC 2965 handling
+   is turned off or :attr:`rfc2109_as_netscape` is ``True``, RFC 2109 cookies are
+   'downgraded' by the :class:`CookieJar` instance to Netscape cookies, by
+   setting the :attr:`version` attribute of the :class:`Cookie` instance to 0.
+   :class:`DefaultCookiePolicy` also provides some parameters to allow some
+   fine-tuning of policy.
 
 
 .. class:: Cookie()
 
-   このクラスは Netscape クッキー、RFC 2109 のクッキー、および RFC 2965 のクッキーを表現します。 :mod:`cookielib`
-   のユーザが自分で :class:`Cookie` インスタンスを作成することは想定されていません。かわりに、必要に応じて :class:`CookieJar`
-   インスタンスの :meth:`make_cookies` を呼ぶことになっています。
+   This class represents Netscape, RFC 2109 and RFC 2965 cookies.  It is not
+   expected that users of :mod:`cookielib` construct their own :class:`Cookie`
+   instances.  Instead, if necessary, call :meth:`make_cookies` on a
+   :class:`CookieJar` instance.
 
 
 .. seealso::
 
    Module :mod:`urllib2`
-      クッキーの自動処理をおこない URL を開くモジュールです。
+      URL opening with automatic cookie handling.
 
    Module :mod:`Cookie`
-      HTTP のクッキークラスで、基本的にはサーバサイドのコードで有用です。 :mod:`cookielib` および :mod:`Cookie` モジュールは
-      互いに依存してはいません。
+      HTTP cookie classes, principally useful for server-side code.  The
+      :mod:`cookielib` and :mod:`Cookie` modules do not depend on each other.
 
-   http://wp.netscape.com/newsref/std/cookie_spec.html
-      元祖 Netscape のクッキープロトコルの仕様です。今でもこれが主流のプロトコルですが、現在のメジャーなブラウザ (と
-      :mod:`cookielib`) が実装している「Netscape クッキープロトコル」は ``cookie_spec.html`` で述べられているものと
-      おおまかにしか似ていません。
+   http://curl.haxx.se/rfc/cookie_spec.html
+      The specification of the original Netscape cookie protocol.  Though this is
+      still the dominant protocol, the 'Netscape cookie protocol' implemented by all
+      the major browsers (and :mod:`cookielib`) only bears a passing resemblance to
+      the one sketched out in ``cookie_spec.html``.
 
    :rfc:`2109` - HTTP State Management Mechanism
-      RFC 2965 によって過去の遺物になりました。 :mailheader:`Set-Cookie` の version=1 で使います。
+      Obsoleted by RFC 2965. Uses :mailheader:`Set-Cookie` with version=1.
 
    :rfc:`2965` - HTTP State Management Mechanism
-      Netscape プロトコルのバグを修正したものです。 :mailheader:`Set-Cookie` のかわりに
-      :mailheader:`Set-Cookie2` を使いますが、普及してはいません。
+      The Netscape protocol with the bugs fixed.  Uses :mailheader:`Set-Cookie2` in
+      place of :mailheader:`Set-Cookie`.  Not widely used.
 
    http://kristol.org/cookie/errata.html
-      RFC 2965 に対する未完の正誤表です。
+      Unfinished errata to RFC 2965.
 
    :rfc:`2964` - Use of HTTP State Management
 
 .. _cookie-jar-objects:
 
-CookieJar および FileCookieJar オブジェクト
--------------------------------------------
+CookieJar and FileCookieJar Objects
+-----------------------------------
 
-:class:`CookieJar` オブジェクトは保管されている :class:`Cookie` オブジェクトを
-ひとつずつ取り出すための、イテレータ(:term:`iterator`)・プロトコルをサポートしています。
+:class:`CookieJar` objects support the :term:`iterator` protocol for iterating over
+contained :class:`Cookie` objects.
 
-:class:`CookieJar` は以下のようなメソッドを持っています:
+:class:`CookieJar` has the following methods:
 
 
 .. method:: CookieJar.add_cookie_header(request)
 
-   *request* に正しい :mailheader:`Cookie` ヘッダを追加します。
+   Add correct :mailheader:`Cookie` header to *request*.
 
-   ポリシーが許すようであれば (:class:`CookieJar` の :class:`CookiePolicy` インスタンスにある
-   属性のうち、 :attr:`rfc2965` および :attr:`hide_cookie2` がそれぞれ真と偽であるような場合)、必要に応じて
-   :mailheader:`Cookie2` ヘッダも追加されます。
+   If policy allows (ie. the :attr:`rfc2965` and :attr:`hide_cookie2` attributes of
+   the :class:`CookieJar`'s :class:`CookiePolicy` instance are true and false
+   respectively), the :mailheader:`Cookie2` header is also added when appropriate.
 
-   *request* オブジェクト (通常は :class:`urllib2.Request` インスタンス) は、 :mod:`urllib2`
-   のドキュメントに記されているように、 :meth:`get_full_url`, :meth:`get_host`, :meth:`get_type`,
+   The *request* object (usually a :class:`urllib2.Request` instance) must support
+   the methods :meth:`get_full_url`, :meth:`get_host`, :meth:`get_type`,
    :meth:`unverifiable`, :meth:`get_origin_req_host`, :meth:`has_header`,
-   :meth:`get_header`, :meth:`header_items` および :meth:`add_unredirected_header`
-   の各メソッドをサポートしている必要があります。
+   :meth:`get_header`, :meth:`header_items`, and :meth:`add_unredirected_header`,as
+   documented by :mod:`urllib2`.
 
 
 .. method:: CookieJar.extract_cookies(response, request)
 
-   HTTP *response* からクッキーを取り出し、ポリシーによって許可されていればこれを :class:`CookieJar` 内に保管します。
+   Extract cookies from HTTP *response* and store them in the :class:`CookieJar`,
+   where allowed by policy.
 
-   :class:`CookieJar` は *response* 引数の中から許可されている :mailheader:`Set-Cookie` および
-   :mailheader:`Set-Cookie2` ヘッダを探しだし、適切に (:meth:`CookiePolicy.set_ok`
-   メソッドの承認におうじて)  クッキーを保管します。
+   The :class:`CookieJar` will look for allowable :mailheader:`Set-Cookie` and
+   :mailheader:`Set-Cookie2` headers in the *response* argument, and store cookies
+   as appropriate (subject to the :meth:`CookiePolicy.set_ok` method's approval).
 
-   *response* オブジェクト (通常は :meth:`urllib2.urlopen` あるいはそれに類似する呼び出しによって得られます) は
-   :meth:`info` メソッドをサポートしている必要があります。これは :meth:`getallmatchingheaders` メソッドのある
-   オブジェクト (通常は :class:`mimetools.Message` インスタンス) を返すものです。
+   The *response* object (usually the result of a call to :meth:`urllib2.urlopen`,
+   or similar) should support an :meth:`info` method, which returns an object with
+   a :meth:`getallmatchingheaders` method (usually a :class:`mimetools.Message`
+   instance).
 
-   *request* オブジェクト (通常は :class:`urllib2.Request` インスタンス) は :mod:`urllib2`
-   のドキュメントに記されているように、 :meth:`get_full_url`, :meth:`get_host`, :meth:`unverifiable`
-   および :meth:`get_origin_req_host` の各メソッドをサポートしている必要があります。この request
-   はそのクッキーの保存が許可されているかを検査するとともに、クッキー属性のデフォルト値を設定するのに使われます。
+   The *request* object (usually a :class:`urllib2.Request` instance) must support
+   the methods :meth:`get_full_url`, :meth:`get_host`, :meth:`unverifiable`, and
+   :meth:`get_origin_req_host`, as documented by :mod:`urllib2`.  The request is
+   used to set default values for cookie-attributes as well as for checking that
+   the cookie is allowed to be set.
 
 
 .. method:: CookieJar.set_policy(policy)
 
-   使用する :class:`CookiePolicy` インスタンスを指定します。
+   Set the :class:`CookiePolicy` instance to be used.
 
 
 .. method:: CookieJar.make_cookies(response, request)
 
-   *response* オブジェクトから得られた :class:`Cookie` オブジェクトからなるシーケンスを返します。
+   Return sequence of :class:`Cookie` objects extracted from *response* object.
 
-   *response* および *request* 引数で要求されるインスタンスについては、 :meth:`extract_cookies`
-   の説明を参照してください。
+   See the documentation for :meth:`extract_cookies` for the interfaces required of
+   the *response* and *request* arguments.
 
 
 .. method:: CookieJar.set_cookie_if_ok(cookie, request)
 
-   ポリシーが許すのであれば、与えられた :class:`Cookie` を設定します。
+   Set a :class:`Cookie` if policy says it's OK to do so.
 
 
 .. method:: CookieJar.set_cookie(cookie)
 
-   与えられた :class:`Cookie` を、それが設定されるべきかどうかのポリシーのチェックを行わずに設定します。
+   Set a :class:`Cookie`, without checking with policy to see whether or not it
+   should be set.
 
 
 .. method:: CookieJar.clear([domain[, path[, name]]])
 
-   いくつかのクッキーを消去します。
+   Clear some cookies.
 
-   引数なしで呼ばれた場合は、すべてのクッキーを消去します。引数がひとつ与えられた場合、その *domain* に属するクッキーのみを消去します。
-   ふたつの引数が与えられた場合、指定された *domain* と URL *path* に属するクッキーのみを消去します。引数が 3つ与えられた場合、
-   *domain*, *path* および *name* で指定されるクッキーが消去されます。
+   If invoked without arguments, clear all cookies.  If given a single argument,
+   only cookies belonging to that *domain* will be removed. If given two arguments,
+   cookies belonging to the specified *domain* and URL *path* are removed.  If
+   given three arguments, then the cookie with the specified *domain*, *path* and
+   *name* is removed.
 
-   与えられた条件に一致するクッキーがない場合は :exc:`KeyError` を発生させます。
+   Raises :exc:`KeyError` if no matching cookie exists.
 
 
 .. method:: CookieJar.clear_session_cookies()
 
-   すべてのセッションクッキーを消去します。
+   Discard all session cookies.
 
-   保存されているクッキーのうち、 :attr:`discard` 属性が真になっているものすべてを消去します (通常これは ``max-age`` または
-   ``expires`` のどちらのクッキー属性もないか、あるいは明示的に ``discard`` クッキー属性が
-   指定されているものです)。対話的なブラウザの場合、セッションの終了はふつうブラウザのウィンドウを閉じることに相当します。
+   Discards all contained cookies that have a true :attr:`discard` attribute
+   (usually because they had either no ``max-age`` or ``expires`` cookie-attribute,
+   or an explicit ``discard`` cookie-attribute).  For interactive browsers, the end
+   of a session usually corresponds to closing the browser window.
 
-   注意: *ignore_discard* 引数に真を指定しないかぎり、 :meth:`save` メソッドはセッションクッキーは保存しません。
+   Note that the :meth:`save` method won't save session cookies anyway, unless you
+   ask otherwise by passing a true *ignore_discard* argument.
 
-さらに :class:`FileCookieJar` は以下のようなメソッドを実装しています:
+:class:`FileCookieJar` implements the following additional methods:
 
 
 .. method:: FileCookieJar.save(filename=None, ignore_discard=False, ignore_expires=False)
 
-   クッキーをファイルに保存します。
+   Save cookies to a file.
 
-   この基底クラスは  :exc:`NotImplementedError` を発生させます。サブクラスはこのメソッドを実装しないままにしておいてもかまいません。
+   This base class raises :exc:`NotImplementedError`.  Subclasses may leave this
+   method unimplemented.
 
-   *filename* はクッキーを保存するファイルの名前です。 *filename* が指定されない場合、 :attr:`self.filename`
-   が使用されます (このデフォルト値は、それが存在する場合は、コンストラクタに渡されています)。 :attr:`self.filename` も
-   :const:`None` の場合は :exc:`ValueError` が発生します。
+   *filename* is the name of file in which to save cookies.  If *filename* is not
+   specified, :attr:`self.filename` is used (whose default is the value passed to
+   the constructor, if any); if :attr:`self.filename` is :const:`None`,
+   :exc:`ValueError` is raised.
 
-   *ignore_discard* : 破棄されるよう指示されていたクッキーでも保存します。 *ignore_expires* :
-   期限の切れたクッキーでも保存します。
+   *ignore_discard*: save even cookies set to be discarded. *ignore_expires*: save
+   even cookies that have expired
 
-   ここで指定されたファイルがもしすでに存在する場合は上書きされるため、以前にあったクッキーはすべて消去されます。保存したクッキーはあとで
-   :meth:`load` または :meth:`revert` メソッドを使って復元することができます。
+   The file is overwritten if it already exists, thus wiping all the cookies it
+   contains.  Saved cookies can be restored later using the :meth:`load` or
+   :meth:`revert` methods.
 
 
 .. method:: FileCookieJar.load(filename=None, ignore_discard=False, ignore_expires=False)
 
-   ファイルからクッキーを読み込みます。
+   Load cookies from a file.
 
-   それまでのクッキーは新しいものに上書きされない限り残ります。
+   Old cookies are kept unless overwritten by newly loaded ones.
 
-   ここでの引数の値は :meth:`save` と同じです。
+   Arguments are as for :meth:`save`.
 
-   名前のついたファイルはこのクラスがわかるやり方で指定する必要があります。さもないと :exc:`LoadError` が発生します。
-   さらに、例えばファイルが存在しないような時に :exc:`IOError` が発生する場合があります。
+   The named file must be in the format understood by the class, or
+   :exc:`LoadError` will be raised.  Also, :exc:`IOError` may be raised, for
+   example if the file does not exist.
 
    .. note::
 
-      (:exc:`IOError` を発行する)Python 2.4との後方互換性のために、 :exc:`LoadError` は
-      :exc:`IOError` のサブクラスです。
+      For backwards-compatibility with Python 2.4 (which raised an :exc:`IOError`),
+      :exc:`LoadError` is a subclass of :exc:`IOError`.
 
 
 .. method:: FileCookieJar.revert(filename=None, ignore_discard=False, ignore_expires=False)
 
-   すべてのクッキーを破棄し、保存されているファイルから読み込み直します。
+   Clear all cookies and reload cookies from a saved file.
 
-   :meth:`revert` は :meth:`load` と同じ例外を発生させる事ができます。失敗した場合、オブジェクトの状態は変更されません。
+   :meth:`revert` can raise the same exceptions as :meth:`load`. If there is a
+   failure, the object's state will not be altered.
 
-:class:`FileCookieJar` インスタンスは以下のような公開の属性をもっています:
+:class:`FileCookieJar` instances have the following public attributes:
 
 
 .. attribute:: FileCookieJar.filename
 
-   クッキーを保存するデフォルトのファイル名を指定します。この属性には代入することができます。
+   Filename of default file in which to keep cookies.  This attribute may be
+   assigned to.
 
 
 .. attribute:: FileCookieJar.delayload
 
-   真であれば、クッキーを読み込むさいにディスクから遅延読み込み (lazy) します。この属性には代入することができません。この情報は単なるヒントであり、
-   (ディスク上のクッキーが変わらない限りは) インスタンスのふるまいには影響を与えず、パフォーマンスのみに影響します。 :class:`CookieJar`
-   オブジェクトはこの値を無視することもあります。標準ライブラリに含まれている :class:`FileCookieJar` クラスで遅延読み込みを
-   おこなうものはありません。
+   If true, load cookies lazily from disk.  This attribute should not be assigned
+   to.  This is only a hint, since this only affects performance, not behaviour
+   (unless the cookies on disk are changing). A :class:`CookieJar` object may
+   ignore it.  None of the :class:`FileCookieJar` classes included in the standard
+   library lazily loads cookies.
 
 
 .. _file-cookie-jar-classes:
 
-FileCookieJar のサブクラスと web ブラウザとの連携
--------------------------------------------------
+FileCookieJar subclasses and co-operation with web browsers
+-----------------------------------------------------------
 
-クッキーの読み書きのために、以下の :class:`CookieJar` サブクラスが提供されています。
+The following :class:`CookieJar` subclasses are provided for reading and
+writing.
 
 .. class:: MozillaCookieJar(filename, delayload=None, policy=None)
 
-   Mozilla の ``cookies.txt`` ファイル形式 (この形式はまた Lynx と Netscape ブラウザによっても使われています)
-   でディスクにクッキーを読み書きするための :class:`FileCookieJar` です。
+   A :class:`FileCookieJar` that can load from and save cookies to disk in the
+   Mozilla ``cookies.txt`` file format (which is also used by the Lynx and Netscape
+   browsers).
 
-   .. .. note::
+   .. note::
+
       Version 3 of the Firefox web browser no longer writes cookies in the
       ``cookies.txt`` file format.
 
    .. note::
 
-      Firefox 3 は、 cookie を ``cookies.txt`` ファイルフォーマットで保存しません。
-
-   .. .. note::
-
       This loses information about RFC 2965 cookies, and also about newer or
       non-standard cookie-attributes such as ``port``.
 
-   .. note::
-
-      このクラスは RFC 2965 クッキーに関する情報を失います。また、より新しいか、標準でない ``port`` などの
-      クッキー属性についての情報も失います。
-
    .. warning::
 
-      もしクッキーの損失や欠損が望ましくない場合は、クッキーを保存する前にバックアップを取っておくようにしてください (ファイルへの読み込み /
-      保存をくり返すと微妙な変化が生じる場合があります)。
+      Back up your cookies before saving if you have cookies whose loss / corruption
+      would be inconvenient (there are some subtleties which may lead to slight
+      changes in the file over a load / save round-trip).
 
-   また、 Mozilla の起動中にクッキーを保存すると、 Mozilla によって内容が破壊されてしまうことにも注意してください。
+   Also note that cookies saved while Mozilla is running will get clobbered by
+   Mozilla.
 
 
 .. class:: LWPCookieJar(filename, delayload=None, policy=None)
 
-   libwww-perl のライブラリである ``Set-Cookie3`` ファイル形式でディスクにクッキーを読み書きするための
-   :class:`FileCookieJar` です。これはクッキーを人間に可読な形式で保存するのに向いています。
+   A :class:`FileCookieJar` that can load from and save cookies to disk in format
+   compatible with the libwww-perl library's ``Set-Cookie3`` file format.  This is
+   convenient if you want to store cookies in a human-readable file.
 
 
 .. _cookie-policy-objects:
 
-CookiePolicy オブジェクト
--------------------------
+CookiePolicy Objects
+--------------------
 
-:class:`CookiePolicy` インターフェイスを実装するオブジェクトは以下のようなメソッドを持っています:
+Objects implementing the :class:`CookiePolicy` interface have the following
+methods:
 
 
 .. method:: CookiePolicy.set_ok(cookie, request)
 
-   クッキーがサーバから受け入れられるべきかどうかを表わす boolean 値を返します。
+   Return boolean value indicating whether cookie should be accepted from server.
 
-   *cookie* は :class:`cookielib.Cookie` インスタンスです。 *request* は
-   :meth:`CookieJar.extract_cookies` の説明で定義されているインターフェイスを実装するオブジェクトです。
+   *cookie* is a :class:`cookielib.Cookie` instance.  *request* is an object
+   implementing the interface defined by the documentation for
+   :meth:`CookieJar.extract_cookies`.
 
 
 .. method:: CookiePolicy.return_ok(cookie, request)
 
-   クッキーがサーバに返されるべきかどうかを表わす boolean 値を返します。
+   Return boolean value indicating whether cookie should be returned to server.
 
-   *cookie* は :class:`cookielib.Cookie` インスタンスです。 *request* は
-   :meth:`CookieJar.add_cookie_header` の説明で定義されているインターフェイスを実装するオブジェクトです。
+   *cookie* is a :class:`cookielib.Cookie` instance.  *request* is an object
+   implementing the interface defined by the documentation for
+   :meth:`CookieJar.add_cookie_header`.
 
 
 .. method:: CookiePolicy.domain_return_ok(domain, request)
 
-   与えられたクッキーのドメインに対して、そこにクッキーを返すべきでない場合には false を返します。
+   Return false if cookies should not be returned, given cookie domain.
 
-   このメソッドは高速化のためのものです。これにより、すべてのクッキーをある特定のドメインに対してチェックする
-   (これには多数のファイル読みこみを伴なう場合があります) 必要がなくなります。 :meth:`domain_return_ok` および
-   :meth:`path_return_ok` の両方から true が返された場合、すべての決定は :meth:`return_ok` に委ねられます。
+   This method is an optimization.  It removes the need for checking every cookie
+   with a particular domain (which might involve reading many files).  Returning
+   true from :meth:`domain_return_ok` and :meth:`path_return_ok` leaves all the
+   work to :meth:`return_ok`.
 
-   もし、このクッキードメインに対して :meth:`domain_return_ok` が true を返すと、つぎにそのクッキーのパス名に対して
-   :meth:`path_return_ok` が呼ばれます。そうでない場合、そのクッキードメインに対する :meth:`path_return_ok` および
-   :meth:`return_ok` は決して呼ばれることはありません。 :meth:`path_return_ok` が true を返すと、
-   :meth:`return_ok` がその :class:`Cookie` オブジェクト自身の全チェックのために
-   呼ばれます。そうでない場合、そのクッキーパス名に対する :meth:`return_ok` は決して呼ばれることはありません。
+   If :meth:`domain_return_ok` returns true for the cookie domain,
+   :meth:`path_return_ok` is called for the cookie path.  Otherwise,
+   :meth:`path_return_ok` and :meth:`return_ok` are never called for that cookie
+   domain.  If :meth:`path_return_ok` returns true, :meth:`return_ok` is called
+   with the :class:`Cookie` object itself for a full check.  Otherwise,
+   :meth:`return_ok` is never called for that cookie path.
 
-   注意: :meth:`domain_return_ok` は *request* ドメインだけではなく、すべての *cookie*
-   ドメインに対して呼ばれます。たとえば request ドメインが ``"www.example.com"`` だった場合、この関数は
-   ``".example.com"`` および ``"www.example.com"`` の両方に対して呼ばれることがあります。同じことは
-   :meth:`path_return_ok` にもいえます。
+   Note that :meth:`domain_return_ok` is called for every *cookie* domain, not just
+   for the *request* domain.  For example, the function might be called with both
+   ``".example.com"`` and ``"www.example.com"`` if the request domain is
+   ``"www.example.com"``.  The same goes for :meth:`path_return_ok`.
 
-   *request* 引数は :meth:`return_ok` で説明されているとおりです。
+   The *request* argument is as documented for :meth:`return_ok`.
 
 
 .. method:: CookiePolicy.path_return_ok(path, request)
 
-   与えられたクッキーのパス名に対して、そこにクッキーを返すべきでない場合には false を返します。
+   Return false if cookies should not be returned, given cookie path.
 
-   :meth:`domain_return_ok` の説明を参照してください。
+   See the documentation for :meth:`domain_return_ok`.
 
-上のメソッドの実装にくわえて、 :class:`CookiePolicy` インターフェイスの実装では
-以下の属性を設定する必要があります。これはどのプロトコルがどのように使われるべきかを示すもので、これらの属性にはすべて代入することが許されています。
+In addition to implementing the methods above, implementations of the
+:class:`CookiePolicy` interface must also supply the following attributes,
+indicating which protocols should be used, and how.  All of these attributes may
+be assigned to.
 
 
 .. attribute:: CookiePolicy.netscape
 
-   Netscape プロトコルを実装していることを示します。
+   Implement Netscape protocol.
 
 
 .. attribute:: CookiePolicy.rfc2965
 
-   RFC 2965 プロトコルを実装していることを示します。
+   Implement RFC 2965 protocol.
 
 
 .. attribute:: CookiePolicy.hide_cookie2
 
-   :mailheader:`Cookie2` ヘッダをリクエストに含めないようにします (このヘッダが存在する場合、私たちは RFC 2965
-   クッキーを理解するということをサーバに示すことになります)。
+   Don't add :mailheader:`Cookie2` header to requests (the presence of this header
+   indicates to the server that we understand RFC 2965 cookies).
 
-もっとも有用な方法は、 :class:`DefaultCookiePolicy` をサブクラス化した :class:`CookiePolicy`
-クラスを定義して、いくつか (あるいはすべて) のメソッドをオーバーライドすることでしょう。 :class:`CookiePolicy` 自体は
-どのようなクッキーも受け入れて設定を許可する「ポリシー無し」ポリシーとして使うこともできます (これが役に立つことはあまりありませんが)。
+The most useful way to define a :class:`CookiePolicy` class is by subclassing
+from :class:`DefaultCookiePolicy` and overriding some or all of the methods
+above.  :class:`CookiePolicy` itself may be used as a 'null policy' to allow
+setting and receiving any and all cookies (this is unlikely to be useful).
 
 
 .. _default-cookie-policy-objects:
 
-DefaultCookiePolicy オブジェクト
---------------------------------
+DefaultCookiePolicy Objects
+---------------------------
 
-クッキーを受けつけ、またそれを返す際の標準的なルールを実装します。
+Implements the standard rules for accepting and returning cookies.
 
-RFC 2965 クッキーと Netscape クッキーの両方に対応しています。デフォルトでは、RFC 2965 の処理はオフになっています。
+Both RFC 2965 and Netscape cookies are covered.  RFC 2965 handling is switched
+off by default.
 
-自分のポリシーを提供するいちばん簡単な方法は、このクラスを継承して、自分用の追加チェックの前にオーバーライドした元のメソッドを呼び出すことです::
+The easiest way to provide your own policy is to override this class and call
+its methods in your overridden implementations before adding your own additional
+checks::
 
    import cookielib
    class MyCookiePolicy(cookielib.DefaultCookiePolicy):
@@ -406,275 +450,304 @@ RFC 2965 クッキーと Netscape クッキーの両方に対応しています�
                return False
            return True
 
-:class:`CookiePolicy` インターフェイスを実装するのに必要な機能に加えて、このクラスではクッキーを受けとったり設定したりするドメインを
-許可したり拒絶したりできるようになっています。ほかにも、 Netscape プロトコルのかなり緩い規則をややきつくするために、いくつかの
-厳密性のスイッチがついています (いくつかの良性クッキーをブロックする危険性もありますが)。
+In addition to the features required to implement the :class:`CookiePolicy`
+interface, this class allows you to block and allow domains from setting and
+receiving cookies.  There are also some strictness switches that allow you to
+tighten up the rather loose Netscape protocol rules a little bit (at the cost of
+blocking some benign cookies).
 
-ドメインのブラックリスト機能やホワイトリスト機能も提供されています (デフォルトではオフになっています)。
-ブラックリストになく、(ホワイトリスト機能を使用している場合は) ホワイトリストにあるドメインのみがクッキーを設定したり返したりすることを許可されます。
-コンストラクタの引数 *blocked_domains* 、および :meth:`blocked_domains` と
-:meth:`set_blocked_domains` メソッドを使ってください (*allowed_domains*
-に関しても同様の対応する引数とメソッドがあります)。ホワイトリストを設定した場合は、それを :const:`None` にすることで
-ホワイトリスト機能をオフにすることができます。
+A domain blacklist and whitelist is provided (both off by default). Only domains
+not in the blacklist and present in the whitelist (if the whitelist is active)
+participate in cookie setting and returning.  Use the *blocked_domains*
+constructor argument, and :meth:`blocked_domains` and
+:meth:`set_blocked_domains` methods (and the corresponding argument and methods
+for *allowed_domains*).  If you set a whitelist, you can turn it off again by
+setting it to :const:`None`.
 
-ブラックリストあるいはホワイトリスト中にあるドメインのうち、ドット (.) で始まっていないものは、正確にそれと一致する
-ドメインのクッキーにしか適用されません。たとえばブラックリスト中のエントリ ``"example.com"`` は、 ``"example.com"``
-にはマッチしますが、 ``"www.example.com"`` にはマッチしません。一方ドット (.)
-で始まっているドメインは、より特化されたドメインともマッチします。たとえば、 ``".example.com"``
-は、 ``"www.example.com"`` と ``"www.coyote.example.com"`` の両方にマッチします
-(が、 ``"example.com"`` 自身にはマッチしません)。IP アドレスは例外で、つねに正確に一致する必要があります。たとえば、かりに
-*blocked_domains* が ``"192.168.1.2"`` と ``".168.1.2"`` を含んでいたとして、192.168.1.2
-はブロックされますが、 193.168.1.2 はブロックされません。
+Domains in block or allow lists that do not start with a dot must equal the
+cookie domain to be matched.  For example, ``"example.com"`` matches a blacklist
+entry of ``"example.com"``, but ``"www.example.com"`` does not.  Domains that do
+start with a dot are matched by more specific domains too. For example, both
+``"www.example.com"`` and ``"www.coyote.example.com"`` match ``".example.com"``
+(but ``"example.com"`` itself does not).  IP addresses are an exception, and
+must match exactly.  For example, if blocked_domains contains ``"192.168.1.2"``
+and ``".168.1.2"``, 192.168.1.2 is blocked, but 193.168.1.2 is not.
 
-:class:`DefaultCookiePolicy` は以下のような追加メソッドを実装しています:
+:class:`DefaultCookiePolicy` implements the following additional methods:
 
 
 .. method:: DefaultCookiePolicy.blocked_domains()
 
-   ブロックしているドメインのシーケンスを (タプルとして) 返します。
+   Return the sequence of blocked domains (as a tuple).
 
 
 .. method:: DefaultCookiePolicy.set_blocked_domains(blocked_domains)
 
-   ブロックするドメインを設定します。
+   Set the sequence of blocked domains.
 
 
 .. method:: DefaultCookiePolicy.is_blocked(domain)
 
-   *domain* がクッキーを授受しないブラックリストに載っているかどうかを返します。
+   Return whether *domain* is on the blacklist for setting or receiving cookies.
 
 
 .. method:: DefaultCookiePolicy.allowed_domains()
 
-   :const:`None` あるいは明示的に許可されているドメインを (タプルとして) 返します。
+   Return :const:`None`, or the sequence of allowed domains (as a tuple).
 
 
 .. method:: DefaultCookiePolicy.set_allowed_domains(allowed_domains)
 
-   許可するドメイン、あるいは :const:`None` を設定します。
+   Set the sequence of allowed domains, or :const:`None`.
 
 
 .. method:: DefaultCookiePolicy.is_not_allowed(domain)
 
-   *domain* がクッキーを授受するホワイトリストに載っているかどうかを返します。
+   Return whether *domain* is not on the whitelist for setting or receiving
+   cookies.
 
-:class:`DefaultCookiePolicy` インスタンスは以下の属性をもっています。
-これらはすべてコンストラクタから同じ名前の引数をつかって初期化することができ、代入してもかまいません。
+:class:`DefaultCookiePolicy` instances have the following attributes, which are
+all initialised from the constructor arguments of the same name, and which may
+all be assigned to.
 
 
 .. attribute:: DefaultCookiePolicy.rfc2109_as_netscape
 
-   Trueの場合、 :class:`CookieJar` のインスタンスに RFC 2109 クッキー (即ち
-   :mailheader:`Set-Cookie` ヘッダのVersion cookie属性の値が1のクッキー)を
-   Netscapeクッキーへ、 :class:`Cookie` インスタンスのversion属性を0に設定する事で
-   ダウングレードするように要求します。デフォルトの値は :const:`None` であり、この場合 RFC 2109 クッキーは RFC 2965
-   処理が無効に設定されている場合に限りダウングレードされます。それ故に RFC 2109 クッキーはデフォルトではダウングレードされます。
+   If true, request that the :class:`CookieJar` instance downgrade RFC 2109 cookies
+   (ie. cookies received in a :mailheader:`Set-Cookie` header with a version
+   cookie-attribute of 1) to Netscape cookies by setting the version attribute of
+   the :class:`Cookie` instance to 0.  The default value is :const:`None`, in which
+   case RFC 2109 cookies are downgraded if and only if RFC 2965 handling is turned
+   off.  Therefore, RFC 2109 cookies are downgraded by default.
 
    .. versionadded:: 2.5
 
-一般的な厳密性のスイッチ:
+General strictness switches:
 
 
 .. attribute:: DefaultCookiePolicy.strict_domain
 
-   サイトに、国別コードとトップレベルドメインだけからなるドメイン名 (``.co.uk``, ``.gov.uk``, ``.co.nz`` など)
-   を設定させないようにします。これは完璧からはほど遠い実装であり、いつもうまくいくとは限りません!
+   Don't allow sites to set two-component domains with country-code top-level
+   domains like ``.co.uk``, ``.gov.uk``, ``.co.nz``.etc.  This is far from perfect
+   and isn't guaranteed to work!
 
-RFC 2965 プロトコルの厳密性に関するスイッチ:
+RFC 2965 protocol strictness switches:
 
 
 .. attribute:: DefaultCookiePolicy.strict_rfc2965_unverifiable
 
-   検証不可能なトランザクション (通常これはリダイレクトか、別のサイトがホスティングしているイメージの読み込み要求です) に関する RFC 2965
-   の規則に従います。この値が偽の場合、検証可能性を基準にしてクッキーがブロックされることは *決して* ありません。
+   Follow RFC 2965 rules on unverifiable transactions (usually, an unverifiable
+   transaction is one resulting from a redirect or a request for an image hosted on
+   another site).  If this is false, cookies are *never* blocked on the basis of
+   verifiability
 
-Netscape プロトコルの厳密性に関するスイッチ:
+Netscape protocol strictness switches:
 
 
 .. attribute:: DefaultCookiePolicy.strict_ns_unverifiable
 
-   検証不可能なトランザクションに関する RFC 2965 の規則を Netscape クッキーに対しても適用します。
+   Apply RFC 2965 rules on unverifiable transactions even to Netscape cookies.
 
 
 .. attribute:: DefaultCookiePolicy.strict_ns_domain
 
-   Netscape クッキーに対するドメインマッチングの規則をどの程度厳しくするかを指示するフラグです。とりうる値については下の説明を見てください。
+   Flags indicating how strict to be with domain-matching rules for Netscape
+   cookies.  See below for acceptable values.
 
 
 .. attribute:: DefaultCookiePolicy.strict_ns_set_initial_dollar
 
-   Set-Cookie: ヘッダで、 ``'$'`` で始まる名前のクッキーを無視します。
+   Ignore cookies in Set-Cookie: headers that have names starting with ``'$'``.
 
 
 .. attribute:: DefaultCookiePolicy.strict_ns_set_path
 
-   要求した URI にパスがマッチしないクッキの設定を禁止します。
+   Don't allow setting cookies whose path doesn't path-match request URI.
 
-:attr:`strict_ns_domain` はいくつかのフラグの集合です。これはいくつかの値を or することで構成します (たとえば
-``DomainStrictNoDots|DomainStrictNonDomain`` は両方のフラグが設定されていることになります)。
+:attr:`strict_ns_domain` is a collection of flags.  Its value is constructed by
+or-ing together (for example, ``DomainStrictNoDots|DomainStrictNonDomain`` means
+both flags are set).
 
 
 .. attribute:: DefaultCookiePolicy.DomainStrictNoDots
 
-   クッキーを設定するさい、ホスト名のプレフィクスにドットが含まれるのを禁止します (例: ``www.foo.bar.com`` は ``.bar.com``
-   のクッキーを設定することはできません、なぜなら ``www.foo`` はドットを含んでいるからです)。
+   When setting cookies, the 'host prefix' must not contain a dot (eg.
+   ``www.foo.bar.com`` can't set a cookie for ``.bar.com``, because ``www.foo``
+   contains a dot).
 
 
 .. attribute:: DefaultCookiePolicy.DomainStrictNonDomain
 
-   ``domain`` クッキー属性を明示的に指定していないクッキーは、そのクッキーを設定したドメインと同一のドメインだけに返されます (例:
-   ``example.com`` からのクッキーに ``domain`` クッキー属性がない場合、そのクッキーが ``spam.example.com``
-   に返されることはありません)。
+   Cookies that did not explicitly specify a ``domain`` cookie-attribute can only
+   be returned to a domain equal to the domain that set the cookie (eg.
+   ``spam.example.com`` won't be returned cookies from ``example.com`` that had no
+   ``domain`` cookie-attribute).
 
 
 .. attribute:: DefaultCookiePolicy.DomainRFC2965Match
 
-   クッキーを設定するさい、RFC 2965 の完全ドメインマッチングを要求します。
+   When setting cookies, require a full RFC 2965 domain-match.
 
-以下の属性は上記のフラグのうちもっともよく使われる組み合わせで、便宜をはかるために提供されています。
+The following attributes are provided for convenience, and are the most useful
+combinations of the above flags:
 
 
 .. attribute:: DefaultCookiePolicy.DomainLiberal
 
-   0 と同じです (つまり、上述の Netscape のドメイン厳密性フラグがすべてオフにされます)。
+   Equivalent to 0 (ie. all of the above Netscape domain strictness flags switched
+   off).
 
 
 .. attribute:: DefaultCookiePolicy.DomainStrict
 
-   ``DomainStrictNoDots|DomainStrictNonDomain`` と同じです。
+   Equivalent to ``DomainStrictNoDots|DomainStrictNonDomain``.
 
 
 .. _cookielib-cookie-objects:
 
-Cookie オブジェクト
--------------------
+Cookie Objects
+--------------
 
-:class:`Cookie` インスタンスは、さまざまなクッキーの標準で規定されている標準的なクッキー属性とおおまかに対応する Python
-属性をもっています。しかしデフォルト値を決める複雑なやり方が存在しており、また ``max-age`` および ``expires`` クッキー属性は
-同じ値をもつことになっているので、また RFC 2109クッキーは :mod:`cookielib` によって version 1から version 0
-(Netscape)クッキーへ 'ダウングレード' される場合があるため、この対応は 1対 1 ではありません。
+:class:`Cookie` instances have Python attributes roughly corresponding to the
+standard cookie-attributes specified in the various cookie standards.  The
+correspondence is not one-to-one, because there are complicated rules for
+assigning default values, because the ``max-age`` and ``expires``
+cookie-attributes contain equivalent information, and because RFC 2109 cookies
+may be 'downgraded' by :mod:`cookielib` from version 1 to version 0 (Netscape)
+cookies.
 
-:class:`CookiePolicy` メソッド内でのごくわずかな例外を除けば、これらの属性に代入する必要はないはずです。このクラスは
-内部の一貫性を保つようにはしていないため、代入するのは自分のやっていることを理解している場合のみにしてください。
+Assignment to these attributes should not be necessary other than in rare
+circumstances in a :class:`CookiePolicy` method.  The class does not enforce
+internal consistency, so you should know what you're doing if you do that.
 
 
 .. attribute:: Cookie.version
 
-   整数または :const:`None` 。 Netscape クッキーはバージョン 0 であり、 RFC 2965 および RFC 2109 クッキーは
-   バージョン 1 です。しかし、 :mod:`cookielib` は RFC 2109クッキーを Netscapeクッキー (:attr:`version` が
-   0)に'ダウングレード'する場合がある事に注意して下さい。
+   Integer or :const:`None`.  Netscape cookies have :attr:`version` 0. RFC 2965 and
+   RFC 2109 cookies have a ``version`` cookie-attribute of 1.  However, note that
+   :mod:`cookielib` may 'downgrade' RFC 2109 cookies to Netscape cookies, in which
+   case :attr:`version` is 0.
 
 
 .. attribute:: Cookie.name
 
-   クッキーの名前 (文字列)。
+   Cookie name (a string).
 
 
 .. attribute:: Cookie.value
 
-   クッキーの値 (文字列)、あるいは :const:`None` 。
+   Cookie value (a string), or :const:`None`.
 
 
 .. attribute:: Cookie.port
 
-   ポートあるいはポートの集合をあらわす文字列 (例: '80' または '80,8080')、あるいは :const:`None` 。
+   String representing a port or a set of ports (eg. '80', or '80,8080'), or
+   :const:`None`.
 
 
 .. attribute:: Cookie.path
 
-   クッキーのパス名 (文字列、例: ``'/acme/rocket_launchers'``)。
+   Cookie path (a string, eg. ``'/acme/rocket_launchers'``).
 
 
 .. attribute:: Cookie.secure
 
-   そのクッキーを返せるのが安全な接続のみならば真を返します。
+   ``True`` if cookie should only be returned over a secure connection.
 
 
 .. attribute:: Cookie.expires
 
-   クッキーの期限が切れる日時をあわらす整数 (エポックから経過した秒数)、あるいは :const:`None` 。 :meth:`is_expired`
-   も参照してください。
+   Integer expiry date in seconds since epoch, or :const:`None`.  See also the
+   :meth:`is_expired` method.
 
 
 .. attribute:: Cookie.discard
 
-   これがセッションクッキーであれば真を返します。
+   ``True`` if this is a session cookie.
 
 
 .. attribute:: Cookie.comment
 
-   このクッキーの働きを説明する、サーバからのコメント文字列、あるいは :const:`None` 。
+   String comment from the server explaining the function of this cookie, or
+   :const:`None`.
 
 
 .. attribute:: Cookie.comment_url
 
-   このクッキーの働きを説明する、サーバからのコメントのリンク URL、あるいは :const:`None` 。
+   URL linking to a comment from the server explaining the function of this cookie,
+   or :const:`None`.
 
 
 .. attribute:: Cookie.rfc2109
 
-   RFC 2109クッキー(即ち :mailheader:`Set-Cookie` ヘッダにあり、かつVersion
-   cookie属性の値が1のクッキー)の場合、Trueを返します。 :mod:`cookielib` が RFC 2109クッキーを Netscapeクッキー
-   (:attr:`version` が 0)に'ダウングレード'する場合があるので、この属性が提供されています。
+   ``True`` if this cookie was received as an RFC 2109 cookie (ie. the cookie
+   arrived in a :mailheader:`Set-Cookie` header, and the value of the Version
+   cookie-attribute in that header was 1).  This attribute is provided because
+   :mod:`cookielib` may 'downgrade' RFC 2109 cookies to Netscape cookies, in
+   which case :attr:`version` is 0.
 
    .. versionadded:: 2.5
 
 
 .. attribute:: Cookie.port_specified
 
-   サーバがポート、あるいはポートの集合を (:mailheader:`Set-Cookie` / :mailheader:`Set-Cookie2` ヘッダ内で)
-   明示的に指定していれば真を返します。
+   ``True`` if a port or set of ports was explicitly specified by the server (in the
+   :mailheader:`Set-Cookie` / :mailheader:`Set-Cookie2` header).
 
 
 .. attribute:: Cookie.domain_specified
 
-   サーバがドメインを明示的に指定していれば真を返します。
+   ``True`` if a domain was explicitly specified by the server.
 
 
 .. attribute:: Cookie.domain_initial_dot
 
-   サーバが明示的に指定したドメインが、ドット (``'.'``) で始まっていれば真を返します。
+   ``True`` if the domain explicitly specified by the server began with a dot
+   (``'.'``).
 
-クッキーは、オプションとして標準的でないクッキー属性を持つこともできます。これらは以下のメソッドでアクセスできます:
+Cookies may have additional non-standard cookie-attributes.  These may be
+accessed using the following methods:
 
 
 .. method:: Cookie.has_nonstandard_attr(name)
 
-   そのクッキーが指定された名前のクッキー属性をもっている場合には真を返します。
+   Return true if cookie has the named cookie-attribute.
 
 
 .. method:: Cookie.get_nonstandard_attr(name, default=None)
 
-   クッキーが指定された名前のクッキー属性をもっていれば、その値を返します。そうでない場合は *default* を返します。
+   If cookie has the named cookie-attribute, return its value. Otherwise, return
+   *default*.
 
 
 .. method:: Cookie.set_nonstandard_attr(name, value)
 
-   指定された名前のクッキー属性を設定します。
+   Set the value of the named cookie-attribute.
 
-:class:`Cookie` クラスは以下のメソッドも定義しています:
+The :class:`Cookie` class also defines the following method:
 
 
 .. method:: Cookie.is_expired([now=None])
 
-   サーバが指定した、クッキーの期限が切れるべき時が過ぎていれば真を返します。 *now* が指定されているときは (エポックから経過した秒数です)、
-   そのクッキーが指定された時間において期限切れになっているかどうかを判定します。
+   ``True`` if cookie has passed the time at which the server requested it should
+   expire.  If *now* is given (in seconds since the epoch), return whether the
+   cookie has expired at the specified time.
 
 
 .. _cookielib-examples:
 
-使用例
-------
+Examples
+--------
 
-はじめに、もっとも一般的な :mod:`cookielib` の使用例をあげます::
+The first example shows the most common usage of :mod:`cookielib`::
 
    import cookielib, urllib2
    cj = cookielib.CookieJar()
    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
    r = opener.open("http://example.com/")
 
-以下の例では、 URL を開く際に Netscape や Mozilla または Lynx のクッキーを使う方法を示しています (クッキーファイルの位置は
-Unix/Netscape の慣例にしたがうものと仮定しています)::
+This example illustrates how to open a URL using your Netscape, Mozilla, or Lynx
+cookies (assumes Unix/Netscape convention for location of the cookies file)::
 
    import os, cookielib, urllib2
    cj = cookielib.MozillaCookieJar()
@@ -682,9 +755,10 @@ Unix/Netscape の慣例にしたがうものと仮定しています)::
    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
    r = opener.open("http://example.com/")
 
-つぎの例は :class:`DefaultCookiePolicy` の使用例です。 RFC 2965 クッキーをオンにし、Netscape
-クッキーを設定したり返したりするドメインに対してより厳密な規則を適用します。そしていくつかのドメインから
-クッキーを設定あるいは返還するのをブロックしています::
+The next example illustrates the use of :class:`DefaultCookiePolicy`. Turn on
+RFC 2965 cookies, be more strict about domains when setting and returning
+Netscape cookies, and block some domains from setting cookies or having them
+returned::
 
    import urllib2
    from cookielib import CookieJar, DefaultCookiePolicy

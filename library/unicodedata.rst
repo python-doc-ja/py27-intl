@@ -1,6 +1,6 @@
 
-:mod:`unicodedata` --- Unicode データベース
-===========================================
+:mod:`unicodedata` --- Unicode Database
+=======================================
 
 .. module:: unicodedata
    :synopsis: Access the Unicode Database.
@@ -14,152 +14,143 @@
    single: character
    pair: Unicode; database
 
-このモジュールは、全ての Unicode 文字の属性を定義している Unicode
-文字データベースへのアクセスを提供します。このデータベース内のデータは、ftp://ftp.unicode.org/ で公開されている
-:file:`UnicodeData.txt` ファイルのバージョン 5.2.0 に基づいています。
+This module provides access to the Unicode Character Database which defines
+character properties for all Unicode characters. The data in this database is
+based on the :file:`UnicodeData.txt` file version 5.2.0 which is publicly
+available from ftp://ftp.unicode.org/.
 
-このモジュールは、UnicodeData ファイルフォーマット 5.2.0
-(http://www.unicode.org/reports/tr44/tr44-4.html を参照)
-で定義されているものと、同じ名前と記号を使います。
-このモジュールで定義されている関数は、以下のとおりです。
+The module uses the same names and symbols as defined by the UnicodeData File
+Format 5.2.0 (see http://www.unicode.org/reports/tr44/tr44-4.html).
+It defines the following functions:
 
 
 .. function:: lookup(name)
 
-   名前に対応する文字を探します。その名前の文字が見つかった場合、その Unicode
-   文字が返されます。見つからなかった場合には、 :exc:`KeyError` を発生させます。
+   Look up character by name.  If a character with the given name is found, return
+   the corresponding Unicode character.  If not found, :exc:`KeyError` is raised.
 
 
 .. function:: name(unichr[, default])
 
-   Unicode 文字 *unichr* に付いている名前を、文字列で返します。名前が定義されていない場合には *default*
-   が返されますが、この引数が与えられていなければ :exc:`ValueError` を発生させます。
+   Returns the name assigned to the Unicode character *unichr* as a string. If no
+   name is defined, *default* is returned, or, if not given, :exc:`ValueError` is
+   raised.
 
 
 .. function:: decimal(unichr[, default])
 
-   Unicode 文字 *unichr* に割り当てられている十進数を、整数で返します。この値が定義されていない場合には *default*
-   が返されますが、この引数が与えられていなければ :exc:`ValueError` を発生させます。
+   Returns the decimal value assigned to the Unicode character *unichr* as integer.
+   If no such value is defined, *default* is returned, or, if not given,
+   :exc:`ValueError` is raised.
 
 
 .. function:: digit(unichr[, default])
 
-   Unicode 文字 *unichr* に割り当てられている二進数を、整数で返します。この値が定義されていない場合には *default*
-   が返されますが、この引数が与えられていなければ :exc:`ValueError` を発生させます。
+   Returns the digit value assigned to the Unicode character *unichr* as integer.
+   If no such value is defined, *default* is returned, or, if not given,
+   :exc:`ValueError` is raised.
 
 
 .. function:: numeric(unichr[, default])
 
-   Unicode 文字 *unichr* に割り当てられている数値を、float 型で返します。この値が定義されていない場合には *default*
-   が返されますが、この引数が与えられていなければ :exc:`ValueError` を発生させます。
+   Returns the numeric value assigned to the Unicode character *unichr* as float.
+   If no such value is defined, *default* is returned, or, if not given,
+   :exc:`ValueError` is raised.
 
 
 .. function:: category(unichr)
 
-   Unicode 文字 *unichr* に割り当てられた、汎用カテゴリを返します。
+   Returns the general category assigned to the Unicode character *unichr* as
+   string.
 
 
 .. function:: bidirectional(unichr)
 
-   Unicode 文字 *unichr* に割り当てられた、双方向カテゴリを返します。そのような値が定義されていない場合、空の文字列が返されます。
+   Returns the bidirectional class assigned to the Unicode character *unichr* as
+   string. If no such value is defined, an empty string is returned.
 
 
 .. function:: combining(unichr)
 
-   Unicode 文字 *unichr* に割り当てられた正規結合クラスを返します。結合クラス定義されていない場合、 ``0`` が返されます。
+   Returns the canonical combining class assigned to the Unicode character *unichr*
+   as integer. Returns ``0`` if no combining class is defined.
 
 
 .. function:: east_asian_width(unichr)
 
-   *unichr* as string. ユニコード文字 *unichr* に割り当てられたeast asian widthを文字列で返します。
+   Returns the east asian width assigned to the Unicode character *unichr* as
+   string.
 
    .. versionadded:: 2.4
 
 
 .. function:: mirrored(unichr)
 
-   Unicode 文字 *unichr* に割り当てられた、鏡像化のプロパティを返します。
-   その文字が双方向テキスト内で鏡像化された文字である場合には
-   ``1`` を、それ以外の場合には ``0`` を返します。
+   Returns the mirrored property assigned to the Unicode character *unichr* as
+   integer. Returns ``1`` if the character has been identified as a "mirrored"
+   character in bidirectional text, ``0`` otherwise.
 
 
 .. function:: decomposition(unichr)
 
-   Unicode 文字 *unichr*
-   に割り当てられた、文字分解マッピングを、文字列型で返します。そのようなマッピングが定義されていない場合、空の文字列が返されます。
+   Returns the character decomposition mapping assigned to the Unicode character
+   *unichr* as string. An empty string is returned in case no such mapping is
+   defined.
 
 
 .. function:: normalize(form, unistr)
 
-   Unicode 文字列 *unistr* の正規形 *form* を返します。 *form* の有効な値は、'NFC'、'NFKC'、'NFD'、'NFKD'
-   です。
+   Return the normal form *form* for the Unicode string *unistr*. Valid values for
+   *form* are 'NFC', 'NFKC', 'NFD', and 'NFKD'.
 
-   .. The Unicode standard defines various normalization forms of a Unicode string,
-      based on the definition of canonical equivalence and compatibility equivalence.
-      In Unicode, several characters can be expressed in various way. For example, the
-      character U+00C7 (LATIN CAPITAL LETTER C WITH CEDILLA) can also be expressed as
-      the sequence U+0327 (COMBINING CEDILLA) U+0043 (LATIN CAPITAL LETTER C).
+   The Unicode standard defines various normalization forms of a Unicode string,
+   based on the definition of canonical equivalence and compatibility equivalence.
+   In Unicode, several characters can be expressed in various way. For example, the
+   character U+00C7 (LATIN CAPITAL LETTER C WITH CEDILLA) can also be expressed as
+   the sequence U+0043 (LATIN CAPITAL LETTER C) U+0327 (COMBINING CEDILLA).
 
-   Unicode 規格は標準等価性 (canonical equivalence) と互換等価性 (compatibility equivalence)
-   に基づいて、様々な Unicode文字列の正規形を定義します。Unicode では、複数の方法で表現できる文字があります。たとえば、文字 U+00C7
-   (LATIN CAPITAL LETTER C WITH CEDILLA) は、U+0327 (COMBINING CEDILLA) U+0043 (LATIN CAPITAL LETTER C)
-   というシーケンスとしても表現できます。
+   For each character, there are two normal forms: normal form C and normal form D.
+   Normal form D (NFD) is also known as canonical decomposition, and translates
+   each character into its decomposed form. Normal form C (NFC) first applies a
+   canonical decomposition, then composes pre-combined characters again.
 
-   各文字には2つの正規形があり、それぞれ正規形 C と正規形 D といいます。正規形 D (NFD) は標準分解 (canonical
-   decomposition) としても知られており、各文字を分解された形に変換します。正規形 C (NFC) は標準分解を適用した後、結合済文字を再構成します。
+   In addition to these two forms, there are two additional normal forms based on
+   compatibility equivalence. In Unicode, certain characters are supported which
+   normally would be unified with other characters. For example, U+2160 (ROMAN
+   NUMERAL ONE) is really the same thing as U+0049 (LATIN CAPITAL LETTER I).
+   However, it is supported in Unicode for compatibility with existing character
+   sets (e.g. gb2312).
 
-   .. % For each character, there are two normal forms: normal form C and
-   .. % normal form D. Normal form D (NFD) is also known as canonical
-   .. % decomposition, and translates each character into its decomposed form.
-   .. % Normal form C (NFC) first applies a canonical decomposition, then
-   .. % composes pre-combined characters again.
+   The normal form KD (NFKD) will apply the compatibility decomposition, i.e.
+   replace all compatibility characters with their equivalents. The normal form KC
+   (NFKC) first applies the compatibility decomposition, followed by the canonical
+   composition.
 
-   互換等価性に基づいて、2つの正規形が加えられています。Unicode では、一般に他の文字との統合がサポートされている文字があります。たとえば、U+2160
-   (ROMAN NUMERAL ONE) は事実上 U+0049 (LATIN CAPITAL LETTER I) と同じものです。しかし、Unicode
-   では、既存の文字集合 (たとえば gb2312) との互換性のために、これがサポートされています。
-
-   .. % In addition to these two forms, there two additional normal forms
-   .. % based on compatibility equivalence. In Unicode, certain characters are
-   .. % supported which normally would be unified with other characters. For
-   .. % example, U+2160 (ROMAN NUMERAL ONE) is really the same thing as U+0049
-   .. % (LATIN CAPITAL LETTER I). However, it is supported in Unicode for
-   .. % compatibility with existing character sets (e.g. gb2312).
-
-   正規形 KD (NFKD) は、互換分解 (compatibility decomposition)
-   を適用します。すなわち、すべての互換文字を、等価な文字で置換します。正規形 KC (NFKC) は、互換分解を適用してから、標準分解を適用します。
-
-   .. % The normal form KD (NFKD) will apply the compatibility decomposition,
-   .. % i.e. replace all compatibility characters with their equivalents. The
-   .. % normal form KC (NFKC) first applies the compatibility decomposition,
-   .. % followed by the canonical composition.
-
-   .. Even if two unicode strings are normalized and look the same to
-      a human reader, if one has combining characters and the other
-      doesn't, they may not compare equal.
-
-   2つのunicode文字列が正規化されていて人間の目に同じに見えても、
-   片方が結合文字を持っていてもう片方が持っていない場合、それらは完全に同じではありません。
+   Even if two unicode strings are normalized and look the same to
+   a human reader, if one has combining characters and the other
+   doesn't, they may not compare equal.
 
    .. versionadded:: 2.3
 
-更に、本モジュールは以下の定数を公開します。
+In addition, the module exposes the following constant:
 
 
 .. data:: unidata_version
 
-   このモジュールで使われている Unicode データベースのバージョン。
+   The version of the Unicode database used in this module.
 
    .. versionadded:: 2.3
 
 
 .. data:: ucd_3_2_0
 
-   これはモジュール全体と同じメソッドを具えたオブジェクトですが、Unicode データベースバージョン 3.2 を代わりに使っており、この特定のバージョンの
-   Unicode データベースを必要とするアプリケーション(IDNA など)のためものです。
+   This is an object that has the same methods as the entire module, but uses the
+   Unicode database version 3.2 instead, for applications that require this
+   specific version of the Unicode database (such as IDNA).
 
    .. versionadded:: 2.5
 
-例:
+Examples:
 
    >>> import unicodedata
    >>> unicodedata.lookup('LEFT CURLY BRACKET')

@@ -1,150 +1,135 @@
-:mod:`email.generator`: MIME 文書を生成する
--------------------------------------------
+:mod:`email.generator`: Generating MIME documents
+-------------------------------------------------
 
 .. module:: email.generator
-   :synopsis: メッセージ構造からフラットな電子メールテキストを生成する。
+   :synopsis: Generate flat text email messages from a message structure.
 
 
-よくある作業のひとつは、メッセージオブジェクト構造から\
-フラットな電子メールテキストを生成することです。この作業は :mod:`smtplib` や
-:mod:`nntplib` モジュールを使って\
-メッセージを送信したり、メッセージをコンソールに出力したりするときに\
-必要になります。あるメッセージオブジェクト構造をとってきて、
-そこからフラットなテキスト文書を生成するのは :class:`Generator`
-クラスの仕事です。
+One of the most common tasks is to generate the flat text of the email message
+represented by a message object structure.  You will need to do this if you want
+to send your message via the :mod:`smtplib` module or the :mod:`nntplib` module,
+or print the message on the console.  Taking a message object structure and
+producing a flat text document is the job of the :class:`Generator` class.
 
-繰り返しになりますが、 :mod:`email.parser` モジュールと同じく、
-この機能は既存の Generator だけに限られるわけではありません。
-これらはご自身でゼロから作りあげることもできます。
-しかし、既存のジェネレータはほとんどの電子メールを標準に沿ったやり方で\
-生成する方法を知っていますし、MIME メッセージも非 MIME メッセージも\
-扱えます。さらにこれはフラットなテキストから :class:`~email.parser.Parser`
-クラスを使ってメッセージ構造に変換し、それをまたフラットなテキストに戻しても、
-結果が冪等 [#]_ になるよう設計されています。
-一方で、プログラムによって構成された :class:`~email.message.Message`
-の Generator を使う場合、デフォルトの挿入によって :class:`~email.message.Message`
-オブジェクトを変えてしまうかもしれません。
+Again, as with the :mod:`email.parser` module, you aren't limited to the
+functionality of the bundled generator; you could write one from scratch
+yourself.  However the bundled generator knows how to generate most email in a
+standards-compliant way, should handle MIME and non-MIME email messages just
+fine, and is designed so that the transformation from flat text, to a message
+structure via the :class:`~email.parser.Parser` class, and back to flat text,
+is idempotent (the input is identical to the output) [#]_.  On the other hand,
+using the Generator on a :class:`~email.message.Message` constructed by program
+may result in changes to the :class:`~email.message.Message` object as defaults
+are filled in.
 
-:mod:`email.generator` モジュールからインポートされる :class:`Generator`
-クラスで公開されているメソッドには、以下のようなものがあります:
+Here are the public methods of the :class:`Generator` class, imported from the
+:mod:`email.generator` module:
 
 
 .. class:: Generator(outfp[, mangle_from_[, maxheaderlen]])
 
-   :class:`Generator` クラスのコンストラクタは *outfp* と呼ばれる
-   ストリーム形式  [#]_ のオブジェクトひとつを引数にとります。
-   *outfp* は :meth:`write` メソッドをサポートし、 Python 拡張 print
-   文の出力ファイルとして使えるようになっている必要があります。
+   The constructor for the :class:`Generator` class takes a file-like object called
+   *outfp* for an argument.  *outfp* must support the :meth:`write` method and be
+   usable as the output file in a Python extended print statement.
 
-   オプション引数 *mangle_from_* はフラグで、
-   ``True`` のときはメッセージ本体に現れる行頭のすべての ``From``
-   という文字列の最初に ``>`` という文字を追加します。これは、このような行が
-   Unix の mailbox 形式のエンペローブヘッダ区切り文字列として誤認識されるの\
-   を防ぐための、移植性ある唯一の方法です (詳しくは `WHY THE CONTENT-LENGTH
-   FORMAT IS BAD (なぜ Content-Length 形式が有害か)
-   <http://www.jwz.org/doc/content-length.html>`_
-   を参照してください)。デフォルトでは *mangle_from_* は ``True`` になっていますが、
-   Unix の mailbox 形式ファイルに出力しないのならば\
-   これは ``False`` に設定してもかまいません。
+   Optional *mangle_from_* is a flag that, when ``True``, puts a ``>`` character in
+   front of any line in the body that starts exactly as ``From``, i.e. ``From``
+   followed by a space at the beginning of the line.  This is the only guaranteed
+   portable way to avoid having such lines be mistaken for a Unix mailbox format
+   envelope header separator (see `WHY THE CONTENT-LENGTH FORMAT IS BAD
+   <http://www.jwz.org/doc/content-length.html>`_ for details).  *mangle_from_*
+   defaults to ``True``, but you might want to set this to ``False`` if you are not
+   writing Unix mailbox format files.
 
-   オプション引数 *maxheaderlen* は連続していないヘッダの最大長を
-   指定します。ひとつのヘッダ行が *maxheaderlen*
-   (これは文字数です、tab は空白 8文字に展開されます) よりも長い場合、
-   ヘッダは :class:`~email.header.Header` クラスで定義されているように途中で
-   折り返され、間にはセミコロンが挿入されます。
-   もしセミコロンが見つからない場合、そのヘッダは放置されます。
-   ヘッダの折り返しを禁止するにはこの値にゼロを指定してください。
-   デフォルトは 78 文字で、 :rfc:`2822` で推奨されている
-   (ですが強制ではありません) 値です。
+   Optional *maxheaderlen* specifies the longest length for a non-continued header.
+   When a header line is longer than *maxheaderlen* (in characters, with tabs
+   expanded to 8 spaces), the header will be split as defined in the
+   :class:`~email.header.Header` class.  Set to zero to disable header wrapping.
+   The default is 78, as recommended (but not required) by :rfc:`2822`.
 
-  これ以外のパブリックな :class:`Generator` メソッドは以下のとおりです:
+   The other public :class:`Generator` methods are:
 
 
-  .. method:: flatten(msg[, unixfrom])
+   .. method:: flatten(msg[, unixfrom])
 
-      *msg* を基点とするメッセージオブジェクト構造体の\
-      文字表現を出力します。出力先のファイルにはこの :class:`Generator` インスタンスが\
-      作成されたときに指定されたものが使われます。各 subpart は深さ優先順序
-      (depth-first) で出力され、得られるテキストは適切に MIME
-      エンコードされたものになっています。
+      Print the textual representation of the message object structure rooted at
+      *msg* to the output file specified when the :class:`Generator` instance
+      was created.  Subparts are visited depth-first and the resulting text will
+      be properly MIME encoded.
 
-      オプション引数 *unixfrom* は、基点となるメッセージオブジェクトの\
-      最初の :rfc:`2822` ヘッダが現れる前に、エンペローブヘッダ区切り文字列を\
-      出力することを強制するフラグです。そのメッセージオブジェクトが\
-      エンペローブヘッダをもたない場合、標準的なエンペローブヘッダが自動的に\
-      作成されます。デフォルトではこの値は ``False`` に設定されており、
-      エンペローブヘッダ区切り文字列は出力されません。
+      Optional *unixfrom* is a flag that forces the printing of the envelope
+      header delimiter before the first :rfc:`2822` header of the root message
+      object.  If the root object has no envelope header, a standard one is
+      crafted.  By default, this is set to ``False`` to inhibit the printing of
+      the envelope delimiter.
 
-      注意: 各 subpart に関しては、エンペローブヘッダは出力されません。
+      Note that for subparts, no envelope header is ever printed.
 
       .. versionadded:: 2.2.2
 
 
-  .. method:: clone(fp)
+   .. method:: clone(fp)
 
-      この :class:`Generator` インスタンスの独立したクローンを生成し返します。
-      オプションはすべて同一になっています。
+      Return an independent clone of this :class:`Generator` instance with the
+      exact same options.
 
       .. versionadded:: 2.2.2
 
 
-  .. method:: write(s)
+   .. method:: write(s)
 
-      文字列 *s* を既定のファイルに出力します。
-      ここでいう出力先は :class:`Generator` コンストラクタに渡した *outfp*
-      のことをさします。この関数はただ単に\
-      拡張 print 文で使われる :class:`Generator` インスタンスに対して\
-      ファイル操作風の API を提供するためだけのものです。
+      Write the string *s* to the underlying file object, i.e. *outfp* passed to
+      :class:`Generator`'s constructor.  This provides just enough file-like API
+      for :class:`Generator` instances to be used in extended print statements.
 
-ユーザの便宜をはかるため、メソッド :meth:`Message.as_string` と
-``str(aMessage)`` (つまり :meth:`Message.__str__` のことです) をつかえば\
-メッセージオブジェクトを特定の書式でフォーマットされた文字列に簡単に変換\
-することができます。
-詳細は :mod:`email.message` を参照してください。
+As a convenience, see the methods :meth:`Message.as_string` and
+``str(aMessage)``, a.k.a. :meth:`Message.__str__`, which simplify the generation
+of a formatted string representation of a message object.  For more detail, see
+:mod:`email.message`.
 
-:mod:`email.generator` モジュールはひとつの派生クラスも提供しています。
-これは :class:`DecodedGenerator` と呼ばれるもので、
-:class:`Generator` 基底クラスと似ていますが、非 :mimetype:`text` 型の subpart
-を特定の書式でフォーマットされた表現形式で置きかえるところが違っています。
+The :mod:`email.generator` module also provides a derived class, called
+:class:`DecodedGenerator` which is like the :class:`Generator` base class,
+except that non-\ :mimetype:`text` parts are substituted with a format string
+representing the part.
 
 
 .. class:: DecodedGenerator(outfp[, mangle_from_[, maxheaderlen[, fmt]]])
 
-   このクラスは :class:`Generator` から派生したもので、メッセージの
-   subpart をすべて渡り歩きます。subpart の主形式が :mimetype:`text`
-   だった場合、これはその subpart のペイロードをデコードして出力します。
-   オプション引数 *_mangle_from_* および *maxheaderlen* の意味は基底\
-   クラス :class:`Generator` のそれと同じです。
+   This class, derived from :class:`Generator` walks through all the subparts of a
+   message.  If the subpart is of main type :mimetype:`text`, then it prints the
+   decoded payload of the subpart. Optional *_mangle_from_* and *maxheaderlen* are
+   as with the :class:`Generator` base class.
 
-   Subpart の主形式が :mimetype:`text` ではない場合、オプション引数 *fmt*
-   がそのメッセージペイロードのかわりのフォーマット文字列として使われます。 *fmt* は ``%(keyword)s`` のような形式を展開し、
-   以下のキーワードを認識します:
+   If the subpart is not of main type :mimetype:`text`, optional *fmt* is a format
+   string that is used instead of the message payload. *fmt* is expanded with the
+   following keywords, ``%(keyword)s`` format:
 
-  * ``type`` -- 非 :mimetype:`text` 型 subpart の MIME 形式
+   * ``type`` -- Full MIME type of the non-\ :mimetype:`text` part
 
-  * ``maintype`` -- 非 :mimetype:`text` 型 subpart の MIME 主形式 (maintype)
+   * ``maintype`` -- Main MIME type of the non-\ :mimetype:`text` part
 
-  * ``subtype`` -- 非 :mimetype:`text` 型 subpart の MIME 副形式 (subtype)
+   * ``subtype`` -- Sub-MIME type of the non-\ :mimetype:`text` part
 
-  * ``filename`` -- 非 :mimetype:`text` 型 subpart のファイル名
+   * ``filename`` -- Filename of the non-\ :mimetype:`text` part
 
-  * ``description`` -- 非 :mimetype:`text` 型 subpart につけられた説明文字列
+   * ``description`` -- Description associated with the non-\ :mimetype:`text` part
 
-  * ``encoding`` -- 非 :mimetype:`text` 型 subpart の Content-transfer-encoding
+   * ``encoding`` -- Content transfer encoding of the non-\ :mimetype:`text` part
 
-   *fmt* のデフォルト値は ``None`` です。こうすると以下の形式で出力します::
+   The default value for *fmt* is ``None``, meaning ::
 
       [Non-text (%(type)s) part of message omitted, filename %(filename)s]
 
    .. versionadded:: 2.2.2
 
 .. versionchanged:: 2.5
-   以前の非推奨メソッド :meth:`__call__` は削除されました。
+   The previously deprecated method :meth:`__call__` was removed.
 
-.. rubric:: 注記
 
-.. [#] 訳注: idempotent、その操作を何回くり返しても 1回だけ行ったのと\
-       結果が同じになること。
+.. rubric:: Footnotes
 
-.. [#] 訳注: file-like object
-
+.. [#] This statement assumes that you use the appropriate setting for the
+       ``unixfrom`` argument, and that you set maxheaderlen=0 (which will
+       preserve whatever the input line lengths were).  It is also not strictly
+       true, since in many cases runs of whitespace in headers are collapsed
+       into single blanks.  The latter is a bug that will eventually be fixed.

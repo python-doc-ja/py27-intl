@@ -1,9 +1,8 @@
-
-:mod:`shlex` --- 単純な字句解析
-===============================
+:mod:`shlex` --- Simple lexical analysis
+========================================
 
 .. module:: shlex
-   :synopsis: Unix シェル類似の言語に対する単純な字句解析。
+   :synopsis: Simple lexical analysis for Unix shell-like languages.
 .. moduleauthor:: Eric S. Raymond <esr@snark.thyrsus.com>
 .. moduleauthor:: Gustavo Niemeyer <niemeyer@conectiva.com>
 .. sectionauthor:: Eric S. Raymond <esr@snark.thyrsus.com>
@@ -12,280 +11,307 @@
 
 .. versionadded:: 1.5.2
 
-:class:`shlex` クラスは Unix シェルを思わせる単純な構文に対する字句解析器を簡単に書けるようにします。
-このクラスはしばしば、 Python アプリケーションのための実行制御ファイルのような小規模言語を書く上で便利です。
+**Source code:** :source:`Lib/shlex.py`
 
-.. note::
-
-   モジュール :mod:`shlex` は今のところユニコード入力をサポートしていません。
+--------------
 
 
-モジュールの内容
-----------------
+The :class:`~shlex.shlex` class makes it easy to write lexical analyzers for
+simple syntaxes resembling that of the Unix shell.  This will often be useful
+for writing minilanguages, (for example, in run control files for Python
+applications) or for parsing quoted strings.
 
-:mod:`shlex` モジュールは以下の関数を定義します。
+Prior to Python 2.7.3, this module did not support Unicode input.
+
+The :mod:`shlex` module defines the following functions:
 
 
 .. function:: split(s[, comments[, posix]])
 
-   シェル類似の文法を使って、文字列 *s* を分割します。
-   *comments* が :const:`False` (デフォルト値) の場合、
-   受理した文字列内のコメントを解析しません
-   (:class:`shlex` インスタンスの :attr:`commenters` メンバの値を空文字列にします)。
-   この関数はデフォルトでは POSIX モードで動作し、
-   *posix* 引数が false の場合は non-POSIX モードで動作します。
+   Split the string *s* using shell-like syntax. If *comments* is :const:`False`
+   (the default), the parsing of comments in the given string will be disabled
+   (setting the :attr:`~shlex.commenters` attribute of the
+   :class:`~shlex.shlex` instance to the empty string).  This function operates
+   in POSIX mode by default, but uses non-POSIX mode if the *posix* argument is
+   false.
 
    .. versionadded:: 2.3
 
    .. versionchanged:: 2.6
-      *posix* パラメータを追加。
+      Added the *posix* parameter.
 
    .. note::
 
-      :func:`split` 関数は :class:`shlex` クラスのインスタンスを利用するので、
-      *s* に ``None`` を渡すと標準入力から分割する文字列を読み込みます。
+      Since the :func:`split` function instantiates a :class:`~shlex.shlex`
+      instance, passing ``None`` for *s* will read the string to split from
+      standard input.
 
-:mod:`shlex` モジュールは以下のクラスを定義します。
+The :mod:`shlex` module defines the following class:
 
 
 .. class:: shlex([instream[, infile[, posix]]])
 
-   :class:`shlex` クラスとサブクラスのインスタンスは、字句解析器オブジェクトです。
-   初期化引数を与えると、どこから文字を読み込むかを指定できます。
-   指定先は :meth:`read` メソッドと :meth:`readline` メソッドを持つファイル/ストリーム類似オブジェクトか、
-   文字列でなくてはいけません（文字列が受理されるようになったのは Python 2.3 以降）。
-   引数が与えられなければ、 ``sys.stdin`` から入力を受け付けます。
-   第 2 引数は、ファイル名を表す文字列で、 :attr:`infile` メンバの値の初期値を決定します。
-   *instream*  引数が省略された場合や、この値が ``sys.stdin`` である場合、
-   第2引数のデフォルト値は "stdin" になります。
-   *posix* 引数は Python 2.3 で導入されました。これは動作モードを定義します。
-   *posix* が真でない場合（デフォルト）、 :class:`shlex` インスタンスは互換モードで動作します。
-   POSIX モードで動作中、 :class:`shlex` は、できる限り POSIX シェルの解析規則に似せようとします。
+   A :class:`~shlex.shlex` instance or subclass instance is a lexical analyzer
+   object.  The initialization argument, if present, specifies where to read
+   characters from. It must be a file-/stream-like object with
+   :meth:`~io.TextIOBase.read` and :meth:`~io.TextIOBase.readline` methods, or
+   a string (strings are accepted since Python 2.3).  If no argument is given,
+   input will be taken from ``sys.stdin``.  The second optional argument is a
+   filename string, which sets the initial value of the :attr:`~shlex.infile`
+   attribute.  If the *instream* argument is omitted or equal to ``sys.stdin``,
+   this second argument defaults to "stdin".  The *posix* argument was
+   introduced in Python 2.3, and defines the operational mode.  When *posix* is
+   not true (default), the :class:`~shlex.shlex` instance will operate in
+   compatibility mode.  When operating in POSIX mode, :class:`~shlex.shlex`
+   will try to be as close as possible to the POSIX shell parsing rules.
+
 
 .. seealso::
 
    Module :mod:`ConfigParser`
-      Windows :file:`.ini` ファイルに似た設定ファイルのパーザ。
+      Parser for configuration files similar to the Windows :file:`.ini` files.
 
 
 .. _shlex-objects:
 
-shlex オブジェクト
-------------------
+shlex Objects
+-------------
 
-:class:`shlex` インスタンスは以下のメソッドを持っています:
+A :class:`~shlex.shlex` instance has the following methods:
 
 
 .. method:: shlex.get_token()
 
-   トークンを一つ返します。トークンが :meth:`push_token` で使ってスタックに積まれていた場合、
-   トークンをスタックからポップします。
-   そうでない場合、トークンを一つ入力ストリームから読み出します。
-   読み出し即時にファイル終了子に遭遇した場合、 :attr:`self.eof` (非 POSIX モードでは空文字列
-   (``''``)、POSIX モードでは ``None``) が返されます。
+   Return a token.  If tokens have been stacked using :meth:`push_token`, pop a
+   token off the stack.  Otherwise, read one from the input stream.  If reading
+   encounters an immediate end-of-file, :attr:`eof` is returned (the empty
+   string (``''``) in non-POSIX mode, and ``None`` in POSIX mode).
+
 
 .. method:: shlex.push_token(str)
 
-   トークンスタックに引数文字列をスタックします。
+   Push the argument onto the token stack.
 
 
 .. method:: shlex.read_token()
 
-   生 (raw) のトークンを読み出します。
-   プッシュバックスタックを無視し、かつソースリクエストを解釈しません
-   (通常これは便利なエントリポイントではありません。完全性のためにここで記述されています)。
+   Read a raw token.  Ignore the pushback stack, and do not interpret source
+   requests.  (This is not ordinarily a useful entry point, and is documented here
+   only for the sake of completeness.)
 
 
 .. method:: shlex.sourcehook(filename)
 
-   :class:`shlex` がソースリクエスト (下の :attr:`source` を参照してください)
-   を検出した際、このメソッドはその後に続くトークンを引数として渡され、
-   ファイル名と開かれたファイル類似オブジェクトからなるタプルを返すとされています。
+   When :class:`~shlex.shlex` detects a source request (see :attr:`source`
+   below) this method is given the following token as argument, and expected
+   to return a tuple consisting of a filename and an open file-like object.
 
-   通常、このメソッドはまず引数から何らかのクオートを剥ぎ取ります。
-   処理後の引数が絶対パス名であった場合か、以前に有効になったソースリクエストが存在しない場合か、
-   以前のソースが (``sys.stdin`` のような) ストリームであった場合、この結果はそのままにされます。
-   そうでない場合で、処理後の引数が相対パス名の場合、
-   ソースインクルードスタックにある直前のファイル名からディレクトリ部分が取り出され、
-   相対パスの前の部分に追加されます
-   (この動作は C 言語プリプロセッサにおける ``#include "file.h"`` の扱いと同様です) 。
+   Normally, this method first strips any quotes off the argument.  If the result
+   is an absolute pathname, or there was no previous source request in effect, or
+   the previous source was a stream (such as ``sys.stdin``), the result is left
+   alone.  Otherwise, if the result is a relative pathname, the directory part of
+   the name of the file immediately before it on the source inclusion stack is
+   prepended (this behavior is like the way the C preprocessor handles ``#include
+   "file.h"``).
 
-   これらの操作の結果はファイル名として扱われ、タプルの最初の要素として返されます。
-   同時にこのファイル名で :func:`open` を呼び出した結果が二つ目の要素になります
-   (注意: インスタンス初期化のときとは引数の並びが逆になっています！)
+   The result of the manipulations is treated as a filename, and returned as the
+   first component of the tuple, with :func:`open` called on it to yield the second
+   component. (Note: this is the reverse of the order of arguments in instance
+   initialization!)
 
-   このフックはディレクトリサーチパスや、ファイル拡張子の追加、
-   その他の名前空間に関するハックを実装できるようにするために公開されています。
-   'close' フックに対応するものはありませんが、shlex インスタンスはソースリクエストされている入力ストリームが
-   EOF を返した時には :meth:`close` を呼び出します。
+   This hook is exposed so that you can use it to implement directory search paths,
+   addition of file extensions, and other namespace hacks. There is no
+   corresponding 'close' hook, but a shlex instance will call the
+   :meth:`~io.IOBase.close` method of the sourced input stream when it returns
+   EOF.
 
-   ソーススタックをより明示的に操作するには、 :meth:`push_source`  および :meth:`pop_source` メソッドを使ってください。
+   For more explicit control of source stacking, use the :meth:`push_source` and
+   :meth:`pop_source` methods.
 
 
 .. method:: shlex.push_source(stream[, filename])
 
-   入力ソースストリームを入力スタックにプッシュします。
-   ファイル名引数が指定された場合、以後のエラーメッセージ中で利用することができます。
-   :meth:`sourcehook` メソッドが内部で使用しているのと同じメソッドです。
+   Push an input source stream onto the input stack.  If the filename argument is
+   specified it will later be available for use in error messages.  This is the
+   same method used internally by the :meth:`sourcehook` method.
 
    .. versionadded:: 2.1
 
 
 .. method:: shlex.pop_source()
 
-   最後にプッシュされた入力ソースを入力スタックからポップします。
-   字句解析器がスタック上の入力ストリームの EOF に到達した際に利用するメソッドと同じです。
+   Pop the last-pushed input source from the input stack. This is the same method
+   used internally when the lexer reaches EOF on a stacked input stream.
 
    .. versionadded:: 2.1
 
 
 .. method:: shlex.error_leader([file[, line]])
 
-   このメソッドはエラーメッセージの論述部分を Unix C コンパイラエラーラベルの形式で生成します;
-   この書式は ``'"%s", line %d: '`` で、 ``%s`` は現在のソースファイル名で置き換えられ、
-   ``%d`` は現在の入力行番号で置き換えられます
-   (オプションの引数を使ってこれらを上書きすることもできます)。
+   This method generates an error message leader in the format of a Unix C compiler
+   error label; the format is ``'"%s", line %d: '``, where the ``%s`` is replaced
+   with the name of the current source file and the ``%d`` with the current input
+   line number (the optional arguments can be used to override these).
 
-   このやり方は、 :mod:`shlex` のユーザに対して、Emacs やその他の Unix
-   ツール群が解釈できる一般的な書式でのメッセージを生成することを推奨するために提供されています。
+   This convenience is provided to encourage :mod:`shlex` users to generate error
+   messages in the standard, parseable format understood by Emacs and other Unix
+   tools.
 
-:class:`shlex` サブクラスのインスタンスは、字句解析を制御したり、
-デバッグに使えるような public なインスタンス変数を持っています:
+Instances of :class:`~shlex.shlex` subclasses have some public instance
+variables which either control lexical analysis or can be used for debugging:
 
 
 .. attribute:: shlex.commenters
 
-   コメントの開始として認識される文字列です。
-   コメントの開始から行末までのすべてのキャラクタ文字は無視されます。
-   標準では単に ``'#'`` が入っています。
+   The string of characters that are recognized as comment beginners. All
+   characters from the comment beginner to end of line are ignored. Includes just
+   ``'#'`` by default.
 
 
 .. attribute:: shlex.wordchars
 
-   複数文字からなるトークンを構成するためにバッファに蓄積していくような文字からなる文字列です。
-   標準では、全ての ASCII 英数字およびアンダースコアが入っています。
+   The string of characters that will accumulate into multi-character tokens.  By
+   default, includes all ASCII alphanumerics and underscore.
 
 
 .. attribute:: shlex.whitespace
 
-   空白と見なされ、読み飛ばされる文字群です。空白はトークンの境界を作ります。
-   標準では、スペース、タブ、改行 (linefeed) および復帰 (carriage-return) が入っています。
+   Characters that will be considered whitespace and skipped.  Whitespace bounds
+   tokens.  By default, includes space, tab, linefeed and carriage-return.
 
 
 .. attribute:: shlex.escape
 
-   エスケープ文字と見なされる文字群です。
-   これは POSIX モードでのみ使われ、デフォルトでは ``'\'`` だけが入っています。
+   Characters that will be considered as escape. This will be only used in POSIX
+   mode, and includes just ``'\'`` by default.
 
    .. versionadded:: 2.3
 
 
 .. attribute:: shlex.quotes
 
-   文字列引用符と見なされる文字群です。
-   トークンを構成する際、同じクオートが再び出現するまで文字をバッファに蓄積します
-   (すなわち、異なるクオート形式はシェル中で互いに保護し合う関係にあります)。
-   標準では、ASCII 単引用符および二重引用符が入っています。
+   Characters that will be considered string quotes.  The token accumulates until
+   the same quote is encountered again (thus, different quote types protect each
+   other as in the shell.)  By default, includes ASCII single and double quotes.
 
 
 .. attribute:: shlex.escapedquotes
 
-   :attr:`quotes` のうち、 :attr:`escape` で定義されたエスケープ文字を解釈する文字群です。
-   これは POSIX モードでのみ使われ、デフォルトでは  ``'"'`` だけが入っています。
+   Characters in :attr:`quotes` that will interpret escape characters defined in
+   :attr:`escape`.  This is only used in POSIX mode, and includes just ``'"'`` by
+   default.
 
    .. versionadded:: 2.3
 
 
 .. attribute:: shlex.whitespace_split
 
-   この値が ``True`` であれば、トークンは空白文字でのみで分割されます。
-   たとえば :class:`shlex` がシェル引数と同じ方法で、コマンドラインを解析するのに便利です。
+   If ``True``, tokens will only be split in whitespaces. This is useful, for
+   example, for parsing command lines with :class:`~shlex.shlex`, getting
+   tokens in a similar way to shell arguments.
 
    .. versionadded:: 2.3
 
 
 .. attribute:: shlex.infile
 
-   現在の入力ファイル名です。クラスのインスタンス化時に初期設定されるか、その後のソースリクエストでスタックされます。
-   エラーメッセージを構成する際にこの値を調べると便利なことがあります。
+   The name of the current input file, as initially set at class instantiation time
+   or stacked by later source requests.  It may be useful to examine this when
+   constructing error messages.
 
 
 .. attribute:: shlex.instream
 
-   :class:`shlex` インスタンスが文字を読み出している入力ストリームです。
+   The input stream from which this :class:`~shlex.shlex` instance is reading
+   characters.
 
 
 .. attribute:: shlex.source
 
-   このメンバ変数は標準で :const:`None` を取ります。
-   この値に文字列を代入すると、その文字列は多くのシェルにおける ``source``
-   キーワードに似た、字句解析レベルでのインクルード要求として認識されます。
-   すなわち、その直後に現れるトークンをファイル名として新たなストリームを開き、
-   そのストリームを入力として、EOF に到達するまで読み込まれます。
-   新たなストリームの EOF に到達した時点で :meth:`close` が呼び出され、入力は元の入力ストリームに戻されます。
-   ソースリクエストは任意のレベルの深さまでスタックしてかまいません。
+   This attribute is ``None`` by default.  If you assign a string to it, that
+   string will be recognized as a lexical-level inclusion request similar to the
+   ``source`` keyword in various shells.  That is, the immediately following token
+   will opened as a filename and input taken from that stream until EOF, at which
+   point the :meth:`~io.IOBase.close` method of that stream will be called and
+   the input source will again become the original input stream.  Source
+   requests may be stacked any number of levels deep.
 
 
 .. attribute:: shlex.debug
 
-   このメンバ変数が数値で、かつ ``1`` またはそれ以上の値の場合、
-   :class:`shlex` インスタンスは動作に関する冗長な進捗報告を出力します。
-   この出力を使いたいなら、モジュールのソースコードを読めば詳細を学ぶことができます。
+   If this attribute is numeric and ``1`` or more, a :class:`~shlex.shlex`
+   instance will print verbose progress output on its behavior.  If you need
+   to use this, you can read the module source code to learn the details.
+
 
 .. attribute:: shlex.lineno
 
-   ソース行番号 (遭遇した改行の数に 1 を加えたもの) です。
+   Source line number (count of newlines seen so far plus one).
 
 
 .. attribute:: shlex.token
 
-   トークンバッファです。例外を捕捉した際にこの値を調べると便利なことがあります。
+   The token buffer.  It may be useful to examine this when catching exceptions.
 
 
 .. attribute:: shlex.eof
 
-   ファイルの終端を決定するのに使われるトークンです。
-   非 POSIX モードでは空文字列 (``''``) 、POSIX モードでは ``None`` が入ります。
+   Token used to determine end of file. This will be set to the empty string
+   (``''``), in non-POSIX mode, and to ``None`` in POSIX mode.
+
+   .. versionadded:: 2.3
 
 
 .. _shlex-parsing-rules:
 
-解析規則
---------
+Parsing Rules
+-------------
 
-非 POSIX モードで動作中の :class:`shlex` は以下の規則に従おうとします。
+When operating in non-POSIX mode, :class:`~shlex.shlex` will try to obey to the
+following rules.
 
-* ワード内の引用符を認識しない (``Do"Not"Separate`` は単一ワード  ``Do"Not"Separate`` として解析されます)
+* Quote characters are not recognized within words (``Do"Not"Separate`` is
+  parsed as the single word ``Do"Not"Separate``);
 
-* エスケープ文字を認識しない
+* Escape characters are not recognized;
 
-* 引用符で囲まれた文字列は、引用符内の全ての文字リテラルを保持する
+* Enclosing characters in quotes preserve the literal value of all characters
+  within the quotes;
 
-* 閉じ引用符でワードを区切る (``"Do"Separate`` は、 ``"Do"`` と ``Separate`` であると解析されます)
+* Closing quotes separate words (``"Do"Separate`` is parsed as ``"Do"`` and
+  ``Separate``);
 
-* :attr:`whitespace_split` が ``False`` の場合、wordchar、 whitespace または quote
-  として宣言されていない全ての文字を、単一の文字トークンとして返す。
-  ``True`` の場合、 :class:`shlex` は空白文字でのみ単語を区切る。
+* If :attr:`~shlex.whitespace_split` is ``False``, any character not
+  declared to be a word character, whitespace, or a quote will be returned as
+  a single-character token. If it is ``True``, :class:`~shlex.shlex` will only
+  split words in whitespaces;
 
-* 空文字列 (``''``) で EOF を送出する
+* EOF is signaled with an empty string (``''``);
 
-* 引用符に囲んであっても、空文字列を解析しない
+* It's not possible to parse empty strings, even if quoted.
 
-POSIX モードで動作中の :class:`shlex` は以下の解析規則に従おうとします。
+When operating in POSIX mode, :class:`~shlex.shlex` will try to obey to the
+following parsing rules.
 
-* 引用符を取り除き、引用符で単語を分解しない  (``"Do"Not"Separate"`` は単一ワード  ``DoNotSeparate``
-  として解析されます)
+* Quotes are stripped out, and do not separate words (``"Do"Not"Separate"`` is
+  parsed as the single word ``DoNotSeparate``);
 
-* 引用符で囲まれないエスケープ文字群 (``'\'``  など)  は直後に続く文字のリテラル値を保持する
+* Non-quoted escape characters (e.g. ``'\'``) preserve the literal value of the
+  next character that follows;
 
-* :attr:`escapedquotes` でない引用符文字 (``"'"`` など) で囲まれている全ての文字のリテラル値を保持する
+* Enclosing characters in quotes which are not part of
+  :attr:`~shlex.escapedquotes` (e.g. ``"'"``) preserve the literal value
+  of all characters within the quotes;
 
-* 引用符に囲まれた :attr:`escapedquotes` に含まれる文字  (``'"'`` など) は、 :attr:`escape`
-  に含まれる文字を除き、全ての文字のリテラル値を保持する。
-  エスケープ文字群は使用中の引用符、または、そのエスケープ文字自身が直後にある場合のみ、特殊な機能を保持する。
-  他の場合にはエスケープ文字は普通の文字とみなされる。
+* Enclosing characters in quotes which are part of
+  :attr:`~shlex.escapedquotes` (e.g. ``'"'``) preserves the literal value
+  of all characters within the quotes, with the exception of the characters
+  mentioned in :attr:`~shlex.escape`.  The escape characters retain its
+  special meaning only when followed by the quote in use, or the escape
+  character itself. Otherwise the escape character will be considered a
+  normal character.
 
-* :const:`None` で EOF を送出する
+* EOF is signaled with a :const:`None` value;
 
-* 引用符に囲まれた空文字列 (``''``) を許す
+* Quoted empty strings (``''``) are allowed;
 

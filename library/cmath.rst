@@ -1,51 +1,57 @@
-
-:mod:`cmath` --- 複素数のための数学関数
-=======================================
+:mod:`cmath` --- Mathematical functions for complex numbers
+===========================================================
 
 .. module:: cmath
-   :synopsis: 複素数のための数学関数です。
+   :synopsis: Mathematical functions for complex numbers.
 
 
-このモジュールは常に利用できます。
-提供しているのは複素数を扱う数学関数へのアクセス手段です。
-このモジュール中の関数は整数、浮動小数点数または複素数を引数にとります。
-また、 :meth:`__complex__` または :meth:`__float__` どちらかのメソッドを提供している
-Python オブジェクトも受け付けます。
-これらのメソッドはそのオブジェクトを複素数または浮動小数点数に変換するのにそれぞれ使われ、
-呼び出された関数はそうして変換された結果を利用します。
+This module is always available.  It provides access to mathematical functions
+for complex numbers.  The functions in this module accept integers,
+floating-point numbers or complex numbers as arguments. They will also accept
+any Python object that has either a :meth:`__complex__` or a :meth:`__float__`
+method: these methods are used to convert the object to a complex or
+floating-point number, respectively, and the function is then applied to the
+result of the conversion.
 
 .. note::
 
-   ハードウェア及びシステムレベルでの符号付きゼロのサポートがあるプラットフォームでは、
-   分枝切断 (branch cut) の関わる関数において切断された両側の分枝で連続になります。
-   ゼロの符号でどちらの分枝であるかを区別するのです。符号付きゼロがサポートされない
-   プラットフォームでは連続性は以下の仕様で述べるようになります。
+   On platforms with hardware and system-level support for signed
+   zeros, functions involving branch cuts are continuous on *both*
+   sides of the branch cut: the sign of the zero distinguishes one
+   side of the branch cut from the other.  On platforms that do not
+   support signed zeros the continuity is as specified below.
 
 
-極座標変換
--------------------
+Conversions to and from polar coordinates
+-----------------------------------------
 
-Python の複素数 ``z`` は内部的には *直交座標* もしくは *カーテシアン座標* と呼ばれる座標を使って格納されています。
-この座標はその複素数の *実部* ``z.real`` と *虚部* ``z.imag`` で決まります。
-言い換えると
+A Python complex number ``z`` is stored internally using *rectangular*
+or *Cartesian* coordinates.  It is completely determined by its *real
+part* ``z.real`` and its *imaginary part* ``z.imag``.  In other
+words::
 
    z == z.real + z.imag*1j
 
-ということです。
+*Polar coordinates* give an alternative way to represent a complex
+number.  In polar coordinates, a complex number *z* is defined by the
+modulus *r* and the phase angle *phi*. The modulus *r* is the distance
+from *z* to the origin, while the phase *phi* is the counterclockwise
+angle, measured in radians, from the positive x-axis to the line
+segment that joins the origin to *z*.
 
-*極座標* は複素数を表現する別の方法です。
-極座標では、複素数 *z* は半径 *r* と位相角 *phi* で定義されます。
-半径 *r* は *z* から原点までの距離です。
-位相 *phi* は x 軸の正の部分から原点と *z* を結んだ線分までの角度を反時計回りにラジアンで測った値です。
-
-次の関数はネイティブの直交座標を極座標に変換したりその逆を行うのに使えます。
+The following functions can be used to convert from the native
+rectangular coordinates to polar coordinates and back.
 
 .. function:: phase(x)
 
-   *x* の位相 (*x* の *偏角* とも呼びます) を浮動小数点数で返します。
-   ``phase(x)`` は ``math.atan2(x.imag, x.real)`` と同等です。
-   返り値は [-π, π] の範囲にあり、この演算の分枝切断は負の実軸に沿って延びていて、上から連続です。
-   (現在のほとんどのシステムはそうですが) 符号付きゼロをサポートしているシステムでは、返り値の符号は ``x.imag`` がゼロであってもその符号と等しくなります::
+   Return the phase of *x* (also known as the *argument* of *x*), as a
+   float.  ``phase(x)`` is equivalent to ``math.atan2(x.imag,
+   x.real)``.  The result lies in the range [-π, π], and the branch
+   cut for this operation lies along the negative real axis,
+   continuous from above.  On systems with support for signed zeros
+   (which includes most systems in current use), this means that the
+   sign of the result is the same as the sign of ``x.imag``, even when
+   ``x.imag`` is zero::
 
       >>> phase(complex(-1.0, 0.0))
       3.1415926535897931
@@ -54,193 +60,201 @@ Python の複素数 ``z`` は内部的には *直交座標* もしくは *カー
 
    .. versionadded:: 2.6
 
+
 .. note::
 
-   複素数 ``x`` の半径 (絶対値) は組み込みの :func:`abs` 関数でも計算することができます。
-   この演算を行う :mod:`cmath` モジュールの関数はありません。
+   The modulus (absolute value) of a complex number *x* can be
+   computed using the built-in :func:`abs` function.  There is no
+   separate :mod:`cmath` module function for this operation.
 
 
-.. memo: phi の前後に asterisk が無いのは誤植か?
 .. function:: polar(x)
 
-   *x* の極座標表現を返します。
-   *x* の半径 *r* と *x* の位相 *phi* の組 ``(r, phi)`` を返します。
-   ``polar(x)`` は ``(abs(x), phase(x))`` に等しいです。
+   Return the representation of *x* in polar coordinates.  Returns a
+   pair ``(r, phi)`` where *r* is the modulus of *x* and phi is the
+   phase of *x*.  ``polar(x)`` is equivalent to ``(abs(x),
+   phase(x))``.
 
    .. versionadded:: 2.6
 
 
 .. function:: rect(r, phi)
 
-   極座標 *r*, *phi* を持つ複素数 *x* を返します。
-   値は ``r * (math.cos(phi) + math.sin(phi)*1j)`` に等しいです。
+   Return the complex number *x* with polar coordinates *r* and *phi*.
+   Equivalent to ``r * (math.cos(phi) + math.sin(phi)*1j)``.
 
    .. versionadded:: 2.6
 
-指数関数と対数関数
-------------------
+
+Power and logarithmic functions
+-------------------------------
 
 .. function:: exp(x)
 
-   指数 ``e**x`` を返します。
+   Return the exponential value ``e**x``.
 
 
 .. function:: log(x[, base])
 
-   *base* を底とする *x* の対数を返します。
-   もし *base* が指定されていない場合には、 *x* の自然対数を返します。
-   分枝切断を一つもち、
-   ``0`` から負の実数軸に沿って ``-∞`` へと延びており、上から連続しています。
+   Returns the logarithm of *x* to the given *base*. If the *base* is not
+   specified, returns the natural logarithm of *x*. There is one branch cut, from 0
+   along the negative real axis to -∞, continuous from above.
 
    .. versionchanged:: 2.4
-      *base* 引数が追加されました。
+      *base* argument added.
 
 
 .. function:: log10(x)
 
-   *x* の底を 10 とする対数を返します。 :func:`log` と同じ分枝切断を持ちます。
+   Return the base-10 logarithm of *x*. This has the same branch cut as
+   :func:`log`.
 
 
 .. function:: sqrt(x)
 
-   *x* の平方根を返します。 :func:`log` と同じ分枝切断を持ちます。
+   Return the square root of *x*. This has the same branch cut as :func:`log`.
 
 
-三角関数
---------
+Trigonometric functions
+-----------------------
 
 .. function:: acos(x)
 
-   *x* の逆余弦を返します。
-   この関数には二つの分枝切断(branch cut)があります:
-   一つは 1 から右側に実数軸に沿って∞へと延びていて、下から連続しています。
-   もう一つは -1 から左側に実数軸に沿って -∞へと延びていて、上から連続しています。
+   Return the arc cosine of *x*. There are two branch cuts: One extends right from
+   1 along the real axis to ∞, continuous from below. The other extends left from
+   -1 along the real axis to -∞, continuous from above.
 
 
 .. function:: asin(x)
 
-   *x* の逆正弦を返します。 :func:`acos` と同じ分枝切断を持ちます。
+   Return the arc sine of *x*. This has the same branch cuts as :func:`acos`.
 
 
 .. function:: atan(x)
 
-   *x* の逆正接を返します。二つの分枝切断があります:
-   一つは ``1j`` から虚数軸に沿って ``∞j`` へと延びており、右から連続です。
-   もう一つは ``-1j`` から虚数軸に沿って ``-∞j`` へと延びており、左から連続です。
+   Return the arc tangent of *x*. There are two branch cuts: One extends from
+   ``1j`` along the imaginary axis to ``∞j``, continuous from the right. The
+   other extends from ``-1j`` along the imaginary axis to ``-∞j``, continuous
+   from the left.
 
    .. versionchanged:: 2.6
-      上側の分割での連続な方向が逆転しました。
+      direction of continuity of upper cut reversed
 
 
 .. function:: cos(x)
 
-   *x* の余弦を返します。
+   Return the cosine of *x*.
 
 
 .. function:: sin(x)
 
-   *x* の正弦を返します。
+   Return the sine of *x*.
 
 
 .. function:: tan(x)
 
-   *x* の正接を返します。
+   Return the tangent of *x*.
 
 
-双曲線関数
-----------
+Hyperbolic functions
+--------------------
 
 .. function:: acosh(x)
 
-   *x* の逆双曲線余弦を返します。
-   分枝切断が一つあり、1 の左側に実数軸に沿って -∞へと延びていて、上から連続しています。
+   Return the inverse hyperbolic cosine of *x*. There is one branch cut,
+   extending left from 1 along the real axis to -∞, continuous from above.
 
 
 .. function:: asinh(x)
 
-   *x* の逆双曲線正弦を返します。二つの分枝切断があります：
-   一つは ``1j`` から虚数軸に沿って ``∞j`` へと延びており、右から連続です。
-   もう一つは ``-1j`` から虚数軸に沿って ``-∞j`` へと延びており、左から連続です。
+   Return the inverse hyperbolic sine of *x*. There are two branch cuts:
+   One extends from ``1j`` along the imaginary axis to ``∞j``,
+   continuous from the right.  The other extends from ``-1j`` along
+   the imaginary axis to ``-∞j``, continuous from the left.
 
    .. versionchanged:: 2.6
-      分枝切断が C99 標準で推奨されたものに合わせて動かされました。
+      branch cuts moved to match those recommended by the C99 standard
 
 
 .. function:: atanh(x)
 
-   *x* の逆双曲線正接を返します。二つの分枝切断があります:
-   一つは ``1`` から実数軸に沿って ``∞`` へと延びており、下から連続です。
-   もう一つは ``-1`` から実数軸に沿って ``-∞`` へと延びており、上から連続です。
+   Return the inverse hyperbolic tangent of *x*. There are two branch cuts: One
+   extends from ``1`` along the real axis to ``∞``, continuous from below. The
+   other extends from ``-1`` along the real axis to ``-∞``, continuous from
+   above.
 
    .. versionchanged:: 2.6
-      右側の分割での連続な方向が逆転しました。
+      direction of continuity of right cut reversed
 
 
 .. function:: cosh(x)
 
-   *x* の双曲線余弦を返します。
+   Return the hyperbolic cosine of *x*.
 
 
 .. function:: sinh(x)
 
-   *x* の双曲線正弦を返します。
+   Return the hyperbolic sine of *x*.
 
 
 .. function:: tanh(x)
 
-   *x* の双曲線正接を返します。
+   Return the hyperbolic tangent of *x*.
 
 
-類別関数
---------
+Classification functions
+------------------------
 
 .. function:: isinf(x)
 
-   *x* の実数部または虚数部が正または負の無限大であれば *True* を返します。
+   Return *True* if the real or the imaginary part of x is positive
+   or negative infinity.
 
    .. versionadded:: 2.6
 
 
 .. function:: isnan(x)
 
-   *x* の実数部または虚数部が非数 (NaN) であれば *True* を返します。
+   Return *True* if the real or imaginary part of x is not a number (NaN).
 
    .. versionadded:: 2.6
 
 
+Constants
+---------
 
-定数
-----
 
 .. data:: pi
 
-   定数 *π* (円周率)で、浮動小数点数です。
+   The mathematical constant *π*, as a float.
 
 
 .. data:: e
 
-   定数 *e* (自然対数の底)で、浮動小数点数です。
+   The mathematical constant *e*, as a float.
 
 .. index:: module: math
 
-:mod:`math` と同じような関数が選ばれていますが、全く同じではないので注意してください。
-機能を二つのモジュールに分けているのは、複素数に興味がなかったり、もしかすると複素数とは何かすら知らないようなユーザがいるからです。
-そういった人たちはむしろ、 ``math.sqrt(-1)`` が複素数を返すよりも例外を送出してほしいと考えます。
-また、 :mod:`cmath` で定義されている関数は、
-たとえ結果が実数で表現可能な場合 (虚数部がゼロの複素数) でも、
-常に複素数を返すので注意してください。
+Note that the selection of functions is similar, but not identical, to that in
+module :mod:`math`.  The reason for having two modules is that some users aren't
+interested in complex numbers, and perhaps don't even know what they are.  They
+would rather have ``math.sqrt(-1)`` raise an exception than return a complex
+number. Also note that the functions defined in :mod:`cmath` always return a
+complex number, even if the answer can be expressed as a real number (in which
+case the complex number has an imaginary part of zero).
 
-分枝切断(branch cut)に関する注釈:
-分枝切断をもつ曲線上では、与えられた関数は連続でありえなくなります。
-これらは多くの複素関数における必然的な特性です。
-複素関数を計算する必要がある場合、これらの分枝に関して理解しているものと仮定しています。
-悟りに至るために何らかの(到底基礎的とはいえない)複素数に関する書をひもといてください。
-数値計算を目的とした分枝切断の正しい選択方法についての情報としては、
-以下がよい参考文献となります:
+A note on branch cuts: They are curves along which the given function fails to
+be continuous.  They are a necessary feature of many complex functions.  It is
+assumed that if you need to compute with complex functions, you will understand
+about branch cuts.  Consult almost any (not too elementary) book on complex
+variables for enlightenment.  For information of the proper choice of branch
+cuts for numerical purposes, a good reference should be the following:
+
 
 .. seealso::
 
    Kahan, W:  Branch cuts for complex elementary functions; or, Much ado about
-   nothings's sign bit.  In Iserles, A., and Powell, M. (eds.), The state of the
-   art in numerical analysis. Clarendon Press (1987) pp165-211.
+   nothing's sign bit.  In Iserles, A., and Powell, M. (eds.), The state of the art
+   in numerical analysis. Clarendon Press (1987) pp165-211.
+
 

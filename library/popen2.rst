@@ -1,140 +1,164 @@
 
-:mod:`popen2` --- アクセス可能な I/O ストリームを持つ子プロセス生成
-===================================================================
+:mod:`popen2` --- Subprocesses with accessible I/O streams
+==========================================================
 
 .. module:: popen2
-   :synopsis: アクセス可能な I/O ストリームを持つ子プロセス生成。
+   :synopsis: Subprocesses with accessible standard I/O streams.
    :deprecated:
 .. sectionauthor:: Drew Csillag <drew_csillag@geocities.com>
 
 
 .. deprecated:: 2.6
-   このモジュールは時代遅れです。 :mod:`subprocess` モジュールを利用してください。
-   特に :ref:`subprocess-replacements` 節を参照してください。
+   This module is obsolete.  Use the :mod:`subprocess` module.  Check
+   especially the :ref:`subprocess-replacements` section.
 
-このモジュールにより、Unix および Windows でプロセスを起動し、その入力／出力／エラー出力パイプに接続し、そのリターンコード
-を取得することができます。
+This module allows you to spawn processes and connect to their
+input/output/error pipes and obtain their return codes under Unix and Windows.
 
-:mod:`subprocess` モジュールが、新しいプロセスを起動してその結果を受け取るためのより強力な仕組みを持っています。
-:mod:`popen2` モジュールよりも :mod:`subprocess` モジュールを利用することが推奨されます。
+The :mod:`subprocess` module provides more powerful facilities for spawning new
+processes and retrieving their results.  Using the :mod:`subprocess` module is
+preferable to using the :mod:`popen2` module.
 
-このモジュールで提供されている第一のインタフェースは 3 つのファクトリ関数です。これらの関数のいずれも、 *bufsize* を指定した場合、 I/O
-パイプのバッファサイズを決定します。 *mode* を指定する場合、文字列 ``'b'`` または ``'t'``  でなければなりません; Windows
-では、ファイルオブジェクトをバイナリあるいはテキストモードのどちらで開くかを決めなければなりません。 *mode* の標準の値は ``'t'`` です。
+The primary interface offered by this module is a trio of factory functions.
+For each of these, if *bufsize* is specified,  it specifies the buffer size for
+the I/O pipes.  *mode*, if provided, should be the string ``'b'`` or ``'t'``; on
+Windows this is needed to determine whether the file objects should be opened in
+binary or text mode.  The default value for *mode* is ``'t'``.
 
-Unixでは *cmd* はシーケンスでもよく、その場合には (:func:`os.spawnv` のように)引数はプログラムシェルを経由せず直接渡されます。
-*cmd* が文字列の場合、(:func:`os.system` のように)シェルに渡されます。
+On Unix, *cmd* may be a sequence, in which case arguments will be passed
+directly to the program without shell intervention (as with :func:`os.spawnv`).
+If *cmd* is a string it will be passed to the shell (as with :func:`os.system`).
 
-子プロセスからのリターンコードを取得するには、 :class:`Popen3` および :class:`Popen4` クラスの :meth:`poll`
-あるいは :meth:`wait` メソッドを使うしかありません; これらの機能は Unixでしか利用できません。この情報は :func:`popen2` 、
-:func:`popen3` 、および :func:`popen4` 関数、あるいは :mod:`os` モジュールにおける同等の関数の
-使用によっては得ることができません。 (:mod:`os` モジュールの関数から返されるタプルは :mod:`popen2` モ
-ジュールの関数から返されるものとは違う順序です。)
+The only way to retrieve the return codes for the child processes is by using
+the :meth:`poll` or :meth:`wait` methods on the :class:`Popen3` and
+:class:`Popen4` classes; these are only available on Unix.  This information is
+not available when using the :func:`popen2`, :func:`popen3`, and :func:`popen4`
+functions, or the equivalent functions in the :mod:`os` module. (Note that the
+tuples returned by the :mod:`os` module's functions are in a different order
+from the ones returned by the :mod:`popen2` module.)
 
 
 .. function:: popen2(cmd[, bufsize[, mode]])
 
-   *cmd* をサブプロセスとして実行します。ファイルオブジェクト ``(child_stdout, child_stdin)`` を返します。
+   Executes *cmd* as a sub-process.  Returns the file objects ``(child_stdout,
+   child_stdin)``.
 
 
 .. function:: popen3(cmd[, bufsize[, mode]])
 
-   *cmd* をサブプロセスとして実行します。ファイルオブジェクト ``(child_stdout, child_stdin, child_stderr)``
-   を返します。
+   Executes *cmd* as a sub-process.  Returns the file objects ``(child_stdout,
+   child_stdin, child_stderr)``.
 
 
 .. function:: popen4(cmd[, bufsize[, mode]])
 
-   *cmd* をサブプロセスとして実行します。ファイルオブジェクト ``(child_stdout_and_stderr, child_stdin)``.
+   Executes *cmd* as a sub-process.  Returns the file objects
+   ``(child_stdout_and_stderr, child_stdin)``.
 
    .. versionadded:: 2.0
 
-Unixでは、ファクトリ関数によって返されるオブジェクトを定義しているクラスも利用することができます。これらのオブジェクトは Windows 実装
-で使われていないため、そのプラットフォーム上で使うことはできません。
+On Unix, a class defining the objects returned by the factory functions is also
+available.  These are not used for the Windows implementation, and are not
+available on that platform.
 
 
 .. class:: Popen3(cmd[, capturestderr[, bufsize]])
 
-   このクラスは子プロセスを表現します。通常、 :class:`Popen3` インスタンスは上で述べた :func:`popen2` および
-   :func:`popen3`  ファクトリ関数を使って生成されます。
+   This class represents a child process.  Normally, :class:`Popen3` instances are
+   created using the :func:`popen2` and :func:`popen3` factory functions described
+   above.
 
-   :class:`Popen3` オブジェクトを生成するためにいずれかのヘルパー関数を使っていないのなら、 *cmd* パラメタは子プロセスで実行する
-   シェルコマンドになります。 *capturestderr* フラグが真であれば、このオブジェクトが子プロセスの標準エラー出力を捕獲しなければならない
-   ことを意味します。標準の値は偽です。 *bufsize* パラメタが存在する場合、子プロセスへの／からの I/O バッファのサイズを指定します。
+   If not using one of the helper functions to create :class:`Popen3` objects, the
+   parameter *cmd* is the shell command to execute in a sub-process.  The
+   *capturestderr* flag, if true, specifies that the object should capture standard
+   error output of the child process. The default is false.  If the *bufsize*
+   parameter is specified, it specifies the size of the I/O buffers to/from the
+   child process.
 
 
 .. class:: Popen4(cmd[, bufsize])
 
-   :class:`Popen3` に似ていますが、標準エラー出力を標準出力と同じファイルオブジェクトで捕獲します。このオブジェクトは通常
-   :func:`popen4` で生成されます。
+   Similar to :class:`Popen3`, but always captures standard error into the same
+   file object as standard output.  These are typically created using
+   :func:`popen4`.
 
    .. versionadded:: 2.0
 
 
 .. _popen3-objects:
 
-Popen3 および Popen4 オブジェクト
----------------------------------
+Popen3 and Popen4 Objects
+-------------------------
 
-:class:`Popen3` および :class:`Popen4` クラスのインスタンスは以下のメソッドを持ちます:
+Instances of the :class:`Popen3` and :class:`Popen4` classes have the following
+methods:
 
 
 .. method:: Popen3.poll()
 
-   子プロセスがまだ終了していない際には ``-1`` を、そうでない場合にはステータスコード (:meth:`wait` を参照) を返します。
+   Returns ``-1`` if child process hasn't completed yet, or its status code
+   (see :meth:`wait`) otherwise.
 
 
 .. method:: Popen3.wait()
 
-   子プロセスの状態コード出力を待機して返します。状態コードでは子プロセスのリターンコードと、プロセスが :c:func:`exit` によって
-   終了したか、あるいはシグナルによって死んだかについての情報を符号化しています。状態コードの解釈を助けるための関数は :mod:`os`
-   モジュールで定義されています;  :ref:`os-process` 節の :func:`W\*` 関数ファミリを参照してください。
+   Waits for and returns the status code of the child process.  The status code
+   encodes both the return code of the process and information about whether it
+   exited using the :c:func:`exit` system call or died due to a signal.  Functions
+   to help interpret the status code are defined in the :mod:`os` module; see
+   section :ref:`os-process` for the :func:`W\*` family of functions.
 
-以下の属性も利用可能です:
+The following attributes are also available:
 
 
 .. attribute:: Popen3.fromchild
 
-   子プロセスからの出力を提供するファイルオブジェクトです。 :class:`Poepn4` インスタンスの場合、この値は標準出力と標準
-   エラー出力の両方を提供するオブジェクトになります。
+   A file object that provides output from the child process.  For :class:`Popen4`
+   instances, this will provide both the standard output and standard error
+   streams.
 
 
 .. attribute:: Popen3.tochild
 
-   子プロセスへの入力を提供するファイルオブジェクトです。
+   A file object that provides input to the child process.
 
 
 .. attribute:: Popen3.childerr
 
-   コンストラクタに *capturestderr* を渡した際には子プロセスからの標準エラー出力を提供するファイルオブジェクトで、そうでない場合
-   ``None`` になります。 :class:`Popen4` インスタンスでは、この値は常に ``None`` になります。
+   A file object that provides error output from the child process, if
+   *capturestderr* was true for the constructor, otherwise ``None``.  This will
+   always be ``None`` for :class:`Popen4` instances.
 
 
 .. attribute:: Popen3.pid
 
-   子プロセスのプロセス番号です。
+   The process ID of the child process.
 
 
 .. _popen2-flow-control:
 
-フロー制御の問題
-----------------
+Flow Control Issues
+-------------------
 
-何らかの形式でプロセス間通信を利用している際には常に、制御フローについて注意深く考える必要があります。これはこのモジュール (あるいは :mod:`os`
-モジュールにおける等価な機能) で生成されるファイルオブジェクトの場合にもあてはまります。
+Any time you are working with any form of inter-process communication, control
+flow needs to be carefully thought out.  This remains the case with the file
+objects provided by this module (or the :mod:`os` module equivalents).
 
-親プロセスが子プロセスの標準出力を読み出している一方で、子プロセスが大量のデータを標準エラー出力に書き込んでいる場合、この子プロセスから
-出力を読み出そうとするとデッドロックが発生します。同様の状況は読み書きの他の組み合わせでも生じます。本質的な要因は、一方のプロセスが別の
-プロセスでブロック型の読み出しをしている際に、 :const:`_PC_PIPE_BUF`
-バイトを超えるデータがブロック型の入出力を行うプロセスによって書き込まれることにあります。
+When reading output from a child process that writes a lot of data to standard
+error while the parent is reading from the child's standard output, a deadlock
+can occur.  A similar situation can occur with other combinations of reads and
+writes.  The essential factors are that more than :const:`_PC_PIPE_BUF` bytes
+are being written by one process in a blocking fashion, while the other process
+is reading from the first process, also in a blocking fashion.
 
-.. % Example explanation and suggested work-arounds substantially stolen
-.. % from Martin von Loewis:
-.. % http://mail.python.org/pipermail/python-dev/2000-September/009460.html
+.. Example explanation and suggested work-arounds substantially stolen
+   from Martin von Löwis:
+   https://mail.python.org/pipermail/python-dev/2000-September/009460.html
 
-こうした状況を扱うには幾つかのやりかたがあります。
+There are several ways to deal with this situation.
 
-多くの場合、もっとも単純なアプリケーションに対する変更は、親プロセスで以下のようなモデル::
+The simplest application change, in many cases, will be to follow this model in
+the parent process::
 
    import popen2
 
@@ -145,7 +169,7 @@ Popen3 および Popen4 オブジェクト
    e.close()
    w.close()
 
-に従うようにし、子プロセスで以下::
+with code like this in the child::
 
    import os
    import sys
@@ -157,19 +181,19 @@ Popen3 および Popen4 オブジェクト
    os.close(sys.stderr.fileno())
    print >>sys.stdout, 400 * 'this is another test\n'
 
-のようなコードにすることでしょう。
+In particular, note that ``sys.stderr`` must be closed after writing all data,
+or :meth:`readlines` won't return.  Also note that :func:`os.close` must be
+used, as ``sys.stderr.close()`` won't close ``stderr`` (otherwise assigning to
+``sys.stderr`` will silently close it, so no further errors can be printed).
 
-とりわけ、 ``sys.stderr`` は全てのデータを書き込んた後に閉じられなければならないということに注意してください。さもなければ、
-:meth:`readlines` は返ってきません。また、 ``sys.stderr.close()`` が ``stderr`` を閉じないように
-:func:`os.close` を使わなければならないことにも注意してください。 (そうでなく、 ``sys.stderr``
-に関連付けると、暗黙のうちに閉じられてしまうので、それ以降のエラーが出力されません)。
-
-より一般的なアプローチをサポートする必要があるアプリケーションでは、パイプ経由の I/O を :func:`select` ループでまとめるか、個々の
-:func:`popen\ *` 関数や :class:`Popen\*` クラスが提供する各々のファイルに対して、個別のスレッドを使って読み出しを行います。
+Applications which need to support a more general approach should integrate I/O
+over pipes with their :func:`select` loops, or use separate threads to read each
+of the individual files provided by whichever :func:`popen\*` function or
+:class:`Popen\*` class was used.
 
 
 .. seealso::
 
    Module :mod:`subprocess`
-      子プロセスの起動と管理のためのモジュール
+      Module for spawning and managing subprocesses.
 

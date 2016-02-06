@@ -1,151 +1,158 @@
 
-:mod:`zipimport` --- Zip アーカイブからモジュールを import する
-===============================================================
+:mod:`zipimport` --- Import modules from Zip archives
+=====================================================
 
 .. module:: zipimport
-   :synopsis: Python モジュールを ZIP アーカイブから import する機能のサポート
+   :synopsis: support for importing Python modules from ZIP archives.
 .. moduleauthor:: Just van Rossum <just@letterror.com>
 
 
 .. versionadded:: 2.3
 
-このモジュールは、 Python モジュール (:file:`\ *.py`, :file:`\*.py[co]`) やパッケージを ZIP 形式のアーカイブから
-import できるようにします。通常、 :mod:`zipimport` を明示的に使う必要はありません; 組み込みの :keyword:`import`
-は、 ``sys.path`` の要素が ZIP  アーカイブへのパスを指している場合にこのモジュールを自動的に使います。
+This module adds the ability to import Python modules (:file:`\*.py`,
+:file:`\*.py[co]`) and packages from ZIP-format archives. It is usually not
+needed to use the :mod:`zipimport` module explicitly; it is automatically used
+by the built-in :keyword:`import` mechanism for :data:`sys.path` items that are paths
+to ZIP archives.
 
-普通、 ``sys.path`` はディレクトリ名の文字列からなるリストです。このモジュールを使うと、 ``sys.path`` の要素に ZIP ファイル\
-アーカイブを示す文字列を使えるようになります。ZIP アーカイブにはサブディレクトリ構造を含めることができ、パッケージの import を\
-サポートさせしたり、アーカイブ内のパスを指定してサブディレクトリ下から import を行わせたりできます。例えば、
-:file:`/tmp/example.zip/lib/` のように指定すると、アーカイブ中の :file:`lib/` サブディレクトリ下だけから
-import を行います。
+Typically, :data:`sys.path` is a list of directory names as strings.  This module
+also allows an item of :data:`sys.path` to be a string naming a ZIP file archive.
+The ZIP archive can contain a subdirectory structure to support package imports,
+and a path within the archive can be specified to only import from a
+subdirectory.  For example, the path :file:`example.zip/lib/` would only
+import from the :file:`lib/` subdirectory within the archive.
 
-ZIP アーカイブ内にはどんなファイルを置いてもかまいませんが、 import できるのは :file:`.py` および :file:`.py[co]`
-だけです。動的モジュール (:file:`.pyd`, :file:`.so`) の ZIP import は行えません。アーカイブ内に
-:file:`.py` ファイルしか入っていない場合、 Python がアーカイブを変更して、 :file:`.py` ファイルに対応する
-:file:`.pyc` や :file:`.pyo` ファイルを追加したりはしません。つまり、ZIP アーカイブ中に :file:`.pyc` が入っていない\
-場合、 import はやや低速になるかもしれないので注意してください。
+Any files may be present in the ZIP archive, but only files :file:`.py` and
+:file:`.py[co]` are available for import.  ZIP import of dynamic modules
+(:file:`.pyd`, :file:`.so`) is disallowed. Note that if an archive only contains
+:file:`.py` files, Python will not attempt to modify the archive by adding the
+corresponding :file:`.pyc` or :file:`.pyo` file, meaning that if a ZIP archive
+doesn't contain :file:`.pyc` files, importing may be rather slow.
 
-ZIP アーカイブからロードしたモジュールに対して組み込み関数 :func:`reload` を呼び出すと失敗します; :func:`reload` が\
-必要になるということは、実行時に ZIP ファイルが置き換えられてしまうことになり、あまり起こりそうにない状況だからです。
+Using the built-in :func:`reload` function will fail if called on a module
+loaded from a ZIP archive; it is unlikely that :func:`reload` would be needed,
+since this would imply that the ZIP has been altered during runtime.
 
-アーカイブコメント付きの ZIP アーカイブは現在のところ未サポートです。
+ZIP archives with an archive comment are currently not supported.
 
 .. seealso::
 
    `PKZIP Application Note <http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_
-      ZIP ファイル形式の作者であり、ZIP で使われているアルゴリズムの作者でもある
-      Phil Katz による、ZIP ファイル形式についてのドキュメントです。
+      Documentation on the ZIP file format by Phil Katz, the creator of the format and
+      algorithms used.
 
    :pep:`273` - Import Modules from Zip Archives
-      このモジュールの実装も行った、James C. Ahlstrom による PEP です。 Python 2.3 は PEP 273 の仕様に従っていますが、
-      Just van Rossum の書いた import フックによる実装を使っています。 import フックは PEP 302 で解説されています。
+      Written by James C. Ahlstrom, who also provided an implementation. Python 2.3
+      follows the specification in PEP 273, but uses an implementation written by Just
+      van Rossum that uses the import hooks described in PEP 302.
 
    :pep:`302` - New Import Hooks
-      このモジュールを動作させる助けになっている import フックの追加を提案している PEP です。
+      The PEP to add the import hooks that help this module work.
 
 
-このモジュールでは例外を一つ定義しています:
+This module defines an exception:
 
-.. exception:: ZipImporterError
+.. exception:: ZipImportError
 
-   zipimporter オブジェクトが送出する例外です。
-   :exc:`ImportError` のサブクラスなので、 :exc:`ImportError` としても捕捉できます。
+   Exception raised by zipimporter objects. It's a subclass of :exc:`ImportError`,
+   so it can be caught as :exc:`ImportError`, too.
 
 
 .. _zipimporter-objects:
 
-zipimporter オブジェクト
-------------------------
+zipimporter Objects
+-------------------
 
-:class:`zipimporter` は ZIP ファイルを import するためのクラスです。
+:class:`zipimporter` is the class for importing ZIP files.
 
 .. class:: zipimporter(archivepath)
 
-   新たな zipimporter インスタンスを生成します。
-   *archivepath* は ZIP ファイルへのパスかまたは
-   ZIP ファイル中の特定のパスへのパスでなければなりません。
-   たとえば、 :file:`foo/bar.zip/lib` という *archivepath* の場合、
-   :file:`foo/bar.zip` という ZIP ファイル(が存在するものとして)の中の
-   :file:`lib` ディレクトリにあるモジュールを探しに行きます。
-   *archivepath* が有効な ZIP アーカイブを指していない場合、
-   :exc:`ZipImportError` を送出します。
+   Create a new zipimporter instance. *archivepath* must be a path to a ZIP
+   file, or to a specific path within a ZIP file.  For example, an *archivepath*
+   of :file:`foo/bar.zip/lib` will look for modules in the :file:`lib` directory
+   inside the ZIP file :file:`foo/bar.zip` (provided that it exists).
 
+   :exc:`ZipImportError` is raised if *archivepath* doesn't point to a valid ZIP
+   archive.
 
    .. method:: find_module(fullname[, path])
 
-      *fullname* に指定したモジュールを検索します。
-      *fullname* は完全指定の (ドット表記の) モジュール名でなければなりません。
-      モジュールが見つかった場合には zipimporter インスタンス自体を返し、
-      そうでない場合には :const:`None` を返します。
-      *path* 引数は無視されます ---
-      この引数は importer プロトコルとの互換性を保つためのものです。
+      Search for a module specified by *fullname*. *fullname* must be the fully
+      qualified (dotted) module name. It returns the zipimporter instance itself
+      if the module was found, or :const:`None` if it wasn't. The optional
+      *path* argument is ignored---it's there for compatibility with the
+      importer protocol.
 
 
    .. method:: get_code(fullname)
 
-      *fullname* に指定したモジュールのコードオブジェクトを返します。
-      モジュールがない場合には :class:`ZipImportError` を送出します。
+      Return the code object for the specified module. Raise
+      :exc:`ZipImportError` if the module couldn't be found.
 
 
    .. method:: get_data(pathname)
 
-      *pathname* に関連付けられたデータを返します。
-      該当するファイルが見つからなかった場合には :exc:`IOError` を送出します。
+      Return the data associated with *pathname*. Raise :exc:`IOError` if the
+      file wasn't found.
 
 
    .. method:: get_filename(fullname)
 
-      指定されたモジュールが import さた場合、そのモジュールに設定した
-      ``__file__`` の値を返します。
-      モジュールが見つからなかった場合は :exc:`ZipImportError` 例外を発生させます。
+      Return the value ``__file__`` would be set to if the specified module
+      was imported. Raise :exc:`ZipImportError` if the module couldn't be
+      found.
 
-      .. versionadded:: 2.7
+   .. versionadded:: 2.7
 
 
    .. method:: get_source(fullname)
 
-      *fullname* に指定したモジュールのソースコードを返します。
-      モジュールが見つからなかった場合には :exc:`ZipImportError` を送出します。
-      モジュールは存在するが、ソースコードがない場合には :const:`None` を返します。
+      Return the source code for the specified module. Raise
+      :exc:`ZipImportError` if the module couldn't be found, return
+      :const:`None` if the archive does contain the module, but has no source
+      for it.
 
 
    .. method:: is_package(fullname)
 
-      *fullname* で指定されたモジュールがパッケージの場合に :const:`True` を返します。
-      モジュールが見つからなかった場合には :exc:`ZipImportError` を送出します。
+      Return ``True`` if the module specified by *fullname* is a package. Raise
+      :exc:`ZipImportError` if the module couldn't be found.
 
 
    .. method:: load_module(fullname)
 
-      *fullname* に指定したモジュールをロードします。
-      *fullname* は完全指定の (ドット表記の) モジュール名でなくてはなりません。
-      import 済みのモジュールを返します。
-      モジュールがない場合には :exc:`ZipImportError` を送出します。
+      Load the module specified by *fullname*. *fullname* must be the fully
+      qualified (dotted) module name. It returns the imported module, or raises
+      :exc:`ZipImportError` if it wasn't found.
+
 
    .. attribute:: archive
 
-      importer に紐付けられた ZIP ファイルのファイル名で、サブパスは含まれません。
+      The file name of the importer's associated ZIP file, without a possible
+      subpath.
+
 
    .. attribute:: prefix
 
-      ZIP ファイル中のモジュールを検索するサブパスです。
-      この文字列は ZIP ファイルの根を指している zipimporter オブジェクトでは空です。
+      The subpath within the ZIP file where modules are searched.  This is the
+      empty string for zipimporter objects which point to the root of the ZIP
+      file.
 
-   アトリビュート :attr:`archive` と :attr:`prefix` とは、スラッシュでつなげると、
-   :class:`zipimporter` コンストラクタに渡された元々の *archivepath*
-   引数と等しくなります。
+   The :attr:`archive` and :attr:`prefix` attributes, when combined with a
+   slash, equal the original *archivepath* argument given to the
+   :class:`zipimporter` constructor.
 
 
 .. _zipimport-examples:
 
-使用例
-------
+Examples
+--------
 
-モジュールを ZIP アーカイブから import する例を以下に示します -
-:mod:`zipimport` モジュールが明示的に使われていないことに注意してください。 ::
+Here is an example that imports a module from a ZIP archive - note that the
+:mod:`zipimport` module is not explicitly used. ::
 
-   $ unzip -l /tmp/example.zip
-   Archive:  /tmp/example.zip
+   $ unzip -l example.zip
+   Archive:  example.zip
      Length     Date   Time    Name
     --------    ----   ----    ----
         8467  11-26-02 22:30   jwzthreading.py
@@ -154,8 +161,8 @@ zipimporter オブジェクト
    $ ./python
    Python 2.3 (#1, Aug 1 2003, 19:54:32)
    >>> import sys
-   >>> sys.path.insert(0, '/tmp/example.zip')  # パス先頭に .zip ファイル追加
+   >>> sys.path.insert(0, 'example.zip')  # Add .zip file to front of path
    >>> import jwzthreading
    >>> jwzthreading.__file__
-   '/tmp/example.zip/jwzthreading.py'
+   'example.zip/jwzthreading.py'
 

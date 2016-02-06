@@ -1,268 +1,256 @@
 
-:mod:`array` --- 効率のよい数値アレイ
-=====================================
+:mod:`array` --- Efficient arrays of numeric values
+===================================================
 
 .. module:: array
-   :synopsis: 一様な型を持つ数値からなる空間効率のよいアレイ。
+   :synopsis: Space efficient arrays of uniformly typed numeric values.
 
 
 .. index:: single: arrays
 
-このモジュールでは、基本的な値 (文字、整数、浮動小数点数) のアレイ
-(array、配列) をコンパクトに表現できるオブジェクト型を定義しています。
-アレイはシーケンス (sequence) 型であり、中に入れるオブジェクトの型に\
-制限があることを除けば、リストとまったく同じように振る舞います。
-オブジェクト生成時に一文字の :dfn:`型コード` を用いて型を指定します。
-次の型コードが定義されています:
+This module defines an object type which can compactly represent an array of
+basic values: characters, integers, floating point numbers.  Arrays are sequence
+types and behave very much like lists, except that the type of objects stored in
+them is constrained.  The type is specified at object creation time by using a
+:dfn:`type code`, which is a single character.  The following type codes are
+defined:
 
-+----------+----------------+------------------------+-------------------------+
-| 型コード | C の型         | Python の型            | 最小サイズ (バイト単位) |
-+==========+================+========================+=========================+
-| ``'c'``  | char           | 文字(str型)            | 1                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'b'``  | signed char    | int型                  | 1                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'B'``  | unsigned char  | int型                  | 1                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'u'``  | Py_UNICODE     | Unicode文字(unicode型) | 2 (ノートを参照)        |
-+----------+----------------+------------------------+-------------------------+
-| ``'h'``  | signed short   | int型                  | 2                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'H'``  | unsigned short | int型                  | 2                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'i'``  | signed int     | int型                  | 2                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'I'``  | unsigned int   | long型                 | 2                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'l'``  | signed long    | int型                  | 4                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'L'``  | unsigned long  | long型                 | 4                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'f'``  | float          | float型                | 4                       |
-+----------+----------------+------------------------+-------------------------+
-| ``'d'``  | double         | float型                | 8                       |
-+----------+----------------+------------------------+-------------------------+
++-----------+----------------+-------------------+-----------------------+
+| Type code | C Type         | Python Type       | Minimum size in bytes |
++===========+================+===================+=======================+
+| ``'c'``   | char           | character         | 1                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'b'``   | signed char    | int               | 1                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'B'``   | unsigned char  | int               | 1                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'u'``   | Py_UNICODE     | Unicode character | 2 (see note)          |
++-----------+----------------+-------------------+-----------------------+
+| ``'h'``   | signed short   | int               | 2                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'H'``   | unsigned short | int               | 2                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'i'``   | signed int     | int               | 2                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'I'``   | unsigned int   | long              | 2                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'l'``   | signed long    | int               | 4                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'L'``   | unsigned long  | long              | 4                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'f'``   | float          | float             | 4                     |
++-----------+----------------+-------------------+-----------------------+
+| ``'d'``   | double         | float             | 8                     |
++-----------+----------------+-------------------+-----------------------+
 
 .. note::
 
-    ``'u'`` 型コードは Python の Unicode 文字列に対応します。
-    一文字幅の文字は 2 バイトで二文字幅の文字は 4 バイトです。
+   The ``'u'`` typecode corresponds to Python's unicode character.  On narrow
+   Unicode builds this is 2-bytes, on wide builds this is 4-bytes.
 
-値の実際の表現はマシンアーキテクチャ (厳密に言うとCの実装) によって決まります。
-値の実際のサイズは :attr:`itemsize` 属性から得られます。
-Python の通常の整数型では C の unsigned (long) 整数の最大範囲を表せないため、
-``'L'`` と ``'I'`` で表現されている要素に入る値は Python では長整数として表されます。
+The actual representation of values is determined by the machine architecture
+(strictly speaking, by the C implementation).  The actual size can be accessed
+through the :attr:`itemsize` attribute.  The values stored  for ``'L'`` and
+``'I'`` items will be represented as Python long integers when retrieved,
+because Python's plain integer type cannot represent the full range of C's
+unsigned (long) integers.
 
-このモジュールでは次の型を定義しています:
+The module defines the following type:
 
 
 .. class:: array(typecode[, initializer])
 
-   要素のデータ型が *typecode* に限定される新しいアレイで、
-   オプションの値 *initializer* を渡すと初期値になりますが、
-   リスト、文字列または適当な型のイテレーション可能オブジェクトでなければなりません。
+   A new array whose items are restricted by *typecode*, and initialized
+   from the optional *initializer* value, which must be a list, string, or iterable
+   over elements of the appropriate type.
 
    .. versionchanged:: 2.4
-      以前はリストか文字列しか受け付けませんでした。
+      Formerly, only lists or strings were accepted.
 
-   リストか文字列を渡した場合、新たに作成されたアレイの :meth:`fromlist` 、
-   :meth:`fromstring` あるいは :meth:`fromunicode` メソッド
-   (以下を参照して下さい)に渡され、初期値としてアレイに追加されます。
-   それ以外の場合には、イテレーション可能オブジェクト
-   *initializer* は新たに作成されたオブジェクトの :meth:`extend` メソッドに渡されます。
+   If given a list or string, the initializer is passed to the new array's
+   :meth:`fromlist`, :meth:`fromstring`, or :meth:`fromunicode` method (see below)
+   to add initial items to the array.  Otherwise, the iterable initializer is
+   passed to the :meth:`extend` method.
 
 
 .. data:: ArrayType
 
-   :class:`array` の別名です。撤廃されました。
+   Obsolete alias for :class:`array`.
 
-アレイオブジェクトでは、インデクス指定、スライス、連結および反復といった、
-通常のシーケンスの演算をサポートしています。スライス代入を使うときは、
-代入値は同じ型コードのアレイオブジェクトでなければなりません。
-それ以外のオブジェクトを指定すると :exc:`TypeError` を送出します。
-アレイオブジェクトはバッファインタフェースを実装しており、
-バッファオブジェクトをサポートしている場所ならどこでも利用できます。
+Array objects support the ordinary sequence operations of indexing, slicing,
+concatenation, and multiplication.  When using slice assignment, the assigned
+value must be an array object with the same type code; in all other cases,
+:exc:`TypeError` is raised. Array objects also implement the buffer interface,
+and may be used wherever buffer objects are supported.
 
-次のデータ要素やメソッドもサポートされています:
-
+The following data items and methods are also supported:
 
 .. attribute:: array.typecode
 
-   アレイを作るときに使う型コード文字です。
+   The typecode character used to create the array.
 
 
 .. attribute:: array.itemsize
 
-   アレイの要素 1 つの内部表現に使われるバイト長です。
+   The length in bytes of one array item in the internal representation.
 
 
 .. method:: array.append(x)
 
-   値 *x* の新たな要素をアレイの末尾に追加します。
+   Append a new item with value *x* to the end of the array.
 
 
 .. method:: array.buffer_info()
 
-   アレイの内容を記憶するために使っているバッファの、
-   現在のメモリアドレスと要素数の入ったタプル ``(address, length)`` を返します。
-   バイト単位で表したメモリバッファの大きさは
-   ``array.buffer_info()[1] * array.itemsize`` で計算できます。
-   例えば :c:func:`ioctl` 操作のような、メモリアドレスを必要とする低レベルな
-   (そして、本質的に危険な) I/Oインタフェースを使って作業する場合に、
-   ときどき便利です。アレイ自体が存在し、長さを変えるような演算を適用しない限り、
-   有効な値を返します。
+   Return a tuple ``(address, length)`` giving the current memory address and the
+   length in elements of the buffer used to hold array's contents.  The size of the
+   memory buffer in bytes can be computed as ``array.buffer_info()[1] *
+   array.itemsize``.  This is occasionally useful when working with low-level (and
+   inherently unsafe) I/O interfaces that require memory addresses, such as certain
+   :c:func:`ioctl` operations.  The returned numbers are valid as long as the array
+   exists and no length-changing operations are applied to it.
 
    .. note::
 
-      C やC++ で書いたコードからアレイオブジェクトを使う場合
-      (:meth:`buffer_info` の情報を使う意味のある唯一の方法です) は、
-      アレイオブジェクトでサポートしているバッファインタフェースを使う方が\
-      より理にかなっています。このメソッドは後方互換性のために保守されており、
-      新しいコードでの使用は避けるべきです。バッファインタフェースの説明は
-      :ref:`bufferobjects` にあります。
+      When using array objects from code written in C or C++ (the only way to
+      effectively make use of this information), it makes more sense to use the buffer
+      interface supported by array objects.  This method is maintained for backward
+      compatibility and should be avoided in new code.  The buffer interface is
+      documented in :ref:`bufferobjects`.
+
 
 .. method:: array.byteswap()
 
-   アレイのすべての要素に対して「バイトスワップ」
-   (リトルエンディアンとビッグエンディアンの変換) を行います。
-   このメソッドは大きさが 1、2、4 および 8 バイトの値にのみをサポートしています。
-   他の型の値に使うと :exc:`RuntimeError` を送出します。
-   異なるバイトオーダをもつ計算機で書かれたファイルからデータを読み込むときに\
-   役に立ちます。
+   "Byteswap" all items of the array.  This is only supported for values which are
+   1, 2, 4, or 8 bytes in size; for other types of values, :exc:`RuntimeError` is
+   raised.  It is useful when reading data from a file written on a machine with a
+   different byte order.
 
 
 .. method:: array.count(x)
 
-   シーケンス中の *x* の出現回数を返します。
+   Return the number of occurrences of *x* in the array.
 
 
 .. method:: array.extend(iterable)
 
-   *iterable* から要素を取り出し、アレイの末尾に要素を追加します。
-   *iterable* が別のアレイ型である場合、
-   二つのアレイは *全く* 同じ型コードでなければなりません。
-   それ以外の場合には :exc:`TypeError` を送出します。
-   *iterable* がアレイでない場合、アレイに値を追加できるような\
-   正しい型の要素からなるイテレーション可能オブジェクトでなければなりません。
+   Append items from *iterable* to the end of the array.  If *iterable* is another
+   array, it must have *exactly* the same type code; if not, :exc:`TypeError` will
+   be raised.  If *iterable* is not an array, it must be iterable and its elements
+   must be the right type to be appended to the array.
 
    .. versionchanged:: 2.4
-      以前は他のアレイ型しか引数に指定できませんでした。
+      Formerly, the argument could only be another array.
 
 
 .. method:: array.fromfile(f, n)
 
-   ファイルオブジェクト *f* から (マシン依存のデータ形式そのままで)
-   *n* 個の要素を読み出し、アレイの末尾に要素を追加します。
-   *n* 個の要素を読めなかったときは :exc:`EOFError` を送出しますが、
-   それまでに読み出せた値はアレイに追加されています。
-   *f* は本当の組み込みファイルオブジェクトでなければなりません。
-   :meth:`read` メソッドをもつ他の型では動作しません。
+   Read *n* items (as machine values) from the file object *f* and append them to
+   the end of the array.  If less than *n* items are available, :exc:`EOFError` is
+   raised, but the items that were available are still inserted into the array.
+   *f* must be a real built-in file object; something else with a :meth:`read`
+   method won't do.
 
 
 .. method:: array.fromlist(list)
 
-   リストから要素を追加します。
-   型に関するエラーが発生した場合にアレイが変更されないことを除き、
-   ``for x in list: a.append(x)`` と同じです。
+   Append items from the list.  This is equivalent to ``for x in list:
+   a.append(x)`` except that if there is a type error, the array is unchanged.
 
 
 .. method:: array.fromstring(s)
 
-   文字列から要素を追加します。文字列は、
-   (ファイルから :meth:`fromfile` メソッドを使って値を読み込んだときのように)
-   マシン依存のデータ形式で表された値の配列として解釈されます。
+   Appends items from the string, interpreting the string as an array of machine
+   values (as if it had been read from a file using the :meth:`fromfile` method).
 
 
 .. method:: array.fromunicode(s)
 
-   指定した Unicode 文字列のデータを使ってアレイを拡張します。
-   アレイの型コードは ``'u'`` でなければなりません。
-   それ以外の場合には、 :exc:`ValueError` を送出します。
-   他の型のアレイに Unicode 型のデータを追加するには、
-   ``array.fromstring(unicodestring.encode(enc))`` を使ってください。
+   Extends this array with data from the given unicode string.  The array must
+   be a type ``'u'`` array; otherwise a :exc:`ValueError` is raised.  Use
+   ``array.fromstring(unicodestring.encode(enc))`` to append Unicode data to an
+   array of some other type.
 
 
 .. method:: array.index(x)
 
-   アレイ中で *x* が出現するインデクスのうち最小の値 *i* を返します。
+   Return the smallest *i* such that *i* is the index of the first occurrence of
+   *x* in the array.
 
 
 .. method:: array.insert(i, x)
 
-   アレイ中の位置 *i* の前に値 *x* をもつ新しい要素を挿入します。
-   *i* の値が負の場合、アレイの末尾からの相対位置として扱います。
+   Insert a new item with value *x* in the array before position *i*. Negative
+   values are treated as being relative to the end of the array.
 
 
 .. method:: array.pop([i])
 
-   アレイからインデクスが *i* の要素を取り除いて返します。オプションの引数はデフォルトで ``-1`` になっていて、最後の要素を取り
-   除いて返すようになっています。
+   Removes the item with the index *i* from the array and returns it. The optional
+   argument defaults to ``-1``, so that by default the last item is removed and
+   returned.
 
 
 .. method:: array.read(f, n)
 
    .. deprecated:: 1.5.1
-      :meth:`fromfile` メソッドを使ってください。
+      Use the :meth:`fromfile` method.
 
-   ファイルオブジェクト *f* から (マシン依存のデータ形式そのままで) 
-   *n* 個の要素を読み出し、アレイの末尾に要素を追加します。
-   *n* 個の要素を読めなかったときは :exc:`EOFError` を送出しますが、
-   それまでに読み出せた値はアレイに追加されています。
-   *f* は本当の組み込みファイルオブジェクトでなければなりません。
-   :meth:`read` メソッドをもつ他の型では動作しません。
+   Read *n* items (as machine values) from the file object *f* and append them to
+   the end of the array.  If less than *n* items are available, :exc:`EOFError` is
+   raised, but the items that were available are still inserted into the array.
+   *f* must be a real built-in file object; something else with a :meth:`read`
+   method won't do.
 
 
 .. method:: array.remove(x)
 
-   アレイ中の *x* のうち、最初に現れたものを取り除きます。
+   Remove the first occurrence of *x* from the array.
 
 
 .. method:: array.reverse()
 
-   アレイの要素の順番を逆にします。
+   Reverse the order of the items in the array.
 
 
 .. method:: array.tofile(f)
 
-   アレイのすべての要素をファイルオブジェクト *f* に
-   (マシン依存のデータ形式そのままで)書き込みます。
+   Write all items (as machine values) to the file object *f*.
 
 
 .. method:: array.tolist()
 
-   アレイを同じ要素を持つ普通のリストに変換します。
+   Convert the array to an ordinary list with the same items.
 
 
 .. method:: array.tostring()
 
-   アレイをマシン依存のデータアレイに変換し、文字列表現 (:meth:`tofile` メソッドによってファイルに書き込まれるものと同じバイト列) を返します。
+   Convert the array to an array of machine values and return the string
+   representation (the same sequence of bytes that would be written to a file by
+   the :meth:`tofile` method.)
 
 
 .. method:: array.tounicode()
 
-   アレイを Unicode 文字列に変換します。
-   アレイの型コードは ``'u'`` でなければなりません。
-   それ以外の場合には :exc:`ValueError` を送出します。
-   他の型のアレイから Unicode 文字列を得るには、
-   ``array.tostring().decode(enc)`` を使ってください。
+   Convert the array to a unicode string.  The array must be a type ``'u'`` array;
+   otherwise a :exc:`ValueError` is raised. Use ``array.tostring().decode(enc)`` to
+   obtain a unicode string from an array of some other type.
 
 
 .. method:: array.write(f)
 
    .. deprecated:: 1.5.1
-      :meth:`tofile` メソッドを使ってください。
+      Use the :meth:`tofile` method.
 
-   ファイルオブジェクト *f* に、
-   全ての要素を(マシン依存のデータ形式そのままで)書き込みます。
+   Write all items (as machine values) to the file object *f*.
 
-アレイオブジェクトを表示したり文字列に変換したりすると、
-``array(typecode, initializer)`` という形式で表現されます。
-アレイが空の場合、 *initializer* の表示を省略します。
-アレイが空でなければ、 *typecode* が ``'c'`` の場合には文字列に、
-それ以外の場合には数値のリストになります。
-関数 :func:`array` を ``from array import array`` で import している限り、
-変換後の文字列に :func:`eval` を用いると元のアレイオブジェクトと同じデータ型と値を\
-持つアレイに逆変換できることが保証されています。文字列表現の例を以下に示します::
+When an array object is printed or converted to a string, it is represented as
+``array(typecode, initializer)``.  The *initializer* is omitted if the array is
+empty, otherwise it is a string if the *typecode* is ``'c'``, otherwise it is a
+list of numbers.  The string is guaranteed to be able to be converted back to an
+array with the same type and value using :func:`eval`, so long as the
+:func:`array` function has been imported using ``from array import array``.
+Examples::
 
    array('l')
    array('c', 'hello world')
@@ -274,15 +262,13 @@ Python の通常の整数型では C の unsigned (long) 整数の最大範囲�
 .. seealso::
 
    Module :mod:`struct`
-      異なる種類のバイナリデータのパックおよびアンパック。
+      Packing and unpacking of heterogeneous binary data.
 
    Module :mod:`xdrlib`
-      遠隔手続き呼び出しシステムで使われる外部データ表現仕様
-      (External Data Representation, XDR) のデータのパックおよびアンパック。
+      Packing and unpacking of External Data Representation (XDR) data as used in some
+      remote procedure call systems.
 
-   `The Numerical Python Manual <http://numpy.sourceforge.net/numdoc/HTML/numdoc.htm>`_
-      Numeric Python 拡張モジュール (NumPy) では、別の方法でシーケンス型を定義しています。
-      Numerical Python に関する詳しい情報は http://numpy.sourceforge.net/ を参照してください。
-      (NumPy マニュアルの PDF バージョンは
-      http://numpy.sourceforge.net/numdoc/numdoc.pdf で手に入ります。)
+   `The Numerical Python Documentation <http://docs.scipy.org/doc/>`_
+      The Numeric Python extension (NumPy) defines another array type; see
+      http://www.numpy.org/ for further information about Numerical Python.
 

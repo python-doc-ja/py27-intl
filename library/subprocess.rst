@@ -1,17 +1,18 @@
 
-:mod:`subprocess` --- サブプロセス管理
-======================================
+:mod:`subprocess` --- Subprocess management
+===========================================
 
 .. module:: subprocess
-   :synopsis: サブプロセス管理
+   :synopsis: Subprocess management.
 .. moduleauthor:: Peter Åstrand <astrand@lysator.liu.se>
 .. sectionauthor:: Peter Åstrand <astrand@lysator.liu.se>
 
 
 .. versionadded:: 2.4
 
-:mod:`subprocess` モジュールは、新しくプロセスを開始したり、それらの標準入出力/エラー出力に対してパイプで接続したり、
-それらの終了ステータスを取得したりします。このモジュールは以下のような古いいくつかのモジュールを置き換えることを目的としています::
+The :mod:`subprocess` module allows you to spawn new processes, connect to their
+input/output/error pipes, and obtain their return codes.  This module intends to
+replace several older modules and functions::
 
    os.system
    os.spawn*
@@ -19,81 +20,234 @@
    popen2.*
    commands.*
 
-これらのモジュールや関数の代わりに、 :mod:`subprocess` モジュールをどのように使うかについては以下の節で説明します。
+Information about how this module can be used to replace the older
+functions can be found in the subprocess-replacements_ section.
 
 .. seealso::
 
+   POSIX users (Linux, BSD, etc.) are strongly encouraged to install
+   and use the much more recent subprocess32_ module instead of the
+   version included with python 2.7.  It is a drop in replacement with
+   better behavior in many situations.
+
    :pep:`324` -- PEP proposing the subprocess module
 
+.. _subprocess32: https://pypi.python.org/pypi/subprocess32/
 
-subprocess モジュールを使う
----------------------------
+Using the :mod:`subprocess` Module
+----------------------------------
 
-このモジュールでは :class:`Popen` と呼ばれるクラスを定義しています:
-
-
-.. class:: Popen(args, bufsize=0, executable=None, stdin=None, stdout=None, stderr=None, preexec_fn=None, close_fds=False, shell=False, cwd=None, env=None, universal_newlines=False, startupinfo=None, creationflags=0)
-
-   各引数の説明は以下のとおりです:
-
-   *args* は文字列か、あるいはプログラムへの引数のシーケンスです。
-   実行するプログラムは通常 *args* シーケンスあるいは文字列の最初の要素ですが、
-   *executable* 引数を使うことにより明示的に指定することもできます。
-   *executable* が与えられると、その引数シーケンスの最初の要素は、
-   多くのプログラムではコマンド名として扱われます。
-   ただ、コマンド名は実際に実行される名前とは違う場合があります。
-   Unix では、コマンド名は :program:`ps` のようなユーティリティプログラムに表示されます。
-
-   Unix で *shell=False* の場合 (デフォルト): この場合、 Popen クラスは子プログラムを実行するのに
-   :meth:`os.execvp` を使います。 文字列が引数として与えられた場合、
-   実行されるプログラムの名前かパスとして使われます；
-   ただし、プログラムは引数無しの場合のみ動作します。
-
-   .. note::
-
-      *args* を正しくトークン化するには、 :meth:`shlex.split` が便利です。
-      このメソッドは特に複雑な状況で活躍します。
-
-      ::
-
-        >>> import shlex, subprocess
-        >>> command_line = raw_input()
-        /bin/vikings -input eggs.txt -output "spam spam.txt" -cmd "echo '$MONEY'"
-        >>> args = shlex.split(command_line)
-        >>> print args
-        ['/bin/vikings', '-input', 'eggs.txt', '-output', 'spam spam.txt', '-cmd', "ech '$MONEY"]
-        >>> p = subprocess.Popen(args) # Success!
-
-      シェルの中で (*-input* 、 *eggs.txt* のように)
-      スペースで区切られたオプションと引数は
-      リストの別の要素として区切られていること、
-      シェルの中で (上にあるようなスペースを含むファイル名や
-      *echo* コマンドのように) クォーティングか
-      バックスラッシュエスケープが必要なものは
-      単一のリスト要素にされていることに注目してください。
+The recommended way to launch subprocesses is to use the following
+convenience functions.  For more advanced use cases when these do not
+meet your needs, use the underlying :class:`Popen` interface.
 
 
-   Unix で *shell=True* の場合: args が文字列の場合、
-   シェルを介して実行されるコマンドライン文字列を指定します。
-   文字列は厳密にシェルプロンプトで打つ形式と一致しなければなりません。
-   例えば、文字列の中にスペースを含むファイル名がある場合、
-   はクォーティングかバックスラッシュエスケープが必要です。
-   args が文字列の場合には最初の要素はコマンド名を表わす文字列として
-   そして残りの要素は続く引数としてシェルに渡されます。
-   これは、以下の *Popen* と等価ということです。
+.. function:: call(args, *, stdin=None, stdout=None, stderr=None, shell=False)
 
-   ::
+   Run the command described by *args*.  Wait for command to complete, then
+   return the :attr:`returncode` attribute.
 
-      Popen(['/bin/sh', '-c', args[0], args[1], ...])
+   The arguments shown above are merely the most common ones, described below
+   in :ref:`frequently-used-arguments` (hence the slightly odd notation in
+   the abbreviated signature). The full function signature is the same as
+   that of the :class:`Popen` constructor - this functions passes all
+   supplied arguments directly through to that interface.
+
+   Examples::
+
+      >>> subprocess.call(["ls", "-l"])
+      0
+
+      >>> subprocess.call("exit 1", shell=True)
+      1
 
    .. warning::
 
-      信頼されていないソースからの衛生化されていない入力を組み込んだ
-      シェルコマンドを実行すると、任意のコマンドを実行されることになる
-      セキュリティ上の重大な欠陥 `シェルインジェクション(en)
-      <http://en.wikipedia.org/wiki/Shell_injection#Shell_injection>`_
-      に対して脆弱になります。この理由から、コマンド文字列が外部入力から
-      構成される場合、 *shell=True* は *絶対に使うべきではありません*::
+      Using ``shell=True`` can be a security hazard.  See the warning
+      under :ref:`frequently-used-arguments` for details.
+
+   .. note::
+
+      Do not use ``stdout=PIPE`` or ``stderr=PIPE`` with this function
+      as that can deadlock based on the child process output volume.
+      Use :class:`Popen` with the :meth:`communicate` method when you
+      need pipes.
+
+
+.. function:: check_call(args, *, stdin=None, stdout=None, stderr=None, shell=False)
+
+   Run command with arguments.  Wait for command to complete. If the return
+   code was zero then return, otherwise raise :exc:`CalledProcessError`. The
+   :exc:`CalledProcessError` object will have the return code in the
+   :attr:`~CalledProcessError.returncode` attribute.
+
+   The arguments shown above are merely the most common ones, described below
+   in :ref:`frequently-used-arguments` (hence the slightly odd notation in
+   the abbreviated signature). The full function signature is the same as
+   that of the :class:`Popen` constructor - this functions passes all
+   supplied arguments directly through to that interface.
+
+   Examples::
+
+      >>> subprocess.check_call(["ls", "-l"])
+      0
+
+      >>> subprocess.check_call("exit 1", shell=True)
+      Traceback (most recent call last):
+         ...
+      subprocess.CalledProcessError: Command 'exit 1' returned non-zero exit status 1
+
+   .. versionadded:: 2.5
+
+   .. warning::
+
+      Using ``shell=True`` can be a security hazard.  See the warning
+      under :ref:`frequently-used-arguments` for details.
+
+   .. note::
+
+      Do not use ``stdout=PIPE`` or ``stderr=PIPE`` with this function
+      as that can deadlock based on the child process output volume.
+      Use :class:`Popen` with the :meth:`communicate` method when you
+      need pipes.
+
+
+.. function:: check_output(args, *, stdin=None, stderr=None, shell=False, universal_newlines=False)
+
+   Run command with arguments and return its output as a byte string.
+
+   If the return code was non-zero it raises a :exc:`CalledProcessError`. The
+   :exc:`CalledProcessError` object will have the return code in the
+   :attr:`~CalledProcessError.returncode` attribute and any output in the
+   :attr:`~CalledProcessError.output` attribute.
+
+   The arguments shown above are merely the most common ones, described below
+   in :ref:`frequently-used-arguments` (hence the slightly odd notation in
+   the abbreviated signature). The full function signature is largely the
+   same as that of the :class:`Popen` constructor, except that *stdout* is
+   not permitted as it is used internally. All other supplied arguments are
+   passed directly through to the :class:`Popen` constructor.
+
+   Examples::
+
+      >>> subprocess.check_output(["echo", "Hello World!"])
+      'Hello World!\n'
+
+      >>> subprocess.check_output("exit 1", shell=True)
+      Traceback (most recent call last):
+         ...
+      subprocess.CalledProcessError: Command 'exit 1' returned non-zero exit status 1
+
+   To also capture standard error in the result, use
+   ``stderr=subprocess.STDOUT``::
+
+      >>> subprocess.check_output(
+      ...     "ls non_existent_file; exit 0",
+      ...     stderr=subprocess.STDOUT,
+      ...     shell=True)
+      'ls: non_existent_file: No such file or directory\n'
+
+   .. versionadded:: 2.7
+
+   .. warning::
+
+      Using ``shell=True`` can be a security hazard.  See the warning
+      under :ref:`frequently-used-arguments` for details.
+
+   .. note::
+
+      Do not use ``stderr=PIPE`` with this function as that can deadlock
+      based on the child process error volume.  Use :class:`Popen` with
+      the :meth:`communicate` method when you need a stderr pipe.
+
+
+.. data:: PIPE
+
+   Special value that can be used as the *stdin*, *stdout* or *stderr* argument
+   to :class:`Popen` and indicates that a pipe to the standard stream should be
+   opened.
+
+
+.. data:: STDOUT
+
+   Special value that can be used as the *stderr* argument to :class:`Popen` and
+   indicates that standard error should go into the same handle as standard
+   output.
+
+
+.. exception:: CalledProcessError
+
+    Exception raised when a process run by :func:`check_call` or
+    :func:`check_output` returns a non-zero exit status.
+
+    .. attribute:: returncode
+
+        Exit status of the child process.
+
+    .. attribute:: cmd
+
+        Command that was used to spawn the child process.
+
+    .. attribute:: output
+
+        Output of the child process if this exception is raised by
+        :func:`check_output`.  Otherwise, ``None``.
+
+
+
+.. _frequently-used-arguments:
+
+Frequently Used Arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To support a wide variety of use cases, the :class:`Popen` constructor (and
+the convenience functions) accept a large number of optional arguments. For
+most typical use cases, many of these arguments can be safely left at their
+default values. The arguments that are most commonly needed are:
+
+   *args* is required for all calls and should be a string, or a sequence of
+   program arguments. Providing a sequence of arguments is generally
+   preferred, as it allows the module to take care of any required escaping
+   and quoting of arguments (e.g. to permit spaces in file names). If passing
+   a single string, either *shell* must be :const:`True` (see below) or else
+   the string must simply name the program to be executed without specifying
+   any arguments.
+
+   *stdin*, *stdout* and *stderr* specify the executed program's standard input,
+   standard output and standard error file handles, respectively.  Valid values
+   are :data:`PIPE`, an existing file descriptor (a positive integer), an
+   existing file object, and ``None``.  :data:`PIPE` indicates that a new pipe
+   to the child should be created.  With the default settings of ``None``, no
+   redirection will occur; the child's file handles will be inherited from the
+   parent.  Additionally, *stderr* can be :data:`STDOUT`, which indicates that
+   the stderr data from the child process should be captured into the same file
+   handle as for stdout.
+
+   .. index::
+      single: universal newlines; subprocess module
+
+   When *stdout* or *stderr* are pipes and *universal_newlines* is
+   ``True`` then all line endings will be converted to ``'\n'`` as described
+   for the :term:`universal newlines` ``'U'`` mode argument to :func:`open`.
+
+   If *shell* is ``True``, the specified command will be executed through
+   the shell.  This can be useful if you are using Python primarily for the
+   enhanced control flow it offers over most system shells and still want
+   convenient access to other shell features such as shell pipes, filename
+   wildcards, environment variable expansion, and expansion of ``~`` to a
+   user's home directory.  However, note that Python itself offers
+   implementations of many shell-like features (in particular, :mod:`glob`,
+   :mod:`fnmatch`, :func:`os.walk`, :func:`os.path.expandvars`,
+   :func:`os.path.expanduser`, and :mod:`shutil`).
+
+   .. warning::
+
+      Executing shell commands that incorporate unsanitized input from an
+      untrusted source makes a program vulnerable to `shell injection
+      <http://en.wikipedia.org/wiki/Shell_injection#Shell_injection>`_,
+      a serious security flaw which can result in arbitrary command execution.
+      For this reason, the use of ``shell=True`` is **strongly discouraged**
+      in cases where the command string is constructed from external input::
 
          >>> from subprocess import call
          >>> filename = input("What file would you like to display?\n")
@@ -101,508 +255,542 @@ subprocess モジュールを使う
          non_existent; rm -rf / #
          >>> call("cat " + filename, shell=True) # Uh-oh. This will end badly...
 
-      *shell=False* は、この脆弱性に悩まされません。上述のノートは、
-      *shell=False* を使ったコードを動かすのに役立つでしょう。
+      ``shell=False`` disables all shell based features, but does not suffer
+      from this vulnerability; see the Note in the :class:`Popen` constructor
+      documentation for helpful hints in getting ``shell=False`` to work.
 
-   Windows の場合: :class:`Popen` クラスは子プログラムを実行するのに文字列の扱える CreateProcess()
-   を使います。 *args* がシーケンスの場合、これは
-   :ref:`converting-argument-sequence` で解説する方法に従って、
-   文字列に変換されます。
+      When using ``shell=True``, :func:`pipes.quote` can be used to properly
+      escape whitespace and shell metacharacters in strings that are going to
+      be used to construct shell commands.
 
-   *bufsize* は、もしこれが与えられた場合、ビルトインの open() 関数の該当する引数と同じ意味をもちます: :const:`0`
-   はバッファされないことを意味し、 :const:`1` は行ごとにバッファされることを、それ以外の正の値は (ほぼ)
-   その大きさのバッファが使われることを意味します。負の *bufsize* はシステムのデフォルト値が使われることを意味し、
-   通常これはバッファがすべて有効となります。 *bufsize* のデフォルト値は :const:`0` (バッファされない) です。
+These options, along with all of the other options, are described in more
+detail in the :class:`Popen` constructor documentation.
 
-   .. note::
-      パフォーマンス上の問題がある場合、 *bufsize* を -1 か十分大きな
-      正の値 (例えば 4096) に設定し、バッファを有効にすることを勧めます。
 
-   *executable* 引数には実行するプログラムを指定します。これはほとんど必要ありません: ふつう、実行するプログラムは *args*
-   引数で指定されるからです。 ``shell=True`` の場合、 *executable* 引数は使用するシェルを指定します。 Unix
-   では、デフォルトのシェルは :file:`/bin/sh` です。Windows では、デフォルトのシェルは :envvar:`COMSPEC`
-   環境変数で指定されます。
-   Windows で ``shell=True`` を有効にする必要があるのは ``dir`` や ``copy`` などの
-   シェル組み込みのコマンドを使いたい場合だけです。
-   バッチファイルを実行するときも、コンソールベースで起動するときも、
-   ``shell=True`` にする必要はありません。
+Popen Constructor
+^^^^^^^^^^^^^^^^^
 
-   *stdin*, *stdout* および *stderr* には、実行するプログラムの標準入力、標準出力、および標準エラー出力の
-   ファイルハンドルをそれぞれ指定します。とりうる値は :data:`PIPE` 、既存のファイル記述子 (正の整数)、既存のファイルオブジェクト、そして
-   ``None`` です。
-   :data:`PIPE` を指定すると新しいパイプが子プロセスに向けて作られます。 ``None``
-   を指定するとリダイレクトは起こりません。子プロセスのファイルハンドルはすべて親から受け継がれます。
-   加えて、 *stderr* を :data:`STDOUT` にすると、アプリケーションの stderr からの出力は stdout と同じファイルハンドルに出力されます。
+The underlying process creation and management in this module is handled by
+the :class:`Popen` class. It offers a lot of flexibility so that developers
+are able to handle the less common cases not covered by the convenience
+functions.
 
-   *preexec_fn* に callable オブジェクトが指定されている場合、このオブジェクトは子プロセスが起動されてから、プログラムが exec
-   される直前に呼ばれます。(Unixのみ)
-   もしくは、Windowsで *close_fds* が真の場合、すべてのファイルハンドルは子プロセスに引き継がれません。
-   Windowsの場合、 *close_fds* を真にしながら、 *stdin*, *stdout*, *stderr* を利用して標準ハンドルをリダイレクトすることはできません。
 
-   *close_fds* が真の場合、子プロセスが実行される前に :const:`0` 、 :const:`1` および :const:`2`
-   をのぞくすべてのファイル記述子が閉じられます。(Unixのみ)
+.. class:: Popen(args, bufsize=0, executable=None, stdin=None, stdout=None, \
+                 stderr=None, preexec_fn=None, close_fds=False, shell=False, \
+                 cwd=None, env=None, universal_newlines=False, \
+                 startupinfo=None, creationflags=0)
 
-   *shell* が :const:`True` の場合、指定されたコマンドはシェルを介して実行されます。
+   Execute a child program in a new process.  On Unix, the class uses
+   :meth:`os.execvp`-like behavior to execute the child program.  On Windows,
+   the class uses the Windows ``CreateProcess()`` function.  The arguments to
+   :class:`Popen` are as follows.
 
-   *cwd* が ``None`` 以外の場合、子プロセスのカレントディレクトリが実行される前に *cwd* に変更されます。
-   このディレクトリは実行ファイルを探す段階では考慮されませんので、プログラムのパスを *cwd* に対する相対パスで指定することはできない、
-   ということに注意してください。
+   *args* should be a sequence of program arguments or else a single string.
+   By default, the program to execute is the first item in *args* if *args* is
+   a sequence.  If *args* is a string, the interpretation is
+   platform-dependent and described below.  See the *shell* and *executable*
+   arguments for additional differences from the default behavior.  Unless
+   otherwise stated, it is recommended to pass *args* as a sequence.
 
-   *env* が ``None`` 以外の場合、これは新しいプロセスでの環境変数を定義します。
-   デフォルトでは、子プロセスは現在のプロセスの環境変数を引き継ぎます。
+   On Unix, if *args* is a string, the string is interpreted as the name or
+   path of the program to execute.  However, this can only be done if not
+   passing arguments to the program.
 
    .. note::
 
-      *env* を特定の値として与える場合、プログラムを実行するのに
-      必要な変数全てを与えなければなりません。
-      Windows で `side-by-side assembly`_ を実行するためには、
-      *env* は正しい :envvar:`SystemRoot` を **含まなければいけません** 。
+      :meth:`shlex.split` can be useful when determining the correct
+      tokenization for *args*, especially in complex cases::
 
-    .. _side-by-side assembly: http://en.wikipedia.org/wiki/Side-by-Side_Assembly
+         >>> import shlex, subprocess
+         >>> command_line = raw_input()
+         /bin/vikings -input eggs.txt -output "spam spam.txt" -cmd "echo '$MONEY'"
+         >>> args = shlex.split(command_line)
+         >>> print args
+         ['/bin/vikings', '-input', 'eggs.txt', '-output', 'spam spam.txt', '-cmd', "echo '$MONEY'"]
+         >>> p = subprocess.Popen(args) # Success!
 
-   *universal_newlines* が :const:`True` の場合、 stdout および stderr
-   のファイルオブジェクトはテキストファイルとして open されますが、行の終端は Unix形式の行末 ``'\n'`` か、古い Macintosh 形式の行末
-   ``'\r'`` か、あるいは Windows 形式の行末 ``'\r\n'`` のいずれも許されます。これらすべての外部表現は Python プログラムには
-   ``'\n'`` として認識されます。
+      Note in particular that options (such as *-input*) and arguments (such
+      as *eggs.txt*) that are separated by whitespace in the shell go in separate
+      list elements, while arguments that need quoting or backslash escaping when
+      used in the shell (such as filenames containing spaces or the *echo* command
+      shown above) are single list elements.
+
+   On Windows, if *args* is a sequence, it will be converted to a string in a
+   manner described in :ref:`converting-argument-sequence`.  This is because
+   the underlying ``CreateProcess()`` operates on strings.
+
+   The *shell* argument (which defaults to *False*) specifies whether to use
+   the shell as the program to execute.  If *shell* is *True*, it is
+   recommended to pass *args* as a string rather than as a sequence.
+
+   On Unix with ``shell=True``, the shell defaults to :file:`/bin/sh`.  If
+   *args* is a string, the string specifies the command
+   to execute through the shell.  This means that the string must be
+   formatted exactly as it would be when typed at the shell prompt.  This
+   includes, for example, quoting or backslash escaping filenames with spaces in
+   them.  If *args* is a sequence, the first item specifies the command string, and
+   any additional items will be treated as additional arguments to the shell
+   itself.  That is to say, :class:`Popen` does the equivalent of::
+
+      Popen(['/bin/sh', '-c', args[0], args[1], ...])
+
+   On Windows with ``shell=True``, the :envvar:`COMSPEC` environment variable
+   specifies the default shell.  The only time you need to specify
+   ``shell=True`` on Windows is when the command you wish to execute is built
+   into the shell (e.g. :command:`dir` or :command:`copy`).  You do not need
+   ``shell=True`` to run a batch file or console-based executable.
+
+   .. warning::
+
+      Passing ``shell=True`` can be a security hazard if combined with
+      untrusted input.  See the warning under :ref:`frequently-used-arguments`
+      for details.
+
+   *bufsize*, if given, has the same meaning as the corresponding argument to the
+   built-in open() function: :const:`0` means unbuffered, :const:`1` means line
+   buffered, any other positive value means use a buffer of (approximately) that
+   size.  A negative *bufsize* means to use the system default, which usually means
+   fully buffered.  The default value for *bufsize* is :const:`0` (unbuffered).
 
    .. note::
 
-      この機能は Python に universal newline がサポートされている場合 (デフォルト) にのみ有効です。また、
-      :attr:`stdout`, :attr:`stdin` および :attr:`stderr` のファイルオブジェクトの newlines 属性は
-      communicate() メソッドでは更新されません。
+      If you experience performance issues, it is recommended that you try to
+      enable buffering by setting *bufsize* to either -1 or a large enough
+      positive value (such as 4096).
 
-   *startupinfo* は、根底の ``CreateProcess`` 関数に渡される
-   :class:`STARTUPINFO` オブジェクトになります。
-   *creationflags* は、与えられるなら、 :data:`CREATE_NEW_CONSOLE` または
-   :data:`CREATE_NEW_PROCESS_GROUP` にできます。(Windows のみ)
+   The *executable* argument specifies a replacement program to execute.   It
+   is very seldom needed.  When ``shell=False``, *executable* replaces the
+   program to execute specified by *args*.  However, the original *args* is
+   still passed to the program.  Most programs treat the program specified
+   by *args* as the command name, which can then be different from the program
+   actually executed.  On Unix, the *args* name
+   becomes the display name for the executable in utilities such as
+   :program:`ps`.  If ``shell=True``, on Unix the *executable* argument
+   specifies a replacement shell for the default :file:`/bin/sh`.
+
+   *stdin*, *stdout* and *stderr* specify the executed program's standard input,
+   standard output and standard error file handles, respectively.  Valid values
+   are :data:`PIPE`, an existing file descriptor (a positive integer), an
+   existing file object, and ``None``.  :data:`PIPE` indicates that a new pipe
+   to the child should be created.  With the default settings of ``None``, no
+   redirection will occur; the child's file handles will be inherited from the
+   parent.  Additionally, *stderr* can be :data:`STDOUT`, which indicates that
+   the stderr data from the child process should be captured into the same file
+   handle as for stdout.
+
+   If *preexec_fn* is set to a callable object, this object will be called in the
+   child process just before the child is executed. (Unix only)
+
+   If *close_fds* is true, all file descriptors except :const:`0`, :const:`1` and
+   :const:`2` will be closed before the child process is executed. (Unix only).
+   Or, on Windows, if *close_fds* is true then no handles will be inherited by the
+   child process.  Note that on Windows, you cannot set *close_fds* to true and
+   also redirect the standard handles by setting *stdin*, *stdout* or *stderr*.
+
+   If *cwd* is not ``None``, the child's current directory will be changed to *cwd*
+   before it is executed.  Note that this directory is not considered when
+   searching the executable, so you can't specify the program's path relative to
+   *cwd*.
+
+   If *env* is not ``None``, it must be a mapping that defines the environment
+   variables for the new process; these are used instead of inheriting the current
+   process' environment, which is the default behavior.
+
+   .. note::
+
+      If specified, *env* must provide any variables required
+      for the program to execute.  On Windows, in order to run a
+      `side-by-side assembly`_ the specified *env* **must** include a valid
+      :envvar:`SystemRoot`.
+
+   .. _side-by-side assembly: http://en.wikipedia.org/wiki/Side-by-Side_Assembly
+
+   If *universal_newlines* is ``True``, the file objects *stdout* and *stderr*
+   are opened as text files in :term:`universal newlines` mode.  Lines may be
+   terminated by any of ``'\n'``, the Unix end-of-line convention, ``'\r'``,
+   the old Macintosh convention or ``'\r\n'``, the Windows convention. All of
+   these external representations are seen as ``'\n'`` by the Python program.
+
+   .. note::
+
+      This feature is only available if Python is built with universal newline
+      support (the default).  Also, the newlines attribute of the file objects
+      :attr:`stdout`, :attr:`stdin` and :attr:`stderr` are not updated by the
+      communicate() method.
+
+   If given, *startupinfo* will be a :class:`STARTUPINFO` object, which is
+   passed to the underlying ``CreateProcess`` function.
+   *creationflags*, if given, can be :data:`CREATE_NEW_CONSOLE` or
+   :data:`CREATE_NEW_PROCESS_GROUP`. (Windows only)
 
 
-.. data:: PIPE
-
-   :class:`Popen` の *stdin*, *stdout*, *stderr* 引数に渡して、標準ストリームに対する
-   パイプを開くことを指定するための特別な値.
-
-
-.. data:: STDOUT
-
-   :class:`Popen` の *stderr* 引数に渡して、標準エラーが標準出力と同じハンドルに出力されるように指定するための特別な値.
-
-
-便利な関数
+Exceptions
 ^^^^^^^^^^
 
-このモジュールは以下の二つのショートカット関数も定義しています:
+Exceptions raised in the child process, before the new program has started to
+execute, will be re-raised in the parent.  Additionally, the exception object
+will have one extra attribute called :attr:`child_traceback`, which is a string
+containing traceback information from the child's point of view.
+
+The most common exception raised is :exc:`OSError`.  This occurs, for example,
+when trying to execute a non-existent file.  Applications should prepare for
+:exc:`OSError` exceptions.
+
+A :exc:`ValueError` will be raised if :class:`Popen` is called with invalid
+arguments.
+
+:func:`check_call` and :func:`check_output` will raise
+:exc:`CalledProcessError` if the called process returns a non-zero return
+code.
 
 
-.. function:: call(*popenargs, **kwargs)
+Security
+^^^^^^^^
 
-   コマンドを指定された引数で実行し、そのコマンドが完了するのを待って、 :attr:`returncode` 属性を返します。
-
-   この引数は :class:`Popen` コンストラクタの引数と同じです。使用例::
-
-      >>> retcode = call(["ls", "-l"])
-
-   .. warning::
-
-      :meth:`Popen.wait` のように、これは以下の場合にデッドロックになります。
-      ``stdout=PIPE`` および/または ``stderr=PIPE`` を使って、
-      子プロセスが十分な出力を生成したのに、出力先が、OS パイプバッファが
-      それ以上のデータを受け付けるのを待っているような場合です。
+Unlike some other popen functions, this implementation will never call a
+system shell implicitly.  This means that all characters, including shell
+metacharacters, can safely be passed to child processes. Obviously, if the
+shell is invoked explicitly, then it is the application's responsibility to
+ensure that all whitespace and metacharacters are quoted appropriately.
 
 
-.. function:: check_call(*popenargs, **kwargs)
+Popen Objects
+-------------
 
-   コマンドを引数付きで実行します。コマンドが完了するのを待ちます。終了コードがゼロならば終わりますが、そうでなければ
-   :exc:`CalledProcessError` 例外を送出します。 :exc:`CalledProcessError` オブジェクトにはリターンコードが
-   :attr:`returncode` 属性として収められています。
-
-   引数は :class:`Popen` コンストラクタと一緒です。使用例::
-
-      >>> subprocess.check_call(["ls", "-l"])
-      0
-
-   .. versionadded:: 2.5
-
-   .. warning::
-
-      :func:`call` の警告を参照してください。
-
-
-.. function:: check_output(*popenargs, **kwargs)
-
-   引数でコマンドを実行し、その出力をバイト文字列として返します。
-
-   終了コードが非 0 なら、 :exc:`CalledProcessError` を送出します。
-   :exc:`CalledProcessError` オブジェクトは、戻りコードを
-   :attr:`returncode` 属性に、出力を :attr:`output` 属性に保持します。
-
-   引数は、 :class:`Popen` コンストラクタのものと同じです。例::
-
-      >>> subprocess.check_output(["ls", "-l", "/dev/null"])
-      'crw-rw-rw- 1 root root 1, 3 Oct 18  2007 /dev/null\n'
-
-   stdout 引数は内部で使われるため、許可されません。
-   結果の標準エラーを捕捉するには、 ``stderr=subprocess.STDOUT`` を
-   使ってください::
-
-      >>> subprocess.check_output(
-      ...     ["/bin/sh", "-c", "ls non_existent_file; exit 0"],
-      ...     stderr=subprocess.STDOUT)
-      'ls: non_existent_file: No such file or directory\n'
-
-   .. versionadded:: 2.7
-
-
-例外
-^^^^
-
-子プロセス内で raise した例外は、新しいプログラムが実行される前であれば、親プロセスでも raise されます。さらに、この例外オブジェクトには
-:attr:`child_traceback` という属性が追加されており、これには子プロセスの視点からの traceback 情報が格納されています。
-
-もっとも一般的に起こる例外は :exc:`OSError` です。これは、たとえば存在しないファイルを実行しようとしたときなどに
-発生します。アプリケーションは :exc:`OSError` 例外にはあらかじめ準備しておく必要があります。
-
-不適当な引数で :class:`Popen` が呼ばれた場合は、 :exc:`ValueError` が発生します。
-
-:func:`check_call` はもし呼び出されたプロセスがゼロでないリターンコードを返したならば :exc:`CalledProcessError`
-を送出します。
-
-
-セキュリティ
-^^^^^^^^^^^^
-
-ほかの popen 関数とは異なり、この実装は決して暗黙のうちに /bin/sh を実行しません。これはシェルのメタ文字をふくむすべての文字が
-安全に子プロセスに渡されるということを意味しています。
-
-
-Popen オブジェクト
-------------------
-
-:class:`Popen` クラスのインスタンスには、以下のようなメソッドがあります:
+Instances of the :class:`Popen` class have the following methods:
 
 
 .. method:: Popen.poll()
 
-   子プロセスが終了しているかどうかを検査します。
-   :attr:`returncode` 属性を設定し、返します。
+   Check if child process has terminated.  Set and return
+   :attr:`~Popen.returncode` attribute.
 
 
 .. method:: Popen.wait()
 
-   子プロセスが終了するまで待ちます。
-   :attr:`returncode` 属性を設定し、返します。
+   Wait for child process to terminate.  Set and return
+   :attr:`~Popen.returncode` attribute.
 
    .. warning::
 
-      これは、子プロセスが十分な出力を生成したのに、出力先が、
-      OS パイプバッファがそれ以上のデータを受け付けるのを待っているような
-      場合に、デッドロックになります。
-      これを避けるために、 :meth:`communicate` を利用してください。
+      This will deadlock when using ``stdout=PIPE`` and/or
+      ``stderr=PIPE`` and the child process generates enough output to
+      a pipe such that it blocks waiting for the OS pipe buffer to
+      accept more data.  Use :meth:`communicate` to avoid that.
+
 
 .. method:: Popen.communicate(input=None)
 
-   プロセスと通信します: end-of-file に到達するまでデータを stdin に送信し、stdout および stderr からデータを受信します。
-   プロセスが終了するまで待ちます。オプション引数 *input* には子プロセスに送られる文字列か、あるいはデータを送らない場合は ``None``
-   を指定します。
+   Interact with process: Send data to stdin.  Read data from stdout and stderr,
+   until end-of-file is reached.  Wait for process to terminate. The optional
+   *input* argument should be a string to be sent to the child process, or
+   ``None``, if no data should be sent to the child.
 
-   :meth:`communicate` はタプル ``(stdoutdata, stderrdata)`` を返します。
+   :meth:`communicate` returns a tuple ``(stdoutdata, stderrdata)``.
 
-   子プロセスの標準入力にデータを送りたい場合は、 Popen オブジェクトを ``stdin=PIPE``
-   と指定して作成しなければなりません。
-   同じく、戻り値のタプルから ``None`` ではない値を取得するためには、
-   ``stdout=PIPE`` かつ/または ``stderr=PIPE`` を指定しなければなりません。
+   Note that if you want to send data to the process's stdin, you need to create
+   the Popen object with ``stdin=PIPE``.  Similarly, to get anything other than
+   ``None`` in the result tuple, you need to give ``stdout=PIPE`` and/or
+   ``stderr=PIPE`` too.
 
    .. note::
 
-      受信したデータはメモリ中にバッファされます。
-      そのため、返されるデータが大きいかあるいは制限がないような場合はこのメソッドを使うべきではありません。
+      The data read is buffered in memory, so do not use this method if the data
+      size is large or unlimited.
 
 
 .. method:: Popen.send_signal(signal)
 
-   *signal* シグナルを子プロセスに送ります。
+   Sends the signal *signal* to the child.
 
    .. note::
 
-      Windows では、 SIGTERM は :meth:`terminate` のエイリアスです。
-      CTRL_C_EVENT と CTRL_BREAK_EVENT を、
-      `CREATE_NEW_PROCESS_GROUP` を含む *creationflags* で始まった、
-      プロセスに送れます。
+      On Windows, SIGTERM is an alias for :meth:`terminate`. CTRL_C_EVENT and
+      CTRL_BREAK_EVENT can be sent to processes started with a *creationflags*
+      parameter which includes `CREATE_NEW_PROCESS_GROUP`.
 
    .. versionadded:: 2.6
 
 
 .. method:: Popen.terminate()
 
-   .. Stop the child. On Posix OSs the method sends SIGTERM to the
-      child. On Windows the Win32 API function :c:func:`TerminateProcess` is called
-      to stop the child.
-
-   子プロセスを止めます。
-   Posix OSでは、このメソッドは SIGTERM シグナルを子プロセスに送ります。
-   Windows では、 Win32 API の :c:func:`TerminateProcess` 関数を利用して子プロセスを止めます。
+   Stop the child. On Posix OSs the method sends SIGTERM to the
+   child. On Windows the Win32 API function :c:func:`TerminateProcess` is called
+   to stop the child.
 
    .. versionadded:: 2.6
 
 
 .. method:: Popen.kill()
 
-   .. Kills the child. On Posix OSs the function sends SIGKILL to the child.
-      On Windows :meth:`kill` is an alias for :meth:`terminate`.
-
-   子プロセスを殺します。
-   Posix OS では SIGKILL シグナルを子プロセスに送ります。
-   Windows では、 :meth:`kill` は :meth:`terminate` のエイリアスです。
+   Kills the child. On Posix OSs the function sends SIGKILL to the child.
+   On Windows :meth:`kill` is an alias for :meth:`terminate`.
 
    .. versionadded:: 2.6
 
 
-以下の属性も利用できます:
+The following attributes are also available:
 
 .. warning::
 
-   :meth:`.stdin.write`, :meth:`.stdout.read`, :meth:`.stderr.read` を利用すると、
-   別のパイプのOSパイプバッファがいっぱいになってデッドロックする恐れがあります。
-   これを避けるためには :meth:`communicate` を利用してください。
+   Use :meth:`~Popen.communicate` rather than :attr:`.stdin.write <Popen.stdin>`,
+   :attr:`.stdout.read <Popen.stdout>` or :attr:`.stderr.read <Popen.stderr>` to avoid
+   deadlocks due to any of the other OS pipe buffers filling up and blocking the
+   child process.
 
 
 .. attribute:: Popen.stdin
 
-   *stdin* 引数が :data:`PIPE` の場合、この属性には子プロセスの入力に使われるファイルオブジェクトになります。そうでない場合は ``None``
-   です。
+   If the *stdin* argument was :data:`PIPE`, this attribute is a file object
+   that provides input to the child process.  Otherwise, it is ``None``.
 
 
 .. attribute:: Popen.stdout
 
-   *stdout* 引数が :data:`PIPE` の場合、この属性には子プロセスの出力に使われるファイルオブジェクトになります。そうでない場合は ``None``
-   です。
+   If the *stdout* argument was :data:`PIPE`, this attribute is a file object
+   that provides output from the child process.  Otherwise, it is ``None``.
 
 
 .. attribute:: Popen.stderr
 
-   *stderr* 引数が :data:`PIPE` の場合、この属性には子プロセスのエラー出力に使われるファイルオブジェクトになります。そうでない場合は
-   ``None`` です。
+   If the *stderr* argument was :data:`PIPE`, this attribute is a file object
+   that provides error output from the child process.  Otherwise, it is
+   ``None``.
 
 
 .. attribute:: Popen.pid
 
-   子プロセスのプロセス ID が入ります。
+   The process ID of the child process.
 
-   *shell* 引数を ``True`` にセットした場合は、生成されたシェルのプロセス ID になります。
+   Note that if you set the *shell* argument to ``True``, this is the process ID
+   of the spawned shell.
 
 
 .. attribute:: Popen.returncode
 
-   :meth:`poll` か :meth:`wait` (か、間接的に :meth:`communicate` )から設定された、子プロセスの終了ステータスが入ります。
-   ``None`` はまだその子プロセスが終了していないことを示します。
+   The child return code, set by :meth:`poll` and :meth:`wait` (and indirectly
+   by :meth:`communicate`).  A ``None`` value indicates that the process
+   hasn't terminated yet.
 
-   負の値 -N は子プロセスがシグナル N により中止させられたことを示します (Unix のみ)。
+   A negative value ``-N`` indicates that the child was terminated by signal
+   ``N`` (Unix only).
 
 
-Windows Popen ヘルパ
+Windows Popen Helpers
 ---------------------
 
-:class:`STARTUPINFO` クラスと以下の定数は、Windows でいつでも利用できます。
+The :class:`STARTUPINFO` class and following constants are only available
+on Windows.
 
 .. class:: STARTUPINFO()
 
-   :class:`Popen` の生成に使われる Windows
+   Partial support of the Windows
    `STARTUPINFO <http://msdn.microsoft.com/en-us/library/ms686331(v=vs.85).aspx>`__
-   構造の部分的なサポートです。
+   structure is used for :class:`Popen` creation.
 
    .. attribute:: dwFlags
 
-      特定の :class:`STARTUPINFO` のメンバが、プロセスがウィンドウを
-      生成するときに使われるかを決定するビットフィールドです::
+      A bit field that determines whether certain :class:`STARTUPINFO`
+      attributes are used when the process creates a window. ::
 
          si = subprocess.STARTUPINFO()
          si.dwFlags = subprocess.STARTF_USESTDHANDLES | subprocess.STARTF_USESHOWWINDOW
 
    .. attribute:: hStdInput
 
-      :attr:`dwFlags` が :data:`STARTF_USESTDHANDLES` を指定すれば、
-      このメンバがプロセスの標準入力処理です。
-      :data:`STARTF_USESTDHANDLES` が指定されなければ、標準入力のデフォルトは
-      キーボードバッファです。
+      If :attr:`dwFlags` specifies :data:`STARTF_USESTDHANDLES`, this attribute
+      is the standard input handle for the process. If
+      :data:`STARTF_USESTDHANDLES` is not specified, the default for standard
+      input is the keyboard buffer.
 
    .. attribute:: hStdOutput
 
-      :attr:`dwFlags` が :data:`STARTF_USESTDHANDLES` を指定すれば、
-      このメンバがプロセスの標準出力処理です。
-      そうでなければ、このメンバは無視され、標準出力のデフォルトは
-      コンソールウィンドウのバッファです。
+      If :attr:`dwFlags` specifies :data:`STARTF_USESTDHANDLES`, this attribute
+      is the standard output handle for the process. Otherwise, this attribute
+      is ignored and the default for standard output is the console window's
+      buffer.
 
    .. attribute:: hStdError
 
-      :attr:`dwFlags` が :data:`STARTF_USESTDHANDLES` を指定すれば、
-      このメンバがプロセスの標準エラー処理です。
-      そうでなければ、このメンバは無視され、標準エラーのデフォルトは
-      コンソールウィンドウのバッファです。
+      If :attr:`dwFlags` specifies :data:`STARTF_USESTDHANDLES`, this attribute
+      is the standard error handle for the process. Otherwise, this attribute is
+      ignored and the default for standard error is the console window's buffer.
 
    .. attribute:: wShowWindow
 
-      :attr:`dwFlags` が :data:`STARTF_USESHOWWINDOW` を指定すれば、
-      このメンバは
+      If :attr:`dwFlags` specifies :data:`STARTF_USESHOWWINDOW`, this attribute
+      can be any of the values that can be specified in the ``nCmdShow``
+      parameter for the
       `ShowWindow <http://msdn.microsoft.com/en-us/library/ms633548(v=vs.85).aspx>`__
-      関数の ``nCmdShow`` パラメタで指定された値なら、 ``SW_SHOWDEFAULT``
-      以外の任意のものにできます。しかし、このメンバは無視されます。
+      function, except for ``SW_SHOWDEFAULT``. Otherwise, this attribute is
+      ignored.
 
-      この属性には :data:`SW_HIDE` が提供されています。
-      これは、 :class:`Popen` が ``shell=True`` として呼び出されたときに
-      使われます。
+      :data:`SW_HIDE` is provided for this attribute. It is used when
+      :class:`Popen` is called with ``shell=True``.
 
 
-定数
-^^^^
+Constants
+^^^^^^^^^
 
-:mod:`subprocess` モジュールは、以下の定数を公開します。
+The :mod:`subprocess` module exposes the following constants.
 
 .. data:: STD_INPUT_HANDLE
 
-   標準入力デバイスです。この初期値は、コンソール入力バッファ、
-   ``CONIN$`` です。
+   The standard input device. Initially, this is the console input buffer,
+   ``CONIN$``.
 
 .. data:: STD_OUTPUT_HANDLE
 
-   標準出力デバイスです。この初期値は、アクティブコンソールスクリーン、
-   ``CONOUT$`` です。
+   The standard output device. Initially, this is the active console screen
+   buffer, ``CONOUT$``.
 
 .. data:: STD_ERROR_HANDLE
 
-   標準エラーデバイスです。この初期値は、アクティブコンソールスクリーン、
-   ``CONOUT$`` です。
+   The standard error device. Initially, this is the active console screen
+   buffer, ``CONOUT$``.
 
 .. data:: SW_HIDE
 
-   ウィンドウを隠します。別のウィンドウが活性化します。
+   Hides the window. Another window will be activated.
 
 .. data:: STARTF_USESTDHANDLES
 
-   追加情報を保持する、 :attr:`STARTUPINFO.hStdInput`,
-   :attr:`STARTUPINFO.hStdOutput`, および :attr:`STARTUPINFO.hStdError`
-   メンバを指定します。
+   Specifies that the :attr:`STARTUPINFO.hStdInput`,
+   :attr:`STARTUPINFO.hStdOutput`, and :attr:`STARTUPINFO.hStdError` attributes
+   contain additional information.
 
 .. data:: STARTF_USESHOWWINDOW
 
-   追加情報を保持する、 :attr:`STARTUPINFO.wShowWindow` 
-   メンバを指定します。
+   Specifies that the :attr:`STARTUPINFO.wShowWindow` attribute contains
+   additional information.
 
 .. data:: CREATE_NEW_CONSOLE
 
-   新しいプロセスが、親プロセスのコンソールを継承する (デフォルト) 
-   のではなく、新しいコンソールを持ちます。
+   The new process has a new console, instead of inheriting its parent's
+   console (the default).
 
-   :class:`Popen` が ``shell=True`` として生成されたとき、
-   このフラグは必ず設定されます。
+   This flag is always set when :class:`Popen` is created with ``shell=True``.
 
 .. data:: CREATE_NEW_PROCESS_GROUP
 
-   新しいプロセスグループが生成されることを指定する :class:`Popen`
-   ``creationflags`` パラメタです。このフラグは、サブプロセスで
-   :func:`os.kill` を使うのに必要です。
+   A :class:`Popen` ``creationflags`` parameter to specify that a new process
+   group will be created. This flag is necessary for using :func:`os.kill`
+   on the subprocess.
 
-   :data:`CREATE_NEW_CONSOLE` が指定されていたら、このフラグは
-   無視されます。
+   This flag is ignored if :data:`CREATE_NEW_CONSOLE` is specified.
 
 
 .. _subprocess-replacements:
 
-古い関数を subprocess モジュールで置き換える
---------------------------------------------
+Replacing Older Functions with the :mod:`subprocess` Module
+-----------------------------------------------------------
 
-以下、この節では、"a ==> b" と書かれているものは a の代替として b が使えるということを表します。
+In this section, "a becomes b" means that b can be used as a replacement for a.
 
 .. note::
 
-   この節で紹介されている関数はすべて、実行するプログラムが見つからないときは (いくぶん) 静かに終了します。このモジュールは :exc:`OSError`
-   例外を発生させます。
+   All "a" functions in this section fail (more or less) silently if the
+   executed program cannot be found; the "b" replacements raise :exc:`OSError`
+   instead.
 
-以下の例では、 subprocess モジュールは "from subprocess import \*" でインポートされたと仮定しています。
+   In addition, the replacements using :func:`check_output` will fail with a
+   :exc:`CalledProcessError` if the requested operation produces a non-zero
+   return code. The output is still available as the
+   :attr:`~CalledProcessError.output` attribute of the raised exception.
+
+In the following examples, we assume that the relevant functions have already
+been imported from the :mod:`subprocess` module.
 
 
-/bin/sh シェルのバッククォートを置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Replacing /bin/sh shell backquote
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
    output=`mycmd myarg`
-   ==>
-   output = Popen(["mycmd", "myarg"], stdout=PIPE).communicate()[0]
+   # becomes
+   output = check_output(["mycmd", "myarg"])
 
 
-シェルのパイプラインを置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Replacing shell pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
    output=`dmesg | grep hda`
-   ==>
+   # becomes
    p1 = Popen(["dmesg"], stdout=PIPE)
    p2 = Popen(["grep", "hda"], stdin=p1.stdout, stdout=PIPE)
    p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
    output = p2.communicate()[0]
 
-p2 を開始した後の p1.stdout.close() の呼び出しは、p1 が p2 の前に
-存在した場合に、p1 が SIGPIPE を受け取るために重要です。
+The p1.stdout.close() call after starting the p2 is important in order for p1
+to receive a SIGPIPE if p2 exits before p1.
 
-:func:`os.system()` を置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Alternatively, for trusted input, the shell's own pipeline support may still
+be used directly::
+
+   output=`dmesg | grep hda`
+   # becomes
+   output=check_output("dmesg | grep hda", shell=True)
+
+
+Replacing :func:`os.system`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-   sts = os.system("mycmd" + " myarg")
-   ==>
-   p = Popen("mycmd" + " myarg", shell=True)
-   sts = os.waitpid(p.pid, 0)[1]
+   status = os.system("mycmd" + " myarg")
+   # becomes
+   status = subprocess.call("mycmd" + " myarg", shell=True)
 
-注意:
+Notes:
 
-* このプログラムは普通シェル経由で呼び出す必要はありません。
+* Calling the program through the shell is usually not required.
 
-* 終了状態を見るよりも :attr:`returncode` 属性を見るほうが簡単です。
-
-より現実的な例ではこうなるでしょう::
+A more realistic example would look like this::
 
    try:
        retcode = call("mycmd" + " myarg", shell=True)
        if retcode < 0:
-           print >>sys.stderr, "子プロセスがシグナルによって中止されました", -retcode
+           print >>sys.stderr, "Child was terminated by signal", -retcode
        else:
-           print >>sys.stderr, "子プロセスが終了コードを返しました", retcode
-   except OSError, e:
-       print >>sys.stderr, "実行に失敗しました:", e
+           print >>sys.stderr, "Child returned", retcode
+   except OSError as e:
+       print >>sys.stderr, "Execution failed:", e
 
 
-:func:`os.spawn <os.spawnl>` 関数群を置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Replacing the :func:`os.spawn <os.spawnl>` family
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-P_NOWAIT の例::
+P_NOWAIT example::
 
    pid = os.spawnlp(os.P_NOWAIT, "/bin/mycmd", "mycmd", "myarg")
    ==>
    pid = Popen(["/bin/mycmd", "myarg"]).pid
 
-P_WAIT の例::
+P_WAIT example::
 
    retcode = os.spawnlp(os.P_WAIT, "/bin/mycmd", "mycmd", "myarg")
    ==>
    retcode = call(["/bin/mycmd", "myarg"])
 
-シーケンスを使った例::
+Vector example::
 
    os.spawnvp(os.P_NOWAIT, path, args)
    ==>
    Popen([path] + args[1:])
 
-環境変数を使った例::
+Environment example::
 
    os.spawnlpe(os.P_NOWAIT, "/bin/mycmd", "mycmd", "myarg", env)
    ==>
    Popen(["/bin/mycmd", "myarg"], env={"PATH": "/usr/bin"})
 
 
-:func:`os.popen`, :func:`os.popen2`, :func:`os.popen3` を置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Replacing :func:`os.popen`, :func:`os.popen2`, :func:`os.popen3`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -645,23 +833,18 @@ P_WAIT の例::
              stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
    (child_stdin, child_stdout_and_stderr) = (p.stdin, p.stdout)
 
-Unix では、 os.popen2、os.popen3、os.popen4 は
-実行するコマンドとしてシーケンスも受け入れます。
-どちらにせよ、引数はシェルの干渉を受けることなく直接渡されます。
-この使い方は以下のように置き換えられます。
-
-::
+On Unix, os.popen2, os.popen3 and os.popen4 also accept a sequence as
+the command to execute, in which case arguments will be passed
+directly to the program without shell intervention.  This usage can be
+replaced as follows::
 
    (child_stdin, child_stdout) = os.popen2(["/bin/ls", "-l"], mode,
                                            bufsize)
    ==>
-   p = Popen(["/bin/ls", "-l"], bufsize=bufsize,
-             stdin=PIPE, stdout=PIPE)
+   p = Popen(["/bin/ls", "-l"], bufsize=bufsize, stdin=PIPE, stdout=PIPE)
    (child_stdin, child_stdout) = (p.stdin, p.stdout)
 
-終了コードハンドリングは以下のように解釈します。
-
-::
+Return code handling translates as follows::
 
    pipe = os.popen("cmd", 'w')
    ...
@@ -669,28 +852,27 @@ Unix では、 os.popen2、os.popen3、os.popen4 は
    if rc is not None and rc >> 8:
        print "There were some errors"
    ==>
-   process = Popen("cmd", 'w', shell=True, stdin=PIPE)
+   process = Popen("cmd", shell=True, stdin=PIPE)
    ...
    process.stdin.close()
    if process.wait() != 0:
        print "There were some errors"
 
-:mod:`popen2` モジュールの関数群を置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Replacing functions from the :mod:`popen2` module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
    (child_stdout, child_stdin) = popen2.popen2("somestring", bufsize, mode)
    ==>
-   p = Popen(["somestring"], shell=True, bufsize=bufsize,
+   p = Popen("somestring", shell=True, bufsize=bufsize,
              stdin=PIPE, stdout=PIPE, close_fds=True)
    (child_stdout, child_stdin) = (p.stdout, p.stdin)
 
-Unix では、 popen2 は実行するコマンドとしてシーケンスも受け入れます。
-どちらにせよ、引数はシェルの干渉を受けることなく、直接渡されます。
-この使い方は、以下のように置き換えられます。
-
-::
+On Unix, popen2 also accepts a sequence as the command to execute, in
+which case arguments will be passed directly to the program without
+shell intervention.  This usage can be replaced as follows::
 
    (child_stdout, child_stdin) = popen2.popen2(["mycmd", "myarg"], bufsize,
                                                mode)
@@ -699,41 +881,48 @@ Unix では、 popen2 は実行するコマンドとしてシーケンスも受�
              stdin=PIPE, stdout=PIPE, close_fds=True)
    (child_stdout, child_stdin) = (p.stdout, p.stdin)
 
-popen2.Popen3 および popen2.Popen4 は基本的には subprocess.Popen と同様です。ただし、違う点は:
+:class:`popen2.Popen3` and :class:`popen2.Popen4` basically work as
+:class:`subprocess.Popen`, except that:
 
-* :class:`Popen` は実行できなかった場合に例外を発生させます。
+* :class:`Popen` raises an exception if the execution fails.
 
-* *capturestderr* 引数は *stderr* 引数に代わりました。
+* the *capturestderr* argument is replaced with the *stderr* argument.
 
-* ``stdin=PIPE`` および ``stdout=PIPE`` を指定する必要があります。
+* ``stdin=PIPE`` and ``stdout=PIPE`` must be specified.
 
-* popen2 はデフォルトですべてのファイル記述子を閉じますが、 :class:`Popen` では明示的に ``close_fds=True``
-  を指定する必要があります。
+* popen2 closes all file descriptors by default, but you have to specify
+  ``close_fds=True`` with :class:`Popen`.
 
-注釈
+
+Notes
 -----
 
 .. _converting-argument-sequence:
 
-Windows における引数シーケンスから文字列への変換
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Converting an argument sequence to a string on Windows
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Windows では、 *args* シーケンスは以下の (MS C ランタイムで使われる規則に
-対応する) 規則を使って解析できる文字列に変換されます:
+On Windows, an *args* sequence is converted to a string that can be parsed
+using the following rules (which correspond to the rules used by the MS C
+runtime):
 
-1. 引数は、スペースかタブのどちらかの空白で分けられます。
+1. Arguments are delimited by white space, which is either a
+   space or a tab.
 
-2. ダブルクオーテーションマークで囲まれた文字列は、空白が含まれていたとしても
-   1 つの引数として解釈されます。クオートされた文字列は引数に埋め込めます。
+2. A string surrounded by double quotation marks is
+   interpreted as a single argument, regardless of white space
+   contained within.  A quoted string can be embedded in an
+   argument.
 
-3. バックスラッシュに続くダブルクオーテーションマークは、
-   文字通りのダブルクオーテーションマークと解釈されます。
+3. A double quotation mark preceded by a backslash is
+   interpreted as a literal double quotation mark.
 
-4. バックスラッシュは、ダブルクオーテーションが続かない限り、
-   文字通りに解釈されます。
+4. Backslashes are interpreted literally, unless they
+   immediately precede a double quotation mark.
 
-5. 複数のバックスラッシュにダブルクオーテーションマークが続くなら、
-   バックスラッシュ 2 つで 1 つのバックスラッシュ文字と解釈されます。
-   バックスラッシュの数が奇数なら、最後のバックスラッシュは
-   規則 3 に従って続くダブルクオーテーションマークをエスケープします。
+5. If backslashes immediately precede a double quotation mark,
+   every pair of backslashes is interpreted as a literal
+   backslash.  If the number of backslashes is odd, the last
+   backslash escapes the next double quotation mark as
+   described in rule 3.
 

@@ -1,16 +1,18 @@
 
 .. _numeric:
 
-********************
-数値と数学モジュール
-********************
+********************************
+Numeric and Mathematical Modules
+********************************
 
-この章で解説されるモジュールは数値と数学関連の関数とデータ型を提供します。
-:mod:`numbers` モジュールは数値型の抽象的階層を定義します。
-:mod:`math` と :mod:`cmath` はさまざまな浮動小数点数および複素数向け数学関数を含みます。
-速度より10進法での正確さに興味があるユーザには、 :mod:`decimal` モジュールが真の10進表現をサポートしています。
+The modules described in this chapter provide numeric and math-related functions
+and data types. The :mod:`numbers` module defines an abstract hierarchy of
+numeric types. The :mod:`math` and :mod:`cmath` modules contain various
+mathematical functions for floating-point and complex numbers. For users more
+interested in decimal accuracy than in speed, the :mod:`decimal` module supports
+exact representations of decimal numbers.
 
-この章で解説されるモジュールの一覧:
+The following modules are documented in this chapter:
 
 
 .. toctree::

@@ -1,156 +1,176 @@
 
-:mod:`bsddb` --- Berkeley DB ライブラリへのインタフェース
-=========================================================
+:mod:`bsddb` --- Interface to Berkeley DB library
+=================================================
 
 .. module:: bsddb
-   :synopsis: Berkeley DB ライブラリへのインタフェース
+   :synopsis: Interface to Berkeley DB database library
 .. sectionauthor:: Skip Montanaro <skip@pobox.com>
 
 .. deprecated:: 2.6
-   :mod:`bsddb` モジュールは、 Python 3.0 では削除されるので、非推奨です。
+    The :mod:`bsddb` module has been removed in Python 3.
 
 
-:mod:`bsddb` モジュールは Berkeley DB ライブラリへのインタフェースを提供します。ユーザは適当な :func:`open`
-呼び出しを使うことで、ハッシュ、B-Tree、またはレコードに基づくデータベースファイルを生成することができます。bsddb
-オブジェクトは辞書と大体同じように振る舞います。しかし、キー及び値は文字列でなければならないので、
-他のオブジェクトをキーとして使ったり、他の種のオブジェクトを記録したい場合、それらのデータを何らかの方法で直列化しなければなりません。これには通常
-:func:`marshal.dumps` や :func:`pickle.dumps` が使われます。
+The :mod:`bsddb` module provides an interface to the Berkeley DB library.  Users
+can create hash, btree or record based library files using the appropriate open
+call. Bsddb objects behave generally like dictionaries.  Keys and values must be
+strings, however, so to use other objects as keys or to store other kinds of
+objects the user must serialize them somehow, typically using
+:func:`marshal.dumps` or  :func:`pickle.dumps`.
 
-:mod:`bsddb` モジュールは、バージョン 4.0 から 4.7 までの間の Berkeley DB ライブラリを必要とします。
+The :mod:`bsddb` module requires a Berkeley DB library version from 4.0 thru
+4.7.
 
 
 .. seealso::
 
    http://www.jcea.es/programacion/pybsddb.htm
-      Berkeley DBインターフェース :mod:`bsddb.db` のドキュメントがあります。
-      インターフェースは、Berkeley DB 4.x でSleepycatが提供している
-      オブジェクト指向インターフェースとほぼ同じインターフェースとなっています。
+      The website with documentation for the :mod:`bsddb.db` Python Berkeley DB
+      interface that closely mirrors the object oriented interface provided in
+      Berkeley DB 4.x itself.
 
    http://www.oracle.com/database/berkeley-db/
       The Berkeley DB library.
 
-より新しい DB である DBEnv や DBSequence オブジェクトのインターフェースも :mod:`bsddb.db`
-モジュールで使用できます。これは、上の URL で説明されている Berkeley DB C API
-によりマッチしています。 :mod:`bsddb.db` API が提供する追加機能には、チューニングやトランザクション、
-ログ出力、マルチプロセス環境でのデータベースへの同時アクセスなどがあります。
+A more modern DB, DBEnv and DBSequence object interface is available in the
+:mod:`bsddb.db` module which closely matches the Berkeley DB C API documented at
+the above URLs.  Additional features provided by the :mod:`bsddb.db` API include
+fine tuning, transactions, logging, and multiprocess concurrent database access.
 
-以下では、従来のbsddbモジュールと互換性のある、古いインターフェースを解説しています。Python 2.5
-以降、このインターフェースはマルチスレッドに対応しています。マルチスレッドを使用する場合は :mod:`bsddb.db` API を推奨します。
-こちらのほうがスレッドをよりうまく制御できるからです。
+The following is a description of the legacy :mod:`bsddb` interface compatible
+with the old Python bsddb module.  Starting in Python 2.5 this interface should
+be safe for multithreaded access.  The :mod:`bsddb.db` API is recommended for
+threading users as it provides better control.
 
-:mod:`bsddb` モジュールでは、適切な形式の Berkeley DB ファイルにアクセスするオブジェクトを生成する以下の関数を定義しています。
-各関数の最初の二つの引数は同じです。可搬性のために、ほとんどのインスタンスでは最初の二つの引数だけが使われているはずです。
+The :mod:`bsddb` module defines the following functions that create objects that
+access the appropriate type of Berkeley DB file.  The first two arguments of
+each function are the same.  For ease of portability, only the first two
+arguments should be used in most instances.
 
 
 .. function:: hashopen(filename[, flag[, mode[, pgsize[, ffactor[, nelem[, cachesize[, lorder[, hflags]]]]]]]])
 
-   *filename* と名づけられたハッシュ形式のファイルを開きます。 *filename* に ``None`` を指定することで、ディスクに保存する
-   つもりがないファイルを生成することもできます。オプションの *flag* には、ファイルを開くためのモードを指定します。このモードは ``'r'``
-   (読み出し専用), ``'w'`` (読み書き可能)、 ``'c'`` (読み書き可能 - 必要ならファイルを生成…これがデフォルトです) または
-   ``'n'`` (読み書き可能 - ファイル長を 0 に切り詰め)、にすることができます。他の引数はほとんど使われることはなく、下位レベルの
-   :c:func:`dbopen` 関数に渡されるだけです。他の引数の使い方およびその解釈については Berkeley DB のドキュメントを読んで下さい。
+   Open the hash format file named *filename*.  Files never intended to be
+   preserved on disk may be created by passing ``None`` as the  *filename*.  The
+   optional *flag* identifies the mode used to open the file.  It may be ``'r'``
+   (read only), ``'w'`` (read-write), ``'c'`` (read-write - create if necessary;
+   the default) or ``'n'`` (read-write - truncate to zero length).  The other
+   arguments are rarely used and are just passed to the low-level :c:func:`dbopen`
+   function.  Consult the Berkeley DB documentation for their use and
+   interpretation.
 
 
 .. function:: btopen(filename[, flag[, mode[, btflags[, cachesize[, maxkeypage[, minkeypage[, pgsize[, lorder]]]]]]]])
 
-   *filename* と名づけられた B-Tree 形式のファイルを開きます。 *filename* に ``None`` を指定することで、ディスクに保存する
-   つもりがないファイルを生成することもできます。オプションの *flag* には、ファイルを開くためのモードを指定します。このモードは ``'r'``
-   (読み出し専用)、 ``'w'`` (読み書き可能)、 ``'c'`` (読み書き可能 - 必要ならファイルを生成…これがデフォルトです)、または
-   ``'n'`` (読み書き可能 - ファイル長を 0 に切り詰め)、にすることができます。他の引数はほとんど使われることはなく、下位レベルの
-   :c:func:`dbopen` 関数に渡されるだけです。他の引数の使い方およびその解釈については Berkeley DB のドキュメントを読んで下さい。
+   Open the btree format file named *filename*.  Files never intended  to be
+   preserved on disk may be created by passing ``None`` as the  *filename*.  The
+   optional *flag* identifies the mode used to open the file.  It may be ``'r'``
+   (read only), ``'w'`` (read-write), ``'c'`` (read-write - create if necessary;
+   the default) or ``'n'`` (read-write - truncate to zero length).  The other
+   arguments are rarely used and are just passed to the low-level dbopen function.
+   Consult the Berkeley DB documentation for their use and interpretation.
 
 
 .. function:: rnopen(filename[, flag[, mode[, rnflags[, cachesize[, pgsize[, lorder[, rlen[, delim[, source[, pad]]]]]]]]]])
 
-   *filename* と名づけられた DB レコード形式のファイルを開きます、 *filename* に ``None`` を指定することで、ディスクに保存する
-   つもりがないファイルを生成することもできます、オプションの *flag* には、ファイルを開くためのモードを指定します、このモードは ``'r'``
-   (読み出し専用), ``'w'`` (読み書き可能)、 ``'c'`` (読み書き可能 - 必要ならファイルを生成…これがデフォルトです)、または
-   ``'n'`` (読み書き可能 - ファイル長を 0 に切り詰め)、にすることができます。他の引数はほとんど使われることはなく、下位レベルの
-   :c:func:`dbopen` 関数に渡されるだけです、他の引数の使い方およびその解釈については Berkeley DB のドキュメントを読んで下さい。
+   Open a DB record format file named *filename*.  Files never intended  to be
+   preserved on disk may be created by passing ``None`` as the  *filename*.  The
+   optional *flag* identifies the mode used to open the file.  It may be ``'r'``
+   (read only), ``'w'`` (read-write), ``'c'`` (read-write - create if necessary;
+   the default) or ``'n'`` (read-write - truncate to zero length).  The other
+   arguments are rarely used and are just passed to the low-level dbopen function.
+   Consult the Berkeley DB documentation for their use and interpretation.
 
 .. note::
 
-   2.3以降の Unix 版Pythonには、 :mod:`bsddb185` モジュールが存在する場合があります。このモジュールは古いBerkeley DB
-   1.85データベースライブラリを持つシステムをサポートするため *だけ* に存在しています。新規に開発する
-   コードでは、 :mod:`bsddb185` を直接使用しないで下さい。
-   このモジュールは Python 3.0 で削除されます。(必要であれば、PyPIにあるかもしれません)
+   Beginning in 2.3 some Unix versions of Python may have a :mod:`bsddb185` module.
+   This is present *only* to allow backwards compatibility with systems which ship
+   with the old Berkeley DB 1.85 database library.  The :mod:`bsddb185` module
+   should never be used directly in new code. The module has been removed in
+   Python 3.  If you find you still need it look in PyPI.
 
 
 .. seealso::
 
    Module :mod:`dbhash`
-      :mod:`bsddb` への DBM 形式のインタフェース
+      DBM-style interface to the :mod:`bsddb`
 
 
 .. _bsddb-objects:
 
-ハッシュ、BTree、およびレコードオブジェクト
--------------------------------------------
+Hash, BTree and Record Objects
+------------------------------
 
-インスタンス化したハッシュ、B-Tree, およびレコードオブジェクトは辞書型と同じメソッドをサポートするようになります。加えて、以下に
-列挙したメソッドもサポートします。
+Once instantiated, hash, btree and record objects support the same methods as
+dictionaries.  In addition, they support the methods listed below.
 
 .. versionchanged:: 2.3.1
-   辞書型メソッドを追加しました.
+   Added dictionary methods.
 
 
 .. method:: bsddbobject.close()
 
-   データベースの背後にあるファイルを閉じます。オブジェクトはアクセスできなくなります。これらのオブジェクトには :meth:`oepn` メソッドがないため、
-   再度ファイルを開くためには、新たな :mod:`bsddb` モジュールを開く関数を呼び出さなくてはなりません。
+   Close the underlying file.  The object can no longer be accessed.  Since there
+   is no open :meth:`open` method for these objects, to open the file again a new
+   :mod:`bsddb` module open function must be called.
 
 
 .. method:: bsddbobject.keys()
 
-   DB ファイルに収められているキーからなるリストを返します。リスト内のキーの順番は決まっておらず、あてにはなりません。特に、異なるファイル形式の DB
-   間では返されるリストの順番が異なります。
+   Return the list of keys contained in the DB file.  The order of the list is
+   unspecified and should not be relied on.  In particular, the order of the list
+   returned is different for different file formats.
 
 
 .. method:: bsddbobject.has_key(key)
 
-   引数 *key* が DB ファイルにキーとして含まれている場合 ``1``  を返します。
+   Return ``1`` if the DB file contains the argument as a key.
 
 
 .. method:: bsddbobject.set_location(key)
 
-   カーソルを *key* で示される要素に移動し、キー及び値からなるタプルを返します。(:func:`bopen` を使って開かれる) B-Tree
-   データベースでは、 *key* が実際にはデータベース内に存在しなかった場合、カーソルは並び順が *key* の次に来るような要素を指し、
-   その場所のキー及び値が返されます。他のデータベースでは、データベース中に *key* が見つからなかった場合 :exc:`KeyError`
-   が送出されます。
+   Set the cursor to the item indicated by *key* and return a tuple containing the
+   key and its value.  For binary tree databases (opened using :func:`btopen`), if
+   *key* does not actually exist in the database, the cursor will point to the next
+   item in sorted order and return that key and value.  For other databases,
+   :exc:`KeyError` will be raised if *key* is not found in the database.
 
 
 .. method:: bsddbobject.first()
 
-   カーソルを DB ファイルの最初の要素に設定し、その要素を返します。 B-Tree データベースの場合を除き、ファイル中のキーの順番は決まっていません。
-   データベースが空の場合、このメソッドは :exc:`bsddb.error` を発生させます。
+   Set the cursor to the first item in the DB file and return it.  The order of
+   keys in the file is unspecified, except in the case of B-Tree databases. This
+   method raises :exc:`bsddb.error` if the database is empty.
 
 
 .. method:: bsddbobject.next()
 
-   カーソルを DB ファイルの次の要素に設定し、その要素を返します。 B-Tree データベースの場合を除き、ファイル中のキーの順番は決まっていません。
+   Set the cursor to the next item in the DB file and return it.  The order of
+   keys in the file is unspecified, except in the case of B-Tree databases.
 
 
 .. method:: bsddbobject.previous()
 
-   カーソルを DB ファイルの直前の要素に設定し、その要素を返します。 B-Tree データベースの場合を除き、ファイル中のキーの順番は決まっていません。
-   (:func:`hashopen` で開かれるような)  ハッシュ表データベースではサポートされていません。
+   Set the cursor to the previous item in the DB file and return it.  The order of
+   keys in the file is unspecified, except in the case of B-Tree databases.  This
+   is not supported on hashtable databases (those opened with :func:`hashopen`).
 
 
 .. method:: bsddbobject.last()
 
-   カーソルを DB ファイルの最後の要素に設定し、その要素を返します。ファイル中のキーの順番は決まっていません。 (:func:`hashopen`
-   で開かれるような)  ハッシュ表データベースではサポートされていません。データベースが空の場合、このメソッドは :exc:`bsddb.error`
-   を発生させます。
+   Set the cursor to the last item in the DB file and return it.  The order of keys
+   in the file is unspecified.  This is not supported on hashtable databases (those
+   opened with :func:`hashopen`). This method raises :exc:`bsddb.error` if the
+   database is empty.
 
 
 .. method:: bsddbobject.sync()
 
-   ディスク上のファイルをデータベースに同期させます。
+   Synchronize the database on disk.
 
-以下はプログラム例です::
+Example::
 
    >>> import bsddb
-   >>> db = bsddb.btopen('/tmp/spam.db', 'c')
+   >>> db = bsddb.btopen('spam.db', 'c')
    >>> for i in range(10): db['%d'%i] = '%d'% (i*i)
    ...
    >>> db['3']

@@ -1,191 +1,199 @@
-******************************
-  関数型プログラミング HOWTO
-******************************
+********************************
+  Functional Programming HOWTO
+********************************
 
 :Author: A. M. Kuchling
 :Release: 0.31
 
-この文書では、関数型スタイルでプログラムを実装するのにピッタリな Python
-の機能を見てまわることにしましょう。まず関数型プログラミングという概念を
-紹介したあと、 :term:`iterator` や :term:`generator` のような言語機能、
-および :mod:`itertools` や :mod:`functools` といった関連するライブラリ
-モジュールを見ることにします。
+In this document, we'll take a tour of Python's features suitable for
+implementing programs in a functional style.  After an introduction to the
+concepts of functional programming, we'll look at language features such as
+:term:`iterator`\s and :term:`generator`\s and relevant library modules such as
+:mod:`itertools` and :mod:`functools`.
 
 
-はじめに
-========
+Introduction
+============
 
-この章は関数型プログラミングの基本概念を説明します; Python
-の言語機能についてだけ知りたい人は、次の章まで飛ばしてください。
+This section explains the basic concept of functional programming; if you're
+just interested in learning about Python language features, skip to the next
+section.
 
-プログラミング言語とは問題を分解するものですが、
-各言語がサポートする分解方法にはいくつかの種類があります:
+Programming languages support decomposing problems in several different ways:
 
-* ほとんどのプログラミング言語は **手続き型** です: プログラムは、
-  入力に対して行うべきことをコンピュータに教える指示リストとなります。
-  C, Pascal, さらには Unix シェルまでもが手続き型言語に入ります。
+* Most programming languages are **procedural**: programs are lists of
+  instructions that tell the computer what to do with the program's input.  C,
+  Pascal, and even Unix shells are procedural languages.
 
-* **宣言型** 言語で書くのは、解くべき問題を説明する仕様書であって、それを
-  効率的に計算処理する方法を見付けるのは言語実装の役目です。SQL はおそらく
-  一番よく知られた宣言型言語です; SQL のクエリは取得したいデータセットを
-  説明しているだけで、テーブルを走査するかインデックスを使うか、
-  どのサブクローズから実行するか等々を決めるのは SQL エンジンなのです。
+* In **declarative** languages, you write a specification that describes the
+  problem to be solved, and the language implementation figures out how to
+  perform the computation efficiently.  SQL is the declarative language you're
+  most likely to be familiar with; a SQL query describes the data set you want
+  to retrieve, and the SQL engine decides whether to scan tables or use indexes,
+  which subclauses should be performed first, etc.
 
-* **オブジェクト指向** プログラムはオブジェクトの集まりを操作します。
-  オブジェクトには内部状態があり、その状態を調べたり色々と変更したりするための
-  メソッドがあります。Smalltalk や Java はオブジェクト指向言語です。
-  C++ と Python はオブジェクト指向プログラミングをサポートしていますが、
-  関連する機能を使わなくても構わないようになっています。
+* **Object-oriented** programs manipulate collections of objects.  Objects have
+  internal state and support methods that query or modify this internal state in
+  some way. Smalltalk and Java are object-oriented languages.  C++ and Python
+  are languages that support object-oriented programming, but don't force the
+  use of object-oriented features.
 
-* **関数型** プログラミングは問題をいくつかの関数にわけて考えます。
-  理想的に言うと、関数は入力を受けて出力を吐くだけで、同じ入力に対して
-  異なる出力をするような内部状態を一切持ちません。有名な関数型言語には
-  ML 一家 (Standard ML, OCaml 等々) と Haskell があります。
+* **Functional** programming decomposes a problem into a set of functions.
+  Ideally, functions only take inputs and produce outputs, and don't have any
+  internal state that affects the output produced for a given input.  Well-known
+  functional languages include the ML family (Standard ML, OCaml, and other
+  variants) and Haskell.
 
-設計者が特定のアプローチを強調することにした言語もありますが、
-そうすると大抵は、別のアプローチを使うプログラムを書きにくくなります。
-複数のアプローチに対応した言語もあり、Lisp, C++, Python はそうした
-マルチパラダイム言語です; この中のどれを使っても、基本的に手続き型な、または
-基本的にオブジェクト指向な、とか、基本的に関数型なプログラムやライブラリを
-書くことができます。大きなプログラムでは、各部で別々のアプローチを使って書く
-ことがあるかもしれません; GUI はオブジェクト指向で、でも処理ロジックは
-手続き型や関数型で、といったようにです。
+The designers of some computer languages choose to emphasize one particular
+approach to programming.  This often makes it difficult to write programs that
+use a different approach.  Other languages are multi-paradigm languages that
+support several different approaches.  Lisp, C++, and Python are
+multi-paradigm; you can write programs or libraries that are largely
+procedural, object-oriented, or functional in all of these languages.  In a
+large program, different sections might be written using different approaches;
+the GUI might be object-oriented while the processing logic is procedural or
+functional, for example.
 
-関数型プログラムでは、入力は一連の関数を通って流れていきます。それぞれの関数は
-入力に何らかの作業をして出力します。関数型スタイルにおいては、内部状態を
-変えてしまったり、返り値に現れない変更をしたりといった副作用のある関数は
-やめるように言われています。副作用のまったくない関数は **純粋関数型** である
-とされます。副作用をなくすということは、プログラムの実行中に順次変化していく
-データ構造を持たない、つまり各関数の出力はその入力にしか影響を受けてはいけない
-ということです。
+In a functional program, input flows through a set of functions. Each function
+operates on its input and produces some output.  Functional style discourages
+functions with side effects that modify internal state or make other changes
+that aren't visible in the function's return value.  Functions that have no side
+effects at all are called **purely functional**.  Avoiding side effects means
+not using data structures that get updated as a program runs; every function's
+output must only depend on its input.
 
-この純粋性を守る面で非常に厳しい言語もあり、そうした言語には ``a=3`` や
-``c = a + b`` といった代入文さえありません。しかし副作用を完全になくすのは
-難しいもので、たとえば画面表示やディスクファイルへの書き込みも副作用なのです。
-Python で言うと、たとえば ``print`` 文や ``time.sleep(1)`` はどちらも
-意味ある値を返しません; ただ画面にテキストを送ったり動作を 1 秒止めたり
-といった副作用のためだけに呼ばれるのです。
+Some languages are very strict about purity and don't even have assignment
+statements such as ``a=3`` or ``c = a + b``, but it's difficult to avoid all
+side effects.  Printing to the screen or writing to a disk file are side
+effects, for example.  For example, in Python a ``print`` statement or a
+``time.sleep(1)`` both return no useful value; they're only called for their
+side effects of sending some text to the screen or pausing execution for a
+second.
 
-関数型スタイルで書いた Python プログラムはふつう、I/O や代入を完全になくす
-といった極端なところまでは行かずに、関数型っぽく見えるインタフェースを
-提供しつつも内部では非関数型の機能を使います。たとえば、関数内で
-ローカル変数の代入は使いますが、グローバル変数は変更せず、他の副作用も
-ないように実装するのです。
+Python programs written in functional style usually won't go to the extreme of
+avoiding all I/O or all assignments; instead, they'll provide a
+functional-appearing interface but will use non-functional features internally.
+For example, the implementation of a function will still use assignments to
+local variables, but won't modify global variables or have other side effects.
 
-関数型プログラミングはオブジェクト指向プログラミングの反対と考えることも
-できます。オブジェクト指向において、オブジェクトは内部状態とそれを変更する
-メソッドコールの入ったカプセルであり、プログラムはその状態を適正に変化
-させていく手順です。一方で、関数型プログラミングは可能なかぎり状態の変更を
-避け、関数どうしの間を流れるデータだけを扱おうとします。Python ではこの
-二つのアプローチを結び合わせることができます。アプリケーション内の
-オブジェクト (メール、トランザクション、等々) を表現したインスタンスを、
-関数が受け渡しするようにするのです。
+Functional programming can be considered the opposite of object-oriented
+programming.  Objects are little capsules containing some internal state along
+with a collection of method calls that let you modify this state, and programs
+consist of making the right set of state changes.  Functional programming wants
+to avoid state changes as much as possible and works with data flowing between
+functions.  In Python you might combine the two approaches by writing functions
+that take and return instances representing objects in your application (e-mail
+messages, transactions, etc.).
 
-関数型デザインは、わけのわからない制約に見えるかもしれません。
-どうしてオブジェクトも副作用もないほうが良いのでしょうか。
-実は、関数型スタイルには理論と実践に基づく次の利点があるのです:
+Functional design may seem like an odd constraint to work under.  Why should you
+avoid objects and side effects?  There are theoretical and practical advantages
+to the functional style:
 
-* 形式的証明可能性
-* モジュラー性
-* 結合性
-* デバグやテストの簡単さ
-
-
-形式的証明可能性
-----------------
-
-理論面の利点としては、プログラムが正しいことの数学的証明を
-他より簡単に構築できるという点があります。
-
-研究者たちは長いあいだ、プログラムが正しいことを数学的に証明する方法の
-発見に血道をあげてきました。これは、色々な入力でテストして出力が正しかった
-からまあ正しいだろう、と結論するのとも違いますし、ソースコードを読んで
-「間違いはなさそうだ」と言うのとも別の話です; 目指すのは、出現しうる入力
-すべてに対してプログラムが正しい結果を出すことの厳密な証明なのです。
-
-プログラムを証明するために使われているのは **不変式** を書き出していく
-というテクニックで、不変式とは入力データやプログラム変数のうち常に真である
-性質のことです。コードの一行一行で、 **実行前** の不変式 X と Y が真なら
-**実行後に** ちょっと違う不変式 X' と Y' が真になることを示していき、
-これをプログラムの終わりまで続けるわけです。すると最終的な不変式は
-プログラムの出力に合った条件になっているはずです。
-
-関数型プログラミングが代入を嫌うのは、この不変式テクニックでは代入を
-扱いにくいからです; 代入は、それまで真だった不変式を壊しておいて、
-自分は次の行に伝えてゆける不変式を生み出さないことがあるのです。
-
-残念ながら、プログラムの証明はだいたい実際的でもありませんし、Python
-ソフトウェアにも関係ありません。本当に簡単なプログラムでも、証明には
-数ページにわたる論文が必要なのです; ある程度の複雑なプログラムではもう
-尋常でない長さになってしまうので、日常で使っているプログラム (Python
-インタプリタ、XML パーサ、ウェブブラウザ) はほとんど、あるいはすべて、
-正しさを証明するのは不可能でしょう。仮に証明を書き出したり生成したりしても、
-その証明を検証するための疑いが残ります; 証明に間違いがあるかもしれず、
-その場合は証明したと自分で勝手に思い込んでいただけになるのです。
+* Formal provability.
+* Modularity.
+* Composability.
+* Ease of debugging and testing.
 
 
-モジュラー性
-------------
+Formal provability
+------------------
 
-より実用的には、関数型プログラミングをすると問題を細かく切り分けることになる
-という利点があります。結果としてプログラムはモジュラー化されます。
-複雑な変形を施す大きな関数を書くより、一つのことに絞ってそれだけをする
-小さな関数のほうが書きやすいものです。それに、小さいほうが
-読むのもエラーをチェックするのも簡単です。
+A theoretical benefit is that it's easier to construct a mathematical proof that
+a functional program is correct.
 
+For a long time researchers have been interested in finding ways to
+mathematically prove programs correct.  This is different from testing a program
+on numerous inputs and concluding that its output is usually correct, or reading
+a program's source code and concluding that the code looks right; the goal is
+instead a rigorous proof that a program produces the right result for all
+possible inputs.
 
-デバグやテストの簡単さ
-----------------------
+The technique used to prove programs correct is to write down **invariants**,
+properties of the input data and of the program's variables that are always
+true.  For each line of code, you then show that if invariants X and Y are true
+**before** the line is executed, the slightly different invariants X' and Y' are
+true **after** the line is executed.  This continues until you reach the end of
+the program, at which point the invariants should match the desired conditions
+on the program's output.
 
-テストやデバグも関数型プログラムなら簡単です。
+Functional programming's avoidance of assignments arose because assignments are
+difficult to handle with this technique; assignments can break invariants that
+were true before the assignment without producing any new invariants that can be
+propagated onward.
 
-関数が一般的に小さくて明確に意味付けされているので、デバグ方法は単純です。
-プログラムが正しく動かないときには、関数ひとつひとつがデータの正しさを
-チェックするポイントになるので、それぞれの時点における入力と出力を
-見ていけば、バグの原因となる関数を素早く切り出すことができるのです。
-
-ひとつひとつの関数がユニットテストの対象になり得るわけですから、
-テストも簡単です。関数はシステムの状態に依存しませんので、テストの実行前に
-そうした状態を再現する必要はありません; 単に適切な入力を合成して、
-出力が期待どおりかどうかチェックするだけで良いのです。
-
-
-結合性
-------
-
-関数型スタイルのプログラムを作っていると、色々な入力や出力のために
-色々な関数を書くことになります。仕方なく特定のアプリケーションに特化した関数を
-書くこともあるでしょうけれど、広範なプログラムに使える関数もあることでしょう。
-たとえば、ディレクトリ名を受け取ってその中の XML ファイル一覧を返す関数や、
-ファイル名を受け取って内容を返す関数などは、多様な場面に適用できそうです。
-
-時たつうちに自分の特製ライブラリやユーティリティが充実してくると、
-新しいプログラムも、既存の関数を調整して少し今回に特化した関数を書くだけで
-組み立てられるようになります。
+Unfortunately, proving programs correct is largely impractical and not relevant
+to Python software. Even trivial programs require proofs that are several pages
+long; the proof of correctness for a moderately complicated program would be
+enormous, and few or none of the programs you use daily (the Python interpreter,
+your XML parser, your web browser) could be proven correct.  Even if you wrote
+down or generated a proof, there would then be the question of verifying the
+proof; maybe there's an error in it, and you wrongly believe you've proved the
+program correct.
 
 
-イテレータ
-==========
+Modularity
+----------
 
-まずは関数型スタイルのプログラムを書く際の基礎となる重要な
-Python 機能から見ていきましょう: イテレータです。
+A more practical benefit of functional programming is that it forces you to
+break apart your problem into small pieces.  Programs are more modular as a
+result.  It's easier to specify and write a small function that does one thing
+than a large function that performs a complicated transformation.  Small
+functions are also easier to read and to check for errors.
 
-イテレータは連続データを表現するオブジェクトです; このオブジェクトは
-一度に一つの要素ずつデータを返します。Python のイテレータは ``next()``
-という、引数を取らず次の要素を返すメソッドを必ずサポートしています。
-データストリームに要素が残っていない場合、 ``next()`` は必ず
-``StopIteration`` 例外を出します。ただ、イテレータの長さは有限である
-必要はありません; 無限のストリームを出すイテレータを書くというのも
-まったく理に適ったことです。
 
-ビルトインの :func:`iter` 関数は任意のオブジェクトを受けて、
-その中身や要素を返すイテレータを返そうとします。引数のオブジェクトが
-イテレータを作れないときは :exc:`TypeError` を投げます。Python の
-ビルトインなデータ型にもいくつかイテレータ化のできるものがあり、
-中でもよく使われるのはリストと辞書です。イテレータを作れる
-オブジェクトは **イテラブル** オブジェクトと呼ばれます。
+Ease of debugging and testing
+-----------------------------
 
-手を動かしてイテレータ化の実験をしてみましょう:
+Testing and debugging a functional-style program is easier.
+
+Debugging is simplified because functions are generally small and clearly
+specified.  When a program doesn't work, each function is an interface point
+where you can check that the data are correct.  You can look at the intermediate
+inputs and outputs to quickly isolate the function that's responsible for a bug.
+
+Testing is easier because each function is a potential subject for a unit test.
+Functions don't depend on system state that needs to be replicated before
+running a test; instead you only have to synthesize the right input and then
+check that the output matches expectations.
+
+
+Composability
+-------------
+
+As you work on a functional-style program, you'll write a number of functions
+with varying inputs and outputs.  Some of these functions will be unavoidably
+specialized to a particular application, but others will be useful in a wide
+variety of programs.  For example, a function that takes a directory path and
+returns all the XML files in the directory, or a function that takes a filename
+and returns its contents, can be applied to many different situations.
+
+Over time you'll form a personal library of utilities.  Often you'll assemble
+new programs by arranging existing functions in a new configuration and writing
+a few functions specialized for the current task.
+
+
+Iterators
+=========
+
+I'll start by looking at a Python language feature that's an important
+foundation for writing functional-style programs: iterators.
+
+An iterator is an object representing a stream of data; this object returns the
+data one element at a time.  A Python iterator must support a method called
+``next()`` that takes no arguments and always returns the next element of the
+stream.  If there are no more elements in the stream, ``next()`` must raise the
+``StopIteration`` exception.  Iterators don't have to be finite, though; it's
+perfectly reasonable to write an iterator that produces an infinite stream of
+data.
+
+The built-in :func:`iter` function takes an arbitrary object and tries to return
+an iterator that will return the object's contents or elements, raising
+:exc:`TypeError` if the object doesn't support iteration.  Several of Python's
+built-in data types support iteration, the most common being lists and
+dictionaries.  An object is called an **iterable** object if you can get an
+iterator for it.
+
+You can experiment with the iteration interface manually:
 
     >>> L = [1,2,3]
     >>> it = iter(L)
@@ -203,10 +211,10 @@ Python 機能から見ていきましょう: イテレータです。
     StopIteration
     >>>
 
-Python は色々な文脈でイテラブルなオブジェクトを期待しますが、
-最も重要なのは ``for`` 文です。 ``for X in Y`` という文の Y は、
-イテレータか、あるいは ``iter()`` でイテレータを作れるオブジェクト
-である必要があります。次の二つは同じ意味になります::
+Python expects iterable objects in several different contexts, the most
+important being the ``for`` statement.  In the statement ``for X in Y``, Y must
+be an iterator or some object for which ``iter()`` can create an iterator.
+These two statements are equivalent::
 
     for i in iter(obj):
         print i
@@ -214,8 +222,8 @@ Python は色々な文脈でイテラブルなオブジェクトを期待しま�
     for i in obj:
         print i
 
-イテレータは :func:`list` や :func:`tuple` といったコンストラクタ関数
-を使ってリストやタプルに具現化することができます:
+Iterators can be materialized as lists or tuples by using the :func:`list` or
+:func:`tuple` constructor functions:
 
     >>> L = [1,2,3]
     >>> iterator = iter(L)
@@ -223,8 +231,8 @@ Python は色々な文脈でイテラブルなオブジェクトを期待しま�
     >>> t
     (1, 2, 3)
 
-シーケンスのアンパックもイテレータに対応しています: イテレータが N 個の要素を
-返すということが事前にわかっていれば、N-タプルにアンパックすることができます:
+Sequence unpacking also supports iterators: if you know an iterator will return
+N elements, you can unpack them into an N-tuple:
 
     >>> L = [1,2,3]
     >>> iterator = iter(L)
@@ -232,31 +240,32 @@ Python は色々な文脈でイテラブルなオブジェクトを期待しま�
     >>> a,b,c
     (1, 2, 3)
 
-ビルトイン関数の :func:`max` や :func:`min` なども、イテレータ一つだけを引数に
-取って最大・最小の要素を返すことができます。 ``in`` や ``not in`` 演算子も
-イテレータに対応しています: ``X in イテレータ`` は、そのイテレータから返る
-ストリームに X があれば真です。ですからイテレータが無限長だと、当然ながら問題
-に直面します; ``max()``, ``min()``, ``not in`` はいつまでも戻って来ませんし、
-要素 X がストリームに出てこなければ ``in`` オペレータも戻りません。
+Built-in functions such as :func:`max` and :func:`min` can take a single
+iterator argument and will return the largest or smallest element.  The ``"in"``
+and ``"not in"`` operators also support iterators: ``X in iterator`` is true if
+X is found in the stream returned by the iterator.  You'll run into obvious
+problems if the iterator is infinite; ``max()``, ``min()``
+will never return, and if the element X never appears in the stream, the
+``"in"`` and ``"not in"`` operators won't return either.
 
-イテレータは次に進むことしかできませんのでご注意ください;
-前の要素を手に入れたり、イテレータをリセットしたり、コピーを作ったり
-する方法はありません。イテレータがオブジェクトとしてそうした追加機能を
-持つことはできますが、プロトコルでは ``next()`` メソッドのことしか
-指定されていません。ですから関数はイテレータの出力を使い尽くして
-しまうかもしれませんし、同じストリームに何か別のことをする
-必要があるなら新しいイテレータを作らなくてはいけません。
+Note that you can only go forward in an iterator; there's no way to get the
+previous element, reset the iterator, or make a copy of it.  Iterator objects
+can optionally provide these additional capabilities, but the iterator protocol
+only specifies the ``next()`` method.  Functions may therefore consume all of
+the iterator's output, and if you need to do something different with the same
+stream, you'll have to create a new iterator.
 
 
-イテレータ対応のデータ型
-------------------------
 
-リストやタプルがイテレータに対応している方法については既に見ましたが、
-実のところ Python のシーケンス型はどれでも、たとえば文字列なども、
-自動でイテレータ生成に対応しています。
+Data Types That Support Iterators
+---------------------------------
 
-辞書に対して :func:`iter` すると、
-辞書のキーでループを回すイテレータが返されます:
+We've already seen how lists and tuples support iterators.  In fact, any Python
+sequence type, such as strings, will automatically support creation of an
+iterator.
+
+Calling :func:`iter` on a dictionary returns an iterator that will loop over the
+dictionary's keys:
 
 .. not a doctest since dict ordering varies across Pythons
 
@@ -279,31 +288,31 @@ Python は色々な文脈でイテラブルなオブジェクトを期待しま�
     Dec 12
     Oct 10
 
-順番は基本的にランダムであることに注目してください。
-これは辞書内オブジェクトのハッシュの順番になっているからです。
+Note that the order is essentially random, because it's based on the hash
+ordering of the objects in the dictionary.
 
-辞書は :func:`iter` を適用するとキーでループを回しますが、辞書には他の
-イテレータを返すメソッドもあります。明示的にキー、値、あるいはキーと値のペアで
-イテレートしたければ、 ``iterkeys()``, ``itervalues()``, ``iteritems()``
-というメソッドでイテレータを作ることができます。
+Applying ``iter()`` to a dictionary always loops over the keys, but dictionaries
+have methods that return other iterators.  If you want to iterate over keys,
+values, or key/value pairs, you can explicitly call the ``iterkeys()``,
+``itervalues()``, or ``iteritems()`` methods to get an appropriate iterator.
 
-逆に :func:`dict` コンストラクタは、有限な ``(キー, 値)`` タプルのストリーム
-を返すイテレータを受け入れることができます:
+The :func:`dict` constructor can accept an iterator that returns a finite stream
+of ``(key, value)`` tuples:
 
     >>> L = [('Italy', 'Rome'), ('France', 'Paris'), ('US', 'Washington DC')]
     >>> dict(iter(L))
     {'Italy': 'Rome', 'US': 'Washington DC', 'France': 'Paris'}
 
-ファイルも、最後の行まで ``readline()`` メソッドを呼んでいくことで
-イテレータ化に対応しています。つまりこうやってファイルの各行を
-読んでいくことができるわけです::
+Files also support iteration by calling the ``readline()`` method until there
+are no more lines in the file.  This means you can read each line of a file like
+this::
 
     for line in file:
-        # 一行ごとに何かをする
+        # do something for each line
         ...
 
-セットはイテラブルを受け取れますし、
-そのセットの要素でイテレートすることもできます::
+Sets can take their contents from an iterable and let you iterate over the set's
+elements::
 
     S = set((2, 3, 5, 7, 11, 13))
     for i in S:
@@ -311,42 +320,43 @@ Python は色々な文脈でイテラブルなオブジェクトを期待しま�
 
 
 
-ジェネレータ式とリスト内包表記
-==============================
+Generator expressions and list comprehensions
+=============================================
 
-イテレータの出力に対してよく使う操作トップ 2 は、(1) ひとつずつ全要素に
-操作を実行する、および (2) 条件に合う要素でサブセットを作る、です。たとえば
-文字列のリストなら、各行のうしろに付いた邪魔なホワイトスペースを削りたい
-とか、特定の文字列を含む部分をピックアップしたいなどと思うかもしれません。
+Two common operations on an iterator's output are 1) performing some operation
+for every element, 2) selecting a subset of elements that meet some condition.
+For example, given a list of strings, you might want to strip off trailing
+whitespace from each line or extract all the strings containing a given
+substring.
 
-リスト内包表記とジェネレータ式 (略して「listcomp」と「genexp」) は、
-そうした操作向けの簡潔な表記方法です。これは関数型プログラミング言語
-Haskell (http://www.haskell.org) にインスパイアされました。
-文字列のストリームからホワイトスペースをすべて削るのは次のコードでできます::
+List comprehensions and generator expressions (short form: "listcomps" and
+"genexps") are a concise notation for such operations, borrowed from the
+functional programming language Haskell (http://www.haskell.org/).  You can strip
+all the whitespace from a stream of strings with the following code::
 
     line_list = ['  line 1\n', 'line 2  \n', ...]
 
-    # ジェネレータ式 -- イテレータを返す
+    # Generator expression -- returns iterator
     stripped_iter = (line.strip() for line in line_list)
 
-    # リスト内包表記 -- リストを返す
+    # List comprehension -- returns list
     stripped_list = [line.strip() for line in line_list]
 
-特定の要素だけを選び出すのは ``if`` 条件式を付けることで可能です::
+You can select only certain elements by adding an ``"if"`` condition::
 
     stripped_list = [line.strip() for line in line_list
                      if line != ""]
 
-リスト内包表記を使うと Python リストが返って来ます; ``stripped_list`` は
-実行結果の行が入ったリストであって、イテレータではありません。ジェネレータ
-式はイテレータを返し、これだと必要に応じてだけ値を算出しますので、
-すべての値を一度に出す必要がありません。つまりリスト内包表記のほうは、
-無限長ストリームや膨大なデータを返すようなイテレータを扱う際には、
-あまり役に立たないということです。そういった状況では
-ジェネレータ式のほうが好ましいと言えます。
+With a list comprehension, you get back a Python list; ``stripped_list`` is a
+list containing the resulting lines, not an iterator.  Generator expressions
+return an iterator that computes the values as necessary, not needing to
+materialize all the values at once.  This means that list comprehensions aren't
+useful if you're working with iterators that return an infinite stream or a very
+large amount of data.  Generator expressions are preferable in these situations.
 
-ジェネレータ式は丸括弧 "()" で囲まれ、リスト内包表記は
-角括弧 "[]" で囲まれます。ジェネレータ式の形式は次のとおりです::
+Generator expressions are surrounded by parentheses ("()") and list
+comprehensions are surrounded by square brackets ("[]").  Generator expressions
+have the form::
 
     ( expression for expr in sequence1
                  if condition1
@@ -357,44 +367,46 @@ Haskell (http://www.haskell.org) にインスパイアされました。
                  for exprN in sequenceN
                  if conditionN )
 
-リスト内包表記も、外側の括弧が違うだけ (丸ではなく角括弧) で、あとは同じです。
+Again, for a list comprehension only the outside brackets are different (square
+brackets instead of parentheses).
 
-生成される出力は ``expression`` 部分の値を要素として並べたものになります。
-``if`` 節はすべて、なくても大丈夫です; あれば ``condition`` が真のときだけ
-``expression`` が評価されて出力に追加されます。
+The elements of the generated output will be the successive values of
+``expression``.  The ``if`` clauses are all optional; if present, ``expression``
+is only evaluated and added to the result when ``condition`` is true.
 
-ジェネレータ式は常に括弧の中に書かなければなりませんが、
-関数コールの目印になっている括弧でも大丈夫です。
-関数にすぐ渡すイテレータを作りたければこう書けるのです::
+Generator expressions always have to be written inside parentheses, but the
+parentheses signalling a function call also count.  If you want to create an
+iterator that will be immediately passed to a function you can write::
 
     obj_total = sum(obj.count for obj in list_all_objects())
 
-``for...in`` 節は複数つなげられますが、どれにも、イテレートするための
-シーケンスが含まれています。それらのシーケンスは並行して **ではなく** 、
-左から右へ順番にイテレートされるので、長さが同じである必要はありません。
-``sequence1`` の各要素ごとに毎回最初から ``sequence2`` をループで回すのです。
-その後 ``sequence1`` と ``sequence2`` から出た要素ペアごとに、
-``sequence3`` でループします。
+The ``for...in`` clauses contain the sequences to be iterated over.  The
+sequences do not have to be the same length, because they are iterated over from
+left to right, **not** in parallel.  For each element in ``sequence1``,
+``sequence2`` is looped over from the beginning.  ``sequence3`` is then looped
+over for each resulting pair of elements from ``sequence1`` and ``sequence2``.
 
-別の書き方をすると、リスト内包表記やジェネレータ式は次の
-Python コードと同じ意味になります::
+To put it another way, a list comprehension or generator expression is
+equivalent to the following Python code::
 
     for expr1 in sequence1:
         if not (condition1):
-            continue   # この要素は飛ばす
+            continue   # Skip this element
         for expr2 in sequence2:
             if not (condition2):
-                continue    # この要素は飛ばす
+                continue    # Skip this element
             ...
             for exprN in sequenceN:
                  if not (conditionN):
-                     continue   # この要素は飛ばす
+                     continue   # Skip this element
 
-                 # expression の値を出力する。
+                 # Output the value of
+                 # the expression.
 
-つまり、複数の ``for...in`` 節があって ``if`` がないときの最
-終出力は、長さが各シーケンス長の積に等しくなるということです。
-長さ 3 のリスト二つなら、出力リストの長さは 9 要素です:
+This means that when there are multiple ``for...in`` clauses but no ``if``
+clauses, the length of the resulting output will be equal to the product of the
+lengths of all the sequences.  If you have two lists of length 3, the output
+list is 9 elements long:
 
 .. doctest::
     :options: +NORMALIZE_WHITESPACE
@@ -406,9 +418,9 @@ Python コードと同じ意味になります::
      ('b', 1), ('b', 2), ('b', 3),
      ('c', 1), ('c', 2), ('c', 3)]
 
-Python の文法に曖昧さを紛れ込ませないように、 ``expression``
-でタプルを作るなら括弧で囲わなくてはなりません。下にあるリス
-ト内包表記で、最初のは構文エラーですが、二番目は有効です::
+To avoid introducing an ambiguity into Python's grammar, if ``expression`` is
+creating a tuple, it must be surrounded with parentheses.  The first list
+comprehension below is a syntax error, while the second one is correct::
 
     # Syntax error
     [ x,y for x in seq1 for y in seq2]
@@ -416,23 +428,23 @@ Python の文法に曖昧さを紛れ込ませないように、 ``expression``
     [ (x,y) for x in seq1 for y in seq2]
 
 
-ジェネレータ
-============
+Generators
+==========
 
-ジェネレータは、イテレータを書く作業を簡単にする、特殊な関数です。
-標準的な関数は値を計算して返しますが、ジェネレータが返すのは、
-一連の値を返すイテレータです。
+Generators are a special class of functions that simplify the task of writing
+iterators.  Regular functions compute a value and return it, but generators
+return an iterator that returns a stream of values.
 
-Python や C の標準的な関数コールについては、よくご存じに違いありません。
-関数を呼ぶと、ローカル変数を作るプライベートな名前空間ができますね。
-その関数が ``return`` 文まで来ると、ローカル変数が破壊されてから、返り値が
-呼び出し元に返ります。次に同じ関数をもう一度呼ぶと、新しいプライベート
-名前空間に新規のローカル変数が作られるのです。しかし、関数を出るときに
-ローカル変数を捨てなければどうなるでしょうか。その出ていったところから
-関数を続行できたとしたら、どうでしょう。これこそジェネレータが提供する
-機能です; すなわち、ジェネレータは続行できる関数と考えることができます。
+You're doubtless familiar with how regular function calls work in Python or C.
+When you call a function, it gets a private namespace where its local variables
+are created.  When the function reaches a ``return`` statement, the local
+variables are destroyed and the value is returned to the caller.  A later call
+to the same function creates a new private namespace and a fresh set of local
+variables. But, what if the local variables weren't thrown away on exiting a
+function?  What if you could later resume the function where it left off?  This
+is what generators provide; they can be thought of as resumable functions.
 
-ごく単純なジェネレータ関数の例がこちらにあります:
+Here's the simplest example of a generator function:
 
 .. testcode::
 
@@ -440,18 +452,19 @@ Python や C の標準的な関数コールについては、よくご存じに�
         for i in range(N):
             yield i
 
-``yield`` キーワードを含む関数はすべてジェネレータ関数です;
-Python の :term:`bytecode` コンパイラがこれを検出して、特別な方法で
-コンパイルしてくれるのです。
+Any function containing a ``yield`` keyword is a generator function; this is
+detected by Python's :term:`bytecode` compiler which compiles the function
+specially as a result.
 
-ジェネレータ関数は、呼ばれたときに一回だけ値を返すのではなく、イテレータ
-プロトコルに対応したオブジェクトを返します。上の例で ``yield`` を実行したとき、
-ジェネレータは ``return`` 文のようにして ``i`` の値を出力します。
-``yield`` と ``return`` 文の大きな違いは、 ``yield`` に到達した段階で
-ジェネレータの実行状態が一時停止になって、ローカル変数が保存される点です。
-次回そのジェネレータの ``.next()`` を呼ぶと、そこから関数が実行を再開します。
+When you call a generator function, it doesn't return a single value; instead it
+returns a generator object that supports the iterator protocol.  On executing
+the ``yield`` expression, the generator outputs the value of ``i``, similar to a
+``return`` statement.  The big difference between ``yield`` and a ``return``
+statement is that on reaching a ``yield`` the generator's state of execution is
+suspended and local variables are preserved.  On the next call to the
+generator's ``.next()`` method, the function will resume executing.
 
-上記 ``generate_ints()`` ジェネレータの使用例はこちらです:
+Here's a sample usage of the ``generate_ints()`` generator:
 
     >>> gen = generate_ints(3)
     >>> gen
@@ -468,27 +481,27 @@ Python の :term:`bytecode` コンパイラがこれを検出して、特別な�
       File "stdin", line 2, in generate_ints
     StopIteration
 
-同じく ``for i in generate_ints(5)`` や ``a,b,c = generate_ints(3)``
-といった書き方もできます。
+You could equally write ``for i in generate_ints(5)``, or ``a,b,c =
+generate_ints(3)``.
 
-ジェネレータ関数内で ``return`` 文は、引数を付けずに、処理の終わりを
-知らせるためにだけ使うことができます; ``return`` を実行したあとは、
-もうそのジェネレータが値を返すことはできません。
-ジェネレータ関数の中では、 ``return 5`` などと値を付けた ``return``
-は構文エラーです。ジェネレータの出力が終わったことを示すには、
-ほかにも、手動で ``StopIteration`` を投げてもいいですし、
-関数の最後まで実行するだけでも同じことになります。
+Inside a generator function, the ``return`` statement can only be used without a
+value, and signals the end of the procession of values; after executing a
+``return`` the generator cannot return any further values.  ``return`` with a
+value, such as ``return 5``, is a syntax error inside a generator function.  The
+end of the generator's results can also be indicated by raising
+``StopIteration`` manually, or by just letting the flow of execution fall off
+the bottom of the function.
 
-自分でクラスを書いて、ジェネレータで言うところのローカル変数を
-インスタンス変数として全部保管しておけば、同じ効果を得ることは可能です。
-たとえば整数のリストを返すのは、 ``self.count`` を 0 にして、
-``next()`` メソッドが ``self.count`` をインクリメントして返すように
-すればできます。しかしながら、ある程度複雑なジェネレータになってくると、
-同じことをするクラスを書くのは格段にややこしいことになります。
+You could achieve the effect of generators manually by writing your own class
+and storing all the local variables of the generator as instance variables.  For
+example, returning a list of integers could be done by setting ``self.count`` to
+0, and having the ``next()`` method increment ``self.count`` and return it.
+However, for a moderately complicated generator, writing a corresponding class
+can be much messier.
 
-Python のライブラリに含まれているテストスイート ``test_generators.py`` には、
-ほかにも興味深い例が数多く入っています。これは二分木の通りがけ順 (in-order) 探索
-を再帰で実装したジェネレータです。 ::
+The test suite included with Python's library, ``test_generators.py``, contains
+a number of more interesting examples.  Here's one generator that implements an
+in-order traversal of a tree using generators recursively. ::
 
     # A recursive generator that generates Tree leaves in in-order.
     def inorder(t):
@@ -501,45 +514,47 @@ Python のライブラリに含まれているテストスイート ``test_gener
             for x in inorder(t.right):
                 yield x
 
-ほかにも ``test_generators.py`` には、N-Queens 問題 (N×N コマのチェス盤に、
-互いに攻撃できないような配置で N 個のクイーンを置く) やナイト・ツアー (N×N
-盤の全コマをナイトが一度ずつ通るような経路を探す) の解を出す例が入っています。
+Two other examples in ``test_generators.py`` produce solutions for the N-Queens
+problem (placing N queens on an NxN chess board so that no queen threatens
+another) and the Knight's Tour (finding a route that takes a knight to every
+square of an NxN chessboard without visiting any square twice).
 
 
-ジェネレータに値を渡す
-----------------------
 
-Python 2.4 までのジェネレータは出力することしかできませんでした。
-ジェネレータのコードを実行してイテレータを作ってしまったあとで、
-その関数を再開するときに新しい情報を渡す手段はなかったのです。
-ジェネレータがグローバル変数を見るようにしたり、ミュータブルな
-オブジェクトを渡しておいて呼び出し元であとからそれを変更したり、
-といったハックは可能でしたが、どれもゴチャゴチャしていますね。
+Passing values into a generator
+-------------------------------
 
-Python 2.5 で、ジェネレータに値を渡す簡単な手段ができました。
-:keyword:`yield` が、変数に代入したり演算したりできる値を返す
-式になったのです::
+In Python 2.4 and earlier, generators only produced output.  Once a generator's
+code was invoked to create an iterator, there was no way to pass any new
+information into the function when its execution is resumed.  You could hack
+together this ability by making the generator look at a global variable or by
+passing in some mutable object that callers then modify, but these approaches
+are messy.
+
+In Python 2.5 there's a simple way to pass values into a generator.
+:keyword:`yield` became an expression, returning a value that can be assigned to
+a variable or otherwise operated on::
 
     val = (yield i)
 
-上のように、返り値で何かをするときは ``yield`` 式の前後に **必ず**
-括弧を付けるようお勧めします。括弧は常に必要なわけではありませんが、
-どんなとき付けなくて良いのかを覚えておくより、
-いつも付けておくほうが楽ですから。
+I recommend that you **always** put parentheses around a ``yield`` expression
+when you're doing something with the returned value, as in the above example.
+The parentheses aren't always necessary, but it's easier to always add them
+instead of having to remember when they're needed.
 
-(PEP 342 がその規則を正確に説明していますが、それによると
-``yield``-式は、代入式で右辺のトップレベルにあるとき以外はいつも
-括弧を付ける必要があります。つまり ``val = yield i`` とは書けますが、
-``val = (yield i) + 12`` のように演算子があるときは
-括弧を使わなくてはいけません。)
+(PEP 342 explains the exact rules, which are that a ``yield``-expression must
+always be parenthesized except when it occurs at the top-level expression on the
+right-hand side of an assignment.  This means you can write ``val = yield i``
+but have to use parentheses when there's an operation, as in ``val = (yield i)
++ 12``.)
 
-ジェネレータに値を送るには ``send(値)`` メソッドを呼びます。
-するとジェネレータのコードが実行を再開し、 ``yield`` 式が
-その値を返すのです。ふつうの ``next()`` メソッドを呼ぶと、
-``yield`` は ``None`` を返します。
+Values are sent into a generator by calling its ``send(value)`` method.  This
+method resumes the generator's code and the ``yield`` expression returns the
+specified value.  If the regular ``next()`` method is called, the ``yield``
+returns ``None``.
 
-下にあるのは 1 ずつ増える単純なカウンタですが、内部カウンタ
-の値を変更することができるようになっています。
+Here's a simple counter that increments by 1 and allows changing the value of
+the internal counter.
 
 .. testcode::
 
@@ -547,13 +562,13 @@ Python 2.5 で、ジェネレータに値を渡す簡単な手段ができまし
         i = 0
         while i < maximum:
             val = (yield i)
-            # 値が提供されていればカウンタを変更する
+            # If value provided, change counter
             if val is not None:
                 i = val
             else:
                 i += 1
 
-そしてカウンタ変更の例がこちらです:
+And here's an example of changing the counter:
 
     >>> it = counter(10)
     >>> print it.next()
@@ -566,53 +581,51 @@ Python 2.5 で、ジェネレータに値を渡す簡単な手段ができまし
     9
     >>> print it.next()
     Traceback (most recent call last):
-      File ``t.py'', line 15, in ?
+      File "t.py", line 15, in ?
         print it.next()
     StopIteration
 
-``yield`` が ``None`` を返すことはよくあるのですから、そうなっていないか
-どうか必ずチェックしておくべきです。ジェネレータ関数を再開するために使う
-メソッドが ``send()`` しかないのだと確定してるのでない限り、式の値を
-そのまま使ってはいけません。
+Because ``yield`` will often be returning ``None``, you should always check for
+this case.  Don't just use its value in expressions unless you're sure that the
+``send()`` method will be the only method used to resume your generator
+function.
 
-ジェネレータには、 ``send()`` のほかにも新しいメソッドが二つあります:
+In addition to ``send()``, there are two other new methods on generators:
 
-* ``throw(type, value=None, traceback=None)`` はジェネレータ内で例外を
-  投げるために使います; その例外はジェネレータの実行が停止したところの
-  ``yield`` 式によって投げられます。
+* ``throw(type, value=None, traceback=None)`` is used to raise an exception
+  inside the generator; the exception is raised by the ``yield`` expression
+  where the generator's execution is paused.
 
-* ``close()`` はジェネレータ内で :exc:`GeneratorExit` 例外を投げて、
-  イテレートを終了させます。この例外を受け取ったジェネレータのコードは
-  :exc:`GeneratorExit` か :exc:`StopIteration` を投げなくてはいけません;
-  この例外を捕捉して何かほかのことをしようとするのは規則違反であり、
-  :exc:`RuntimeError` を引き起こします。 ``close()`` はジェネレータが GC
-  されるときにも呼ばれます。
+* ``close()`` raises a :exc:`GeneratorExit` exception inside the generator to
+  terminate the iteration.  On receiving this exception, the generator's code
+  must either raise :exc:`GeneratorExit` or :exc:`StopIteration`; catching the
+  exception and doing anything else is illegal and will trigger a
+  :exc:`RuntimeError`.  ``close()`` will also be called by Python's garbage
+  collector when the generator is garbage-collected.
 
-  :exc:`GeneratorExit` が起こったときにクリーンアップ作業をする必要が
-  あるなら、 :exc:`GeneratorExit` を捕捉するのではなく
-  ``try: ... finaly:`` するようお勧めします。
+  If you need to run cleanup code when a :exc:`GeneratorExit` occurs, I suggest
+  using a ``try: ... finally:`` suite instead of catching :exc:`GeneratorExit`.
 
-これらの変更の合わせ技で、ジェネレータは情報の一方的な生産者から、
-生産者かつ消費者という存在に変貌を遂げたのです。
+The cumulative effect of these changes is to turn generators from one-way
+producers of information into both producers and consumers.
 
-ジェネレータは **コルーチン** という、より一般化された形式のサブルーチン
-にもなります。サブルーチンは一カ所 (関数の冒頭) から入って別の一カ所
-(``return`` 文) から出るだけですが、コルーチンはいろいろな場所
-(``yield`` 文) から入ったり出たり再開したりできるのです。
+Generators also become **coroutines**, a more generalized form of subroutines.
+Subroutines are entered at one point and exited at another point (the top of the
+function, and a ``return`` statement), but coroutines can be entered, exited,
+and resumed at many different points (the ``yield`` statements).
 
 
-ビルトイン関数
-==============
+Built-in functions
+==================
 
-よくイテレータと一緒に使うビルトイン関数について、もっと詳しく見ていきましょう。
+Let's look in more detail at built-in functions often used with iterators.
 
-Python のビルトイン関数 :func:`map` と :func:`filter` は少し
-時代遅れになっています; 機能がリスト内包表記と重複していて、
-イテレータではなくリストそのものを返します。
+Two of Python's built-in functions, :func:`map` and :func:`filter`, are somewhat
+obsolete; they duplicate the features of list comprehensions but return actual
+lists instead of iterators.
 
-``map(f, iterA, iterB, ...)`` は
-``f(iterA[0], iterB[0]), f(iterA[1], iterB[1]), f(iterA[2], iterB[2]), ...``
-のリストを返します。
+``map(f, iterA, iterB, ...)`` returns a list containing ``f(iterA[0], iterB[0]),
+f(iterA[1], iterB[1]), f(iterA[2], iterB[2]), ...``.
 
     >>> def upper(s):
     ...     return s.upper()
@@ -623,16 +636,15 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     >>> [upper(s) for s in ['sentence', 'fragment']]
     ['SENTENCE', 'FRAGMENT']
 
-上にあるように、リスト内包表記でも同じ結果を得ることができます。
-:func:`itertools.imap` 関数も同じことをしてくれますが、
-無限長イテレータまで扱うことができます; これについてはあとから
-:mod:`itertools` モジュールの章で論じましょう。
+As shown above, you can achieve the same effect with a list comprehension.  The
+:func:`itertools.imap` function does the same thing but can handle infinite
+iterators; it'll be discussed later, in the section on the :mod:`itertools` module.
 
-``filter(predicate, iter)`` は条件に合う要素すべてのリストを
-返しますので、同様にリスト内包表記で再現できます。 **predicate**
-の部分には、条件が合うと真値を返す関数を入れてください;
-:func:`filter` で使うには、その関数が取る引数は一つだけ
-でなくてはいけません。
+``filter(predicate, iter)`` returns a list that contains all the sequence
+elements that meet a certain condition, and is similarly duplicated by list
+comprehensions.  A **predicate** is a function that returns the truth value of
+some condition; for use with :func:`filter`, the predicate must take a single
+value.
 
     >>> def is_even(x):
     ...     return (x % 2) == 0
@@ -640,26 +652,26 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     >>> filter(is_even, range(10))
     [0, 2, 4, 6, 8]
 
-これはリスト内包表記でも書けます:
+This can also be written as a list comprehension:
 
     >>> [x for x in range(10) if is_even(x)]
     [0, 2, 4, 6, 8]
 
-:func:`filter` も :mod:`itertools` モジュールに同等品があり、その
-:func:`itertools.ifilter` はイテレータを返すので、
-:func:`itertools.imap` と同様、無限長シーケンスまで扱えます。
+:func:`filter` also has a counterpart in the :mod:`itertools` module,
+:func:`itertools.ifilter`, that returns an iterator and can therefore handle
+infinite sequences just as :func:`itertools.imap` can.
 
-``reduce(func, iter, [initial_value])`` はイテラブルの要素に対して次々に
-演算を実行していった最終結果を出すもので、それゆえ無限長イテラブルには
-適用できませんので、 :mod:`itertools` モジュールに同等品がありません。
-``func`` には、要素を二つ取って値を一つ返す関数が入ります。
-:func:`reduce` はイテレータが返す最初の二要素 A と B を取って
-``func(A, B)`` を出します。それから三番目の要素 C を要求して
-``func(func(A, B), C)`` を算出すると、その結果をさらに四番目の要素と
-組み合わせて……ということをイテラブルが尽きるまで続けるのです。
-もしイテラブルが一つも値を返さなければ :exc:`TypeError` が出ます。
-初期値 ``initial_value`` があるときには、
-``func(initial_value, A)`` がスタート地点として実行されます。
+``reduce(func, iter, [initial_value])`` doesn't have a counterpart in the
+:mod:`itertools` module because it cumulatively performs an operation on all the
+iterable's elements and therefore can't be applied to infinite iterables.
+``func`` must be a function that takes two elements and returns a single value.
+:func:`reduce` takes the first two elements A and B returned by the iterator and
+calculates ``func(A, B)``.  It then requests the third element, C, calculates
+``func(func(A, B), C)``, combines this result with the fourth element returned,
+and continues until the iterable is exhausted.  If the iterable returns no
+values at all, a :exc:`TypeError` exception is raised.  If the initial value is
+supplied, it's used as a starting point and ``func(initial_value, A)`` is the
+first calculation.
 
     >>> import operator
     >>> reduce(operator.concat, ['A', 'BB', 'C'])
@@ -673,9 +685,9 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     >>> reduce(operator.mul, [], 1)
     1
 
-:func:`operator.add` を :func:`reduce` で使うと、イテラブルの全要素を
-合計することになります。これは使用頻度が高いので、そのためだけの
-:func:`sum` というビルトインがあるほどです:
+If you use :func:`operator.add` with :func:`reduce`, you'll add up all the
+elements of the iterable.  This case is so common that there's a special
+built-in called :func:`sum` to compute it:
 
     >>> reduce(operator.add, [1,2,3,4], 0)
     10
@@ -684,20 +696,20 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     >>> sum([])
     0
 
-とはいえ、多くの場合 :func:`reduce` を使うよりは単に
-:keyword:`for` ループを書いたほうがわかりやすくなるかもしれません::
+For many uses of :func:`reduce`, though, it can be clearer to just write the
+obvious :keyword:`for` loop::
 
-    # こう書く代わりに
+    # Instead of:
     product = reduce(operator.mul, [1,2,3], 1)
 
-    # こう書けます
+    # You can write:
     product = 1
     for i in [1,2,3]:
         product *= i
 
 
-``enumerate(iter)`` はイテラブルの要素を数え上げて、それぞれの
-番号と要素の入った 2-タプルを返します。
+``enumerate(iter)`` counts off the elements in the iterable, returning 2-tuples
+containing the count and each element.
 
     >>> for item in enumerate(['subject', 'verb', 'object']):
     ...     print item
@@ -705,21 +717,21 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     (1, 'verb')
     (2, 'object')
 
-:func:`enumerate` はよく、リストに対してループさせて、
-条件に合う所に印を付けていくときに使われます::
+:func:`enumerate` is often used when looping through a list and recording the
+indexes at which certain conditions are met::
 
     f = open('data.txt', 'r')
     for i, line in enumerate(f):
         if line.strip() == '':
             print 'Blank line at line #%i' % i
 
-``sorted(iterable, [cmp=None], [key=None], [reverse=false])`` は
-イテラブルの要素をすべて集めたリストを作り、ソートして返します。
-引数 ``cmp``, ``key``, ``reverse`` は、リストの ``.sort()``
-メソッドにそのまま渡されます。 ::
+``sorted(iterable, [cmp=None], [key=None], [reverse=False])`` collects all the
+elements of the iterable into a list, sorts the list, and returns the sorted
+result.  The ``cmp``, ``key``, and ``reverse`` arguments are passed through to
+the constructed list's ``.sort()`` method. ::
 
     >>> import random
-    >>> # 0 以上 10000 未満の乱数を 8 個生成
+    >>> # Generate 8 random numbers between [0, 10000)
     >>> rand_list = random.sample(range(10000), 8)
     >>> rand_list
     [769, 7953, 9828, 6431, 8442, 9878, 6213, 2207]
@@ -728,12 +740,13 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     >>> sorted(rand_list, reverse=True)
     [9878, 9828, 8442, 7953, 6431, 6213, 2207, 769]
 
-(ソートに関する詳細な論議は Python wiki の Sorting mini-HOWTO
-を参照: http://wiki.python.org/moin/HowTo/Sorting [#]_
+(For a more detailed discussion of sorting, see the Sorting mini-HOWTO in the
+Python wiki at https://wiki.python.org/moin/HowTo/Sorting.)
 
-ビルトインの ``any(iter)`` および ``all(iter)`` はイテラブルの真値を調べます。
-:func:`any` は要素のどれかが真値なら True を返し、
-:func:`all` は要素がどれも真値なら True を返します:
+The ``any(iter)`` and ``all(iter)`` built-ins look at the truth values of an
+iterable's contents.  :func:`any` returns ``True`` if any element in the iterable is
+a true value, and :func:`all` returns ``True`` if all of the elements are true
+values:
 
     >>> any([0,1,0])
     True
@@ -749,21 +762,22 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     True
 
 
-小さな関数とラムダ式
-====================
+Small functions and the lambda expression
+=========================================
 
-関数型スタイルのプログラムを書いていると、述語として働いたり、何らかの形で
-要素をつなぎ合わせたりするミニサイズの関数を必要とすることがよくあります。
+When writing functional-style programs, you'll often need little functions that
+act as predicates or that combine elements in some way.
 
-ちょうど良い関数がビルトインやモジュールで存在していれば、
-新しい関数を定義する必要はまったくありません::
+If there's a Python built-in or a module function that's suitable, you don't
+need to define a new function at all::
 
     stripped_lines = [line.strip() for line in lines]
     existing_files = filter(os.path.exists, file_list)
 
-しかし、欲しい関数がないなら書くしかありません。そうした小さな関数を書く方法の
-一つが ``lambda`` 文です。 ``lambda`` は引数として複数のパラメータと
-それをつなぐ式を取り、その式の値を返す小さな関数を作ります::
+If the function you need doesn't exist, you need to write it.  One way to write
+small functions is to use the ``lambda`` statement.  ``lambda`` takes a number
+of parameters and an expression combining these parameters, and creates a small
+function that returns the value of the expression::
 
     lowercase = lambda x: x.lower()
 
@@ -771,7 +785,8 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
 
     adder = lambda x, y: x+y
 
-もう一つの選択肢は、ふつうに ``def`` 文で関数を定義するだけです::
+An alternative is to just use the ``def`` statement and define a function in the
+usual way::
 
     def lowercase(x):
         return x.lower()
@@ -782,132 +797,131 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     def adder(x,y):
         return x + y
 
-どちらのほうが良いのでしょうか。それは好みの問題です; 著者のスタイルとしては
-できるだけ ``lambda`` を使わないようにしています。
+Which alternative is preferable?  That's a style question; my usual course is to
+avoid using ``lambda``.
 
-そのようにしている理由の一つに、 ``lambda`` は定義できる関数が非常に
-限られているという点があります。一つの式として算出できる結果に
-しなければいけませんので、 ``if... elif... else`` や ``try... except``
-のような分岐を持つことができないのです。 ``lambda`` 文の中で
-たくさんのことをやろうとしすぎると、ごちゃごちゃして読みにくい式に
-なってしまいます。さて、次のコードは何をしているでしょうか、
-素早くお答えください!
+One reason for my preference is that ``lambda`` is quite limited in the
+functions it can define.  The result has to be computable as a single
+expression, which means you can't have multiway ``if... elif... else``
+comparisons or ``try... except`` statements.  If you try to do too much in a
+``lambda`` statement, you'll end up with an overly complicated expression that's
+hard to read.  Quick, what's the following code doing?
 
 ::
 
     total = reduce(lambda a, b: (0, a[1] + b[1]), items)[1]
 
-わかるにはわかるでしょうが、何がどうなっているのか紐解いていくには時間が
-かかるはずです。短い ``def`` 文で入れ子にすると、少し見通しが良くなりますが::
+You can figure it out, but it takes time to disentangle the expression to figure
+out what's going on.  Using a short nested ``def`` statements makes things a
+little bit better::
 
     def combine (a, b):
         return 0, a[1] + b[1]
 
     total = reduce(combine, items)[1]
 
-でも単純に ``for`` ループにすれば良かったのです::
+But it would be best of all if I had simply used a ``for`` loop::
 
      total = 0
      for a, b in items:
          total += b
 
-あるいは :func:`sum` ビルトインとジェネレータ式でも良いですね::
+Or the :func:`sum` built-in and a generator expression::
 
      total = sum(b for a,b in items)
 
-多くの場合、 :func:`reduce` を使っているところは ``for`` ループに
-書き直したほうが見やすいです。
+Many uses of :func:`reduce` are clearer when written as ``for`` loops.
 
-Fredrik Lundh は以前 ``lambda`` 利用のリファクタリング
-に関して以下の指針を提案したことがあります:
+Fredrik Lundh once suggested the following set of rules for refactoring uses of
+``lambda``:
 
-1) ラムダ関数を書く。
-2) そのラムダが一体ぜんたい何をしているのかコメントで説明する。
-3) そのコメントをしばらく研究して、本質をとらえた名前を考える。
-4) ラムダをその名前で def 文に書き換える。
-5) コメントを消す。
+1) Write a lambda function.
+2) Write a comment explaining what the heck that lambda does.
+3) Study the comment for a while, and think of a name that captures the essence
+   of the comment.
+4) Convert the lambda to a def statement, using that name.
+5) Remove the comment.
 
-著者はこの指針を本当に気に入っていますが、こうしたラムダなし
-スタイルが他より優れているかどうかについて、異論は認めます。
+I really like these rules, but you're free to disagree
+about whether this lambda-free style is better.
 
 
-itertools モジュール
+The itertools module
 ====================
 
-:mod:`itertools` モジュールには、よく使うイテレータや、イテレータ同士の
-連結に使う関数がたくさん含まれています。この章では、そのモジュールの内容を
-小さな例で紹介していきたいと思います。
+The :mod:`itertools` module contains a number of commonly-used iterators as well
+as functions for combining several iterators.  This section will introduce the
+module's contents by showing small examples.
 
-このモジュールの関数を大まかに分けるとこうなります:
+The module's functions fall into a few broad classes:
 
-* 既存のイテレータに基づいて新しいイテレータを作る関数
-* イテレータの要素を引数として扱う関数
-* イテレータの出力から一部を取り出す関数
-* イテレータの出力をグループ分けする関数
+* Functions that create a new iterator based on an existing iterator.
+* Functions for treating an iterator's elements as function arguments.
+* Functions for selecting portions of an iterator's output.
+* A function for grouping an iterator's output.
 
-新しいイテレータを作る
+Creating new iterators
 ----------------------
 
-``itertools.count(n)`` は整数を 1 ずつ増やして無限長ストリームを返します。
-開始地点となる数を渡すこともでき、既定は 0 になっています::
+``itertools.count(n)`` returns an infinite stream of integers, increasing by 1
+each time.  You can optionally supply the starting number, which defaults to 0::
 
     itertools.count() =>
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ...
     itertools.count(10) =>
       10, 11, 12, 13, 14, 15, 16, 17, 18, 19, ...
 
-``itertools.cycle(iter)`` は与えられたイテラブルの内容をコピーして、
-その要素を最初から最後まで無限に繰り返していくイテレータを返します。 ::
+``itertools.cycle(iter)`` saves a copy of the contents of a provided iterable
+and returns a new iterator that returns its elements from first to last.  The
+new iterator will repeat these elements infinitely. ::
 
     itertools.cycle([1,2,3,4,5]) =>
       1, 2, 3, 4, 5, 1, 2, 3, 4, 5, ...
 
-``itertools.repeat(elem, [n])`` は、与えられた要素を ``n``
-回返しますが、 ``n`` がなければ永遠に返し続けます。 ::
+``itertools.repeat(elem, [n])`` returns the provided element ``n`` times, or
+returns the element endlessly if ``n`` is not provided. ::
 
     itertools.repeat('abc') =>
       abc, abc, abc, abc, abc, abc, abc, abc, abc, abc, ...
     itertools.repeat('abc', 5) =>
       abc, abc, abc, abc, abc
 
-``itertools.chain(iterA, iterB, ...)`` はイテラブルを好きな数だけ
-受け取って、最初のイテレータから要素をすべて返し、次に二番目から
-要素をすべて返し、ということを要素がなくなるまで続けます。 ::
+``itertools.chain(iterA, iterB, ...)`` takes an arbitrary number of iterables as
+input, and returns all the elements of the first iterator, then all the elements
+of the second, and so on, until all of the iterables have been exhausted. ::
 
     itertools.chain(['a', 'b', 'c'], (1, 2, 3)) =>
       a, b, c, 1, 2, 3
 
-``itertools.izip(iterA, iterB, ...)`` は各イテラブルから
-要素を一つずつ取り、タプルに入れて返します::
+``itertools.izip(iterA, iterB, ...)`` takes one element from each iterable and
+returns them in a tuple::
 
     itertools.izip(['a', 'b', 'c'], (1, 2, 3)) =>
       ('a', 1), ('b', 2), ('c', 3)
 
-これはビルトインの :func:`zip` 関数と似ていますが、メモリ内に
-リストを構築したり、入力イテレータを使い切ってから返したり
-しない点が違います; これがタプルを作って返すのは、要求を受けたとき
-だけなのです。(この振る舞いを専門用語で `遅延評価
-<http://ja.wikipedia.org/wiki/%E9%81%85%E5%BB%B6%E8%A9%95%E4%BE%A1>`__
-と言います。)
+It's similar to the built-in :func:`zip` function, but doesn't construct an
+in-memory list and exhaust all the input iterators before returning; instead
+tuples are constructed and returned only if they're requested.  (The technical
+term for this behaviour is `lazy evaluation
+<http://en.wikipedia.org/wiki/Lazy_evaluation>`__.)
 
-このイテレータの用途には、すべて同じ長さのイテラブルを想定しています。
-長さが違っていれば、出力されるストリームは一番短いイテラブルと
-同じ長さになります。 ::
+This iterator is intended to be used with iterables that are all of the same
+length.  If the iterables are of different lengths, the resulting stream will be
+the same length as the shortest iterable. ::
 
     itertools.izip(['a', 'b'], (1, 2, 3)) =>
       ('a', 1), ('b', 2)
 
-とは言え、これをやってしまうと長いイテレータから要素をひとつ無駄に多く
-取って捨ててしまうかもしれませんので、やめておいたほうが良いです。
-その捨てられた要素を抜かしてしまう危険があるので、
-もうそのイテレータはそれ以上使えなくなってしまいます。
+You should avoid doing this, though, because an element may be taken from the
+longer iterators and discarded.  This means you can't go on to use the iterators
+further because you risk skipping a discarded element.
 
-``itertools.islice(iter, [start], stop, [step])`` は、イテレータの
-スライスをストリームで返します。 ``stop`` 引数だけだと、最初の
-``stop`` 個の要素を返します。開始インデックスを渡すと
-``stop - start`` 個で、 ``step`` の値も渡せばそれに応じて
-要素を抜かします。Python における文字列やリストのスライスとは違って、
-マイナスの値は ``start``, ``stop``, ``step`` に使えません。 ::
+``itertools.islice(iter, [start], stop, [step])`` returns a stream that's a
+slice of the iterator.  With a single ``stop`` argument, it will return the
+first ``stop`` elements.  If you supply a starting index, you'll get
+``stop-start`` elements, and if you supply a value for ``step``, elements will
+be skipped accordingly.  Unlike Python's string and list slicing, you can't use
+negative values for ``start``, ``stop``, or ``step``. ::
 
     itertools.islice(range(10), 8) =>
       0, 1, 2, 3, 4, 5, 6, 7
@@ -916,12 +930,12 @@ itertools モジュール
     itertools.islice(range(10), 2, 8, 2) =>
       2, 4, 6
 
-``itertools.tee(iter, [n])`` はイテレータを複製します; 元のイテレータの
-内容を同じように返す、独立した ``n`` 個のイテレータを返すのです。
-``n`` の値は、指定しなければ既定が 2 になっています。複製するには元の
-イテレータの内容を一部保存しておく必要がありますから、大きな
-イテレータから複製したうちの一つが他よりも進んでいってしまうと、
-大量のメモリを消費することがあります。 ::
+``itertools.tee(iter, [n])`` replicates an iterator; it returns ``n``
+independent iterators that will all return the contents of the source iterator.
+If you don't supply a value for ``n``, the default is 2.  Replicating iterators
+requires saving some of the contents of the source iterator, so this can consume
+significant memory if the iterator is large and one of the new iterators is
+consumed more than the others. ::
 
         itertools.tee( itertools.count() ) =>
            iterA, iterB
@@ -933,25 +947,25 @@ itertools モジュール
            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ...
 
 
-要素に対して関数を呼ぶ
-----------------------
+Calling functions on elements
+-----------------------------
 
-イテラブルの中身に対して他の関数を呼ぶための関数が二つあります。
+Two functions are used for calling other functions on the contents of an
+iterable.
 
-``itertools.imap(f, iterA, iterB, ...)`` は
-``f(iterA[0], iterB[0]), f(iterA[1], iterB[1]), f(iterA[2], iterB[2]), ...``
-というストリームを返します::
+``itertools.imap(f, iterA, iterB, ...)`` returns a stream containing
+``f(iterA[0], iterB[0]), f(iterA[1], iterB[1]), f(iterA[2], iterB[2]), ...``::
 
     itertools.imap(operator.add, [5, 6, 5], [1, 2, 3]) =>
       6, 8, 8
 
-いま使った ``operator`` モジュールには、Python の演算子に対応する関数が入って
-います。いくつか例を挙げると、 ``operator.add(a, b)`` (二つの値を加算)、
-``operator.ne(a, b)`` (``a!=b`` と同じ)、 ``operator.attrgetter('id')``
-(``"id"`` 属性を取得するコーラブルを返す) といった関数です。
+The ``operator`` module contains a set of functions corresponding to Python's
+operators.  Some examples are ``operator.add(a, b)`` (adds two values),
+``operator.ne(a, b)`` (same as ``a!=b``), and ``operator.attrgetter('id')``
+(returns a callable that fetches the ``"id"`` attribute).
 
-``itertools.starmap(func, iter)`` は、イテラブルがタプルを返すものとして、
-そのタプルを引数に使って ``func()`` を呼びます::
+``itertools.starmap(func, iter)`` assumes that the iterable will return a stream
+of tuples, and calls ``f()`` using these tuples as the arguments::
 
     itertools.starmap(os.path.join,
                       [('/usr', 'bin', 'java'), ('/bin', 'python'),
@@ -960,13 +974,14 @@ itertools モジュール
       /usr/bin/java, /bin/python, /usr/bin/perl, /usr/bin/ruby
 
 
-要素を選択する
---------------
+Selecting elements
+------------------
 
-さらに別のグループとして、述語 (predicate) に基づいて
-イテレータの要素からサブセットを選び出す関数があります。
+Another group of functions chooses a subset of an iterator's elements based on a
+predicate.
 
-``itertools.ifilter(predicate, iter)`` は述語が真を返す要素をすべて返します::
+``itertools.ifilter(predicate, iter)`` returns all the elements for which the
+predicate returns true::
 
     def is_even(x):
         return (x % 2) == 0
@@ -974,14 +989,15 @@ itertools モジュール
     itertools.ifilter(is_even, itertools.count()) =>
       0, 2, 4, 6, 8, 10, 12, 14, ...
 
-``itertools.ifilterfalse(predicate, iter)`` は反対に、
-述語が偽を返す要素をすべて返します::
+``itertools.ifilterfalse(predicate, iter)`` is the opposite, returning all
+elements for which the predicate returns false::
 
     itertools.ifilterfalse(is_even, itertools.count()) =>
       1, 3, 5, 7, 9, 11, 13, 15, ...
 
-``itertools.takewhile(predicate, iter)`` は述語が真を返している間だけ要素
-を返します。一度でも述語が偽を返すと、イテレータは出力終了の合図をします。
+``itertools.takewhile(predicate, iter)`` returns elements for as long as the
+predicate returns true.  Once the predicate returns false, the iterator will
+signal the end of its results.
 
 ::
 
@@ -994,8 +1010,8 @@ itertools モジュール
     itertools.takewhile(is_even, itertools.count()) =>
       0
 
-``itertools.dropwhile(predicate, iter)`` は、述語が真を返しているうちは
-要素を無視し、偽になってから残りの出力をすべて返します。
+``itertools.dropwhile(predicate, iter)`` discards elements while the predicate
+returns true, and then returns the rest of the iterable's results.
 
 ::
 
@@ -1006,17 +1022,17 @@ itertools モジュール
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, ...
 
 
-要素をグループ分けする
-----------------------
+Grouping elements
+-----------------
 
-最後に議題に上げる関数 ``itertools.groupby(iter, key_func=None)`` は、
-これまでで最も複雑です。 ``key_func(elem)`` は、イテラブルから返ってきた要素
-それぞれのキー値を計算する関数です。この関数が指定されていなければ、
-キーは単に各要素そのものになります。
+The last function I'll discuss, ``itertools.groupby(iter, key_func=None)``, is
+the most complicated.  ``key_func(elem)`` is a function that can compute a key
+value for each element returned by the iterable.  If you don't supply a key
+function, the key is simply each element itself.
 
-``groupby()`` は、下敷きになっているイテラブルから、
-連続して同じキー値を持つ要素を集めて、キー値とイテレータの 2-タプルを
-返していきます。イテレータは、それぞれのキーに対応する要素を出します。
+``groupby()`` collects all the consecutive elements from the underlying iterable
+that have the same key value, and returns a stream of 2-tuples containing a key
+value and an iterator for the elements with that key.
 
 ::
 
@@ -1042,32 +1058,31 @@ itertools モジュール
     iterator-3 =>
       ('Flagstaff', 'AZ'), ('Phoenix', 'AZ'), ('Tucson', 'AZ')
 
-``groupby()`` は、下敷きにするイテラブルの中身がキー値でソート済みに
-なって与えられることを想定しています。さて、こうして出力される
-イテレータ自体も下敷きのイテラブルを使うということに注意してください。
-ですから iterator-1 に出力し切ってしまうまで、iterator-2
-およびそのキー値を要求することはできません。
+``groupby()`` assumes that the underlying iterable's contents will already be
+sorted based on the key.  Note that the returned iterators also use the
+underlying iterable, so you have to consume the results of iterator-1 before
+requesting iterator-2 and its corresponding key.
 
 
-functools モジュール
+The functools module
 ====================
 
-Python 2.5 からの :mod:`functools` モジュールには、高階関数がいくつか入って
-います。 **高階関数** とは、入力として関数を受け取って新たな関数を返す関数
-です。このモジュールで一番便利なツールは :func:`functools.partial` 関数です。
+The :mod:`functools` module in Python 2.5 contains some higher-order functions.
+A **higher-order function** takes one or more functions as input and returns a
+new function.  The most useful tool in this module is the
+:func:`functools.partial` function.
 
-関数型スタイルのプログラムでは時折、既存の関数から一部のパラメータを埋めた
-変種を作りたくなることがあります。Python の関数 ``f(a, b, c)`` というものが
-あるとしてください; ``f(1, b, c)`` と同じ意味の ``g(b, c)`` という関数を
-作りたくなることがあります; つまり ``f()`` のパラメータを一つ埋めるわけです。
-これは「関数の部分適用」と呼ばれています。
+For programs written in a functional style, you'll sometimes want to construct
+variants of existing functions that have some of the parameters filled in.
+Consider a Python function ``f(a, b, c)``; you may wish to create a new function
+``g(b, c)`` that's equivalent to ``f(1, b, c)``; you're filling in a value for
+one of ``f()``'s parameters.  This is called "partial function application".
 
-``partial`` のコンストラクタは
-``(関数, 引数1, 引数2, ... キーワード引数1=既定値1, キーワード引数2=既定値2)``
-という引数を取ります。できあがったオブジェクトはコーラブルですので、それを
-呼べば、引数の埋まった ``function`` を実行したのと同じことになります。
+The constructor for ``partial`` takes the arguments ``(function, arg1, arg2,
+... kwarg1=value1, kwarg2=value2)``.  The resulting object is callable, so you
+can just call it to invoke ``function`` with the filled-in arguments.
 
-以下にあるのは、小さいけれども現実的な一つの例です::
+Here's a small but realistic example::
 
     import functools
 
@@ -1080,155 +1095,33 @@ Python 2.5 からの :mod:`functools` モジュールには、高階関数がい
     server_log('Unable to open socket')
 
 
-operator モジュール
+The operator module
 -------------------
 
-:mod:`operator` モジュールは、既に取り上げましたが、Python の演算子に対応する
-関数が入っているモジュールです。関数型スタイルのコードにおいて、演算を一つ
-実行するだけのくだらない関数を書かずに済むので、よく世話になります。
+The :mod:`operator` module was mentioned earlier.  It contains a set of
+functions corresponding to Python's operators.  These functions are often useful
+in functional-style code because they save you from writing trivial functions
+that perform a single operation.
 
-このモジュールの関数を一部だけ紹介しましょう:
+Some of the functions in this module are:
 
-* 数学演算子: ``add()``, ``sub()``, ``mul()``, ``div()``, ``floordiv()``,
+* Math operations: ``add()``, ``sub()``, ``mul()``, ``div()``, ``floordiv()``,
   ``abs()``, ...
-* 論理演算子: ``not_()``, ``truth()``
-* ビット演算子: ``and_()``, ``or_()``, ``invert()``
-* 比較: ``eq()``, ``ne()``, ``lt()``, ``le()``, ``gt()``, ``ge()``
-* オブジェクト識別: ``is_()``, ``is_not()``
+* Logical operations: ``not_()``, ``truth()``.
+* Bitwise operations: ``and_()``, ``or_()``, ``invert()``.
+* Comparisons: ``eq()``, ``ne()``, ``lt()``, ``le()``, ``gt()``, and ``ge()``.
+* Object identity: ``is_()``, ``is_not()``.
 
-ちゃんとした一覧は operator モジュールの文書でご覧ください。
-
-
-functional モジュール
----------------------
-
-Collin Winter の
-`functional モジュール <http://oakwinter.com/code/functional/>`__
-には関数型プログラミング用の上級ツールが多数備わっています。さらには、
-いくつかの Python ビルトインを再実装して、既に他言語で関数型プログラミングに
-親しんでいる人たちにとってより直感的なようにしてあります。
-
-この章では、 ``functional`` の中で最も重要な関数をいくつか紹介します;
-完全版の文書は `プロジェクトのウェブサイト
-<http://oakwinter.com/code/functional/documentation/>`__ にあります。
-
-``compose(outer, inner, unpack=False)``
-
-``compose()`` 関数は、関数合成を実装しています。言い換えると、
-``inner`` と ``outer`` の両コーラブルを囲んで、 ``inner`` からの返り値を
-すぐ ``outer`` に渡すようなラッパを返します。つまり、 ::
-
-    >>> def add(a, b):
-    ...     return a + b
-    ...
-    >>> def double(a):
-    ...     return 2 * a
-    ...
-    >>> compose(double, add)(5, 6)
-    22
-
-は下と同じことをしています。 ::
-
-    >>> double(add(5, 6))
-    22
-
-``unpack`` キーワードが用意されているのは、Python には完全に `カリー化
-<http://en.wikipedia.org/wiki/Currying>`__ されていない関数があるという
-現実に対処するためです。既定では ``inner`` 関数も単一オブジェクトを返し
-``outer`` 関数も単一の引数を取るものと期待されていますが、 ``unpack``
-引数を設定すると、 ``compose`` は ``inner`` からタプルが来るものとして、
-``outer`` に渡す前に展開するようになります。ですから単なる ::
-
-    compose(f, g)(5, 6)
-
-は次の書き方と同じことです::
-
-    f(g(5, 6))
-
-けれども ::
-
-    compose(f, g, unpack=True)(5, 6)
-
-は次と同じ意味になります::
-
-    f(*g(5, 6))
-
-``compose()`` は二つしか関数を受け付けませんが、
-好きなだけ合成できるバージョンを作るのは簡単なことです。それには
-``reduce()``, ``compose()``, ``partial()`` を使います (最後のは
-``functional`` でも ``functools`` でも提供されています)。 ::
-
-    from functional import compose, partial
-
-    multi_compose = partial(reduce, compose)
+Consult the operator module's documentation for a complete list.
 
 
-``map()``, ``compose()``, ``partial()`` を使って、引数を文字列に
-変換するバージョンの ``"".join(...)`` を組み立てることもできます::
+Revision History and Acknowledgements
+=====================================
 
-    from functional import compose, partial
-
-    join = compose("".join, partial(map, str))
-
-
-``flip(func)``
-
-``flip()`` は、 ``func`` に指定したコーラブルのラッパを返し、
-キーワードなし引数を逆の順番で受け取るようにします。 ::
-
-    >>> def triple(a, b, c):
-    ...     return (a, b, c)
-    ...
-    >>> triple(5, 6, 7)
-    (5, 6, 7)
-    >>>
-    >>> flipped_triple = flip(triple)
-    >>> flipped_triple(5, 6, 7)
-    (7, 6, 5)
-
-``foldl(func, start, iterable)``
-
-``foldl()`` は引数として二引数関数、初期値 (たいていは「ある種の」ゼロ)、
-イテラブルを取ります。その二引数関数を初期値とリスト第一要素に適用し、その結果と
-リスト第二要素、さらにその結果と第三要素、というように適用していくのです。
-
-つまり、こういうコールは ::
-
-    foldl(f, 0, [1, 2, 3])
-
-これと同じことになります::
-
-    f(f(f(0, 1), 2), 3)
-
-
-``foldl()`` は以下の再帰関数とほぼ同じです::
-
-    def foldl(func, start, seq):
-        if len(seq) == 0:
-            return start
-
-        return foldl(func, func(start, seq[0]), seq[1:])
-
-「同じ」と言えば、さきほどの ``foldl`` コールの例は、ビルトインの
-``reduce`` を使ってこのように表現することもできます::
-
-    reduce(f, [1, 2, 3], 0)
-
-
-``foldl()``, ``operator.concat()``, ``partial()`` を使えば、
-スッキリして見やすいバージョンの ``"".join(...)`` を書くことができます::
-
-    from functional import foldl, partial from operator import concat
-
-    join = partial(foldl, concat, "")
-
-更新履歴と謝辞
-==============
-
-著者は提案の申し出や修正、様々なこの記事の草稿の助けをしてくれた
-以下の人々に感謝します:
-Ian Bicking, Nick Coghlan, Nick Efford, Raymond Hettinger, Jim Jewett,
-Mike Krell, Leandro Lameiro, Jussi Salmela, Collin Winter, Blake Winton.
+The author would like to thank the following people for offering suggestions,
+corrections and assistance with various drafts of this article: Ian Bicking,
+Nick Coghlan, Nick Efford, Raymond Hettinger, Jim Jewett, Mike Krell, Leandro
+Lameiro, Jussi Salmela, Collin Winter, Blake Winton.
 
 Version 0.1: posted June 30 2006.
 
@@ -1243,50 +1136,52 @@ Version 0.30: Adds a section on the ``functional`` module written by Collin
 Winter; adds short section on the operator module; a few other edits.
 
 
-参照資料
-========
+References
+==========
 
-一般論
-------
+General
+-------
 
-Harold Abelson と Gerald Jay Sussman, Julie Sussman による
-**Structure and Interpretation of Computer Programs** 。
-http://mitpress.mit.edu/sicp/ に全文があります。
-この計算機科学に関する古典的な教科書では、
-2 章と 3 章でデータフローをプログラム内でまとめるための
-シーケンスとストリームの利用について議論しています。
-この本は例として Scheme を使っていますが、
-これらの章内の多くのデザインアプローチは
-関数スタイルな Python コードにも適用できます。
+**Structure and Interpretation of Computer Programs**, by Harold Abelson and
+Gerald Jay Sussman with Julie Sussman.  Full text at
+http://mitpress.mit.edu/sicp/.  In this classic textbook of computer science,
+chapters 2 and 3 discuss the use of sequences and streams to organize the data
+flow inside a program.  The book uses Scheme for its examples, but many of the
+design approaches described in these chapters are applicable to functional-style
+Python code.
 
-http://www.defmacro.org/ramblings/fp.html: 関数プログラミングの一般的な入門で
-Java での例を利用していて、長大な歴史の紹介があります。
+http://www.defmacro.org/ramblings/fp.html: A general introduction to functional
+programming that uses Java examples and has a lengthy historical introduction.
 
-http://en.wikipedia.org/wiki/Functional_programming: 関数プログラミングに関する
-一般的な内容の記事 [#]_ 。
+http://en.wikipedia.org/wiki/Functional_programming: General Wikipedia entry
+describing functional programming.
 
-http://en.wikipedia.org/wiki/Coroutine: コルーチンに関する記事 [#]_ 。
+http://en.wikipedia.org/wiki/Coroutine: Entry for coroutines.
 
-http://en.wikipedia.org/wiki/Currying: カリー化の概念に関する記事 [#]_ 。
+http://en.wikipedia.org/wiki/Currying: Entry for the concept of currying.
 
-Python 特有の話
+Python-specific
 ---------------
 
-http://gnosis.cx/TPiP/: David Mertz's の本の最初の章
-:title-reference:`Text Processing in Python` では文書処理のための
-関数プログラミングについて議論しています、
-この議論の節には
-"Utilizing Higher-Order Functions in Text Processing"
-というタイトルがついています。
+http://gnosis.cx/TPiP/: The first chapter of David Mertz's book
+:title-reference:`Text Processing in Python` discusses functional programming
+for text processing, in the section titled "Utilizing Higher-Order Functions in
+Text Processing".
+
+Mertz also wrote a 3-part series of articles on functional programming
+for IBM's DeveloperWorks site; see
+
+`part 1 <http://www.ibm.com/developerworks/linux/library/l-prog/index.html>`__,
+`part 2 <http://www.ibm.com/developerworks/linux/library/l-prog2/index.html>`__, and
+`part 3 <http://www.ibm.com/developerworks/linux/library/l-prog3/index.html>`__,
 
 
+Python documentation
+--------------------
 
-Python 文書
------------
+Documentation for the :mod:`itertools` module.
 
-:mod:`itertools` モジュールの文書。
-
-:mod:`operator` モジュールの文書。
+Documentation for the :mod:`operator` module.
 
 :pep:`289`: "Generator Expressions"
 
@@ -1352,17 +1247,4 @@ features in Python 2.5.
              sys.stdout.write(', ')
         print elem[-1]
 
-.. rubric:: 注記
 
-.. [#] 訳注 Python Wiki の内容の最新の情報は反映されていませんが、
-       Python ドキュメント内に和訳があります :ref:`sortinghowto`
-.. [#] 訳注 日本語版 Wikipedia に
-       `関数型言語
-       <http://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E8%A8%80%E8%AA%9E>`_
-       に関する記事があります。
-.. [#] 訳注 日本語版 Wikipedia に
-       `コルーチン <http://ja.wikipedia.org/wiki/%E3%82%B3%E3%83%AB%E3%83%BC%E3%83%81%E3%83%B3>`_
-       に関する記事があります。
-.. [#] 訳注 日本語版 Wikipedia に
-       `カリー化 <http://ja.wikipedia.org/wiki/%E3%82%AB%E3%83%AA%E3%83%BC%E5%8C%96>`_
-       に関する記事があります。

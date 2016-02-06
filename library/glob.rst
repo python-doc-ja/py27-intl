@@ -1,41 +1,50 @@
-
-:mod:`glob` --- Unix 形式のパス名のパターン展開
-===============================================
+:mod:`glob` --- Unix style pathname pattern expansion
+=====================================================
 
 .. module:: glob
-   :synopsis: Unix シェル形式のパス名のパターン展開。
+   :synopsis: Unix shell style pathname pattern expansion.
 
 
-.. index:: single: filenames; pathname expantion
+.. index:: single: filenames; pathname expansion
 
-:mod:`glob` モジュールはUnix シェルで使われているルールに従って指定されたパターンにマッチするすべてのパス名を見つけ出します。
-チルダ展開は使えませんが、 ``*`` 、 ``?`` と ``[]`` で表される文字範囲には正しくマッチします。これは :func:`os.listdir`
-関数と :func:`fnmatch.fnmatch` 関数を一緒に使って実行されていて、実際に subshell を呼び出しているわけではありま
-せん。(チルダ展開とシェル変数展開を利用したければ、 :func:`os.path.expanduser`
-と :func:`os.path.expandvars` を使ってください。)
+**Source code:** :source:`Lib/glob.py`
 
-.. seealso::
+--------------
 
-   最新バージョンの `glob モジュールの Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/glob.py?view=markup>`_
+The :mod:`glob` module finds all the pathnames matching a specified pattern
+according to the rules used by the Unix shell, although results are returned in
+arbitrary order.  No tilde expansion is done, but ``*``, ``?``, and character
+ranges expressed with ``[]`` will be correctly matched.  This is done by using
+the :func:`os.listdir` and :func:`fnmatch.fnmatch` functions in concert, and
+not by actually invoking a subshell.  Note that unlike :func:`fnmatch.fnmatch`,
+:mod:`glob` treats filenames beginning with a dot (``.``) as special cases.
+(For tilde and shell variable expansion, use :func:`os.path.expanduser` and
+:func:`os.path.expandvars`.)
+
+For a literal match, wrap the meta-characters in brackets.
+For example, ``'[?]'`` matches the character ``'?'``.
+
 
 .. function:: glob(pathname)
 
-   *pathname* (パスの指定を含んだ文字列でなければいけません。)にマッチする空の可能性のあるパス名のリストを返します。
-
-   *pathname* は( :file:`/usr/src/Python-1.5/Makefile` のように)絶対パスでも
-   いいし、(:file:`../../Tools/\*/\*.gif` のように)相対パスでもよくて、シェル形式のワイルドカードを含んでいてもかまいません。
-   結果には(シェルと同じく)壊れたシンボリックリンクも含まれます。
+   Return a possibly-empty list of path names that match *pathname*, which must be
+   a string containing a path specification. *pathname* can be either absolute
+   (like :file:`/usr/src/Python-1.5/Makefile`) or relative (like
+   :file:`../../Tools/\*/\*.gif`), and can contain shell-style wildcards. Broken
+   symlinks are included in the results (as in the shell).
 
 
 .. function:: iglob(pathname)
 
-   実際には一度に全てを格納せずに、 :func:`glob` と同じ値を順に生成するイテレータを返します。
+   Return an :term:`iterator` which yields the same values as :func:`glob`
+   without actually storing them all simultaneously.
 
    .. versionadded:: 2.5
 
-たとえば、次の三つのファイルだけがあるディレクトリを考えてください: :file:`1.gif` 、 :file:`2.txt` 、 :file:`card.gif` 。
-:func:`glob` は次のような結果になります。パスに接頭するどの部分が保たれているかに注意してください。 ::
+For example, consider a directory containing only the following files:
+:file:`1.gif`, :file:`2.txt`, and :file:`card.gif`.  :func:`glob` will produce
+the following results.  Notice how any leading components of the path are
+preserved. ::
 
    >>> import glob
    >>> glob.glob('./[0-9].*')
@@ -45,9 +54,18 @@
    >>> glob.glob('?.gif')
    ['1.gif']
 
+If the directory contains files starting with ``.`` they won't be matched by
+default. For example, consider a directory containing :file:`card.gif` and
+:file:`.card.gif`::
+
+   >>> import glob
+   >>> glob.glob('*.gif')
+   ['card.gif']
+   >>> glob.glob('.c*')
+   ['.card.gif']
 
 .. seealso::
 
    Module :mod:`fnmatch`
-      シェル形式の(パスではない)ファイル名展開
+      Shell-style filename (not path) expansion
 

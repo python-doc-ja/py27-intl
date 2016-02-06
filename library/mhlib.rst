@@ -1,204 +1,207 @@
-:mod:`mhlib` --- MH のメールボックスへのアクセス機構
-====================================================
+:mod:`mhlib` --- Access to MH mailboxes
+=======================================
 
 .. module:: mhlib
-   :synopsis: Python から MH のメールボックスを操作します。
+   :synopsis: Manipulate MH mailboxes from Python.
    :deprecated:
 
 .. deprecated:: 2.6
-    :mod:`mhlib` は Python 3.0 では削除されています。
-    代わりに :mod:`mailbox` をお使い下さい。
+    The :mod:`mhlib` module has been removed in Python 3. Use the
+    :mod:`mailbox` instead.
 
 .. sectionauthor:: Skip Montanaro <skip@pobox.com>
 
-:mod:`mhlib` モジュールは MH フォルダおよびその内容に対する Python インタフェースを提供します。
+The :mod:`mhlib` module provides a Python interface to MH folders and their
+contents.
 
-このモジュールには、あるフォルダの集まりを表現する :class:`MH` 、
-単一のフォルダを表現する :class:`Folder` 、
-単一のメッセージを表現する :class:`Message` 、の 3 つのクラスが入っています。
+The module contains three basic classes, :class:`MH`, which represents a
+particular collection of folders, :class:`Folder`, which represents a single
+folder, and :class:`Message`, which represents a single message.
 
 
 .. class:: MH([path[, profile]])
 
-   :class:`MH` は MH フォルダの集まりを表現します。
+   :class:`MH` represents a collection of MH folders.
 
 
 .. class:: Folder(mh, name)
 
-   :class:`Folder` クラスは単一のフォルダとフォルダ内のメッセージ群を表現します。
+   The :class:`Folder` class represents a single folder and its messages.
 
 
 .. class:: Message(folder, number[, name])
 
-   :class:`Message` オブジェクトはフォルダ内の個々のメッセージを表現します。
-   メッセージクラスは :class:`mimetools.Message` から派生しています。
+   :class:`Message` objects represent individual messages in a folder.  The Message
+   class is derived from :class:`mimetools.Message`.
 
 
 .. _mh-objects:
 
-MH オブジェクト
----------------
+MH Objects
+----------
 
-:class:`MH` インスタンスは以下のメソッドを持っています:
+:class:`MH` instances have the following methods:
 
 
 .. method:: MH.error(format[, ...])
 
-   エラーメッセージを出力します -- 上書きすることができます。
+   Print an error message -- can be overridden.
 
 
 .. method:: MH.getprofile(key)
 
-   プロファイルエントリ (設定されていなければ ``None``) を返します。
+   Return a profile entry (``None`` if not set).
 
 
 .. method:: MH.getpath()
 
-   メールボックスのパス名を返します。
+   Return the mailbox pathname.
 
 
 .. method:: MH.getcontext()
 
-   現在のフォルダ名を返します。
+   Return the current folder name.
 
 
 .. method:: MH.setcontext(name)
 
-   現在のフォルダ名を設定します。
+   Set the current folder name.
 
 
 .. method:: MH.listfolders()
 
-   トップレベルフォルダのリストを返します。
+   Return a list of top-level folders.
 
 
 .. method:: MH.listallfolders()
 
-   全てのフォルダを列挙します。
+   Return a list of all folders.
 
 
 .. method:: MH.listsubfolders(name)
 
-   指定したフォルダの直下にあるサブフォルダのリストを返します。
+   Return a list of direct subfolders of the given folder.
 
 
 .. method:: MH.listallsubfolders(name)
 
-   指定したフォルダの下にある全てのサブフォルダのリストを返します。
+   Return a list of all subfolders of the given folder.
 
 
 .. method:: MH.makefolder(name)
 
-   新しいフォルダを生成します。
+   Create a new folder.
 
 
 .. method:: MH.deletefolder(name)
 
-   フォルダを削除します -- サブフォルダが入っていてはいけません。
+   Delete a folder -- must have no subfolders.
 
 
 .. method:: MH.openfolder(name)
 
-   新たな開かれたフォルダオブジェクトを返します。
+   Return a new open folder object.
 
 
 .. _mh-folder-objects:
 
-Folder オブジェクト
--------------------
+Folder Objects
+--------------
 
-:class:`Folder` インスタンスは開かれたフォルダを表現し、以下のメソッドを持っています:
+:class:`Folder` instances represent open folders and have the following methods:
 
 
 .. method:: Folder.error(format[, ...])
 
-   エラーメッセージを出力します -- 上書きすることができます。
+   Print an error message -- can be overridden.
 
 
 .. method:: Folder.getfullname()
 
-   フォルダの完全なパス名を返します。
+   Return the folder's full pathname.
 
 
 .. method:: Folder.getsequencesfilename()
 
-   フォルダ内のシーケンスファイルの完全なパス名を返します。
+   Return the full pathname of the folder's sequences file.
 
 
 .. method:: Folder.getmessagefilename(n)
 
-   フォルダ内のメッセージ *n* の完全なパス名を返します。
+   Return the full pathname of message *n* of the folder.
 
 
 .. method:: Folder.listmessages()
 
-   フォルダ内のメッセージの (番号の) リストを返します。
+   Return a list of messages in the folder (as numbers).
 
 
 .. method:: Folder.getcurrent()
 
-   現在のメッセージ番号を返します。
+   Return the current message number.
 
 
 .. method:: Folder.setcurrent(n)
 
-   現在のメッセージ番号を *n* に設定します。
+   Set the current message number to *n*.
 
 
 .. method:: Folder.parsesequence(seq)
 
-   msgs 文を解釈して、メッセージのリストにします。
+   Parse msgs syntax into list of messages.
 
 
 .. method:: Folder.getlast()
 
-   最新のメッセージを取得します。メッセージがフォルダにない場合には ``0`` を返します。
+   Get last message, or ``0`` if no messages are in the folder.
 
 
 .. method:: Folder.setlast(n)
 
-   最新のメッセージを設定します (内部使用のみ)。
+   Set last message (internal use only).
 
 
 .. method:: Folder.getsequences()
 
-   フォルダ内のシーケンスからなる辞書を返します。シーケンス名がキーとして使われ、値はシーケンスに含まれるメッセージ番号のリストになります。
+   Return dictionary of sequences in folder.  The sequence names are used  as keys,
+   and the values are the lists of message numbers in the sequences.
 
 
 .. method:: Folder.putsequences(dict)
 
-   フォルダ内のシーケンスからなる辞書 name: list を返します。
+   Return dictionary of sequences in folder name: list.
 
 
 .. method:: Folder.removemessages(list)
 
-   リスト中のメッセージをフォルダから削除します。
+   Remove messages in list from folder.
 
 
 .. method:: Folder.refilemessages(list, tofolder)
 
-   リスト中のメッセージを他のフォルダに移動します。
+   Move messages in list to other folder.
 
 
 .. method:: Folder.movemessage(n, tofolder, ton)
 
-   一つのメッセージを他のフォルダの指定先に移動します。
+   Move one message to a given destination in another folder.
 
 
 .. method:: Folder.copymessage(n, tofolder, ton)
 
-   一つのメッセージを他のフォルダの指定先にコピーします。
+   Copy one message to a given destination in another folder.
 
 
 .. _mh-message-objects:
 
-Message オブジェクト
---------------------
+Message Objects
+---------------
 
-:class:`Message` クラスは :class:`mimetools.Message` のメソッドに加え、一つメソッドを持っています:
+The :class:`Message` class adds one method to those of
+:class:`mimetools.Message`:
 
 
 .. method:: Message.openmessage(n)
 
-   新たな開かれたメッセージオブジェクトを返します (ファイル記述子を一つ消費します)。
+   Return a new open message object (costs a file descriptor).
 

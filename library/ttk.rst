@@ -8,77 +8,79 @@
 
 .. index:: single: ttk
 
-:mod:`ttk` モジュールは Tk 8.5 で導入された Tk のテーマ付きウィジェットへのアクセスを提供します。
-Tk 8.5 が無い環境で Python がコンパイルされていた場合でも、 Tile がインストールされていればこのモジュールはそれを使おうとします。
-しかし、 X11 上のフォントのアンチエイリアスや透過ウィンドウ (X11 ではコンポジションウィンドウマネージャが必要です) などの新しい Tk が提供している機能は使えません。
+The :mod:`ttk` module provides access to the Tk themed widget set, which has
+been introduced in Tk 8.5. If Python is not compiled against Tk 8.5 code may
+still use this module as long as Tile is installed. However, some features
+provided by the new Tk, like anti-aliased font rendering under X11, window
+transparency (on X11 you will need a composition window manager) will be
+missing.
 
-:mod:`ttk` の基本的なアイディアは、拡張可能性のためにウィジェットの動作を実装するコードと見た目を記述するコードを分離することです。
+The basic idea of :mod:`ttk` is to separate, to the extent possible, the code
+implementing a widget's behavior from the code implementing its appearance.
+
 
 .. seealso::
 
    `Tk Widget Styling Support <http://www.tcl.tk/cgi-bin/tct/tip/48>`_
-      Tk のテーマサポートの立ち上げのドキュメント
+      The document which brought up theming support for Tk
 
 
-Ttk を使う
-----------
+Using Ttk
+---------
 
-Ttk を使い始めるために、モジュールをインポートします::
+To start using Ttk, import its module::
 
    import ttk
 
-しかしこのようなコードでは
-::
+But code like this::
 
    from Tkinter import *
 
-このように使いたいことがあるかもしれません
-::
+may optionally want to use this::
 
    from Tkinter import *
    from ttk import *
 
-このように書くと、いくつかの :mod:`ttk` ウィジェット (:class:`Button`,
-:class:`Checkbutton`, :class:`Entry`, :class:`Frame`, :class:`Label`,
-:class:`LabelFrame`, :class:`Menubutton`, :class:`PanedWindow`,
-:class:`Radiobutton`, :class:`Scale`,
-:class:`Scrollbar`) は自動的に Tk ウィジェットを置き換えます。
+And then several :mod:`ttk` widgets (:class:`Button`, :class:`Checkbutton`,
+:class:`Entry`, :class:`Frame`, :class:`Label`, :class:`LabelFrame`,
+:class:`Menubutton`, :class:`PanedWindow`, :class:`Radiobutton`, :class:`Scale`
+and :class:`Scrollbar`) will automatically substitute for the Tk widgets.
 
-これにはプラットフォームをまたいでより良い見た目を得られるという、直接的な利益がありますが、ウィジェットは完全な互換性を持っているわけではないことに注意してください。
-一番の違いは "fg" や "bg" やその他のスタイルに関係するウィジェットのオプションが Ttk ウィジェットから無くなっていることです。
-同じ (もしくはより良い) 見た目にするためには :class:`ttk.Style` を使ってください。
+This has the direct benefit of using the new widgets, giving better look & feel
+across platforms, but be aware that they are not totally compatible. The main
+difference is that widget options such as "fg", "bg" and others related to
+widget styling are no longer present in Ttk widgets. Use :class:`ttk.Style` to
+achieve the same (or better) styling.
 
 .. seealso::
 
    `Converting existing applications to use the Tile widgets <http://tktable.sourceforge.net/tile/doc/converting.txt>`_
-     Tcl において、アプリケーションを新しいウィジェットに移行するときに出てくる典型的な差異について書かれているテキスト
+     A text which talks in Tcl terms about differences typically found when
+     converting applications to use the new widgets.
 
 
-Ttk ウィジェット
-----------------
+Ttk Widgets
+-----------
 
-Ttk には 17 のウィジェットがあり、そのうち 11 は Tkinter に既にあるものです:
+Ttk comes with 17 widgets, 11 of which already exist in Tkinter:
 :class:`Button`, :class:`Checkbutton`, :class:`Entry`, :class:`Frame`,
 :class:`Label`, :class:`LabelFrame`, :class:`Menubutton`,
-:class:`PanedWindow`, :class:`Radiobutton`, :class:`Scale`,
-:class:`Scrollbar` 。
-新しい 6 つのウィジェットクラスは次のものです: :class:`Combobox`,
+:class:`PanedWindow`, :class:`Radiobutton`, :class:`Scale` and
+:class:`Scrollbar`. The 6 new widget classes are: :class:`Combobox`,
 :class:`Notebook`, :class:`Progressbar`, :class:`Separator`,
-:class:`Sizegrip`, :class:`Treeview` 。
-これらのクラスは全て :class:`Widget` の子クラスです。
+:class:`Sizegrip` and :class:`Treeview`.  All of these classes are
+subclasses of :class:`Widget`.
 
-上にも書いた通り、スタイルの記述コードと同様に見た目も変わっていることに気付くでしょう。
-それを見せるために、非常に簡単な例を以下に示します。
+As said previously, you will notice changes in look-and-feel as well in the
+styling code. To demonstrate the latter, a very simple example is shown below.
 
-Tk のコード
-::
+Tk code::
 
    l1 = Tkinter.Label(text="Test", fg="black", bg="white")
    l2 = Tkinter.Label(text="Test", fg="black", bg="white")
 
 
-それに相当する Ttk のコード
-::
+Corresponding Ttk code::
 
    style = ttk.Style()
    style.configure("BW.TLabel", foreground="black", background="white")
@@ -86,258 +88,264 @@ Tk のコード
    l1 = ttk.Label(text="Test", style="BW.TLabel")
    l2 = ttk.Label(text="Test", style="BW.TLabel")
 
-TtkStyling_ についての情報は :class:`Style` クラスの文書を読んでください。
+For more information about TtkStyling_ read the :class:`Style` class
+documentation.
 
-ウィジェット
-------------
+Widget
+------
 
-:class:`ttk.Widget` はTk のテーマ付きウィジェットがサポートしている標準のオプションやメソッドを定義するもので、
-これを直接インスタンス化するものではありません。
-
-
-標準オプション
-^^^^^^^^^^^^^^
-
-全ての :mod:`ttk` ウィジェットは以下のオプションを受け付けます:
-
-   +------------+--------------------------------------------------------------+
-   | オプション | 説明                                                         |
-   +============+==============================================================+
-   | class      | ウィンドウクラスを指定します。このクラスはオプション         |
-   |            | データベースにウィンドウの他のオプションについて問い合わせを |
-   |            | 行うときに使われ、これによりウィンドウのデフォルトの         |
-   |            | バインドタグを決定したり、ウィジェットのデフォルトの         |
-   |            | レイアウトやスタイルを選択します。これは読み取り専用の       |
-   |            | オプションでウィンドウが作られるときにのみ指定できます。     |
-   +------------+--------------------------------------------------------------+
-   | cursor     | このウィジェットで使うマウスカーソルを指定します。           |
-   |            | 空文字列 (デフォルト) が設定されている場合は、               |
-   |            | カーソルは親ウィジェットのものを引き継ぎます。               |
-   +------------+--------------------------------------------------------------+
-   | takefocus  | キーボードによる移動のときにウィンドウがフォーカスを         |
-   |            | 受け入れるかを決定します。 0 、 1 、空文字列のいずれかを     |
-   |            | 返します。 0 の場合、キーボードによる移動でそのウィンドウは  |
-   |            | 常にスキップされます。 1 の場合、そのウィンドウが            |
-   |            | 表示されているときに限り入力フォーカスを受け入れます。       |
-   |            | 空文字列は、移動スクリプトによってウィンドウに               |
-   |            | フォーカスを当てるかどうかが決まることを意味します。         |
-   +------------+--------------------------------------------------------------+
-   | style      | 独自のウィジェットスタイルを指定するのに使われます。         |
-   +------------+--------------------------------------------------------------+
+:class:`ttk.Widget` defines standard options and methods supported by Tk
+themed widgets and is not supposed to be directly instantiated.
 
 
-スクロール可能ウィジェットのオプション
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-以下のオプションはスクロールバーで操作されるウィジェットが持っているオプションです。
-
-   +----------------+---------------------------------------------------------+
-   | オプション     | 説明                                                    |
-   +================+=========================================================+
-   | xscrollcommand | 水平方向のスクロールバーとのやり取りに使われます。      |
-   |                |                                                         |
-   |                | ウィジェットのウィンドウが再描画されたとき,             |
-   |                | ウィジェットは scrollcommand に基いて Tcl コマンドを    |
-   |                | 生成します。                                            |
-   |                |                                                         |
-   |                | 通常このオプションにはあるスクロールバーの              |
-   |                | :meth:`Scrollbar.set` メソッドが設定されます。          |
-   |                | こうすると、ウィンドウの見た目が変わったときに          |
-   |                | スクロールバーの状態も更新されます。                    |
-   +----------------+---------------------------------------------------------+
-   | yscrollcommand | 垂直方向のスクロールバーとのやり取りに使われます。      |
-   |                | 詳しいことは、上記を参照してください。                  |
-   +----------------+---------------------------------------------------------+
-
-
-ラベルオプション
+Standard Options
 ^^^^^^^^^^^^^^^^
 
-以下のオプションはラベルやボタンやボタンに類似したウィジェットが持っているオプションです。
+All the :mod:`ttk` widgets accept the following options:
+
+   +-----------+--------------------------------------------------------------+
+   | Option    | Description                                                  |
+   +===========+==============================================================+
+   | class     | Specifies the window class. The class is used when querying  |
+   |           | the option database for the window's other options, to       |
+   |           | determine the default bindtags for the window, and to select |
+   |           | the widget's default layout and style. This is a read-only   |
+   |           | option which may only be specified when the window is        |
+   |           | created.                                                     |
+   +-----------+--------------------------------------------------------------+
+   | cursor    | Specifies the mouse cursor to be used for the widget. If set |
+   |           | to the empty string (the default), the cursor is inherited   |
+   |           | from the parent widget.                                      |
+   +-----------+--------------------------------------------------------------+
+   | takefocus | Determines whether the window accepts the focus during       |
+   |           | keyboard traversal. 0, 1 or an empty string is returned.     |
+   |           | If 0, the window should be skipped entirely                  |
+   |           | during keyboard traversal. If 1, the window                  |
+   |           | should receive the input focus as long as it is viewable.    |
+   |           | An empty string means that the traversal scripts make the    |
+   |           | decision about whether or not to focus on the window.        |
+   +-----------+--------------------------------------------------------------+
+   | style     | May be used to specify a custom widget style.                |
+   +-----------+--------------------------------------------------------------+
+
+
+Scrollable Widget Options
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The following options are supported by widgets that are controlled by a
+scrollbar.
+
+   +----------------+---------------------------------------------------------+
+   | option         | description                                             |
+   +================+=========================================================+
+   | xscrollcommand | Used to communicate with horizontal scrollbars.         |
+   |                |                                                         |
+   |                | When the view in the widget's window changes, the widget|
+   |                | will generate a Tcl command based on the scrollcommand. |
+   |                |                                                         |
+   |                | Usually this option consists of the                     |
+   |                | :meth:`Scrollbar.set` method of some scrollbar. This    |
+   |                | will cause                                              |
+   |                | the scrollbar to be updated whenever the view in the    |
+   |                | window changes.                                         |
+   +----------------+---------------------------------------------------------+
+   | yscrollcommand | Used to communicate with vertical scrollbars.           |
+   |                | For more information, see above.                        |
+   +----------------+---------------------------------------------------------+
+
+
+Label Options
+^^^^^^^^^^^^^
+
+The following options are supported by labels, buttons and other button-like
+widgets.
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.7\textwidth}|
 ..
 
    +--------------+-----------------------------------------------------------+
-   | オプション   | 説明                                                      |
+   | option       | description                                               |
    +==============+===========================================================+
-   | text         | ウィジェットに表示される文字列を指定します。              |
+   | text         | Specifies a text string to be displayed inside the widget.|
    +--------------+-----------------------------------------------------------+
-   | textvariable | text オプションの代わりに使う値の変数名を指定します。     |
+   | textvariable | Specifies a name whose value will be used in place of the |
+   |              | text option resource.                                     |
    +--------------+-----------------------------------------------------------+
-   | underline    | このオプションを設定すると、文字列の中で下線を引く文字の  |
-   |              | インデックス (0 基点) を指定します。下線が引かれた文字は  |
-   |              | ショートカットとして使われます。                          |
+   | underline    | If set, specifies the index (0-based) of a character to   |
+   |              | underline in the text string. The underline character is  |
+   |              | used for mnemonic activation.                             |
    +--------------+-----------------------------------------------------------+
-   | image        | 表示する画像を指定します。これは 1 つ以上の要素を持つ     |
-   |              | リストです。先頭の要素はデフォルトの画像名です。          |
-   |              | 残りの要素は :meth:`Style.map` で定義されているような     |
-   |              | 状態名と値のペアの並びで、ウィジェットがある状態、        |
-   |              | もしくはある状態の組み合わせにいるときに使用する          |
-   |              | 別の画像を指定します。                                    |
-   |              | このリストにある全ての画像は同じサイズでなればなりません。|
+   | image        | Specifies an image to display. This is a list of 1 or more|
+   |              | elements. The first element is the default image name. The|
+   |              | rest of the list is a sequence of statespec/value pairs as|
+   |              | defined by :meth:`Style.map`, specifying different images |
+   |              | to use when the widget is in a particular state or a      |
+   |              | combination of states. All images in the list should have |
+   |              | the same size.                                            |
    +--------------+-----------------------------------------------------------+
-   | compound     | text オプションと image オプションが両方とも              |
-   |              | 指定されていた場合に、テキストに対して                    |
-   |              | 画像をどう配置するかを指定します。                        |
+   | compound     | Specifies how to display the image relative to the text,  |
+   |              | in the case both text and image options are present.      |
+   |              | Valid values are:                                         |
    |              |                                                           |
-   |              | * text: テキストのみ表示する                              |
-   |              | * image: 画像のみ表示する                                 |
-   |              | * top, bottom, left, right: それぞれ画像をテキストの      |
-   |              |   上、下、左、右に配置する。                              |
-   |              | * none: デフォルト。もしあれば画像を表示し、              |
-   |              |   そうでなければテキストを表示する                        |
+   |              | * text: display text only                                 |
+   |              | * image: display image only                               |
+   |              | * top, bottom, left, right: display image above, below,   |
+   |              |   left of, or right of the text, respectively.            |
+   |              | * none: the default. display the image if present,        |
+   |              |   otherwise the text.                                     |
    +--------------+-----------------------------------------------------------+
-   | width        | 0 より大きい場合、テキストラベルを作成するのに            |
-   |              | どれくらいのスペースを使うかを文字の幅で指定します。      |
-   |              | 0 より小さい場合、最小の幅が指定されます。                |
-   |              | 0 もしくは無指定の場合、テキストラベルに対して            |
-   |              | 自然な幅が使われます。                                    |
+   | width        | If greater than zero, specifies how much space, in        |
+   |              | character widths, to allocate for the text label; if less |
+   |              | than zero, specifies a minimum width. If zero or          |
+   |              | unspecified, the natural width of the text label is used. |
    +--------------+-----------------------------------------------------------+
 
 
-互換性オプション
-^^^^^^^^^^^^^^^^
+Compatibility Options
+^^^^^^^^^^^^^^^^^^^^^
 
-   +------------+--------------------------------------------------------------+
-   | オプション | 説明                                                         |
-   +============+==============================================================+
-   | state      | "normal" か "disabled" に設定され、 "disabled" 状態のビットを|
-   |            | コントロールします。これは書き込み専用のオプションです:      |
-   |            | これを設定するとウィジェットの状態を変更できますが、         |
-   |            | :meth:`Widget.state` メソッドはこのオプションに影響を        |
-   |            | 及ぼしません。                                               |
-   +------------+--------------------------------------------------------------+
+   +--------+----------------------------------------------------------------+
+   | option | description                                                    |
+   +========+================================================================+
+   | state  | May be set to "normal" or "disabled" to control the "disabled" |
+   |        | state bit. This is a write-only option: setting it changes the |
+   |        | widget state, but the :meth:`Widget.state` method does not     |
+   |        | affect this option.                                            |
+   +--------+----------------------------------------------------------------+
 
-ウィジェットの状態
-^^^^^^^^^^^^^^^^^^
+Widget States
+^^^^^^^^^^^^^
 
-ウィジェットの状態は独立した状態フラグのビットマップです。
+The widget state is a bitmap of independent state flags.
 
    +------------+-------------------------------------------------------------+
-   | フラグ     | 説明                                                        |
+   | flag       | description                                                 |
    +============+=============================================================+
-   | active     | マウスカーソルがウィジェットの上にあり、マウスのボタンを    |
-   |            | クリックすることで何らかの動作をさせられます。              |
+   | active     | The mouse cursor is over the widget and pressing a mouse    |
+   |            | button will cause some action to occur.                     |
    +------------+-------------------------------------------------------------+
-   | disabled   | プログラムによってウィジェットは無効化されています。        |
+   | disabled   | Widget is disabled under program control.                   |
    +------------+-------------------------------------------------------------+
-   | focus      | ウィジェットにキーボードフォーカスがあります。              |
+   | focus      | Widget has keyboard focus.                                  |
    +------------+-------------------------------------------------------------+
-   | pressed    | ウィジェットは押されています。                              |
+   | pressed    | Widget is being pressed.                                    |
    +------------+-------------------------------------------------------------+
-   | selected   | チェックボタンやラジオボタンのようなウィジェットでの        |
-   |            | "オン" や "チェック有" や "選択中" に当たります。           |
+   | selected   | "On", "true", or "current" for things like Checkbuttons and |
+   |            | radiobuttons.                                               |
    +------------+-------------------------------------------------------------+
-   | background | Windows と Mac には "アクティブな" もしくは最前面の         |
-   |            | ウィンドウという概念があります。背面のウィンドウにある      |
-   |            | ウィジェットには *background* 状態が設定され、              |
-   |            | 最前面のウィンドウにあるウィジェットでは解除されます。      |
+   | background | Windows and Mac have a notion of an "active" or foreground  |
+   |            | window. The *background* state is set for widgets in a      |
+   |            | background window, and cleared for those in the foreground  |
+   |            | window.                                                     |
    +------------+-------------------------------------------------------------+
-   | readonly   | ウィジェットはユーザからの変更を受け付けません。            |
+   | readonly   | Widget should not allow user modification.                  |
    +------------+-------------------------------------------------------------+
-   | alternate  | ウィジェット特有の切り替え表示になっています。              |
+   | alternate  | A widget-specific alternate display format.                 |
    +------------+-------------------------------------------------------------+
-   | invalid    | ウィジェットの値が不正です。                                |
+   | invalid    | The widget's value is invalid.                              |
    +------------+-------------------------------------------------------------+
 
+A state specification is a sequence of state names, optionally prefixed with
+an exclamation point indicating that the bit is off.
 
-状態仕様は状態名の並びになっていて、状態名の先頭にはビットがオフになっていることを示す感嘆符が付くことがあります。
 
 ttk.Widget
 ^^^^^^^^^^
 
-以下に書かれているメソッドに加えて、 :class:`ttk.Widget` クラスは
-:meth:`Tkinter.Widget.cget` メソッドと :meth:`Tkinter.Widget.configure` メソッドをサポートしています。
+Besides the methods described below, the :class:`ttk.Widget` class supports the
+:meth:`Tkinter.Widget.cget` and :meth:`Tkinter.Widget.configure` methods.
 
 .. class:: Widget
 
    .. method:: identify(x, y)
 
-      *x* *y* の位置にある要素の名前、もしくは
-      その位置に要素が無ければ空文字列を返します。
+      Returns the name of the element at position *x* *y*, or the empty string
+      if the point does not lie within any element.
 
-      *x* と *y* はウィジェットに対するピクセル単位の座標です。
+      *x* and *y* are pixel coordinates relative to the widget.
 
 
-   .. method:: instate(statespec[, callback=None[, *args[, **kw]]])
+   .. method:: instate(statespec, callback=None, *args, **kw)
 
-      ウィジェットの状態をチェックします。コールバックが指定されていない場合、
-      ウィジェットの状態が *statespec* に一致していれば True 、
-      そうでなければ False を返します。
-      コールバックが指定されていて、ウィジェットの状態が *statespec* に
-      一致している場合、引数に *args* を指定してそのコールバックを呼び出します。
+      Test the widget's state. If a callback is not specified, returns ``True``
+      if the widget state matches *statespec* and ``False`` otherwise. If callback
+      is specified then it is called with *args* if widget state matches
+      *statespec*.
 
 
    .. method:: state([statespec=None])
 
-      ウィジェットの状態を変更したり、取得したりします。
-      *statespec* が指定されている場合、それに応じてウィジェットの状態を設定し、
-      どのフラグが変更されたかを示す新しい *statespec* を返します。
-      *statespec* が指定されていない場合、現在の状態フラグを返します。
+      Modify or read widget state. If *statespec* is specified, sets the
+      widget state accordingly and returns a new *statespec* indicating
+      which flags were changed. If *statespec* is not specified, returns
+      the currently-enabled state flags.
 
-   通常 *statespec* はリストもしくはタプルです。
+   *statespec* will usually be a list or a tuple.
 
 
-コンボボックス
---------------
+Combobox
+--------
 
-:class:`ttk.Combobox` ウィジェットはテキストフィールドと値のポップダウンリストを結び付けます。
-このウィジェットは :class:`Entry` の子クラスです。
+The :class:`ttk.Combobox` widget combines a text field with a pop-down list of
+values. This widget is a subclass of :class:`Entry`.
 
-:class:`Widget` から継承したメソッド (:meth:`Widget.cget`,
-:meth:`Widget.configure`, :meth:`Widget.identify`, :meth:`Widget.instate`,
-:meth:`Widget.state`) と :class:`Entry` から継承したメソッド
+Besides the methods inherited from :class:`Widget` (:meth:`Widget.cget`,
+:meth:`Widget.configure`, :meth:`Widget.identify`, :meth:`Widget.instate`
+and :meth:`Widget.state`) and those inherited from :class:`Entry`
 (:meth:`Entry.bbox`, :meth:`Entry.delete`, :meth:`Entry.icursor`,
 :meth:`Entry.index`, :meth:`Entry.inset`, :meth:`Entry.selection`,
-:meth:`Entry.xview`) に加え、このクラスには :class:`ttk.Combobox` で説明する
-メソッドがあります。
-
-オプション
-^^^^^^^^^^
-
-このウィジェットは以下のオプションを受け付けます:
-
-   +-----------------+---------------------------------------------------------+
-   | オプション      | 説明                                                    |
-   +=================+=========================================================+
-   | exportselection | 真偽値を取る。設定されている場合、ウィジェットの選択は  |
-   |                 | ウィンドウマネージャの選択とリンクしています。(例えば、 |
-   |                 | :meth:`Misc.selection_get` を実行することで得られます。)|
-   +-----------------+---------------------------------------------------------+
-   | justify         | ウィジェットの中でテキストをどう配置するかを指定します。|
-   |                 | "left", "center", "right" のうちのどれか 1 つです。     |
-   +-----------------+---------------------------------------------------------+
-   | height          | ポップダウンリストの高さを行数で指定します。            |
-   +-----------------+---------------------------------------------------------+
-   | postcommand     | コンボボックスの値を表示する直前に呼び出される、        |
-   |                 | (:meth:`Misc.register` などで登録した) スクリプトです。 |
-   |                 | どの値を表示するかについても指定できます。              |
-   +-----------------+---------------------------------------------------------+
-   | state           | "normal", "readonly", "disabled" のどれか 1 つです。    |
-   |                 | "readonly" 状態では、直接入力値を編集することはできず、 |
-   |                 | ユーザはドロップダウンリストから値を 1 つ選ぶことしか   |
-   |                 | できません。 "normal" 状態では、テキストフィールドは    |
-   |                 | 直接編集できます。 "disabled" 状態では、                |
-   |                 | コンボボックスは一切反応しません。                      |
-   +-----------------+---------------------------------------------------------+
-   | textvariable    | コンボボックスの値とリンクさせる変数名を指定します。    |
-   |                 | その変数の値が変更されたとき、ウィジェットの値は更新    |
-   |                 | されます。ウィジェットの値が更新されたときも同様です。  |
-   |                 | :class:`Tkinter.StringVar` を参照してください。         |
-   +-----------------+---------------------------------------------------------+
-   | values          | ドロップダウンリストに表示する値のリストを指定します。  |
-   +-----------------+---------------------------------------------------------+
-   | width           | 入力ウィンドウに必要な幅をウィジェットのフォントの      |
-   |                 | 平均的なサイズの文字で測った、文字数を指定します。      |
-   +-----------------+---------------------------------------------------------+
+:meth:`Entry.xview`), this class has some other methods, described at
+:class:`ttk.Combobox`.
 
 
-仮想イベント
-^^^^^^^^^^^^
+Options
+^^^^^^^
 
-コンボボックスウィジェットは、ユーザが値のリストから1つ選んだときに
-仮想イベント **<<ComboboxSelected>>** を生成します。
+This widget accepts the following options:
+
+   +-----------------+--------------------------------------------------------+
+   | option          | description                                            |
+   +=================+========================================================+
+   | exportselection | Boolean value. If set, the widget selection is linked  |
+   |                 | to the Window Manager selection (which can be returned |
+   |                 | by invoking :meth:`Misc.selection_get`, for example).  |
+   +-----------------+--------------------------------------------------------+
+   | justify         | Specifies how the text is aligned within the widget.   |
+   |                 | One of "left", "center", or "right".                   |
+   +-----------------+--------------------------------------------------------+
+   | height          | Specifies the height of the pop-down listbox, in rows. |
+   +-----------------+--------------------------------------------------------+
+   | postcommand     | A script (possibly registered with                     |
+   |                 | :meth:`Misc.register`) that                            |
+   |                 | is called immediately before displaying the values. It |
+   |                 | may specify which values to display.                   |
+   +-----------------+--------------------------------------------------------+
+   | state           | One of "normal", "readonly", or "disabled". In the     |
+   |                 | "readonly" state, the value may not be edited directly,|
+   |                 | and the user can only select one of the values from the|
+   |                 | dropdown list. In the "normal" state, the text field is|
+   |                 | directly editable. In the "disabled" state, no         |
+   |                 | interaction is possible.                               |
+   +-----------------+--------------------------------------------------------+
+   | textvariable    | Specifies a name whose value is linked to the widget   |
+   |                 | value. Whenever the value associated with that name    |
+   |                 | changes, the widget value is updated, and vice versa.  |
+   |                 | See :class:`Tkinter.StringVar`.                        |
+   +-----------------+--------------------------------------------------------+
+   | values          | Specifies the list of values to display in the         |
+   |                 | drop-down listbox.                                     |
+   +-----------------+--------------------------------------------------------+
+   | width           | Specifies an integer value indicating the desired width|
+   |                 | of the entry window, in average-size characters of the |
+   |                 | widget's font.                                         |
+   +-----------------+--------------------------------------------------------+
+
+
+Virtual events
+^^^^^^^^^^^^^^
+
+The combobox widget generates a **<<ComboboxSelected>>** virtual event
+when the user selects an element from the list of values.
 
 
 ttk.Combobox
@@ -347,109 +355,110 @@ ttk.Combobox
 
    .. method:: current([newindex=None])
 
-      *newindex* が指定されている場合、コンボボックスの値が
-      ドロップダウンリストの *newindex* の位置にある値に設定されます。
-      そうでない場合、現在の値のインデックスを、もしくは現在の値がリストに
-      含まれていないなら -1 を返します。
+      If *newindex* is specified, sets the combobox value to the element
+      position *newindex*. Otherwise, returns the index of the current value or
+      -1 if the current value is not in the values list.
 
 
    .. method:: get()
 
-      コンボボックスの現在の値を返します。
+      Returns the current value of the combobox.
 
 
    .. method:: set(value)
 
-      コンボボックスの値を *value* に設定します。
+      Sets the value of the combobox to *value*.
 
 
-ノートブック
-------------
+Notebook
+--------
 
-Ttk ノートブックウィジェットは複数のウィンドウを管理し、同時に 1 つのウィンドウを表示します。
-それぞれの子ウィンドウはタブの関連付けられていて、ユーザはそれを選択して表示されているウィンドウを切り替えます。
-
-
-オプション
-^^^^^^^^^^
-
-このウィジェットは以下のオプションを受け付けます:
-
-   +------------+-------------------------------------------------------------+
-   | オプション | 説明                                                        |
-   +============+=============================================================+
-   | height     | 0 より大きな値が設定されている場合、                        |
-   |            | (内部のパディングやタブを含まない) ペイン領域に必要な高さを |
-   |            | 指定します。設定されていない場合、全てのペインの            |
-   |            | 高さの最大値が使われます。                                  |
-   +------------+-------------------------------------------------------------+
-   | padding    | ノートブックの外周に付け足す追加の領域の量を指定します。    |
-   |            | パディングは最大 4 個の長さ指定のリストです:                |
-   |            | 左、上、右、下の順で指定します。4 個より少ない場合、        |
-   |            | デフォルトで下は上と、右は左と、上は左と同じ値が、          |
-   |            | それぞれ使われます。                                        |
-   +------------+-------------------------------------------------------------+
-   | width      | 0 より大きな値が指定されている場合、                        |
-   |            | (内部のパディングを含まない) ペイン領域に必要な幅を         |
-   |            | 指定します。設定されていない場合、全てのペインの            |
-   |            | 幅の最大値が使われます。                                    |
-   +------------+-------------------------------------------------------------+
+The Ttk Notebook widget manages a collection of windows and displays a single
+one at a time. Each child window is associated with a tab, which the user
+may select to change the currently-displayed window.
 
 
-タブオプション
+Options
+^^^^^^^
+
+This widget accepts the following specific options:
+
+   +---------+----------------------------------------------------------------+
+   | option  | description                                                    |
+   +=========+================================================================+
+   | height  | If present and greater than zero, specifies the desired height |
+   |         | of the pane area (not including internal padding or tabs).     |
+   |         | Otherwise, the maximum height of all panes is used.            |
+   +---------+----------------------------------------------------------------+
+   | padding | Specifies the amount of extra space to add around the outside  |
+   |         | of the notebook. The padding is a list of up to four length    |
+   |         | specifications: left top right bottom. If fewer than four      |
+   |         | elements are specified, bottom defaults to top, right defaults |
+   |         | to left, and top defaults to left.                             |
+   +---------+----------------------------------------------------------------+
+   | width   | If present and greater than zero, specifies the desired width  |
+   |         | of the pane area (not including internal padding). Otherwise,  |
+   |         | the maximum width of all panes is used.                        |
+   +---------+----------------------------------------------------------------+
+
+
+Tab Options
+^^^^^^^^^^^
+
+There are also specific options for tabs:
+
+   +-----------+--------------------------------------------------------------+
+   | option    | description                                                  |
+   +===========+==============================================================+
+   | state     | Either "normal", "disabled" or "hidden". If "disabled", then |
+   |           | the tab is not selectable. If "hidden", then the tab is not  |
+   |           | shown.                                                       |
+   +-----------+--------------------------------------------------------------+
+   | sticky    | Specifies how the child window is positioned within the pane |
+   |           | area. Value is a string containing zero or more of the       |
+   |           | characters "n", "s", "e" or "w". Each letter refers to a     |
+   |           | side (north, south, east or west) that the child window will |
+   |           | stick to, as per the :meth:`grid` geometry manager.          |
+   +-----------+--------------------------------------------------------------+
+   | padding   | Specifies the amount of extra space to add between the       |
+   |           | notebook and this pane. Syntax is the same as for the option |
+   |           | padding used by this widget.                                 |
+   +-----------+--------------------------------------------------------------+
+   | text      | Specifies a text to be displayed in the tab.                 |
+   +-----------+--------------------------------------------------------------+
+   | image     | Specifies an image to display in the tab. See the option     |
+   |           | image described in :class:`Widget`.                          |
+   +-----------+--------------------------------------------------------------+
+   | compound  | Specifies how to display the image relative to the text, in  |
+   |           | the case both text and image options are present. See        |
+   |           | `Label Options`_ for legal values.                           |
+   +-----------+--------------------------------------------------------------+
+   | underline | Specifies the index (0-based) of a character to underline in |
+   |           | the text string. The underlined character is used for        |
+   |           | mnemonic activation if :meth:`Notebook.enable_traversal` is  |
+   |           | called.                                                      |
+   +-----------+--------------------------------------------------------------+
+
+
+Tab Identifiers
+^^^^^^^^^^^^^^^
+
+The *tab_id* present in several methods of :class:`ttk.Notebook` may take any
+of the following forms:
+
+* An integer between zero and the number of tabs.
+* The name of a child window.
+* A positional specification of the form "@x,y", which identifies the tab.
+* The literal string "current", which identifies the currently-selected tab.
+* The literal string "end", which returns the number of tabs (only valid for
+  :meth:`Notebook.index`).
+
+
+Virtual Events
 ^^^^^^^^^^^^^^
 
-タブ用のオプションもあります:
-
-   +-----------+--------------------------------------------------------------+
-   | オプション| 説明                                                         |
-   +===========+==============================================================+
-   | state     | "normal", "disabled", "hidden" のうちどれか 1 つです。       |
-   |           | "disabled" の場合、タブは選択することができません。          |
-   |           | "hidden" の場合、タブは表示されません。                      |
-   +-----------+--------------------------------------------------------------+
-   | sticky    | ペイン領域の中に子ウィンドウがどう置かれるかを指定します。   |
-   |           | 指定する値は "n", "s", "e", "w" からなる 0 文字以上の        |
-   |           | 文字列です。配置マネージャの :meth:`grid` と同様に、         |
-   |           | それぞれの文字は子ウィンドウが (北、南、東、西の) どの辺に   |
-   |           | 対して追随するかに対応しています。                           |
-   +-----------+--------------------------------------------------------------+
-   | padding   | ノートブックとこのペインの間に付け足す追加の領域の量を       |
-   |           | 指定します。文法はこのウィジェットの padding オプションと    |
-   |           | 同じです。                                                   |
-   +-----------+--------------------------------------------------------------+
-   | text      | タブに表示するテキストを指定します。                         |
-   +-----------+--------------------------------------------------------------+
-   | image     | タブに表示する画像を指定します。 :class:`Widget` の          |
-   |           | `ラベルオプション`_ の説明を参照してください。               |
-   +-----------+--------------------------------------------------------------+
-   | compound  | text オプションと image オプションが両方指定されているときに |
-   |           | テキストに対して画像をどう表示するかを指定します。           |
-   |           | 指定する値については `ラベルオプション`_ を参照してください。|
-   +-----------+--------------------------------------------------------------+
-   | underline | テキスト中の下線を引く文字のインデックス (0 基点) を指定     |
-   |           | します。                                                     |
-   |           | :meth:`Notebook.enable_traversal` が呼ばれていた場合、       |
-   |           | 下線が引かれた文字はショートカットとして使われます。         |
-   +-----------+--------------------------------------------------------------+
-
-
-タブ識別子
-^^^^^^^^^^
-
-:class:`ttk.Notebook` のいくつかのメソッドにある *tab_id* は以下の形式を取ります:
-
-* 0 からタブの数の間の整数。
-* 子ウィンドウの名前。
-* タブを指し示す "@x,y" という形式の位置指定。
-* 現在選択されているタブを指し示すリテラル文字列 "current"。
-* タブ数を返すリテラル文字列 "end" (:meth:`Notebook.index` でのみ有効)。
-
-
-仮想イベント
-^^^^^^^^^^^^
-
-このウィジェットは新しいタブが選択された後に仮想イベント **<<NotebookTabChanged>>** を生成します。
+This widget generates a **<<NotebookTabChanged>>** virtual event after a new
+tab is selected.
 
 
 ttk.Notebook
@@ -459,131 +468,135 @@ ttk.Notebook
 
    .. method:: add(child, **kw)
 
-      ノートブックに新しいタブを追加します。
+      Adds a new tab to the notebook.
 
-      ウィンドウが現在ノートブックによって管理されているが隠れている場合、
-      以前の位置に復元します。
+      If window is currently managed by the notebook but hidden, it is
+      restored to its previous position.
 
-      利用可能なオプションのリストについては `タブオプション`_ を参照してください。
+      See `Tab Options`_ for the list of available options.
 
 
    .. method:: forget(tab_id)
 
-      *tab_id* で指定されたタブを削除します。関連付けられていたウィンドウは切り離され、管理対象でなくなります。
+      Removes the tab specified by *tab_id*, unmaps and unmanages the
+      associated window.
 
 
    .. method:: hide(tab_id)
 
-      *tab_id* で指定されたタブを隠します。
+      Hides the tab specified by *tab_id*.
 
-      タブは表示されませんが、関連付いているウィンドウはノートブックによって保持されていて、
-      その設定も記憶されています。隠れたタブは :meth:`add` コマンドで復元できます。
+      The tab will not be displayed, but the associated window remains
+      managed by the notebook and its configuration remembered. Hidden tabs
+      may be restored with the :meth:`add` command.
 
 
    .. method:: identify(x, y)
 
-      *x* *y* の位置にあるタブの名前を、そこにタブが無ければ空文字列を返します。
+      Returns the name of the tab element at position *x*, *y*, or the empty
+      string if none.
 
 
    .. method:: index(tab_id)
 
-      *tab_id* で指定されたタブのインデックスを、 *tab_id* が文字列の "end"
-      だった場合はタブの総数を返します。
+      Returns the numeric index of the tab specified by *tab_id*, or the total
+      number of tabs if *tab_id* is the string "end".
 
 
    .. method:: insert(pos, child, **kw)
 
-      指定された位置にペインを挿入します。
+      Inserts a pane at the specified position.
 
-      *pos* は文字列の "end" か整数のインデックスか管理されている子ウィンドウの名前です。
-      *child* が既にノートブックの管理対象だった場合、指定された場所に移動させます。
+      *pos* is either the string "end", an integer index, or the name of a
+      managed child. If *child* is already managed by the notebook, moves it to
+      the specified position.
 
-      利用可能なオプションのリストについては `タブオプション`_ を参照してください。
+      See `Tab Options`_ for the list of available options.
 
 
    .. method:: select([tab_id])
 
-      指定された *tab_id* を選択します。
+      Selects the specified *tab_id*.
 
-      関連付いている子ウィンドウは表示され、直前に選択されていたウィンドウは
-      (もし異なれば) 表示されなくなります。
-      *tab_id* が指定されていない場合は、現在選択されているペインのウィジェット名を返します。
+      The associated child window will be displayed, and the
+      previously-selected window (if different) is unmapped. If *tab_id* is
+      omitted, returns the widget name of the currently selected pane.
 
 
-   .. method:: tab(tab_id[, option=None[, **kw]])
+   .. method:: tab(tab_id, option=None, **kw)
 
-      指定された *tab_id* のオプションを問い合わせたり、変更したりします。
+      Query or modify the options of the specific *tab_id*.
 
-      *kw* が与えられなかった場合、タブのオプション値の辞書を返します。
-      *option* が指定されていた場合、その *option* の値を返します。
-      それ以外の場合は、オプションに対応する値が設定されます。
+      If *kw* is not given, returns a dictionary of the tab option values. If
+      *option* is specified, returns the value of that *option*. Otherwise,
+      sets the options to the corresponding values.
 
 
    .. method:: tabs()
 
-      ノートブックに管理されているウィンドウのリストを返します。
+      Returns a list of windows managed by the notebook.
 
 
    .. method:: enable_traversal()
 
-      このノートブックを含む最上位にあるウィンドウでのキーボード移動を可能にします。
+      Enable keyboard traversal for a toplevel window containing this notebook.
 
-      これによりノートブックを含んだ最上位にあるウィンドウに対し、
-      以下のキーバインディングが追加されます:
+      This will extend the bindings for the toplevel window containing the
+      notebook as follows:
 
-      * Control-Tab: 現在選択されているタブの 1 つ次のタブを選択します。
-      * Shift-Control-Tab: 現在選択されているタブの 1 つ前のタブを選択します。
-      * Alt-K: K があるタブの (下線が引かれた) ショートカットキーだとして、
-        そのタブを選択します。
+      * :kbd:`Control-Tab`: selects the tab following the currently selected one.
+      * :kbd:`Shift-Control-Tab`: selects the tab preceding the currently selected one.
+      * :kbd:`Alt-K`: where *K* is the mnemonic (underlined) character of any tab, will
+        select that tab.
 
-      ネストしたノートブックも含め、1 つのウィンドウの最上位にある
-      複数のノートブックのキーボード移動が可能になることもあります。
-      しかしノートブック上の移動は、全てのペインが同じノートブックを親としているときのみ正しく動作します。
-
-
-プログレスバー
---------------
-
-:class:`ttk.Progressbar` ウィジェットは長く走る処理の状態を表示します。
-このウィジェットは 2 つのモードで動作します:
-決定的モードでは、全ての処理の総量のうち完了した量を表示します。
-非決定的モードでは、今何か処理が行われていることをユーザに示します。
+      Multiple notebooks in a single toplevel may be enabled for traversal,
+      including nested notebooks. However, notebook traversal only works
+      properly if all panes have the notebook they are in as master.
 
 
-オプション
-^^^^^^^^^^
+Progressbar
+-----------
 
-このウィジェットは以下のオプションを受け付けます:
+The :class:`ttk.Progressbar` widget shows the status of a long-running
+operation. It can operate in two modes: determinate mode shows the amount
+completed relative to the total amount of work to be done, and indeterminate
+mode provides an animated display to let the user know that something is
+happening.
 
-   +------------+-------------------------------------------------------------+
-   | オプション | 説明                                                        |
-   +============+=============================================================+
-   | orient     | "horizontal" もしくは "vertical" のいずれかです。           |
-   |            | プログレスバーの方向を指定します。                          |
-   +------------+-------------------------------------------------------------+
-   | length     | プログレスバーの長さを指定します。                          |
-   |            | (水平方向の場合は幅、垂直方向の場合は高さです)              |
-   +------------+-------------------------------------------------------------+
-   | mode       | "determinate" か "indeterminate" のいずれかです。           |
-   +------------+-------------------------------------------------------------+
-   | maximum    | 最大値を数値で指定します。デフォルトは 100 です。           |
-   +------------+-------------------------------------------------------------+
-   | value      | プログレスバーの現在値です。決定的 ("determinate") モード   |
-   |            | では、完了した処理の量を表します。                          |
-   |            | 非決定的 ("indeterminate") モードでは、                     |
-   |            | *maximum* を法として解釈され、値が *maximum* に達したときに |
-   |            | プログレスバーは 1 "サイクル" を完了したことになります。    |
-   +------------+-------------------------------------------------------------+
-   | variable   | value オプションとリンクさせる変数名です。                  |
-   |            | 指定されている場合、変数の値が変更されるとプログレスバーの  |
-   |            | 値は自動的にその値に設定されます。                          |
-   +------------+-------------------------------------------------------------+
-   | phase      | 読み取り専用のオプションです。このウィジェットの値が 0 より |
-   |            | 大きく、かつ決定的モードでは最大値より小さいときに、        |
-   |            | ウィジェットが定期的にこのオプションの値を増加させます。    |
-   |            | このオプションは現在の画面テーマが追加のアニメーション効果を|
-   |            | 出すのに使います。                                          |
-   +------------+-------------------------------------------------------------+
+
+Options
+^^^^^^^
+
+This widget accepts the following specific options:
+
+   +----------+---------------------------------------------------------------+
+   | option   | description                                                   |
+   +==========+===============================================================+
+   | orient   | One of "horizontal" or "vertical". Specifies the orientation  |
+   |          | of the progress bar.                                          |
+   +----------+---------------------------------------------------------------+
+   | length   | Specifies the length of the long axis of the progress bar     |
+   |          | (width if horizontal, height if vertical).                    |
+   +----------+---------------------------------------------------------------+
+   | mode     | One of "determinate" or "indeterminate".                      |
+   +----------+---------------------------------------------------------------+
+   | maximum  | A number specifying the maximum value. Defaults to 100.       |
+   +----------+---------------------------------------------------------------+
+   | value    | The current value of the progress bar. In "determinate" mode, |
+   |          | this represents the amount of work completed. In              |
+   |          | "indeterminate" mode, it is interpreted as modulo *maximum*;  |
+   |          | that is, the progress bar completes one "cycle" when its value|
+   |          | increases by *maximum*.                                       |
+   +----------+---------------------------------------------------------------+
+   | variable | A name which is linked to the option value. If specified, the |
+   |          | value of the progress bar is automatically set to the value of|
+   |          | this name whenever the latter is modified.                    |
+   +----------+---------------------------------------------------------------+
+   | phase    | Read-only option. The widget periodically increments the value|
+   |          | of this option whenever its value is greater than 0 and, in   |
+   |          | determinate mode, less than maximum. This option may be used  |
+   |          | by the current theme to provide additional animation effects. |
+   +----------+---------------------------------------------------------------+
 
 
 ttk.Progressbar
@@ -593,238 +606,239 @@ ttk.Progressbar
 
    .. method:: start([interval])
 
-      自動増加モードを開始します: *interval* ミリ秒ごとに
-      :meth:`Progressbar.step` を繰り返し呼び出すタイマーイベントを設定します。
-      引数で指定しない場合は、 *interval* はデフォルトで 50 ミリ秒になります。
+      Begin autoincrement mode: schedules a recurring timer event that calls
+      :meth:`Progressbar.step` every *interval* milliseconds. If omitted,
+      *interval* defaults to 50 milliseconds.
 
 
    .. method:: step([amount])
 
-      プログレスバーの値を *amount* だけ増加させます。
+      Increments the progress bar's value by *amount*.
 
-      引数で指定しない場合は、 *amount* はデフォルトで 1.0 になります。
+      *amount* defaults to 1.0 if omitted.
 
 
    .. method:: stop()
 
-      自動増加モードを停止します: このプログレスバーの :meth:`Progressbar.start` で
-      開始された繰り返しのタイマーイベントを全てキャンセルします。
+      Stop autoincrement mode: cancels any recurring timer event initiated by
+      :meth:`Progressbar.start` for this progress bar.
 
 
-セパレータ
-----------
+Separator
+---------
 
-:class:`ttk.Separator` ウィジェットは水平もしくは垂直のセパレータを表示します。
+The :class:`ttk.Separator` widget displays a horizontal or vertical separator
+bar.
 
-:class:`ttk.Widget` から継承したメソッド以外にメソッドを持ちません。
-
-
-オプション
-^^^^^^^^^^
-
-このウィジェットは以下のオプションを受け付けます:
-
-   +------------+------------------------------------------------------------+
-   | オプション | 説明                                                       |
-   +============+============================================================+
-   | orient     | "horizontal" か "vertical" のいずれかです。                |
-   |            | セパレータの方向を指定します。                             |
-   +------------+------------------------------------------------------------+
+It has no other methods besides the ones inherited from :class:`ttk.Widget`.
 
 
-サイズグリップ
---------------
+Options
+^^^^^^^
 
-(グローボックスとしても知られる) :class:`ttk.Sizegrip` ウィジェットは、
-押してつまみ部分をドラッグすることで最上位のウィンドウのサイズを変更できます。
+This widget accepts the following specific option:
 
-このウィジェットは :class:`ttk.Widget` から継承したもの以外のオプションとメソッドを持ちません。
-
-
-プラットフォーム固有のメモ
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-* Mac OS X では、最上位のウィンドウにはデフォルトで組み込みのサイズグリップが含まれています。
-  組み込みのグリップが :class:`Sizegrip` を隠してしまうので、 :class:`Sizegrip` を追加するのは無害です。
+   +--------+----------------------------------------------------------------+
+   | option | description                                                    |
+   +========+================================================================+
+   | orient | One of "horizontal" or "vertical". Specifies the orientation of|
+   |        | the separator.                                                 |
+   +--------+----------------------------------------------------------------+
 
 
-バグ
+Sizegrip
+--------
+
+The :class:`ttk.Sizegrip` widget (also known as a grow box) allows the user to
+resize the containing toplevel window by pressing and dragging the grip.
+
+This widget has neither specific options nor specific methods, besides the
+ones inherited from :class:`ttk.Widget`.
+
+
+Platform-specific notes
+^^^^^^^^^^^^^^^^^^^^^^^
+
+* On Mac OS X, toplevel windows automatically include a built-in size grip
+  by default. Adding a :class:`Sizegrip` is harmless, since the built-in
+  grip will just mask the widget.
+
+
+Bugs
 ^^^^
 
-.. memo
-
-   I (cocoatomo) didn't have confidence translations on 
-
-   - relative to the right or bottom of the screen
-   - (e.g. ....).
-
-* 最上位のウィンドウの位置がスクリーンに対して右や下に指定されている場合 (などなど....)、
-  :class:`Sizegrip` ウィジェットはウィンドウのサイズ変更をしません。
-* このウィジェットは "南東" 方向のサイズ変更しかサポートしていません。
+* If the containing toplevel's position was specified relative to the right
+  or bottom of the screen (e.g. ....), the :class:`Sizegrip` widget will
+  not resize the window.
+* This widget supports only "southeast" resizing.
 
 
-ツリービュー
-------------
+Treeview
+--------
 
-:class:`ttk.Treeview` ウィジェットは階層のある要素 (アイテム) の集まりを表示します。
-それぞれの要素はテキストラベル、オプションの画像、オプションのデータのリストを持っています。
-データはラベルの後に続くカラムに表示されます。
+The :class:`ttk.Treeview` widget displays a hierarchical collection of items.
+Each item has a textual label, an optional image, and an optional list of data
+values. The data values are displayed in successive columns after the tree
+label.
 
-データが表示される順序はウィジェットの ``displaycolumns`` オプションで制御されます。
-ツリーウィジェットはカラムヘッダを表示することもできます。
-カラムには数字もしくはウィジェットの columns オプションにある名前でアクセスできます。
-`カラム識別子`_ を参照してください。
+The order in which data values are displayed may be controlled by setting
+the widget option ``displaycolumns``. The tree widget can also display column
+headings. Columns may be accessed by number or symbolic names listed in the
+widget option columns. See `Column Identifiers`_.
 
-それぞれの要素は一意な名前で識別されます。
-要素の作成時に識別子が与えられなかった場合、ウィジェットが要素の識別子を生成します。
-このウィジェットには ``{}`` という名前の特別なルート要素があります。
-ルート要素自身は表示されません; その子要素たちが階層の最上位に現れます。
+Each item is identified by an unique name. The widget will generate item IDs
+if they are not supplied by the caller. There is a distinguished root item,
+named ``{}``. The root item itself is not displayed; its children appear at the
+top level of the hierarchy.
 
-それぞれの要素はタグのリストも持っていて、イベントバインディングと個別の要素を関連付け、要素の見た目を管理するのに使えます。
+Each item also has a list of tags, which can be used to associate event bindings
+with individual items and control the appearance of the item.
 
-ツリービューウィジェットは水平方向と垂直方向のスクロールをサポートしていて、
-`スクロール可能ウィジェットのオプション`_ に記述してあるオプションと :meth:`Treeview.xview` メソッドおよび :meth:`Treeview.yview` メソッドが使えます。
+The Treeview widget supports horizontal and vertical scrolling, according to
+the options described in `Scrollable Widget Options`_ and the methods
+:meth:`Treeview.xview` and :meth:`Treeview.yview`.
 
 
-オプション
-^^^^^^^^^^
+Options
+^^^^^^^
 
-このウィジェットは以下のオプションを受け付けます:
-
-.. note from translator (cocoatomo)
-
-   - tag binding refers tag_bind method
-   - 'list' is list in Tcl, which is space-separated strings, not list in Python
-   TODO add explanation for list in Tcl
+This widget accepts the following specific options:
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.7\textwidth}|
 ..
 
    +----------------+--------------------------------------------------------+
-   | オプション     | 説明                                                   |
+   | option         | description                                            |
    +================+========================================================+
-   | columns        | カラム数とその名前を指定するカラム識別子のリストです。 |
+   | columns        | A list of column identifiers, specifying the number of |
+   |                | columns and their names.                               |
    +----------------+--------------------------------------------------------+
-   | displaycolumns | どのデータカラムをどの順序で表示するかを指定する、     |
-   |                | (名前もしくは整数のインデックスの) カラム識別子の      |
-   |                | リストか、文字列 "#all" です。                         |
+   | displaycolumns | A list of column identifiers (either symbolic or       |
+   |                | integer indices) specifying which data columns are     |
+   |                | displayed and the order in which they appear, or the   |
+   |                | string "#all".                                         |
    +----------------+--------------------------------------------------------+
-   | height         | 表示する行数を指定します。                             |
-   |                | メモ: 表示に必要な幅はカラム幅の合計から決定されます。 |
+   | height         | Specifies the number of rows which should be visible.  |
+   |                | Note: the requested width is determined from the sum   |
+   |                | of the column widths.                                  |
    +----------------+--------------------------------------------------------+
-   | padding        | ウィジェットの内部のパディングのサイズを指定します。   |
-   |                | パディングは最大 4 個の長さ指定のリストです。          |
+   | padding        | Specifies the internal padding for the widget. The     |
+   |                | padding is a list of up to four length specifications. |
    +----------------+--------------------------------------------------------+
-   | selectmode     | 組み込みのクラスバインディングが選択状態を             |
-   |                | どう管理するかを指定します。設定する値は               |
-   |                | "extended", "browse", "none" のどれか 1 つです。       |
-   |                | "extended" に設定した場合 (デフォルト)、複数の要素が   |
-   |                | 選択できます。 "browse" に設定した場合、同時に 1 つの  |
-   |                | 要素しか選択できません。 "none" に設定した場合、選択を |
-   |                | 変更することはできません。                             |
+   | selectmode     | Controls how the built-in class bindings manage the    |
+   |                | selection. One of "extended", "browse" or "none".      |
+   |                | If set to "extended" (the default), multiple items may |
+   |                | be selected. If "browse", only a single item will be   |
+   |                | selected at a time. If "none", the selection will not  |
+   |                | be changed.                                            |
    |                |                                                        |
-   |                | このオプションの値によらず、アプリケーションのコードと |
-   |                | 関連付けられているタグからは好きなように選択状態を     |
-   |                | 設定できます。                                         |
+   |                | Note that the application code and tag bindings can set|
+   |                | the selection however they wish, regardless of the     |
+   |                | value  of this option.                                 |
    +----------------+--------------------------------------------------------+
-   | show           | ツリーのどの要素を表示するかを指定する、以下にある値を |
-   |                | 0 個以上含むリストです。                               |
+   | show           | A list containing zero or more of the following values,|
+   |                | specifying which elements of the tree to display.      |
    |                |                                                        |
-   |                | * tree: カラム #0 にツリーのラベルを表示します。       |
-   |                | * headings: ヘッダ行を表示します。                     |
+   |                | * tree: display tree labels in column #0.              |
+   |                | * headings: display the heading row.                   |
    |                |                                                        |
-   |                | デフォルトは "tree headings" 、つまり全ての要素を      |
-   |                | 表示します。                                           |
+   |                | The default is "tree headings", i.e., show all         |
+   |                | elements.                                              |
    |                |                                                        |
-   |                | **メモ**: show="tree" が指定されていない場合でも、     |
-   |                | カラム #0 は常にツリーカラムを参照します。             |
+   |                | **Note**: Column #0 always refers to the tree column,  |
+   |                | even if show="tree" is not specified.                  |
    +----------------+--------------------------------------------------------+
 
 
-要素オプション
-^^^^^^^^^^^^^^
+Item Options
+^^^^^^^^^^^^
 
-以下の要素オプションは、ウィジェットの insert コマンドと item コマンドで要素に対して指定できます。
+The following item options may be specified for items in the insert and item
+widget commands.
 
-   +------------+--------------------------------------------------------------+
-   | オプション | 説明                                                         |
-   +============+==============================================================+
-   | text       | アイテムに表示するテキストラベルです。                       |
-   +------------+--------------------------------------------------------------+
-   | image      | ラベルの左に表示される Tk 画像です。                         |
-   +------------+--------------------------------------------------------------+
-   | values     | 要素に関連付けられている値のリストです。                     |
-   |            |                                                              |
-   |            | それぞれの要素はウィジェットの columns オプションと          |
-   |            | 同じ数の値を持たなければいけません。 columns オプションより  |
-   |            | 少ない場合、残りの値は空として扱われます。                   |
-   |            | columns オプションより多い場合、余計な値は無視されます。     |
-   +------------+--------------------------------------------------------------+
-   | open       | 要素の子供を表示するか隠すかを指示する真偽値です。           |
-   +------------+--------------------------------------------------------------+
-   | tags       | この要素に関連付いているタグのリストです。                   |
-   +------------+--------------------------------------------------------------+
+   +--------+---------------------------------------------------------------+
+   | option | description                                                   |
+   +========+===============================================================+
+   | text   | The textual label to display for the item.                    |
+   +--------+---------------------------------------------------------------+
+   | image  | A Tk Image, displayed to the left of the label.               |
+   +--------+---------------------------------------------------------------+
+   | values | The list of values associated with the item.                  |
+   |        |                                                               |
+   |        | Each item should have the same number of values as the widget |
+   |        | option columns. If there are fewer values than columns, the   |
+   |        | remaining values are assumed empty. If there are more values  |
+   |        | than columns, the extra values are ignored.                   |
+   +--------+---------------------------------------------------------------+
+   | open   | True/False value indicating whether the item's children should|
+   |        | be displayed or hidden.                                       |
+   +--------+---------------------------------------------------------------+
+   | tags   | A list of tags associated with this item.                     |
+   +--------+---------------------------------------------------------------+
 
 
-タグオプション
-^^^^^^^^^^^^^^
+Tag Options
+^^^^^^^^^^^
 
-以下のオプションはタグに対して設定できます:
+The following options may be specified on tags:
 
    +------------+-----------------------------------------------------------+
-   | オプション | 説明                                                      |
+   | option     | description                                               |
    +============+===========================================================+
-   | foreground | テキストの色を指定します。                                |
+   | foreground | Specifies the text foreground color.                      |
    +------------+-----------------------------------------------------------+
-   | background | セルや要素の背景色を指定します。                          |
+   | background | Specifies the cell or item background color.              |
    +------------+-----------------------------------------------------------+
-   | font       | テキストを描画するときに使うフォントを指定します。        |
+   | font       | Specifies the font to use when drawing text.              |
    +------------+-----------------------------------------------------------+
-   | image      | 要素の image オプションが空だった場合に使用する画像を     |
-   |            | 指定します。                                              |
+   | image      | Specifies the item image, in case the item's image option |
+   |            | is empty.                                                 |
    +------------+-----------------------------------------------------------+
 
 
-カラム識別子
-^^^^^^^^^^^^
+Column Identifiers
+^^^^^^^^^^^^^^^^^^
 
-カラム識別子は以下のいずれかの形式を取ります:
+Column identifiers take any of the following forms:
 
-* columns オプションのリストにある名前。
-* n 番目のデータカラムを指し示す整数 n 。
-* n を整数として n 番目の表示されているカラムを指し示す #n という形式の文字列。
+* A symbolic name from the list of columns option.
+* An integer n, specifying the nth data column.
+* A string of the form #n, where n is an integer, specifying the nth display
+  column.
 
-メモ:
+Notes:
 
-* 要素のオプション値は実際に格納されている順序とは違った順序で表示されることがあります。
-* show="tree" が指定されていない場合でも、カラム #0 は常にツリーカラムを指しています。
+* Item's option values may be displayed in a different order than the order
+  in which they are stored.
+* Column #0 always refers to the tree column, even if show="tree" is not
+  specified.
 
-データカラムを指す数字は、要素の values オプションのリストのインデックスです;
-表示カラムを指す数字は、値が表示されているツリーのカラム番号です。
-ツリーラベルはカラム #0 に表示されます。
-displaycolumns オプションが設定されていない場合は、 n 番目のデータカラムは
-カラム #n+1 に表示されます。
-再度言っておくと、 **カラム #0 は常にツリーカラムを指します** 。
+A data column number is an index into an item's option values list; a display
+column number is the column number in the tree where the values are displayed.
+Tree labels are displayed in column #0. If option displaycolumns is not set,
+then data column n is displayed in column #n+1. Again, **column #0 always
+refers to the tree column**.
 
 
-仮想イベント
-^^^^^^^^^^^^
+Virtual Events
+^^^^^^^^^^^^^^
 
-ツリービューは以下の仮想イベントを生成します。
+The Treeview widget generates the following virtual events.
 
    +--------------------+--------------------------------------------------+
-   | イベント           | 説明                                             |
+   | event              | description                                      |
    +====================+==================================================+
-   | <<TreeviewSelect>> | 選択状態が変更されたときに生成されます。         |
+   | <<TreeviewSelect>> | Generated whenever the selection changes.        |
    +--------------------+--------------------------------------------------+
-   | <<TreeviewOpen>>   | フォーカスが当たっている要素に open=True が      |
-   |                    | 設定される直前に生成されます。                   |
+   | <<TreeviewOpen>>   | Generated just before settings the focus item to |
+   |                    | open=True.                                       |
    +--------------------+--------------------------------------------------+
-   | <<TreeviewClose>>  | フォーカスが当たっている要素に open=False が     |
-   |                    | 設定された直後に生成されます。                   |
+   | <<TreeviewClose>>  | Generated just after setting the focus item to   |
+   |                    | open=False.                                      |
    +--------------------+--------------------------------------------------+
 
-:meth:`Treeview.focus` メソッドと :meth:`Treeview.selection` メソッドは変更を受けた要素を判別するのに使えます。
+The :meth:`Treeview.focus` and :meth:`Treeview.selection` methods can be used
+to determine the affected item or items.
 
 
 ttk.Treeview
@@ -832,326 +846,332 @@ ttk.Treeview
 
 .. class:: Treeview
 
-   .. method:: bbox(item[, column=None])
+   .. method:: bbox(item, column=None)
 
-      (ツリービューウィジェットのウィンドウを基準として) 指定された *item* の
-      バウンディングボックス情報を (x 座標, y 座標, 幅, 高さ) の形式で返します。
+      Returns the bounding box (relative to the treeview widget's window) of
+      the specified *item* in the form (x, y, width, height).
 
-      *column* が指定されている場合は、セルのバウンディングボックスを返します。
-      (例えば、閉じた状態の要素の子供であったり、枠外にスクロールされていて)
-      *item* が見えなくなっている場合は、空文字列が返されます。
+      If *column* is specified, returns the bounding box of that cell. If the
+      *item* is not visible (i.e., if it is a descendant of a closed item or is
+      scrolled offscreen), returns an empty string.
 
 
    .. method:: get_children([item])
 
-      *item* の子要素のリストを返します。
+      Returns the list of children belonging to *item*.
 
-      *item* が指定されていなかった場合は、ルート要素の子供が返されます。
+      If *item* is not specified, returns root children.
 
 
    .. method:: set_children(item, *newchildren)
 
-      *item* の子要素を *newchildren* で置き換えます。
+      Replaces *item*'s child with *newchildren*.
 
-      *item* にいる子供のうち *newchildren* にないものはツリーから切り離されます。
-      *newchildren* にあるどの要素も *item* の祖先であってはいけません。
-      *newchildren* を指定しなかった場合は、 *item* の子要素が全て切り離されることに注意してください。
+      Children present in *item* that are not present in *newchildren* are
+      detached from the tree. No items in *newchildren* may be an ancestor of
+      *item*. Note that not specifying *newchildren* results in detaching
+      *item*'s children.
 
 
-   .. method:: column(column[, option=None[, **kw]])
+   .. method:: column(column, option=None, **kw)
 
-      指定した *column* のオプションを問い合わせたり、変更したりします。
+      Query or modify the options for the specified *column*.
 
-      *kw* が与えられなかった場合は、カラムのオプション値の辞書が返されます。
-      *option* が指定されていた場合は、その *option* の値が返されます。
-      それ以外の場合は、オプションに値を設定します。
+      If *kw* is not given, returns a dict of the column option values. If
+      *option* is specified then the value for that *option* is returned.
+      Otherwise, sets the options to the corresponding values.
 
-      設定できるオプションとその値は次の通りです:
+      The valid options/values are:
 
       * id
-         カラム名を返します。これは読み取り専用のオプションです。
-      * anchor: 標準の Tk anchor の値
-         このカラムでセルに対してテキストをどう配置するかを指定します。
-      * minwidth: 幅
-         カラムの最小幅をピクセル単位で表したものです。
-         ツリービューウィジェットは、ウィジェットのサイズが変更されたり
-         カラムをユーザがドラッグして移動させたりしたときに、
-         このオプションで指定した幅より狭くすることはありません。
-      * stretch: True もしくは False
-         ウィジェットがサイズ変更されたとき、カラムの幅をそれに合わせるかどうかを指定します。
-      * width: 幅
-         カラムの幅をピクセル単位で表したものです。
+         Returns the column name. This is a read-only option.
+      * anchor: One of the standard Tk anchor values.
+         Specifies how the text in this column should be aligned with respect
+         to the cell.
+      * minwidth: width
+         The minimum width of the column in pixels. The treeview widget will
+         not make the column any smaller than specified by this option when
+         the widget is resized or the user drags a column.
+      * stretch: True/False
+         Specifies whether the column's width should be adjusted when
+         the widget is resized.
+      * width: width
+         The width of the column in pixels.
 
-      ツリーカラムの設定を行うには、 column = "#0" を付けてこのメソッドを呼び出してください。
+      To configure the tree column, call this with column = "#0"
 
    .. method:: delete(*items)
 
-      指定された *items* とその子孫たち全てを削除します。
+      Delete all specified *items* and all their descendants.
 
-      ルート要素は削除されません。
+      The root item may not be deleted.
 
 
    .. method:: detach(*items)
 
-      指定された *items* を全てツリーから切り離します。
+      Unlinks all of the specified *items* from the tree.
 
       The items and all of their descendants are still present, and may be
       reinserted at another point in the tree, but will not be displayed.
-      その要素と子孫たちは依然として存在していて、ツリーの別の場所に再度
-      挿入することができますが、隠された状態になり表示はされません。
 
-      ルート要素は切り離されません。
+      The root item may not be detached.
 
 
    .. method:: exists(item)
 
-      指定された *item* がツリーの中にあれば True を返します。
+      Returns ``True`` if the specified *item* is present in the tree.
 
 
    .. method:: focus([item=None])
 
-      *item* が指定されていた場合は、 *item* にフォーカスを当てます。
-      そうでない場合は、現在フォーカスが当たっている要素が、
-      どの要素にもフォーカスが当たっていない場合は '' が返されます。
+      If *item* is specified, sets the focus item to *item*. Otherwise, returns
+      the current focus item, or '' if there is none.
 
 
-   .. method:: heading(column[, option=None[, **kw]])
+   .. method:: heading(column, option=None, **kw)
 
-      指定された *column* の heading のオプションを問い合わせたり、変更したりします。
+      Query or modify the heading options for the specified *column*.
 
-      *kw* が与えられなかった場合は、見出しのオプション値の辞書が返されます。
-      *option* が指定されている場合は、 *option* の値が返されます。
-      それ以外の場合は、オプションに値を設定します。
+      If *kw* is not given, returns a dict of the heading option values. If
+      *option* is specified then the value for that *option* is returned.
+      Otherwise, sets the options to the corresponding values.
 
-      設定できるオプションとその値は次の通りです:
+      The valid options/values are:
 
-      * text: テキスト
-         カラムの見出しに表示するテキスト。
-      * image: 画像名
-         カラムの見出しの右に表示する画像を指定します。
+      * text: text
+         The text to display in the column heading.
+      * image: imageName
+         Specifies an image to display to the right of the column heading.
       * anchor: anchor
-         見出しのテキストをどう配置するかを指定します。標準の Tk anchor の値です。
-      * command: コールバック
-         見出しラベルがクリックされたときに実行されるコールバックです。
+         Specifies how the heading text should be aligned. One of the standard
+         Tk anchor values.
+      * command: callback
+         A callback to be invoked when the heading label is pressed.
 
-      ツリーカラムの見出しの設定を行うには、 column = "#0" を付けてこのメソッドを呼び出してください。
+      To configure the tree column heading, call this with column = "#0".
+
 
    .. method:: identify(component, x, y)
 
-      *x* *y* で与えられた場所にある指定された *component* の説明を返します。
-      その場所に指定された *component* が無い場合は空文字列を返します。
-      (訳注: component には "region", "item", "column", "row", "element" が指定でき、
-      それぞれ "cell", "heading" などの場所の名前、要素の識別子、 #n という形式のカラム名、
-      その行にある要素の識別子、 "text", "padding" などの画面構成要素の名前を返します。)
+      Returns a description of the specified *component* under the point given
+      by *x* and *y*, or the empty string if no such *component* is present at
+      that position.
 
 
    .. method:: identify_row(y)
 
-      y 座標が *y* の位置にある要素の識別子を返します。
+      Returns the item ID of the item at position *y*.
 
 
    .. method:: identify_column(x)
 
-      x 座標が *x* の位置にあるセルのデータカラムの識別子を返します。
+      Returns the data column identifier of the cell at position *x*.
 
-      ツリーカラムは #0 という識別子を持ちます。
+      The tree column has ID #0.
 
 
    .. method:: identify_region(x, y)
 
-      以下のうち 1 つを返します:
+      Returns one of:
 
       +-----------+--------------------------------------+
-      | region    | 意味                                 |
+      | region    | meaning                              |
       +===========+======================================+
-      | heading   | ツリーの見出し領域                   |
+      | heading   | Tree heading area.                   |
       +-----------+--------------------------------------+
-      | separator | 2 つのカラム見出しの間のスペース     |
+      | separator | Space between two columns headings.  |
       +-----------+--------------------------------------+
-      | tree      | ツリーの領域                         |
+      | tree      | The tree area.                       |
       +-----------+--------------------------------------+
-      | cell      | データセル                           |
+      | cell      | A data cell.                         |
       +-----------+--------------------------------------+
 
-      使用可能バージョン: Tk 8.6
+      Availability: Tk 8.6.
 
 
    .. method:: identify_element(x, y)
 
-      *x* *y* の位置にある画面構成要素の名前を返します。
+      Returns the element at position *x*, *y*.
 
-      使用可能バージョン: Tk 8.6
+      Availability: Tk 8.6.
 
 
    .. method:: index(item)
 
-      親要素の子要素リストの中での *item* のインデックスを返します。
+      Returns the integer index of *item* within its parent's list of children.
 
 
-   .. method:: insert(parent, index[, iid=None[, **kw]])
+   .. method:: insert(parent, index, iid=None, **kw)
 
-      新しい要素を作り、その要素の識別子を返します。
+      Creates a new item and returns the item identifier of the newly created
+      item.
 
-      *parent* は親となる要素の識別子で、空文字列にすると新しい
-      要素を最上位に作成します。
-      *index* は整数もしくは "end" という値で、それによって
-      親要素の子要素リストのどこに新しい要素を挿入するかを指定します。
-      *index* が 0 以下だった場合は、新しい要素は先頭に挿入されます;
-      *index* が現在の子要素の数以上だった場合は末尾に挿入されます。
-      *iid* が指定された場合は、要素の識別子として使われます;
-      *iid* はまだツリーに存在していないものに限ります。
-      それ以外の場合は、一意な識別子が生成されます。
+      *parent* is the item ID of the parent item, or the empty string to create
+      a new top-level item. *index* is an integer, or the value "end",
+      specifying where in the list of parent's children to insert the new item.
+      If *index* is less than or equal to zero, the new node is inserted at
+      the beginning; if *index* is greater than or equal to the current number
+      of children, it is inserted at the end. If *iid* is specified, it is used
+      as the item identifier; *iid* must not already exist in the tree.
+      Otherwise, a new unique identifier is generated.
 
-      使用できるオプションのリストについては `要素オプション`_ を参照してください。
+      See `Item Options`_ for the list of available points.
 
 
    .. method:: item(item[, option[, **kw]])
 
-      指定された *item* のオプションを問い合わせたり、変更したりします。
+      Query or modify the options for the specified *item*.
 
-      オプションが与えられなかった場合は、要素のオプションと値が辞書の形で返されます。
-      *option* が指定された場合は、そのオプションの値が返されます。
-      それ以外の場合は、 *kw* で与えられたようにオプションに値が設定されます。
+      If no options are given, a dict with options/values for the item is
+      returned.
+      If *option* is specified then the value for that option is returned.
+      Otherwise, sets the options to the corresponding values as given by *kw*.
 
 
    .. method:: move(item, parent, index)
 
-      *item* を *parent* の子要素リストの *index* の位置に移動します。
+      Moves *item* to position *index* in *parent*'s list of children.
 
-      要素を自身の子孫の下に移動させるのは許されていません。
-      *index* が 0 以下の場合、 *item* は先頭に移動されます;
-      子要素の数以上だった場合、末尾に移動されます。
-      *item* が切り離された状態の場合は、再度取り付けられます。
+      It is illegal to move an item under one of its descendants. If *index* is
+      less than or equal to zero, *item* is moved to the beginning; if greater
+      than or equal to the number of children, it is moved to the end. If *item*
+      was detached it is reattached.
 
 
    .. method:: next(item)
 
-      *item* の 1 つ下の兄弟の識別子を、 *item* が親にとって一番下の子供だった場合 '' を返します。
+      Returns the identifier of *item*'s next sibling, or '' if *item* is the
+      last child of its parent.
 
 
    .. method:: parent(item)
 
-      *item* の親の識別子を、 *item* が階層の最上位にいた場合 '' を返します。
+      Returns the ID of the parent of *item*, or '' if *item* is at the top
+      level of the hierarchy.
 
 
    .. method:: prev(item)
 
-      *item* の 1 つ上の兄弟の識別子を、 *item* が親にとって一番上の子供だった場合 '' を返します。
+      Returns the identifier of *item*'s previous sibling, or '' if *item* is
+      the first child of its parent.
 
 
    .. method:: reattach(item, parent, index)
 
-      :meth:`Treeview.move` のエイリアスです。
+      An alias for :meth:`Treeview.move`.
 
 
    .. method:: see(item)
 
-      *item* を見える状態にします。
+      Ensure that *item* is visible.
 
-      *item* の全ての子孫の open オプションを True にし、必要であれば *item* がツリーの見える範囲に来るようにウィジェットをスクロールさせます。
+      Sets all of *item*'s ancestors open option to ``True``, and scrolls the
+      widget if necessary so that *item* is within the visible portion of
+      the tree.
 
 
    .. method:: selection([selop=None[, items=None]])
 
-      *selop* が指定されなかった場合は、選択されている要素を返します。
-      そうでなければ、以下の選択メソッドに従って動作します。
-      (訳注: *selop* には "set", "add", "remove", "toggle" のうち 1 つが指定できます。
-      *items* にはそれぞれのメソッドの引数を指定します。)
+      If *selop* is not specified, returns selected items. Otherwise, it will
+      act according to the following selection methods.
 
 
    .. method:: selection_set(items)
 
-      新しく選択状態の要素が *items* になります。
+      *items* becomes the new selection.
 
 
    .. method:: selection_add(items)
 
-      選択状態の要素として *items* を追加します。
+      Add *items* to the selection.
 
 
    .. method:: selection_remove(items)
 
-      選択状態の要素から *items* を取り除きます。
+      Remove *items* from the selection.
 
 
    .. method:: selection_toggle(items)
 
-      *items* のそれぞれの要素の選択状態を入れ替えます。
+      Toggle the selection state of each item in *items*.
 
 
-   .. method:: set(item[, column=None[, value=None]])
+   .. method:: set(item, column=None, value=None)
 
-      1 引数で呼び出された場合、指定された *item* のカラムと値のペアからなる辞書を返します。
-      2 引数で呼び出された場合、指定された *column* の現在の値を返します。
-      3 引数で呼び出された場合、与えられた *item* の *column* を指定された値 *value* に設定します。
-
-
-   .. method:: tag_bind(tagname[, sequence=None[, callback=None]])
-
-      与えられたイベント *sequence* 用のコールバックをタグ *tagname* にバインドします。
-      イベントが要素に渡ってきたときに、要素の tags オプションのそれぞれのコールバックが呼び出されます。
+      With one argument, returns a dictionary of column/value pairs for the
+      specified *item*. With two arguments, returns the current value of the
+      specified *column*. With three arguments, sets the value of given
+      *column* in given *item* to the specified *value*.
 
 
-   .. method:: tag_configure(tagname[, option=None[, **kw]])
+   .. method:: tag_bind(tagname, sequence=None, callback=None)
 
-      指定された *tagname* のオプションを問い合わせたり、変更したりします。
+      Bind a callback for the given event *sequence* to the tag *tagname*.
+      When an event is delivered to an item, the callbacks for each of the
+      item's tags option are called.
 
-      *kw* が与えられなかった場合、 *tagname* のオプション設定を辞書の形で返します。
-      *option* が指定された場合、指定された *tagname* の *option* の値を返します。
-      それ以外の場合、与えられた *tagname* のオプションに値を設定します。
+
+   .. method:: tag_configure(tagname, option=None, **kw)
+
+      Query or modify the options for the specified *tagname*.
+
+      If *kw* is not given, returns a dict of the option settings for
+      *tagname*. If *option* is specified, returns the value for that *option*
+      for the specified *tagname*. Otherwise, sets the options to the
+      corresponding values for the given *tagname*.
 
 
    .. method:: tag_has(tagname[, item])
 
-      *item* が指定されていた場合、指定された *item* が与えられた *tagname* を
-      持っているかどうかに従って 1 または 0 が返されます。
-      そうでない場合、指定されたタグを持つ全ての要素のリストを返します。
+      If *item* is specified, returns 1 or 0 depending on whether the specified
+      *item* has the given *tagname*. Otherwise, returns a list of all items
+      that have the specified tag.
 
-      使用可能バージョン: Tk 8.6
+      Availability: Tk 8.6
 
 
    .. method:: xview(*args)
 
-      ツリービューの水平方向の位置を問い合わせたり、変更したりします。
+      Query or modify horizontal position of the treeview.
 
 
    .. method:: yview(*args)
 
-      ツリービューの垂直方向の位置を問い合わせたり、変更したりします。
+      Query or modify vertical position of the treeview.
 
 
 .. _TtkStyling:
 
-Ttk スタイル
-------------
+Ttk Styling
+-----------
 
-:mod:`ttk` のそれぞれのウィジェットにはスタイルが関連付けられていて、
-それと動的もしくはデフォルトで設定される要素のオプションによって
-ウィジェットを構成する要素とその配置を指定します。
-デフォルトではスタイル名はウィジェットのクラス名と同じですが、ウィジェットの style オプションで上書きすることができます。
-ウィジェットのクラス名が分からない場合は、 :meth:`Misc.winfo_class` (somewidget.winfo_class()) メソッドを使ってください。
+Each widget in :mod:`ttk` is assigned a style, which specifies the set of
+elements making up the widget and how they are arranged, along with dynamic and
+default settings for element options. By default the style name is the same as
+the widget's class name, but it may be overridden by the widget's style
+option. If the class name of a widget is unknown, use the method
+:meth:`Misc.winfo_class` (somewidget.winfo_class()).
 
 .. seealso::
 
    `Tcl'2004 conference presentation <http://tktable.sourceforge.net/tile/tile-tcl2004.pdf>`_
-      この文書ではテーマエンジンがどう動くかを説明しています
+      This document explains how the theme engine works
 
 
 .. class:: Style
 
-   このクラスはスタイルデータベースを操作するために使われます。
+   This class is used to manipulate the style database.
 
 
    .. method:: configure(style, query_opt=None, **kw)
 
-      *style* の指定されたオプションのデフォルト値を問い合わせたり、設定したりします。
+      Query or set the default value of the specified option(s) in *style*.
 
-      *kw* のそれぞれのキーはオプション名で値はそのオプションの値の文字列です。
+      Each key in *kw* is an option and each value is a string identifying
+      the value for that option.
 
-      例えば、全てのデフォルトのボタンをパディングのある平らな見た目にし
-      背景の色を変更するには以下のようにします
-
-      ::
+      For example, to change every default button to be a flat button with some
+      padding and a different background color do::
 
          import ttk
          import Tkinter
@@ -1169,15 +1189,14 @@ Ttk スタイル
 
    .. method:: map(style, query_opt=None, **kw)
 
-      *style* の指定されたオプションの動的な値を問い合わせたり、設定したりします。
+      Query or sets dynamic values of the specified option(s) in *style*.
 
-      *kw* のそれぞれのキーはオプション名で、値はタプルやリストや
-      何か他の好きなものでグループ化された状態仕様 (statespec) を要素とするリストやタプルです。
-      状態仕様は 1 つもしくは複数の状態と値の組み合わせです。
+      Each key in *kw* is an option and each value should be a list or a
+      tuple (usually) containing statespecs grouped in tuples, lists, or
+      something else of your preference. A statespec is a compound of one
+      or more states and then a value.
 
-      例
-
-      ::
+      An example::
 
          import Tkinter
          import ttk
@@ -1195,42 +1214,39 @@ Ttk スタイル
          root.mainloop()
 
 
-      あるオプションに対する状態と値の組 (states, value) の並び順は
-      スタイルに影響を与えることに注意してください。
-      例えば、 foreground オプションの順序を ``[('active', 'blue'), ('pressed', 'red')]`` に変更した場合、
-      ウィジェットがアクティブもしくは押された状態のとき前面が青くなります。
+      Note that the order of the (states, value) sequences for an
+      option matters.  In the previous example, if you change the
+      order to ``[('active', 'blue'), ('pressed', 'red')]`` in the
+      foreground option, for example, you would get a blue foreground
+      when the widget is in the active or pressed states.
 
+   .. method:: lookup(style, option, state=None, default=None)
 
-   .. method:: lookup(style, option[, state=None[, default=None]])
+      Returns the value specified for *option* in *style*.
 
-      *style* の指定された *option* の値を返します。
+      If *state* is specified, it is expected to be a sequence of one or more
+      states. If the *default* argument is set, it is used as a fallback value
+      in case no specification for option is found.
 
-      *state* を指定する場合は、1 つ以上の状態名の並びである必要があります。
-      *default* 引数が指定されていた場合は、オプション指定が見付からなかったときに
-      代わりに返される値として使われます。
-
-      デフォルトでボタンがどのフォントを使うかを調べるには、以下のように実行します
-      ::
+      To check what font a Button uses by default, do::
 
          import ttk
 
          print ttk.Style().lookup("TButton", "font")
 
 
-   .. method:: layout(style[, layoutspec=None])
+   .. method:: layout(style, layoutspec=None)
 
-      与えられた *style* でのウィジェットのレイアウトを定義します。
-      *layoutspec* が省略されていた場合は、
-      与えられたスタイルのレイアウト仕様を返します。
+      Define the widget layout for given *style*. If *layoutspec* is omitted,
+      return the layout specification for given style.
 
-      *layoutspec* を指定する場合は、リストもしくは
-      (文字列を除いた) 何か他のシーケンス型である必要があります。
-      それぞれの要素はタプルで、レイアウト名を 1 番目の要素とし、
-      2 番目の要素は `レイアウト`_ で説明されているフォーマットである必要があります。
+      *layoutspec*, if specified, is expected to be a list or some other
+      sequence type (excluding strings), where each item should be a tuple and
+      the first item is the layout name and the second item should have the
+      format described in `Layouts`_.
 
-      フォーマットを理解するために以下の例を見てください
-      (何かを使い易くするための例ではありません)
-      ::
+      To understand the format, see the following example (it is not
+      intended to do anything useful)::
 
          import ttk
          import Tkinter
@@ -1256,70 +1272,74 @@ Ttk スタイル
 
    .. method:: element_create(elementname, etype, *args, **kw)
 
-      与えられた *etype* ("image", "from", "vsapi" のいずれか) の現在のテーマに新しい要素を作成します。
-      最後の "vsapi" は Windows XP と Vista の Tk 8.6a のみで使用可能でここでは説明しません。
+      Create a new element in the current theme, of the given *etype* which is
+      expected to be either "image", "from" or "vsapi". The latter is only
+      available in Tk 8.6a for Windows XP and Vista and is not described here.
 
-      "image" が使われた場合、 *args* はデフォルトの画像名の後ろに
-      状態仕様と値のペア (これが画像仕様です) を並べたものである必要があります。
-      *kw* には以下のオプションが指定できます:
+      If "image" is used, *args* should contain the default image name followed
+      by statespec/value pairs (this is the imagespec), and *kw* may have the
+      following options:
 
        * border=padding
-          padding は 4 個以下の整数のリストで、それぞれ左、上、右、下の縁の幅を指定します。
+          padding is a list of up to four integers, specifying the left, top,
+          right, and bottom borders, respectively.
 
        * height=height
-          要素の最小の高さを指定します。0 より小さい場合は、
-          画像の高さをデフォルトとして使用します。
+          Specifies a minimum height for the element. If less than zero, the
+          base image's height is used as a default.
 
        * padding=padding
-          要素の内部のパディングを指定します。指定されない場合は、
-          border の値がデフォルトとして使われます。
+          Specifies the element's interior padding. Defaults to border's value
+          if not specified.
 
        * sticky=spec
-          1 つ外側の枠に対し画像をどう配置するかを指定します。
-          spec は "n", "s", "w", "e" の文字を 0 個以上含みます。
+          Specifies how the image is placed within the final parcel. spec
+          contains zero or more characters "n", "s", "w", or "e".
 
        * width=width
-          要素の最小の幅を指定します。0 より小さい場合は、
-          画像の幅をデフォルトとして使用します。
+          Specifies a minimum width for the element. If less than zero, the
+          base image's width is used as a default.
 
-      *etype* の値として "from" が使われた場合は、
-      :meth:`element_create` が現在の要素を複製します。
-      *args* は要素の複製元のテーマの名前と、オプションで複製する要素を含んでいる必要があります。
-      複製元の要素が指定されていなかった場合、空要素が使用され、 *kw* は破棄されます。
+      If "from" is used as the value of *etype*,
+      :meth:`element_create` will clone an existing
+      element. *args* is expected to contain a themename, from which
+      the element will be cloned, and optionally an element to clone from.
+      If this element to clone from is not specified, an empty element will
+      be used. *kw* is discarded.
 
 
    .. method:: element_names()
 
-      現在のテーマに定義されている要素のリストを返します。
+      Returns the list of elements defined in the current theme.
 
 
    .. method:: element_options(elementname)
 
-      *elementname* のオプションのリストを返します。
+      Returns the list of *elementname*'s options.
 
 
-   .. method:: theme_create(themename[, parent=None[, settings=None]])
+   .. method:: theme_create(themename, parent=None, settings=None)
 
-      新しいテーマを作成します。
+      Create a new theme.
 
-      *themename* が既に存在していた場合はエラーになります。
-      *parent* が指定されていた場合は、新しいテーマは親テーマからスタイルや要素やレイアウトを継承します。
-      *settings* が指定された場合は、 :meth:`theme_settings` で使われるのと
-      同じ形式である必要があります。
+      It is an error if *themename* already exists. If *parent* is specified,
+      the new theme will inherit styles, elements and layouts from the parent
+      theme. If *settings* are present they are expected to have the same
+      syntax used for :meth:`theme_settings`.
 
 
    .. method:: theme_settings(themename, settings)
 
-      一時的に現在のテーマを *themename* に設定し、指定された *settings* を適用した後、元のテーマを復元します。
+      Temporarily sets the current theme to *themename*, apply specified
+      *settings* and then restore the previous theme.
 
-      *settings* のそれぞれのキーはスタイル名で値はさらに
-      'configure', 'map', 'layout', 'element create' をキーとして持ち、
-      その値はそれぞれ :meth:`Style.configure`, :meth:`Style.map`,
-      :meth:`Style.layout`, :meth:`Style.element_create` メソッドで
-      指定するのと同じ形式である必要があります。
+      Each key in *settings* is a style and each value may contain the keys
+      'configure', 'map', 'layout' and 'element create' and they are expected
+      to have the same format as specified by the methods
+      :meth:`Style.configure`, :meth:`Style.map`, :meth:`Style.layout` and
+      :meth:`Style.element_create` respectively.
 
-      例として、コンボボックスの default テーマを少し変更してみましょう
-      ::
+      As an example, let's change the Combobox for the default theme a bit::
 
          import ttk
          import Tkinter
@@ -1347,42 +1367,41 @@ Ttk スタイル
 
    .. method:: theme_names()
 
-      全ての既存のテーマのリストを返します。
+      Returns a list of all known themes.
 
 
    .. method:: theme_use([themename])
 
-      *themename* が与えられなかった場合は、現在使用中のテーマ名を返します。
-      そうでない場合は、現在のテーマを *themename* に設定し、
-      全てのウィジェットを再描画し、 <<ThemeChanged>> イベントを発生させます。
+      If *themename* is not given, returns the theme in use.  Otherwise, sets
+      the current theme to *themename*, refreshes all widgets and emits a
+      <<ThemeChanged>> event.
 
 
-レイアウト
-^^^^^^^^^^
+Layouts
+^^^^^^^
 
-レイアウトはオプションを取らない場合はただの None にできますし、
-そうでない場合は要素をどう配置するかを指定するオプションの辞書になります。
-レイアウト機構は単純化したジオメトリマネージャを使っています:
-最初に空間が与えられ、それぞれの要素に分割された空間が配分されます。
-設定できるオプションと値は次の通りです:
+A layout can be just None, if it takes no options, or a dict of
+options specifying how to arrange the element. The layout mechanism
+uses a simplified version of the pack geometry manager: given an
+initial cavity, each element is allocated a parcel. Valid
+options/values are:
 
- * side: 辺の名前
-    要素を空間のどちら側に配置するかを指定します;
-    top, right, bottom, left のどれか 1 つです。
-    省略された場合は、要素は空間全体を占めます。
+ * side: whichside
+    Specifies which side of the cavity to place the element; one of
+    top, right, bottom or left. If omitted, the element occupies the
+    entire cavity.
 
- * sticky: n, s, w, e から 0 個以上
-    配分された空間の内部に要素をどう配置するかを指定します。
+ * sticky: nswe
+    Specifies where the element is placed inside its allocated parcel.
 
- * unit: 0 か 1
+ * unit: 0 or 1
     If set to 1, causes the element and all of its descendants to be treated as
     a single element for the purposes of :meth:`Widget.identify` et al. It's
     used for things like scrollbar thumbs with grips.
-    1 を設定した場合、要素とその
 
- * children: [内部レイアウト... ]
-    要素の内部に配置する要素のリストを指定します。
-    リストのそれぞれの要素はタプル (もしくは他のシーケンス型) で、
-    それの 1 番目の要素はレイアウト名でそれ以降は `Layout`_ です。
+ * children: [sublayout... ]
+    Specifies a list of elements to place inside the element. Each
+    element is a tuple (or other sequence type) where the first item is
+    the layout name, and the other is a `Layout`_.
 
-.. _Layout: `レイアウト`_
+.. _Layout: `Layouts`_

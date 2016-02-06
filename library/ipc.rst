@@ -1,16 +1,18 @@
 
 .. _ipc:
 
-****************************
-プロセス間通信とネットワーク
-****************************
+*****************************************
+Interprocess Communication and Networking
+*****************************************
 
-この章で解説されるモジュールは他のプロセスと通信するメカニズムを提供します。
+The modules described in this chapter provide mechanisms for different processes
+to communicate.
 
-いくつかのモジュール、たとえば :mod:`signal` や :mod:`subprocess` は同じマシン上での2つのプロセス間でだけ動作します。
-他のモジュールはネットワークプロトコルをサポートし、2つかそれ以上のプロセスがマシンをまたいで通信するために利用できます。
+Some modules only work for two processes that are on the same machine, e.g.
+:mod:`signal` and :mod:`subprocess`.  Other modules support networking protocols
+that two or more processes can used to communicate across machines.
 
-この章で解説されるモジュールの一覧は:
+The list of modules described in this chapter is:
 
 
 .. toctree::

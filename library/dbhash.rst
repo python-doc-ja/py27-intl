@@ -1,99 +1,101 @@
-:mod:`dbhash` --- BSD データベースライブラリへの DBM 形式のインタフェース
-=========================================================================
+:mod:`dbhash` --- DBM-style interface to the BSD database library
+=================================================================
 
 .. module:: dbhash
-   :synopsis: BSD データベースライブラリへの DBM 形式のインタフェース。
+   :synopsis: DBM-style interface to the BSD database library.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 .. deprecated:: 2.6
-   :mod:`dbhash` モジュールは Python 3.0 では削除されます。
-
+   The :mod:`dbhash` module has been removed in Python 3.
 
 .. index:: module: bsddb
 
-:mod:`dbhash` モジュールでは BSD ``db`` ライブラリを使ってデータベースを開くための関数を提供します。このモジュールは、 DBM 形式
-のデータベースへのアクセスを提供する他の Python データベースモジュールのインタフェースをそのまま反映しています。 :mod:`dbhash`
-を使うには :mod:`bsddb` モジュールが必要です。
+The :mod:`dbhash` module provides a function to open databases using the BSD
+``db`` library.  This module mirrors the interface of the other Python database
+modules that provide access to DBM-style databases.  The :mod:`bsddb` module is
+required  to use :mod:`dbhash`.
 
-このモジュールでは一つの例外と一つの関数を提供しています:
+This module provides an exception and a function:
 
 
 .. exception:: error
 
-   :exc:`KeyError` 以外のデータベースのエラーで送出されます。 :exc:`bsddb.error` と同じ意味です。
+   Exception raised on database errors other than :exc:`KeyError`.  It is a synonym
+   for :exc:`bsddb.error`.
 
 
 .. function:: open(path[, flag[, mode]])
 
-   データベース ``db`` を開き、データベースオブジェクトを返します。引数 *path* はデータベースファイルの名前です。
+   Open a ``db`` database and return the database object.  The *path* argument is
+   the name of the database file.
 
-   .. The *flag* argument can be:
+   The *flag* argument can be:
 
-   *flag* 引数は、次のいずれかの値になります。
+   +---------+-------------------------------------------+
+   | Value   | Meaning                                   |
+   +=========+===========================================+
+   | ``'r'`` | Open existing database for reading only   |
+   |         | (default)                                 |
+   +---------+-------------------------------------------+
+   | ``'w'`` | Open existing database for reading and    |
+   |         | writing                                   |
+   +---------+-------------------------------------------+
+   | ``'c'`` | Open database for reading and writing,    |
+   |         | creating it if it doesn't exist           |
+   +---------+-------------------------------------------+
+   | ``'n'`` | Always create a new, empty database, open |
+   |         | for reading and writing                   |
+   +---------+-------------------------------------------+
 
-   +---------+------------------------------------------------------------+
-   | 値      | 意味                                                       |
-   +=========+============================================================+
-   | ``'r'`` | 既存のデータベースを、読み込み専用で開きます。             |
-   |         | (デフォルト)                                               |
-   +---------+------------------------------------------------------------+
-   | ``'w'`` | 既存のデータベースを、読み書き用に開きます。               |
-   +---------+------------------------------------------------------------+
-   | ``'c'`` | データベースを読み書き用に開きます。                       |
-   |         | 存在しない場合は作成します。                               |
-   +---------+------------------------------------------------------------+
-   | ``'n'`` | 常に新しい空のデータベースを、読み書き用に開きます。       |
-   +---------+------------------------------------------------------------+
+   For platforms on which the BSD ``db`` library supports locking, an ``'l'``
+   can be appended to indicate that locking should be used.
 
-   .. For platforms on which the BSD ``db`` library supports locking, an ``'l'``
-      can be appended to indicate that locking should be used.
-
-   BSD ``db`` ライブラリがロックをサポートしているプラットフォームでは、
-   flag に ``'l'`` を追加して、ロックを利用することを指定できます。
-
-   オプションの *mode* 引数は、新たにデータベースを作成しなければならないときにデータベースファイルに設定すべき Unix ファイル権限
-   ビットを表すために使われます; この値はプロセスの現在の umask 値でマスクされます。
+   The optional *mode* parameter is used to indicate the Unix permission bits that
+   should be set if a new database must be created; this will be masked by the
+   current umask value for the process.
 
 
 .. seealso::
 
    Module :mod:`anydbm`
-      ``dbm`` 形式のデータベースへの汎用インタフェース。
+      Generic interface to ``dbm``\ -style databases.
 
    Module :mod:`bsddb`
-      BSD ``db`` ライブラリへの低レベルインタフェース。
+      Lower-level interface to the BSD ``db`` library.
 
    Module :mod:`whichdb`
-      既存のデータベースがどの形式のデータベースか判定するユーティリティモジュール。
+      Utility module used to determine the type of an existing database.
 
 
 .. _dbhash-objects:
 
-データベースオブジェクト
-------------------------
+Database Objects
+----------------
 
-:func:`.open` によって返されるデータベースオブジェクトは、全ての DBM 形式
-データベースやマップ型オブジェクトで共通のメソッドを提供します。
-それら標準のメソッドに加えて、以下のメソッドが利用可能です。
+The database objects returned by :func:`.open` provide the methods  common to all
+the DBM-style databases and mapping objects.  The following methods are
+available in addition to the standard methods.
 
 
 .. method:: dbhash.first()
 
-   このメソッドと :meth:`next` メソッドを使って、データベースの全ての
-   キー/値のペアにわたってループ処理を行えます。探索はデータベースの
-   内部ハッシュ値の順番に行われ、キーの値に順に並んでいるとは限りません。
-   このメソッドは最初のキーを返します。
+   It's possible to loop over every key/value pair in the database using this
+   method and the :meth:`!next` method.  The traversal is ordered by the databases
+   internal hash values, and won't be sorted by the key values.  This method
+   returns the starting key.
 
 
 .. method:: dbhash.last()
 
-   データベース探索における最後のキー/値を返します。逆順探索を開始する際に使うことができます; :meth:`previous` を参照してください。
+   Return the last key/value pair in a database traversal.  This may be used to
+   begin a reverse-order traversal; see :meth:`previous`.
 
 
 .. method:: dbhash.next()
 
-   データベースの順方向探索において、次のよりも後に来るキー/値のペアを返します。以下のコードはデータベース ``db`` に
-   ついて、キー全てを含むリストをメモリ上に生成することなく全てのキーを出力します。 ::
+   Returns the key next key/value pair in a database traversal.  The following code
+   prints every key in the database ``db``, without having to create a list in
+   memory that contains them all::
 
       print db.first()
       for i in xrange(1, len(db)):
@@ -102,10 +104,12 @@
 
 .. method:: dbhash.previous()
 
-   データベースの逆方向探索において、手前に来るキー/値のペアを返します。 :meth:`last` と併せて、逆方向の探索に用いられます。
+   Returns the previous key/value pair in a forward-traversal of the database. In
+   conjunction with :meth:`last`, this may be used to implement a reverse-order
+   traversal.
 
 
 .. method:: dbhash.sync()
 
-   このメソッドはディスクにまだ書き込まれていないデータを全て書き込ませます。
+   This method forces any unwritten data to be written to the disk.
 

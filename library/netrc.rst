@@ -1,68 +1,88 @@
 
-:mod:`netrc` --- netrc ファイルの処理
-=====================================
+:mod:`netrc` --- netrc file processing
+======================================
 
 .. module:: netrc
-   :synopsis: .netrc ファイル群の読み出し。
+   :synopsis: Loading of .netrc files.
 .. moduleauthor:: Eric S. Raymond <esr@snark.thyrsus.com>
 .. sectionauthor:: Eric S. Raymond <esr@snark.thyrsus.com>
 
 
 .. versionadded:: 1.5.2
 
-:class:`netrc` クラスは、Unix :program:`ftp` プログラムや他の FTP クライアントで用いられる netrc
-ファイル形式を解析し、カプセル化 (encapsulate) します。
+**Source code:** :source:`Lib/netrc.py`
+
+--------------
+
+The :class:`netrc` class parses and encapsulates the netrc file format used by
+the Unix :program:`ftp` program and other FTP clients.
 
 
 .. class:: netrc([file])
 
-   :class:`netrc` のインスタンスやサブクラスのインスタンスは netrc ファイルのデータをカプセル化します。初期化の際の引数が存在する
-   場合、解析対象となるファイルの指定になります。引数がない場合、ユーザのホームディレクトリ下にある :file:`.netrc` が読み出されます。
-   解析エラーが発生した場合、ファイル名、行番号、解析を中断したトークンに関する情報の入った :exc:`NetrcParseError` を送出します。
+   A :class:`netrc` instance or subclass instance encapsulates data from  a netrc
+   file.  The initialization argument, if present, specifies the file to parse.  If
+   no argument is given, the file :file:`.netrc` in the user's home directory will
+   be read.  Parse errors will raise :exc:`NetrcParseError` with diagnostic
+   information including the file name, line number, and terminating token.
+   If no argument is specified on a POSIX system, the presence of passwords in
+   the :file:`.netrc` file will raise a :exc:`NetrcParseError` if the file
+   ownership or permissions are insecure (owned by a user other than the user
+   running the process, or accessible for read or write by any other user).
+   This implements security behavior equivalent to that of ftp and other
+   programs that use :file:`.netrc`.
+
+   .. versionchanged:: 2.7.6 Added the POSIX permissions check.
 
 
 .. exception:: NetrcParseError
 
-   ソースファイルのテキスト中で文法エラーに遭遇した場合に :class:`netrc`  クラスによって送出される例外です。この例外のインスタンスは 3 つの
-   インスタンス変数を持っています: :attr:`msg` はテキストによるエラーの説明で、 :attr:`filename` はソースファイルの名前、そして
-   :attr:`lineno` はエラーが発見された行番号です。
+   Exception raised by the :class:`netrc` class when syntactical errors are
+   encountered in source text.  Instances of this exception provide three
+   interesting attributes:  :attr:`msg` is a textual explanation of the error,
+   :attr:`filename` is the name of the source file, and :attr:`lineno` gives the
+   line number on which the error was found.
 
 
 .. _netrc-objects:
 
-netrc オブジェクト
-------------------
+netrc Objects
+-------------
 
-:class:`netrc` インスタンスは以下のメソッドを持っています:
+A :class:`netrc` instance has the following methods:
 
 
 .. method:: netrc.authenticators(host)
 
-   *host* の認証情報として、三要素のタプル  ``(login, account, password)`` を返します。与えられた host
-   に対するエントリが netrc ファイルにない場合、 'default' エントリに関連付けられたタプルが返されます。 host
-   に対応するエントリがなく、default エントリもない場合、 ``None`` を返します。
+   Return a 3-tuple ``(login, account, password)`` of authenticators for *host*.
+   If the netrc file did not contain an entry for the given host, return the tuple
+   associated with the 'default' entry.  If neither matching host nor default entry
+   is available, return ``None``.
 
 
 .. method:: netrc.__repr__()
 
-   クラスの持っているデータを netrc ファイルの書式に従った文字列で出力します。(コメントは無視され、エントリが並べ替えられる可能性があります。)
+   Dump the class data as a string in the format of a netrc file. (This discards
+   comments and may reorder the entries.)
 
-:class:`netrc` のインスタンスは以下の公開されたインスタンス変数を持っています:
+Instances of :class:`netrc` have public instance variables:
 
 
 .. attribute:: netrc.hosts
 
-   ホスト名を ``(login, account, password)`` からなるタプルに対応づけている辞書です。'default' エントリがある場合、
-   その名前の擬似ホスト名として表現されます。
+   Dictionary mapping host names to ``(login, account, password)`` tuples.  The
+   'default' entry, if any, is represented as a pseudo-host by that name.
 
 
 .. attribute:: netrc.macros
 
-   マクロ名を文字列のリストに対応付けている辞書です。
+   Dictionary mapping macro names to string lists.
 
 .. note::
 
-   利用可能なパスワードの文字セットは、ASCIIのサブセットのみです。2.3より前の
-   バージョンでは厳しく制限されていましたが、2.3以降ではASCIIの記号を使用することが
-   できます。しかし、空白文字と印刷不可文字を使用することはできません。この制限は .netrcファイルの解析方法によるものであり、将来解除されます。
+   Passwords are limited to a subset of the ASCII character set. Versions of
+   this module prior to 2.3 were extremely limited.  Starting with 2.3, all
+   ASCII punctuation is allowed in passwords.  However, note that whitespace and
+   non-printable characters are not allowed in passwords.  This is a limitation
+   of the way the .netrc file is parsed and may be removed in the future.
 

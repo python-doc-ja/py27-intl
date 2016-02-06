@@ -1,141 +1,132 @@
 
-:mod:`fl` --- グラフィカルユーザーインターフェースのための FORMS ライブラリ
-===========================================================================
+:mod:`fl` --- FORMS library for graphical user interfaces
+=========================================================
 
 .. module:: fl
    :platform: IRIX
-   :synopsis: グラフィカルユーザーインターフェースのための FORMS ライブラリ。
+   :synopsis: FORMS library for applications with graphical user interfaces.
    :deprecated:
 
 
 .. deprecated:: 2.6
-    :mod:`fl` モジュールは Python 3.0 での削除に向けて非推奨になりました。
+    The :mod:`fl` module has been removed in Python 3.
 
 
 .. index::
-   single: Overmars, Mark
    single: FORMS Library
+   single: Overmars, Mark
 
-このモジュールは、Mark Overmars による FORMS ライブラリへのインターフェースを提供します。
-FORMS ライブラリのソースは anonymous ftp ``ftp.cs.ruu.nl`` の
-:file:`SGI/FORMS` ディレクトリから入手できます。
-最新のテストはバージョン2.0bで行いました。
+This module provides an interface to the FORMS Library by Mark Overmars.  The
+source for the library can be retrieved by anonymous ftp from host
+``ftp.cs.ruu.nl``, directory :file:`SGI/FORMS`.  It was last tested with version
+2.0b.
 
-ほとんどの関数は接頭辞の ``fl_`` を取ると、対応する C の関数名になります。
-ライブラリで使われる定数は後述の :mod:`FL` モジュールで
-定義されています。
+Most functions are literal translations of their C equivalents, dropping the
+initial ``fl_`` from their name.  Constants used by the library are defined in
+module :mod:`FL` described below.
 
-Python でこのオブジェクトを作る方法は C とは少し違っています：
-ライブラリに保持された'現在のフォーム'に新しい FORMS オブジェクトを加える
-のではなく、フォームに FORMS オブジェクトを加えるには、
-フォームを示す Python オブジェクトのメソッドで全て行います。
-したがって、C の関数の :c:func:`fl_addto_form` と :c:func:`fl_end_form`
-に相当するものは Python にはありませんし、
-:c:func:`fl_bgn_form` に相当するものとしては :func:`fl.make_form` を呼び出します。
+The creation of objects is a little different in Python than in C: instead of
+the 'current form' maintained by the library to which new FORMS objects are
+added, all functions that add a FORMS object to a form are methods of the Python
+object representing the form. Consequently, there are no Python equivalents for
+the C functions :c:func:`fl_addto_form` and :c:func:`fl_end_form`, and the
+equivalent of :c:func:`fl_bgn_form` is called :func:`fl.make_form`.
 
-用語のちょっとした混乱に注意してください：
-FORMS ではフォームの中に置くことができるボタン、スライダーなどに
-:dfn:`object` の用語を使います。
-Python では全ての値が'オブジェクト'です。
-FORMS への Python のインターフェースによって、2つの新しいタイプの Python
-オブジェクト：フォームオブジェクト（フォーム全体を示します）と
-FORMS オブジェクト（ボタン、スライダーなどの一つひとつを示します）を作ります。
-おそらく、混乱するほどのことではありません。
+Watch out for the somewhat confusing terminology: FORMS uses the word
+:dfn:`object` for the buttons, sliders etc. that you can place in a form. In
+Python, 'object' means any value.  The Python interface to FORMS introduces two
+new Python object types: form objects (representing an entire form) and FORMS
+objects (representing one button, slider etc.). Hopefully this isn't too
+confusing.
 
-FORMS への Python インターフェースに'フリーオブジェクト'はありませんし、
-Python でオブジェクトクラスを書いて加える簡単な方法もありません。
-しかし、GL イベントハンドルへの FORMS インターフェースが利用可能で、
-純粋な GL ウィンドウに FORMS を組み合わせることができます。
+There are no 'free objects' in the Python interface to FORMS, nor is there an
+easy way to add object classes written in Python.  The FORMS interface to GL
+event handling is available, though, so you can mix FORMS with pure GL windows.
 
-**注意：**  :mod:`fl` をインポートすると、GL の関数 :c:func:`foreground` と
-FORMS のルーチン :c:func:`fl_init` を呼び出します。
+**Please note:** importing :mod:`fl` implies a call to the GL function
+:c:func:`foreground` and to the FORMS routine :c:func:`fl_init`.
 
 
 .. _fl-functions:
 
-:mod:`fl` モジュールに定義されている関数
-----------------------------------------
+Functions Defined in Module :mod:`fl`
+-------------------------------------
 
-:mod:`fl` モジュールには以下の関数が定義されています。
-これらの関数の働きに関する詳しい情報については、FORMS ドキュメントで対応\
-する C の関数の説明を参照してください。
+Module :mod:`fl` defines the following functions.  For more information about
+what they do, see the description of the equivalent C function in the FORMS
+documentation:
 
 
 .. function:: make_form(type, width, height)
 
-   与えられたタイプ、幅、高さでフォームを作ります。
-   これは :dfn:`form` オブジェクトを返します。
-   このオブジェクトは後述のメソッドを持ちます。
+   Create a form with given type, width and height.  This returns a :dfn:`form`
+   object, whose methods are described below.
 
 
 .. function:: do_forms()
 
-   標準の FORMS のメインループです。
-   ユーザからの応答が必要な FORMS オブジェクトを示す Python オブジェクト、
-   あるいは特別な値 :const:`FL.EVENT` を返します。
+   The standard FORMS main loop.  Returns a Python object representing the FORMS
+   object needing interaction, or the special value :const:`FL.EVENT`.
 
 
 .. function:: check_forms()
 
-   FORMS イベントを確認します。 :func:`do_forms` が返すもの、
-   あるいはユーザからの応答をすぐに必要とするイベントがないなら ``None`` を返します。
+   Check for FORMS events.  Returns what :func:`do_forms` above returns, or
+   ``None`` if there is no event that immediately needs interaction.
 
 
 .. function:: set_event_call_back(function)
 
-   イベントのコールバック関数を設定します。
+   Set the event callback function.
 
 
 .. function:: set_graphics_mode(rgbmode, doublebuffering)
 
-   グラフィックモードを設定します。
+   Set the graphics modes.
 
 
 .. function:: get_rgbmode()
 
-   現在の RGB モードを返します。
-   これは C のグローバル変数 :c:data:`fl_rgbmode` の値です。
+   Return the current rgb mode.  This is the value of the C global variable
+   :c:data:`fl_rgbmode`.
 
 
 .. function:: show_message(str1, str2, str3)
 
-   3行のメッセージと OK ボタンのあるダイアログボックスを表示します。
+   Show a dialog box with a three-line message and an OK button.
 
 
 .. function:: show_question(str1, str2, str3)
 
-   3行のメッセージと YES、NO のボタンのあるダイアログボックスを表示します。
-   ユーザによって YES が押されたら ``1`` 、NO が押されたら ``0`` を返しま\
-   す。
+   Show a dialog box with a three-line message and YES and NO buttons. It returns
+   ``1`` if the user pressed YES, ``0`` if NO.
 
 
 .. function:: show_choice(str1, str2, str3, but1[, but2[, but3]])
 
-   3行のメッセージと最大3つまでのボタンのあるダイアログボックスを表示しま\
-   す。ユーザによって押されたボタンの数値を返します (それぞれ ``1`` 、 ``2``
-   、 ``3``)。
+   Show a dialog box with a three-line message and up to three buttons. It returns
+   the number of the button clicked by the user (``1``, ``2`` or ``3``).
 
 
 .. function:: show_input(prompt, default)
 
-   1行のプロンプトメッセージと、ユーザが入力できるテキストフィールドを持つ\
-   ダイアログボックスを表示します。 2番目の引数はデフォルトで表示される入力文字列です。
-   ユーザが入力した文字列が返されます。
+   Show a dialog box with a one-line prompt message and text field in which the
+   user can enter a string.  The second argument is the default input string.  It
+   returns the string value as edited by the user.
 
 
-.. function:: show_file_selector(message, directory, pattern,  default)
+.. function:: show_file_selector(message, directory, pattern, default)
 
-   ファイル選択ダイアログを表示します。
-   ユーザによって選択されたファイルの絶対パス、あるいはユーザが Cancel
-   ボタンを押した場合は ``None`` を返します。
+   Show a dialog box in which the user can select a file.  It returns the absolute
+   filename selected by the user, or ``None`` if the user presses Cancel.
 
 
 .. function:: get_directory()
               get_pattern()
               get_filename()
 
-   これらの関数は最後にユーザが :func:`show_file_selector`
-   で選択したディレクトリ、パターン、ファイル名（パスの末尾のみ）を返します。
+   These functions return the directory, pattern and filename (the tail part only)
+   selected by the user in the last :func:`show_file_selector` call.
 
 
 .. function:: qdevice(dev)
@@ -148,380 +139,385 @@ FORMS のルーチン :c:func:`fl_init` を呼び出します。
               get_mouse()
               tie(button, valuator1, valuator2)
 
-   これらの関数は対応する GL 関数への FORMS のインターフェースです。
-   :func:`fl.do_events` を使っていて、自分で何か GL イベントを操作したい\
-   ときにこれらを使います。FORMS が扱うことのできない GL イベントが検出されたら
-   :func:`fl.do_forms` が特別の値 :const:`FL.EVENT` を返すので、
-   :func:`fl.qread` を呼び出して、キューからイベントを読み込むべきです。
-   対応する GL の関数は使わないでください！
+   These functions are the FORMS interfaces to the corresponding GL functions.  Use
+   these if you want to handle some GL events yourself when using
+   :func:`fl.do_events`.  When a GL event is detected that FORMS cannot handle,
+   :func:`fl.do_forms` returns the special value :const:`FL.EVENT` and you should
+   call :func:`fl.qread` to read the event from the queue.  Don't use the
+   equivalent GL functions!
 
+   .. \funcline{blkqread}{?}
 
 
 .. function:: color()
               mapcolor()
               getmcolor()
 
-   FORMS ドキュメントにある :c:func:`fl_color` 、 :c:func:`fl_mapcolor` 、
-   :c:func:`fl_getmcolor` の記述を参照してください。
+   See the description in the FORMS documentation of :c:func:`fl_color`,
+   :c:func:`fl_mapcolor` and :c:func:`fl_getmcolor`.
 
 
 .. _form-objects:
 
-フォームオブジェクト
---------------------
+Form Objects
+------------
 
-フォームオブジェクト（上で述べた :func:`make_form` で返されます）には\
-下記のメソッドがあります。
-各メソッドは名前の接頭辞に ``fl_`` を付けた C の関数に対応します；
-また、最初の引数はフォームのポインタです；
-説明はFORMSの公式文書を参照してください。
+Form objects (returned by :func:`make_form` above) have the following methods.
+Each method corresponds to a C function whose name is prefixed with ``fl_``; and
+whose first argument is a form pointer; please refer to the official FORMS
+documentation for descriptions.
 
-全ての :meth:`add_\*` メソッドは、 FORMS オブジェクトを示す Python
-オブジェクトを返します。
-FORMS オブジェクトのメソッドを以下に記載します。
-ほとんどの FORMS オブジェクトは、そのオブジェクトの種類ごとに特有の\
-メソッドもいくつか持っています。
+All the :meth:`add_\*` methods return a Python object representing the FORMS
+object.  Methods of FORMS objects are described below.  Most kinds of FORMS
+object also have some methods specific to that kind; these methods are listed
+here.
 
 
 .. method:: form.show_form(placement, bordertype, name)
 
-   フォームを表示します。
+   Show the form.
 
 
 .. method:: form.hide_form()
 
-   フォームを隠します。
+   Hide the form.
 
 
 .. method:: form.redraw_form()
 
-   フォームを再描画します。
+   Redraw the form.
 
 
 .. method:: form.set_form_position(x, y)
 
-   フォームの位置を設定します。
+   Set the form's position.
 
 
 .. method:: form.freeze_form()
 
-   フォームを固定します。
+   Freeze the form.
 
 
 .. method:: form.unfreeze_form()
 
-   固定したフォームの固定を解除します。
+   Unfreeze the form.
 
 
 .. method:: form.activate_form()
 
-   フォームをアクティベートします。
+   Activate the form.
 
 
 .. method:: form.deactivate_form()
 
-   フォームをディアクティベートします。
+   Deactivate the form.
 
 
 .. method:: form.bgn_group()
 
-   新しいオブジェクトのグループを作ります；グループオブジェクトを返します。
+   Begin a new group of objects; return a group object.
 
 
 .. method:: form.end_group()
 
-   現在のオブジェクトのグループを終了します。
+   End the current group of objects.
 
 
 .. method:: form.find_first()
 
-   フォームの中の最初のオブジェクトを見つけます。
+   Find the first object in the form.
 
 
 .. method:: form.find_last()
 
-   フォームの中の最後のオブジェクトを見つけます。
+   Find the last object in the form.
 
 
 .. method:: form.add_box(type, x, y, w, h, name)
 
-   フォームにボックスオブジェクトを加えます。特別な追加のメソッドはありません。
+   Add a box object to the form. No extra methods.
 
 
 .. method:: form.add_text(type, x, y, w, h, name)
 
-   フォームにテキストオブジェクトを加えます。特別な追加のメソッドはありません。
+   Add a text object to the form. No extra methods.
+
+.. \begin{methoddesc}[form]{add_bitmap}{type, x, y, w, h, name}
+.. Add a bitmap object to the form.
+.. \end{methoddesc}
 
 
 .. method:: form.add_clock(type, x, y, w, h, name)
 
-   フォームにクロックオブジェクトを加えます。 ---  メソッド： :meth:`get_clock` 。
+   Add a clock object to the form.  ---  Method: :meth:`get_clock`.
 
 
 .. method:: form.add_button(type, x, y, w, h,  name)
 
-   フォームにボタンオブジェクトを加えます。 ---  メソッド： :meth:`get_button` 、 :meth:`set_button` 。
+   Add a button object to the form.  ---  Methods: :meth:`get_button`,
+   :meth:`set_button`.
 
 
 .. method:: form.add_lightbutton(type, x, y, w, h, name)
 
-   フォームにライトボタンオブジェクトを加えます。 ---  メソッド： :meth:`get_button` 、 :meth:`set_button` 。
+   Add a lightbutton object to the form.  ---  Methods: :meth:`get_button`,
+   :meth:`set_button`.
 
 
 .. method:: form.add_roundbutton(type, x, y, w, h, name)
 
-   フォームにラウンドボタンオブジェクトを加えます。 ---  メソッド： :meth:`get_button` 、 :meth:`set_button` 。
+   Add a roundbutton object to the form.  ---  Methods: :meth:`get_button`,
+   :meth:`set_button`.
 
 
 .. method:: form.add_slider(type, x, y, w, h, name)
 
-   フォームにスライダーオブジェクトを加えます。 ---  メソッド： :meth:`set_slider_value` 、
-   :meth:`get_slider_value` 、 :meth:`set_slider_bounds` 、 :meth:`get_slider_bounds` 、
-   :meth:`set_slider_return` 、 :meth:`set_slider_size` 、
-   :meth:`set_slider_precision` 、 :meth:`set_slider_step` 。
+   Add a slider object to the form.  ---  Methods: :meth:`set_slider_value`,
+   :meth:`get_slider_value`, :meth:`set_slider_bounds`, :meth:`get_slider_bounds`,
+   :meth:`set_slider_return`, :meth:`set_slider_size`,
+   :meth:`set_slider_precision`, :meth:`set_slider_step`.
 
 
 .. method:: form.add_valslider(type, x, y, w, h, name)
 
-   フォームにバリュースライダーオブジェクトを加えます。 ---  メソッド： :meth:`set_slider_value` 、
-   :meth:`get_slider_value` 、 :meth:`set_slider_bounds` 、 :meth:`get_slider_bounds` 、
-   :meth:`set_slider_return` 、 :meth:`set_slider_size` 、
-   :meth:`set_slider_precision` 、 :meth:`set_slider_step` 。
+   Add a valslider object to the form.  ---  Methods: :meth:`set_slider_value`,
+   :meth:`get_slider_value`, :meth:`set_slider_bounds`, :meth:`get_slider_bounds`,
+   :meth:`set_slider_return`, :meth:`set_slider_size`,
+   :meth:`set_slider_precision`, :meth:`set_slider_step`.
 
 
 .. method:: form.add_dial(type, x, y, w, h, name)
 
-   フォームにダイアルオブジェクトを加えます。 ---  メソッド： :meth:`set_dial_value` 、 :meth:`get_dial_value` 、
-   :meth:`set_dial_bounds` 、 :meth:`get_dial_bounds` 。
+   Add a dial object to the form.  ---  Methods: :meth:`set_dial_value`,
+   :meth:`get_dial_value`, :meth:`set_dial_bounds`, :meth:`get_dial_bounds`.
 
 
 .. method:: form.add_positioner(type, x, y, w, h, name)
 
-   フォームに2次元ポジショナーオブジェクトを加えます。 ---  メソッド： :meth:`set_positioner_xvalue` 、
-   :meth:`set_positioner_yvalue` 、 :meth:`set_positioner_xbounds` 、
-   :meth:`set_positioner_ybounds` 、 :meth:`get_positioner_xvalue` 、
-   :meth:`get_positioner_yvalue` 、 :meth:`get_positioner_xbounds` 、
-   :meth:`get_positioner_ybounds` 。
+   Add a positioner object to the form.  ---  Methods:
+   :meth:`set_positioner_xvalue`, :meth:`set_positioner_yvalue`,
+   :meth:`set_positioner_xbounds`, :meth:`set_positioner_ybounds`,
+   :meth:`get_positioner_xvalue`, :meth:`get_positioner_yvalue`,
+   :meth:`get_positioner_xbounds`, :meth:`get_positioner_ybounds`.
 
 
 .. method:: form.add_counter(type, x, y, w, h, name)
 
-   フォームにカウンタオブジェクトを加えます。 ---  メソッド： :meth:`set_counter_value` 、
-   :meth:`get_counter_value` 、 :meth:`set_counter_bounds` 、 :meth:`set_counter_step` 、
-   :meth:`set_counter_precision` 、 :meth:`set_counter_return` 。
+   Add a counter object to the form.  ---  Methods: :meth:`set_counter_value`,
+   :meth:`get_counter_value`, :meth:`set_counter_bounds`, :meth:`set_counter_step`,
+   :meth:`set_counter_precision`, :meth:`set_counter_return`.
 
 
 .. method:: form.add_input(type, x, y, w, h, name)
 
-   フォームにインプットオブジェクトを加えます。 ---  メソッド： :meth:`set_input` 、 :meth:`get_input` 、
-   :meth:`set_input_color` 、 :meth:`set_input_return` 。
+   Add a input object to the form.  ---  Methods: :meth:`set_input`,
+   :meth:`get_input`, :meth:`set_input_color`, :meth:`set_input_return`.
 
 
 .. method:: form.add_menu(type, x, y, w, h, name)
 
-   フォームにメニューオブジェクトを加えます。 ---  メソッド： :meth:`set_menu` 、 :meth:`get_menu` 、
-   :meth:`addto_menu` 。
+   Add a menu object to the form.  ---  Methods: :meth:`set_menu`,
+   :meth:`get_menu`, :meth:`addto_menu`.
 
 
 .. method:: form.add_choice(type, x, y, w, h, name)
 
-   フォームにチョイスオブジェクトを加えます。 ---  メソッド： :meth:`set_choice` 、 :meth:`get_choice` 、
-   :meth:`clear_choice` 、 :meth:`addto_choice` 、 :meth:`replace_choice` 、
-   :meth:`delete_choice` 、 :meth:`get_choice_text` 、 :meth:`set_choice_fontsize` 、
-   :meth:`set_choice_fontstyle` 。
+   Add a choice object to the form.  ---  Methods: :meth:`set_choice`,
+   :meth:`get_choice`, :meth:`clear_choice`, :meth:`addto_choice`,
+   :meth:`replace_choice`, :meth:`delete_choice`, :meth:`get_choice_text`,
+   :meth:`set_choice_fontsize`, :meth:`set_choice_fontstyle`.
 
 
 .. method:: form.add_browser(type, x, y, w, h, name)
 
-   フォームにブラウザオブジェクトを加えます。 ---  メソッド： :meth:`set_browser_topline` 、
-   :meth:`clear_browser` 、 :meth:`add_browser_line` 、 :meth:`addto_browser` 、
-   :meth:`insert_browser_line` 、 :meth:`delete_browser_line` 、
-   :meth:`replace_browser_line` 、 :meth:`get_browser_line` 、 :meth:`load_browser` 、
-   :meth:`get_browser_maxline` 、 :meth:`select_browser_line` 、
-   :meth:`deselect_browser_line` 、 :meth:`deselect_browser` 、
-   :meth:`isselected_browser_line` 、 :meth:`get_browser` 、
-   :meth:`set_browser_fontsize` 、 :meth:`set_browser_fontstyle` 、
-   :meth:`set_browser_specialkey` 。
+   Add a browser object to the form.  ---  Methods: :meth:`set_browser_topline`,
+   :meth:`clear_browser`, :meth:`add_browser_line`, :meth:`addto_browser`,
+   :meth:`insert_browser_line`, :meth:`delete_browser_line`,
+   :meth:`replace_browser_line`, :meth:`get_browser_line`, :meth:`load_browser`,
+   :meth:`get_browser_maxline`, :meth:`select_browser_line`,
+   :meth:`deselect_browser_line`, :meth:`deselect_browser`,
+   :meth:`isselected_browser_line`, :meth:`get_browser`,
+   :meth:`set_browser_fontsize`, :meth:`set_browser_fontstyle`,
+   :meth:`set_browser_specialkey`.
 
 
 .. method:: form.add_timer(type, x, y, w, h, name)
 
-   フォームにタイマーオブジェクトを加えます。 ---  メソッド： :meth:`set_timer` 、 :meth:`get_timer` 。
+   Add a timer object to the form.  ---  Methods: :meth:`set_timer`,
+   :meth:`get_timer`.
 
-フォームオブジェクトには以下のデータ属性があります；FORMS ドキュメントを参照してください：
+Form objects have the following data attributes; see the FORMS documentation:
 
-+---------------------+-----------------+--------------------------------------------------+
-| 名称                | Cの型           | 意味                                             |
-+=====================+=================+==================================================+
-| :attr:`window`      | int (read-only) | GLウィンドウのid                                 |
-+---------------------+-----------------+--------------------------------------------------+
-| :attr:`w`           | float           | フォームの幅                                     |
-+---------------------+-----------------+--------------------------------------------------+
-| :attr:`h`           | float           | フォームの高さ                                   |
-+---------------------+-----------------+--------------------------------------------------+
-| :attr:`x`           | float           | フォーム左肩のx座標                              |
-+---------------------+-----------------+--------------------------------------------------+
-| :attr:`y`           | float           | フォーム左肩のy座標                              |
-+---------------------+-----------------+--------------------------------------------------+
-| :attr:`deactivated` | int             | フォームがディアクティベートされているなら非ゼロ |
-+---------------------+-----------------+--------------------------------------------------+
-| :attr:`visible`     | int             | フォームが可視なら非ゼロ                         |
-+---------------------+-----------------+--------------------------------------------------+
-| :attr:`frozen`      | int             | フォームが固定されているなら非ゼロ               |
-+---------------------+-----------------+--------------------------------------------------+
-| :attr:`doublebuf`   | int             | ダブルバッファリングがオンなら非ゼロ             |
-+---------------------+-----------------+--------------------------------------------------+
++---------------------+-----------------+--------------------------------+
+| Name                | C Type          | Meaning                        |
++=====================+=================+================================+
+| :attr:`window`      | int (read-only) | GL window id                   |
++---------------------+-----------------+--------------------------------+
+| :attr:`w`           | float           | form width                     |
++---------------------+-----------------+--------------------------------+
+| :attr:`h`           | float           | form height                    |
++---------------------+-----------------+--------------------------------+
+| :attr:`x`           | float           | form x origin                  |
++---------------------+-----------------+--------------------------------+
+| :attr:`y`           | float           | form y origin                  |
++---------------------+-----------------+--------------------------------+
+| :attr:`deactivated` | int             | nonzero if form is deactivated |
++---------------------+-----------------+--------------------------------+
+| :attr:`visible`     | int             | nonzero if form is visible     |
++---------------------+-----------------+--------------------------------+
+| :attr:`frozen`      | int             | nonzero if form is frozen      |
++---------------------+-----------------+--------------------------------+
+| :attr:`doublebuf`   | int             | nonzero if double buffering on |
++---------------------+-----------------+--------------------------------+
 
 
 .. _forms-objects:
 
-FORMSオブジェクト
------------------
+FORMS Objects
+-------------
 
-FORMS オブジェクトの種類ごとに特有のメソッドの他に、
-全てのFORMSオブジェクトは以下のメソッドも持っています：
+Besides methods specific to particular kinds of FORMS objects, all FORMS objects
+also have the following methods:
 
 
 .. method:: FORMS object.set_call_back(function, argument)
 
-   オブジェクトのコールバック関数と引数を設定します。
-   オブジェクトがユーザからの応答を必要とするときには、コールバック関数は2
-   つの引数、オブジェクトとコールバックの引数とともに呼び出されます。
-   （コールバック関数のない FORMS オブジェクトは、ユーザからの応答を必要とす\
-   るときには :func:`fl.do_forms` あるいは :func:`fl.check_forms`
-   によって返されます。）
-   引数なしにこのメソッドを呼び出すと、コールバック関数を削除します。
+   Set the object's callback function and argument.  When the object needs
+   interaction, the callback function will be called with two arguments: the
+   object, and the callback argument.  (FORMS objects without a callback function
+   are returned by :func:`fl.do_forms` or :func:`fl.check_forms` when they need
+   interaction.)  Call this method without arguments to remove the callback
+   function.
 
 
 .. method:: FORMS object.delete_object()
 
-   オブジェクトを削除します。
+   Delete the object.
 
 
 .. method:: FORMS object.show_object()
 
-   オブジェクトを表示します。
+   Show the object.
 
 
 .. method:: FORMS object.hide_object()
 
-   オブジェクトを隠します。
+   Hide the object.
 
 
 .. method:: FORMS object.redraw_object()
 
-   オブジェクトを再描画します。
+   Redraw the object.
 
 
 .. method:: FORMS object.freeze_object()
 
-   オブジェクトを固定します。
+   Freeze the object.
 
 
 .. method:: FORMS object.unfreeze_object()
 
-   固定したオブジェクトの固定を解除します。
+   Unfreeze the object.
 
-FORMS オブジェクトには以下のデータ属性があります；
-FORMS ドキュメントを参照してください。
+FORMS objects have these data attributes; see the FORMS documentation:
+
+.. \begin{methoddesc}[FORMS object]{handle_object}{} XXX
+.. \end{methoddesc}
+.. \begin{methoddesc}[FORMS object]{handle_object_direct}{} XXX
+.. \end{methoddesc}
+
++--------------------+-----------------+------------------+
+| Name               | C Type          | Meaning          |
++====================+=================+==================+
+| :attr:`objclass`   | int (read-only) | object class     |
++--------------------+-----------------+------------------+
+| :attr:`type`       | int (read-only) | object type      |
++--------------------+-----------------+------------------+
+| :attr:`boxtype`    | int             | box type         |
++--------------------+-----------------+------------------+
+| :attr:`x`          | float           | x origin         |
++--------------------+-----------------+------------------+
+| :attr:`y`          | float           | y origin         |
++--------------------+-----------------+------------------+
+| :attr:`w`          | float           | width            |
++--------------------+-----------------+------------------+
+| :attr:`h`          | float           | height           |
++--------------------+-----------------+------------------+
+| :attr:`col1`       | int             | primary color    |
++--------------------+-----------------+------------------+
+| :attr:`col2`       | int             | secondary color  |
++--------------------+-----------------+------------------+
+| :attr:`align`      | int             | alignment        |
++--------------------+-----------------+------------------+
+| :attr:`lcol`       | int             | label color      |
++--------------------+-----------------+------------------+
+| :attr:`lsize`      | float           | label font size  |
++--------------------+-----------------+------------------+
+| :attr:`label`      | string          | label string     |
++--------------------+-----------------+------------------+
+| :attr:`lstyle`     | int             | label style      |
++--------------------+-----------------+------------------+
+| :attr:`pushed`     | int (read-only) | (see FORMS docs) |
++--------------------+-----------------+------------------+
+| :attr:`focus`      | int (read-only) | (see FORMS docs) |
++--------------------+-----------------+------------------+
+| :attr:`belowmouse` | int (read-only) | (see FORMS docs) |
++--------------------+-----------------+------------------+
+| :attr:`frozen`     | int (read-only) | (see FORMS docs) |
++--------------------+-----------------+------------------+
+| :attr:`active`     | int (read-only) | (see FORMS docs) |
++--------------------+-----------------+------------------+
+| :attr:`input`      | int (read-only) | (see FORMS docs) |
++--------------------+-----------------+------------------+
+| :attr:`visible`    | int (read-only) | (see FORMS docs) |
++--------------------+-----------------+------------------+
+| :attr:`radio`      | int (read-only) | (see FORMS docs) |
++--------------------+-----------------+------------------+
+| :attr:`automatic`  | int (read-only) | (see FORMS docs) |
++--------------------+-----------------+------------------+
 
 
-+--------------------+-----------------+---------------------------+
-| 名称               | Cの型           | 意味                      |
-+====================+=================+===========================+
-| :attr:`objclass`   | int (read-only) | オブジェクトクラス        |
-+--------------------+-----------------+---------------------------+
-| :attr:`type`       | int (read-only) | オブジェクトタイプ        |
-+--------------------+-----------------+---------------------------+
-| :attr:`boxtype`    | int             | ボックスタイプ            |
-+--------------------+-----------------+---------------------------+
-| :attr:`x`          | float           | 左肩のx座標               |
-+--------------------+-----------------+---------------------------+
-| :attr:`y`          | float           | 左肩のy座標               |
-+--------------------+-----------------+---------------------------+
-| :attr:`w`          | float           | 幅                        |
-+--------------------+-----------------+---------------------------+
-| :attr:`h`          | float           | 高さ                      |
-+--------------------+-----------------+---------------------------+
-| :attr:`col1`       | int             | 第1の色                   |
-+--------------------+-----------------+---------------------------+
-| :attr:`col2`       | int             | 第2の色                   |
-+--------------------+-----------------+---------------------------+
-| :attr:`align`      | int             | 配置                      |
-+--------------------+-----------------+---------------------------+
-| :attr:`lcol`       | int             | ラベルの色                |
-+--------------------+-----------------+---------------------------+
-| :attr:`lsize`      | float           | ラベルのフォントサイズ    |
-+--------------------+-----------------+---------------------------+
-| :attr:`label`      | string          | ラベルの文字列            |
-+--------------------+-----------------+---------------------------+
-| :attr:`lstyle`     | int             | ラベルのスタイル          |
-+--------------------+-----------------+---------------------------+
-| :attr:`pushed`     | int (read-only) | （FORMSドキュメント参照） |
-+--------------------+-----------------+---------------------------+
-| :attr:`focus`      | int (read-only) | （FORMSドキュメント参照） |
-+--------------------+-----------------+---------------------------+
-| :attr:`belowmouse` | int (read-only) | （FORMSドキュメント参照） |
-+--------------------+-----------------+---------------------------+
-| :attr:`frozen`     | int (read-only) | （FORMSドキュメント参照） |
-+--------------------+-----------------+---------------------------+
-| :attr:`active`     | int (read-only) | （FORMSドキュメント参照） |
-+--------------------+-----------------+---------------------------+
-| :attr:`input`      | int (read-only) | （FORMSドキュメント参照） |
-+--------------------+-----------------+---------------------------+
-| :attr:`visible`    | int (read-only) | （FORMSドキュメント参照） |
-+--------------------+-----------------+---------------------------+
-| :attr:`radio`      | int (read-only) | （FORMSドキュメント参照） |
-+--------------------+-----------------+---------------------------+
-| :attr:`automatic`  | int (read-only) | （FORMSドキュメント参照） |
-+--------------------+-----------------+---------------------------+
-
-
-:mod:`FL` --- :mod:`fl` モジュールで使用される定数
-==================================================
+:mod:`FL` --- Constants used with the :mod:`fl` module
+======================================================
 
 .. module:: FL
    :platform: IRIX
-   :synopsis: flモジュールで使用される定数。
+   :synopsis: Constants used with the fl module.
    :deprecated:
 
 
 .. deprecated:: 2.6
-    :mod:`FL` モジュールは Python 3.0 での削除に向けて非推奨になりました。
+    The :mod:`FL` module has been removed in Python 3.
 
 
-このモジュールには、組み込みモジュール :mod:`fl` を使うのに必要なシン\
-ボル定数が定義されています (上記参照) ；これらは名前の接頭辞 ``FL_`` が
-省かれていることを除いて、C のヘッダファイル ``<forms.h>`` に定義されて\
-いるものと同じです。
-定義されている名称の完全なリストについては、モジュールのソースをご覧くだ\
-さい。\
-お勧めする使い方は以下の通りです： ::
+This module defines symbolic constants needed to use the built-in module
+:mod:`fl` (see above); they are equivalent to those defined in the C header file
+``<forms.h>`` except that the name prefix ``FL_`` is omitted.  Read the module
+source for a complete list of the defined names.  Suggested use::
 
    import fl
    from FL import *
 
 
-:mod:`flp` --- 保存されたFORMSデザインをロードする関数
-======================================================
+:mod:`flp` --- Functions for loading stored FORMS designs
+=========================================================
 
 .. module:: flp
    :platform: IRIX
-   :synopsis: 保存されたFORMSデザインをロードする関数。
+   :synopsis: Functions for loading stored FORMS designs.
    :deprecated:
 
 
 .. deprecated:: 2.6
-    :mod:`flp` モジュールは Python 3.0 での削除に向けて非推奨になりました。
+    The :mod:`flp` module has been removed in Python 3.
 
 
-このモジュールには、FORMSライブラリ (上記の :mod:`fl` モジュールを参\
-照してください) とともに配布される 'フォームデザイナー'
-(:program:`fdesign`) プログラムで作られたフォームの定義を読み込む関数が\
-定義されています。
+This module defines functions that can read form definitions created by the
+'form designer' (:program:`fdesign`) program that comes with the FORMS library
+(see module :mod:`fl` above).
 
-詳しくはPythonライブラリソースのディレクトリの中の :file:`flp.doc` を参照し\
-てください。
+For now, see the file :file:`flp.doc` in the Python library source directory for
+a description.
 
-XXX　完全な説明をここに書いて！
+XXX A complete description should be inserted here!
 

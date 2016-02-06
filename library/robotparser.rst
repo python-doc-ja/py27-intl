@@ -1,9 +1,11 @@
-:mod:`robotparser` ---  robots.txt のためのパーザ
-=================================================
+
+:mod:`robotparser` ---  Parser for robots.txt
+=============================================
 
 .. module:: robotparser
-   :synopsis: robots.txt ファイルを読み出し、他の URL に対する取得可能性の質問に答えるクラス。
-.. sectionauthor:: Skip Montanaro <skip@mojam.com>
+   :synopsis: Loads a robots.txt file and answers questions about
+              fetchability of other URLs.
+.. sectionauthor:: Skip Montanaro <skip@pobox.com>
 
 
 .. index::
@@ -12,61 +14,59 @@
    single: URL
    single: robots.txt
 
-..
-   note::
-   The :mod:`robotparser` module has been renamed :mod:`urllib.robotparser` in
-   Python 3.0.
-   The :term:`2to3` tool will automatically adapt imports when converting
-   your sources to 3.0.
-
 .. note::
+   The :mod:`robotparser` module has been renamed :mod:`urllib.robotparser` in
+   Python 3.
+   The :term:`2to3` tool will automatically adapt imports when converting
+   your sources to Python 3.
 
-   :mod:`robotparser` モジュールは、 Python 3.0 では :mod:`urllib.robotparser`
-   にリネームされました。
-   :term:`2to3` ツールが自動的にソースコードの import を修正します。
-
-このモジュールでは単一のクラス、 :class:`RobotFileParser` を提供します。このクラスは、特定のユーザエージェントが
-:file:`robots.txt` ファイルを公開している Web サイトのある URL を取得可能かどうかの質問に答えます。
-:file:`robots.txt` ファイルの構造に関する詳細は http://www.robotstxt.org/orig.html を参照してください。
+This module provides a single class, :class:`RobotFileParser`, which answers
+questions about whether or not a particular user agent can fetch a URL on the
+Web site that published the :file:`robots.txt` file.  For more details on the
+structure of :file:`robots.txt` files, see http://www.robotstxt.org/orig.html.
 
 
-.. class:: RobotFileParser()
+.. class:: RobotFileParser(url='')
 
-   このクラスでは単一の :file:`robots.txt` ファイルを読み出し、解釈し、ファイルの内容に関する質問の回答を得るためのメソッドを定義しています。
+   This class provides methods to read, parse and answer questions about the
+   :file:`robots.txt` file at *url*.
 
 
    .. method:: set_url(url)
 
-      :file:`robots.txt` ファイルを参照するための URL を設定します。
+      Sets the URL referring to a :file:`robots.txt` file.
 
 
    .. method:: read()
 
-      :file:`robots.txt` URL を読み出し、パーザに入力します。
+      Reads the :file:`robots.txt` URL and feeds it to the parser.
 
 
    .. method:: parse(lines)
 
-      引数 *lines* の内容を解釈します。
+      Parses the lines argument.
 
 
    .. method:: can_fetch(useragent, url)
 
-      解釈された :file:`robots.txt` ファイル中に記載された規則に従ったとき、 *useragent* が *url* を取得してもよい場合には
-      ``True`` を返します。
+      Returns ``True`` if the *useragent* is allowed to fetch the *url*
+      according to the rules contained in the parsed :file:`robots.txt`
+      file.
 
 
    .. method:: mtime()
 
-      ``robots.txt`` ファイルを最後に取得した時刻を返します。この値は、定期的に新たな ``robots.txt`` をチェックする必要がある、
-      長時間動作する Web スパイダープログラムを実装する際に便利です。
+      Returns the time the ``robots.txt`` file was last fetched.  This is
+      useful for long-running web spiders that need to check for new
+      ``robots.txt`` files periodically.
 
 
    .. method:: modified()
 
-      ``robots.txt`` ファイルを最後に取得した時刻を現在の時刻に設定します。
+      Sets the time the ``robots.txt`` file was last fetched to the current
+      time.
 
-以下にRobotFileParser クラスの利用例を示します。 ::
+The following example demonstrates basic use of the RobotFileParser class. ::
 
    >>> import robotparser
    >>> rp = robotparser.RobotFileParser()

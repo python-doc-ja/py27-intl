@@ -1,12 +1,12 @@
 
 .. _fileformats:
 
-********************
-ファイルフォーマット
-********************
+************
+File Formats
+************
 
-この章で説明されるモジュールは様々な(マークアップやでないものやEメールの)
-ファイルフォーマットを構文解析します。
+The modules described in this chapter parse various miscellaneous file formats
+that aren't markup languages or are related to e-mail.
 
 
 .. toctree::

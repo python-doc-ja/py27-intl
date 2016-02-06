@@ -1,199 +1,215 @@
-
-:mod:`telnetlib` --- Telnet クライアント
-========================================
+:mod:`telnetlib` --- Telnet client
+==================================
 
 .. module:: telnetlib
-   :synopsis: Telnet クライアントクラス
+   :synopsis: Telnet client class.
 .. sectionauthor:: Skip Montanaro <skip@pobox.com>
 
 
 .. index:: single: protocol; Telnet
 
-:mod:`telnetlib` モジュールでは、Telnet プロトコルを実装している :class:`Telnet` クラスを提供します。Telnet
-プロトコルについての詳細は :rfc:`854` を参照してください。加えて、このモジュールでは Telnet プロトコルにおける制御文字
-(下を参照してください) と、telnet オプションに対するシンボル定数を提供しています。telnet オプションに対するシンボル名は
-``arpa/telnet.h`` の ``TELOPT_`` がない状態での定義に従います。伝統的に ``arpa/telnet.h`` に含められて
-いない telnet オプションのシンボル名については、このモジュールのソースコード自体を参照してください。
+**Source code:** :source:`Lib/telnetlib.py`
 
-telnet コマンドのシンボル定数は、IAC、DONT、DO、WONT、WILL、SE (サブネゴシエーション終了)、NOP (何もしない)、DM
-(データマーク)、 BRK (ブレーク)、IP (プロセス割り込み)、AO (出力中断)、 AYT (応答確認)、EC (文字削除)、EL (行削除)、GA
-(進め)、SB ( サブネゴシエーション開始) です。
+--------------
+
+The :mod:`telnetlib` module provides a :class:`Telnet` class that implements the
+Telnet protocol.  See :rfc:`854` for details about the protocol. In addition, it
+provides symbolic constants for the protocol characters (see below), and for the
+telnet options. The symbolic names of the telnet options follow the definitions
+in ``arpa/telnet.h``, with the leading ``TELOPT_`` removed. For symbolic names
+of options which are traditionally not included in ``arpa/telnet.h``, see the
+module source itself.
+
+The symbolic constants for the telnet commands are: IAC, DONT, DO, WONT, WILL,
+SE (Subnegotiation End), NOP (No Operation), DM (Data Mark), BRK (Break), IP
+(Interrupt process), AO (Abort output), AYT (Are You There), EC (Erase
+Character), EL (Erase Line), GA (Go Ahead), SB (Subnegotiation Begin).
 
 
 .. class:: Telnet([host[, port[, timeout]]])
 
-   :class:`Telnet` は Telnet サーバへの接続を表現します。
-   デフォルトでは、 :class:`Telnet` クラスのインスタンスは最初はサーバに
-   接続していません。接続を確立するには :meth:`open` を使わなければなりません。
-   別の方法として、コンストラクタに *host* とオプションの *port* を
-   渡すことができます。この場合はコンストラクタの呼び出しが返る以前にサーバへの
-   接続が確立されます。
-   オプション引数の *timeout* が渡された場合、コネクション接続時のタイムアウト時間を秒数で指定します。
-   (指定されなかった場合は、グローバルのデフォルトタイムアウト設定が利用されます。)
+   :class:`Telnet` represents a connection to a Telnet server. The instance is
+   initially not connected by default; the :meth:`open` method must be used to
+   establish a connection.  Alternatively, the host name and optional port
+   number can be passed to the constructor, to, in which case the connection to
+   the server will be established before the constructor returns.  The optional
+   *timeout* parameter specifies a timeout in seconds for blocking operations
+   like the connection attempt (if not specified, the global default timeout
+   setting will be used).
 
-   すでに接続の開かれているンスタンスを再度開いてはいけません。
+   Do not reopen an already connected instance.
 
-   このクラスは多くの :meth:`read_\*` メソッドを持っています。これらのメソッドのいくつかは、接続の終端を示す文字を読み込んだ場合に
-   :exc:`EOFError` を送出するので注意してください。例外を送出するのは、これらの関数が終端に到達しなくても空の文字列を返す可能性
-   があるからです。詳しくは下記の個々の説明を参照してください。
+   This class has many :meth:`read_\*` methods.  Note that some of them  raise
+   :exc:`EOFError` when the end of the connection is read, because they can return
+   an empty string for other reasons.  See the individual descriptions below.
 
    .. versionchanged:: 2.6
-      *timeout* が追加されました
+      *timeout* was added.
 
 
 .. seealso::
 
-   :rfc:`854` - Telnet プロトコル仕様 (Telnet Protocol Specification)
-      Telnet プロトコルの定義。
+   :rfc:`854` - Telnet Protocol Specification
+      Definition of the Telnet protocol.
 
 
 .. _telnet-objects:
 
-Telnet オブジェクト
--------------------
+Telnet Objects
+--------------
 
-:class:`Telnet` インスタンスは以下のメソッドを持っています:
+:class:`Telnet` instances have the following methods:
 
 
 .. method:: Telnet.read_until(expected[, timeout])
 
-   *expected* で指定された文字列を読み込むか、 *timeout* で指定された秒数が経過するまで読み込みます。
+   Read until a given string, *expected*, is encountered or until *timeout* seconds
+   have passed.
 
-   与えられた文字列に一致する部分が見つからなかった場合、読み込むことができたもの全てを返します。これは空の文字列になる可能性が
-   あります。接続が閉じられ、転送処理済みのデータが得られない場合には :exc:`EOFError` が送出されます。
+   When no match is found, return whatever is available instead, possibly the empty
+   string.  Raise :exc:`EOFError` if the connection is closed and no cooked data is
+   available.
 
 
 .. method:: Telnet.read_all()
 
-   EOFに到達するまでの全てのデータを読み込みます; 接続が閉じられるまでブロックします。
+   Read all data until EOF; block until connection closed.
 
 
 .. method:: Telnet.read_some()
 
-   EOF に到達しない限り、少なくとも 1 バイトの転送処理済みデータを読み込みます。EOF に到達した場合は ``''`` を返します。
-   すぐに読み出せるデータが存在しない場合にはブロックします。
+   Read at least one byte of cooked data unless EOF is hit. Return ``''`` if EOF is
+   hit.  Block if no data is immediately available.
 
 
 .. method:: Telnet.read_very_eager()
 
-   I/O によるブロックを起こさずに読み出せる全てのデータを読み込みます (eager モード)。
+   Read everything that can be without blocking in I/O (eager).
 
-   接続が閉じられており、転送処理済みのデータとして読み出せるものがない場合には :exc:`EOFError` が送出されます。それ以外の
-   場合で、単に読み出せるデータがない場合には ``''`` を返します。 IAC シーケンス操作中でないかぎりブロックしません。
+   Raise :exc:`EOFError` if connection closed and no cooked data available.  Return
+   ``''`` if no cooked data available otherwise. Do not block unless in the midst
+   of an IAC sequence.
 
 
 .. method:: Telnet.read_eager()
 
-   現在すぐに読み出せるデータを読み出します。
+   Read readily available data.
 
-   接続が閉じられており、転送処理済みのデータとして読み出せるものがない場合には :exc:`EOFError` が送出されます。それ以外の
-   場合で、単に読み出せるデータがない場合には ``''`` を返します。 IAC シーケンス操作中でないかぎりブロックしません。
+   Raise :exc:`EOFError` if connection closed and no cooked data available.  Return
+   ``''`` if no cooked data available otherwise. Do not block unless in the midst
+   of an IAC sequence.
 
 
 .. method:: Telnet.read_lazy()
 
-   すでにキューに入っているデータを処理して返します (lazy モード)。
+   Process and return data already in the queues (lazy).
 
-   接続が閉じられており、読み出せるデータがない場合には :exc:`EOFError` を送出します。それ以外の場合で、転送処理済みの
-   データで読み出せるものがない場合には ``''`` を返します。 IAC シーケンス操作中でないかぎりブロックしません。
+   Raise :exc:`EOFError` if connection closed and no data available. Return ``''``
+   if no cooked data available otherwise.  Do not block unless in the midst of an
+   IAC sequence.
 
 
 .. method:: Telnet.read_very_lazy()
 
-   すでに処理済みキューに入っているデータを処理して返します (very lazy モード)。
+   Return any data available in the cooked queue (very lazy).
 
-   接続が閉じられており、読み出せるデータがない場合には :exc:`EOFError` を送出します。それ以外の場合で、転送処理済みの
-   データで読み出せるものがない場合には ``''`` を返します。このメソッドは決してブロックしません。
+   Raise :exc:`EOFError` if connection closed and no data available. Return ``''``
+   if no cooked data available otherwise.  This method never blocks.
 
 
 .. method:: Telnet.read_sb_data()
 
-   SB/SE ペア (サブオプション開始／終了) の間に収集されたデータを返します。 ``SE`` コマンドによって起動されたコールバック関数はこれらのデータ
-   にアクセスしなければなりません。
-
-   このメソッドはけっしてブロックしません。
+   Return the data collected between a SB/SE pair (suboption begin/end). The
+   callback should access these data when it was invoked with a ``SE`` command.
+   This method never blocks.
 
    .. versionadded:: 2.3
 
 
-.. method:: Telnet.open(host[, port])
+.. method:: Telnet.open(host[, port[, timeout]])
 
-   サーバホストに接続します。第二引数はオプションで、ポート番号を指定します。標準の値は通常の Telnet ポート番号 (23) です。
-   オプション引数の *timeout* が渡された場合、コネクション接続時などのブロックする操作のタイムアウト時間を秒数で指定します。
-   (指定されなかった場合は、グローバルのデフォルトタイムアウト設定が利用されます。)
+   Connect to a host. The optional second argument is the port number, which
+   defaults to the standard Telnet port (23). The optional *timeout* parameter
+   specifies a timeout in seconds for blocking operations like the connection
+   attempt (if not specified, the global default timeout setting will be used).
 
-   すでに接続しているインスタンスで再接続を試みてはいけません。
+   Do not try to reopen an already connected instance.
 
    .. versionchanged:: 2.6
-      *timeout* が追加されました
+      *timeout* was added.
 
 
 .. method:: Telnet.msg(msg[, *args])
 
-   デバッグレベルが ``>`` 0 のとき、デバッグ用のメッセージを出力します。追加の引数が存在する場合、標準の文字列書式化演算子 ``%`` を使って
-   *msg* 中の書式指定子に代入されます。
+   Print a debug message when the debug level is ``>`` 0. If extra arguments are
+   present, they are substituted in the message using the standard string
+   formatting operator.
 
 
 .. method:: Telnet.set_debuglevel(debuglevel)
 
-   デバッグレベルを設定します。 *debuglevel* が大きくなるほど、 (``sys.stdout`` に) デバッグメッセージがたくさん出力されます。
+   Set the debug level.  The higher the value of *debuglevel*, the more debug
+   output you get (on ``sys.stdout``).
 
 
 .. method:: Telnet.close()
 
-   接続を閉じます。
+   Close the connection.
 
 
 .. method:: Telnet.get_socket()
 
-   内部的に使われているソケットオブジェクトです。
+   Return the socket object used internally.
 
 
 .. method:: Telnet.fileno()
 
-   内部的に使われているソケットオブジェクトのファイル記述子です。
+   Return the file descriptor of the socket object used internally.
 
 
 .. method:: Telnet.write(buffer)
 
-   ソケットに文字列を書き込みます。このとき IAC 文字については  2 度送信します。接続がブロックした場合、書き込みがブロックする
-   可能性があります。接続が閉じられた場合、 :exc:`socket.error`  が送出されるかもしれません。
+   Write a string to the socket, doubling any IAC characters. This can block if the
+   connection is blocked.  May raise :exc:`socket.error` if the connection is
+   closed.
 
 
 .. method:: Telnet.interact()
 
-   非常に低機能の telnet クライアントをエミュレートする対話関数です。
+   Interaction function, emulates a very dumb Telnet client.
 
 
 .. method:: Telnet.mt_interact()
 
-   :meth:`interact` のマルチスレッド版です。
+   Multithreaded version of :meth:`interact`.
 
 
 .. method:: Telnet.expect(list[, timeout])
 
-   正規表現のリストのうちどれか一つにマッチするまでデータを読みます。
+   Read until one from a list of a regular expressions matches.
 
-   第一引数は正規表現のリストです。コンパイルされたもの  (:class:`re.RegexObject` のインスタンス) でも、コンパイルされていないもの
-   (文字列) でもかまいません。オプションの第二引数はタイムアウトで、単位は秒です; 標準の値は無期限に設定されています。
+   The first argument is a list of regular expressions, either compiled
+   (:class:`regex objects <re-objects>`) or uncompiled (strings). The optional second
+   argument is a timeout, in seconds; the default is to block indefinitely.
 
-   3 つの要素からなるタプル: 最初にマッチした正規表現のインデクス; 返されたマッチオブジェクト;
-   マッチ部分を含む、マッチするまでに読み込まれたテキストデータ、を返します。
+   Return a tuple of three items: the index in the list of the first regular
+   expression that matches; the match object returned; and the text read up till
+   and including the match.
 
-   ファイル終了子が見つかり、かつ何もテキストデータが読み込まれなかった場合、 :exc:`EOFError` が送出されます。そうでない
-   場合で何もマッチしなかった場合には ``(-1, None, text)`` が返されます。ここで *text* はこれまで受信したテキストデータです
-   (タイムアウトが発生した場合には空の文字列になる場合もあります)。
+   If end of file is found and no text was read, raise :exc:`EOFError`.  Otherwise,
+   when nothing matches, return ``(-1, None, text)`` where *text* is the text
+   received so far (may be the empty string if a timeout happened).
 
-   正規表現の末尾が (``.*`` のような) 貪欲マッチングになっている場合や、入力に対して
-   1 つ以上の正規表現がマッチする場合には、その結果は決定不能で、I/O
-   のタイミングに依存するでしょう。
+   If a regular expression ends with a greedy match (such as ``.*``) or if more
+   than one expression can match the same input, the results are
+   non-deterministic, and may depend on the I/O timing.
 
 
 .. method:: Telnet.set_option_negotiation_callback(callback)
 
-   telnet オプションが入力フローから読み込まれるたびに、 *callback* が (設定されていれば) 以下の引数形式: callback(telnet
-   socket, command (DO/DONT/WILL/WONT), option) で呼び出されます。その後 telnet オプションに対しては
-   telnetlib  は何も行いません。
+   Each time a telnet option is read on the input flow, this *callback* (if set) is
+   called with the following parameters: callback(telnet socket, command
+   (DO/DONT/WILL/WONT), option).  No other action is done afterwards by telnetlib.
 
 
 .. _telnet-example:
@@ -204,7 +220,7 @@ Telnet Example
 .. sectionauthor:: Peter Funk <pf@artcom-gmbh.de>
 
 
-典型的な使い方を表す単純な例を示します::
+A simple example illustrating typical use::
 
    import getpass
    import sys

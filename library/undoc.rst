@@ -1,251 +1,248 @@
 
 .. _undoc:
 
-************************************
-ドキュメント化されていないモジュール
-************************************
+********************
+Undocumented Modules
+********************
 
-現在ドキュメント化されていないが、ドキュメント化すべきモジュールを\
-以下にざっと列挙します。どうぞこれらのドキュメントを寄稿してください！
-(電子メールで docs@python.org に送ってください)。
+Here's a quick listing of modules that are currently undocumented, but that
+should be documented.  Feel free to contribute documentation for them!  (Send
+via email to docs@python.org.)
 
-この章のアイデアと元の文章内容は Fredrik Lundh のポストによる\
-ものです; この章の特定の内容は実際には改訂されてきています。
+The idea and original contents for this chapter were taken from a posting by
+Fredrik Lundh; the specific contents of this chapter have been substantially
+revised.
 
 
-雑多な有用ユーティリティ
-========================
+Miscellaneous useful utilities
+==============================
 
-以下のいくつかは非常に古く、かつ／またはあまり頑健ではありません。 "hmm." マーク付きです。
+Some of these are very old and/or not very robust; marked with "hmm."
 
 :mod:`ihooks`
-   --- import フックのサポートです (:mod:`rexec` のためのものです; 撤廃されるかもしれません)。
-   Python 3.0 で削除されました。
+   --- Import hook support (for :mod:`rexec`; may become obsolete).  Removed in
+   Python 3.x.
 
 
-プラットフォーム固有のモジュール
-================================
+Platform specific modules
+=========================
 
-これらのモジュールは :mod:`os.path` モジュールを実装するために用いられていますが、
-ここで触れる内容を超えてドキュメントされていません。
-これらはもう少しドキュメント化する必要があります。
+These modules are used to implement the :mod:`os.path` module, and are not
+documented beyond this mention.  There's little need to document these.
 
 :mod:`ntpath`
-   --- Win32、 Win64、 WinCE、および OS/2 プラットフォームにおける :mod:`os.path` 実装です。
+   --- Implementation of :mod:`os.path` on Win32, Win64, WinCE, and OS/2 platforms.
 
 :mod:`posixpath`
-   --- POSIXにおける :mod:`os.path` 実装です。
+   --- Implementation of :mod:`os.path` on POSIX.
 
 :mod:`bsddb185`
-   --- まだBerkeleyDB 1.85を使用しているシステムで後方互換性を保つためのモジュール。通常、特定のBSD
-   Unixベースのシステムでのみ利用可能。直接使用しないで下さい。
+   --- Backwards compatibility module for systems which still use the Berkeley DB
+   1.85 module.  It is normally only available on certain BSD Unix-based systems.
+   It should never be used directly.
 
 
-マルチメディア関連
-==================
+Multimedia
+==========
 
 :mod:`audiodev`
-   --- 音声データを再生するためのプラットフォーム非依存の API です。
-   Python 3.0 で削除されました。
+   --- Platform-independent API for playing audio data.  Removed in Python 3.x.
 
 :mod:`linuxaudiodev`
-   --- Linux 音声デバイスで音声データを再生します。Python 2.3 では
-   :mod:`ossaudiodev` モジュールと置き換えられました。
-   Python 3.0 で削除されました。
+   --- Play audio data on the Linux audio device.  Replaced in Python 2.3 by the
+   :mod:`ossaudiodev` module.  Removed in Python 3.x.
 
 :mod:`sunaudio`
-   --- Sun 音声データヘッダを解釈します (撤廃されるか、ツール/デモに
-   なるかもしれません)。
-   Python 3.0 で削除されました。
+   --- Interpret Sun audio headers (may become obsolete or a tool/demo).
+   Removed in Python 3.x.
 
 :mod:`toaiff`
-   --- "任意の" 音声ファイルを AIFF ファイルに変換します; おそらくツールか
-   デモになるはずです。外部プログラム :program:`sox` が必要です。
-   Python 3.0 で削除されました。
+   --- Convert "arbitrary" sound files to AIFF files; should probably become a tool
+   or demo.  Requires the external program :program:`sox`.  Removed in Python 3.x.
 
 
 .. _undoc-mac-modules:
 
-文書化されていない Mac OS モジュール
-====================================
+Undocumented Mac OS modules
+===========================
 
 
-:mod:`applesingle` --- AppleSingle デコーダー
----------------------------------------------
+:mod:`applesingle` --- AppleSingle decoder
+------------------------------------------
 
 .. module:: applesingle
    :platform: Mac
-   :synopsis: AppleSingle フォーマットファイル用の基本的なデコーダ
+   :synopsis: Rudimentary decoder for AppleSingle format files.
    :deprecated:
 
 .. deprecated:: 2.6
 
 
-:mod:`buildtools` --- BuildAppletとその仲間のヘルパーモジュール
+:mod:`buildtools` --- Helper module for BuildApplet and Friends
 ---------------------------------------------------------------
 
 .. module:: buildtools
    :platform: Mac
-   :synopsis: BuildAppletとその仲間のヘルパーモジュール
+   :synopsis: Helper module for BuildApplet, BuildApplication and macfreeze.
    :deprecated:
 
 
 .. deprecated:: 2.4
 
-:mod:`cfmfile` --- コードフラグメントリソースを扱うモジュール
--------------------------------------------------------------
+:mod:`cfmfile` --- Code Fragment Resource module
+------------------------------------------------
 
 .. module:: cfmfile
    :platform: Mac
-   :synopsis: コードフラグメントリソースを扱うモジュール
+   :synopsis: Code Fragment Resource module.
    :deprecated:
 
 
-:mod:`cfmfile` は、コードフラグメントと関連する"cfrg"リソースを処\
-理するモジュールです。このモジュールでコードフラグメントを分解やマージ\
-できて、全てのプラグインモジュールをまとめて、一つの実行可能ファイルに\
-するため、BuildApplicationによって利用されます。
+:mod:`cfmfile` is a module that understands Code Fragments and the accompanying
+"cfrg" resources. It can parse them and merge them, and is used by
+BuildApplication to combine all plugin modules to a single executable.
 
 .. deprecated:: 2.4
 
-:mod:`icopen` --- :meth:`open` と Internet Config の置き換え
-------------------------------------------------------------
+:mod:`icopen` --- Internet Config replacement for :meth:`open`
+--------------------------------------------------------------
 
 .. module:: icopen
    :platform: Mac
-   :synopsis: open()と Internet Config の置き換え
+   :synopsis: Internet Config replacement for open().
    :deprecated:
 
 
-:mod:`icopen` をインポートすると、組込み :meth:`open` を新しいファイル用に
-ファイルタイプおよびクリエーターを設定するために
-Internet Configを使用するバージョンに置き換えます。
+Importing :mod:`icopen` will replace the built-in :meth:`open` with a version
+that uses Internet Config to set file type and creator for new files.
 
 .. deprecated:: 2.6
 
 
-:mod:`macerrors` --- MacOSのエラー
+:mod:`macerrors` --- Mac OS Errors
 ----------------------------------
 
 .. module:: macerrors
    :platform: Mac
-   :synopsis: 多くの MacOS エラーコード定数定義
+   :synopsis: Constant definitions for many Mac OS error codes.
    :deprecated:
 
 
-:mod:`macerrors` は、MacOS エラーコードを意味する定数定義を含みます。
+:mod:`macerrors` contains constant definitions for many Mac OS error codes.
 
 .. deprecated:: 2.6
 
 
-:mod:`macresource` --- スクリプトのリソースを見つける
------------------------------------------------------
+:mod:`macresource` --- Locate script resources
+----------------------------------------------
 
 .. module:: macresource
    :platform: Mac
-   :synopsis: スクリプトのリソースを見つける
+   :synopsis: Locate script resources.
    :deprecated:
 
 
-:mod:`macresource` はスクリプトが MacPython 上や MacPython アプレッ\
-トおよび OSX Python 上で起動されている時、特別な処理をせずにダイアログ\
-やメニューなどのようなリソースを見つけるためのヘルパースクリプトです。
+:mod:`macresource` helps scripts finding their resources, such as dialogs and
+menus, without requiring special case code for when the script is run under
+MacPython, as a MacPython applet or under OSX Python.
 
 .. deprecated:: 2.6
 
 
-:mod:`Nav` --- NavServices の呼出し
------------------------------------
+:mod:`Nav` --- NavServices calls
+--------------------------------
 
 .. module:: Nav
    :platform: Mac
-   :synopsis: Navigation Services へのインターフェース
+   :synopsis: Interface to Navigation Services.
    :deprecated:
 
 
-Navigation Servicesの低レベルインターフェース。
+A low-level interface to Navigation Services.
 
 .. deprecated:: 2.6
 
 
-:mod:`PixMapWrapper` --- PixMapオブジェクトのラッパー
------------------------------------------------------
+:mod:`PixMapWrapper` --- Wrapper for PixMap objects
+---------------------------------------------------
 
 .. module:: PixMapWrapper
    :platform: Mac
-   :synopsis: PixMapオブジェクトのラッパー
+   :synopsis: Wrapper for PixMap objects.
    :deprecated:
 
 
-:mod:`PixMapWrapper` はPixMap オブジェクトを Python オブジェクトでラッ\
-プしたもので、各フィールドに対し名前でアクセスできるようになります。
-:mod:`PIL` 画像との相互の変換をするメソッドも用意されています。
+:mod:`PixMapWrapper` wraps a PixMap object with a Python object that allows
+access to the fields by name. It also has methods to convert to and from
+:mod:`PIL` images.
 
 .. deprecated:: 2.6
 
 
-:mod:`videoreader` --- QuickTime ムービーの読み込み
----------------------------------------------------
+:mod:`videoreader` --- Read QuickTime movies
+--------------------------------------------
 
 .. module:: videoreader
    :platform: Mac
-   :synopsis: フレームの継続処理のためのQuickTime ムービーのフレーム読み込み
+   :synopsis: Read QuickTime movies frame by frame for further processing.
    :deprecated:
 
 
-:mod:`videoreader` は QuickTime ムービーを読み込み、デコードし、プロ\
-グラムへ渡せます。このモジュールはさらにオーディオトラックをサ\
-ポートしています。
+:mod:`videoreader` reads and decodes QuickTime movies and passes a stream of
+images to your program. It also provides some support for audio tracks.
 
 .. deprecated:: 2.6
 
 
-:mod:`W` --- :mod:`FrameWork` 上に作られたウイジェット
-------------------------------------------------------
+:mod:`W` --- Widgets built on :mod:`FrameWork`
+----------------------------------------------
 
 .. module:: W
    :platform: Mac
-   :synopsis: FrameWork 上に作られた Mac 用ウイジェット
+   :synopsis: Widgets for the Mac, built on top of FrameWork.
    :deprecated:
 
 
-:mod:`W` ウィジェットは、 :program:`IDE` で頻繁に使われています。
+The :mod:`W` widgets are used extensively in the :program:`IDE`.
 
 .. deprecated:: 2.6
 
 
 .. _obsolete-modules:
 
-撤廃されたもの
-==============
+Obsolete
+========
 
-これらのモジュールは通常 import して利用できません; 利用できるようにするには作業を行わなければなりません。
+These modules are not normally available for import; additional work must be
+done to make them available.
 
-これらの拡張モジュールのうち C で書かれたものは、標準の設定ではビルドされません。Unixでこれらのモジュールを有効にするには、ビルドツリー内の
-:file:`Modules/Setup` の適切な行のコメントアウトを外して、モジュールを静的リンクするなら Python をビルドしなおし、
-動的にロードされる拡張を使うなら共有オブジェクトをビルドしてインストールする必要があります。
+These extension modules written in C are not built by default. Under Unix, these
+must be enabled by uncommenting the appropriate lines in :file:`Modules/Setup`
+in the build tree and either rebuilding Python if the modules are statically
+linked, or building and installing the shared object if using dynamically-loaded
+extensions.
 
 .. (lib-old is empty as of Python 2.5)
 
-   Python で書かれたものは、標準ライブラリの一部としてインストール
-   されている \file{lib-old/} ディレクトリの中にインストールされます。
-   利用するには、\envvar{PYTHONPATH} を使うなどして、\file{lib-old/}
-   ディレクトリを \code{sys.path} に追加しなければなりません。
-
+   Those which are written in Python will be installed into the directory
+   \file{lib-old/} installed as part of the standard library.  To use
+   these, the directory must be added to \code{sys.path}, possibly using
+   \envvar{PYTHONPATH}.
 
 :mod:`timing`
-   --- 高い精度で経過時間を計測します (:func:`time.clock` を使ってください)。
-   Python 3.0 で削除されました。
+   --- Measure time intervals to high resolution (use :func:`time.clock`
+   instead).  Removed in Python 3.x.
 
 
-SGI 固有の拡張モジュール
-========================
+SGI-specific Extension modules
+==============================
 
-以下は SGI 固有のモジュールで、現在のバージョンの SGI の実情が反映されていないかもしれません。
+The following are SGI specific, and may be out of touch with the current version
+of reality.
 
 :mod:`cl`
-   --- SGI 圧縮ライブラリへのインタフェースです。
+   --- Interface to the SGI compression library.
 
 :mod:`sv`
-   --- SGI Indigo 上の "simple video" ボード(旧式のハードウェアです) へのインタフェースです。
-   Python 3.0 で削除されました。
+   --- Interface to the "simple video" board on SGI Indigo (obsolete hardware).
+   Removed in Python 3.x.

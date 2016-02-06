@@ -1,13 +1,13 @@
-:mod:`BaseHTTPServer` --- 基本的な機能を持つ HTTP サーバ
-========================================================
+:mod:`BaseHTTPServer` --- Basic HTTP server
+===========================================
 
 .. module:: BaseHTTPServer
-   :synopsis: 基本的な機能を持つ HTTP サーバ  (SimpleHTTPServer および CGIHTTPServer の基底クラス)。
+   :synopsis: Basic HTTP server (base class for SimpleHTTPServer and CGIHTTPServer).
 
 .. note::
-
-   :mod:`BaseHTTPServer` モジュールは Python 3.0 では :mod:`http.server` に統合されました。
-   ソースコードを 3.0 用に変換する時は、 :term:`2to3` ツールが自動的に import を修正します。
+   The :mod:`BaseHTTPServer` module has been merged into :mod:`http.server` in
+   Python 3.  The :term:`2to3` tool will automatically adapt imports when
+   converting your sources to Python 3.
 
 
 .. index::
@@ -18,14 +18,19 @@
    module: SimpleHTTPServer
    module: CGIHTTPServer
 
-このモジュールでは、 HTTP サーバ (Web サーバ) を実装するための二つののクラスを定義しています。
-通常、このモジュールが直接使用されることはなく、特定の機能を持つ Web サーバを構築するために使われます。
-:mod:`SimpleHTTPServer` および :mod:`CGIHTTPServer` モジュールを参照してください。
+**Source code:** :source:`Lib/BaseHTTPServer.py`
 
-最初のクラス, :class:`HTTPServer` は :class:`SocketServer.TCPServer`
-のサブクラスで、従って :class:`SocketServer.BaseServer` インタフェースを実装しています。
-:class:`HTTPServer` は HTTP ソケットを生成してリクエスト待ち (listen)
-を行い、リクエストをハンドラに渡します。サーバを作成して動作させるためのコードは以下のようになります::
+--------------
+
+This module defines two classes for implementing HTTP servers (Web servers).
+Usually, this module isn't used directly, but is used as a basis for building
+functioning Web servers. See the :mod:`SimpleHTTPServer` and
+:mod:`CGIHTTPServer` modules.
+
+The first class, :class:`HTTPServer`, is a :class:`SocketServer.TCPServer`
+subclass, and therefore implements the :class:`SocketServer.BaseServer`
+interface.  It creates and listens at the HTTP socket, dispatching the requests
+to a handler.  Code to create and run the server looks like this::
 
    def run(server_class=BaseHTTPServer.HTTPServer,
            handler_class=BaseHTTPServer.BaseHTTPRequestHandler):
@@ -36,221 +41,242 @@
 
 .. class:: HTTPServer(server_address, RequestHandlerClass)
 
-   このクラスは :class:`TCPServer` 型のクラスの上に構築されており、
-   サーバのアドレスをインスタンス変数 :attr:`server_name`
-   および :attr:`server_port` に記憶します。サーバはハンドラからアクセス可能で、通常 :attr:`server`
-   インスタンス変数でアクセスします。
+   This class builds on the :class:`TCPServer` class by storing the server
+   address as instance variables named :attr:`server_name` and
+   :attr:`server_port`. The server is accessible by the handler, typically
+   through the handler's :attr:`server` instance variable.
 
 
 .. class:: BaseHTTPRequestHandler(request, client_address, server)
 
-   このクラスはサーバに到着したリクエストを処理します。
-   このメソッド自体では、実際のリクエストに応答することはできません; (GET や POST のような)
-   各リクエストメソッドを処理するためにはサブクラス化しなければなりません。
-   :class:`BaseHTTPRequestHandler` では、サブクラスで使うためのクラスやインスタンス変数、
-   メソッド群を数多く提供しています。
+   This class is used to handle the HTTP requests that arrive at the server. By
+   itself, it cannot respond to any actual HTTP requests; it must be subclassed
+   to handle each request method (e.g. GET or
+   POST). :class:`BaseHTTPRequestHandler` provides a number of class and
+   instance variables, and methods for use by subclasses.
 
-   このハンドラはリクエストを解釈し、次いでリクエスト形式ごとに固有のメソッドを呼び出します。
-   メソッド名はリクエストの名称から構成されます。
-   例えば、リクエストメソッド ``SPAM`` に対しては、 :meth:`do_SPAM` メソッドが引数なしで呼び出されます。
-   リクエストに関連する情報は全て、ハンドラのインスタンス変数に記憶されています。
-   サブクラスでは :meth:`__init__` メソッドを上書きしたり拡張したりする必要はありません。
+   The handler will parse the request and the headers, then call a method
+   specific to the request type. The method name is constructed from the
+   request. For example, for the request method ``SPAM``, the :meth:`do_SPAM`
+   method will be called with no arguments. All of the relevant information is
+   stored in instance variables of the handler.  Subclasses should not need to
+   override or extend the :meth:`__init__` method.
 
-   :class:`BaseHTTPRequestHandler` は以下のインスタンス変数を持っています:
+   :class:`BaseHTTPRequestHandler` has the following instance variables:
 
 
    .. attribute:: client_address
 
-      HTTP クライアントのアドレスを参照している、 ``(host, port)`` の形式をとるタプルが入っています。
+      Contains a tuple of the form ``(host, port)`` referring to the client's
+      address.
+
 
    .. attribute:: server
 
-      server インスタンスが入っています。
+      Contains the server instance.
 
 
    .. attribute:: command
 
-      HTTP 命令 (リクエスト形式) が入っています。例えば ``'GET'`` です。
+      Contains the command (request type). For example, ``'GET'``.
 
 
    .. attribute:: path
 
-      リクエストされたパスが入っています。
+      Contains the request path.
 
 
    .. attribute:: request_version
 
-      リクエストのバージョン文字列が入っています。例えば ``'HTTP/1.0'`` です。
+      Contains the version string from the request. For example, ``'HTTP/1.0'``.
 
 
    .. attribute:: headers
 
-      :attr:`MessageClass` クラス変数で指定されたクラスのインスタンスを保持しています。
-      このインスタンスは HTTP リクエストのヘッダを解釈し、管理しています。
+      Holds an instance of the class specified by the :attr:`MessageClass` class
+      variable. This instance parses and manages the headers in the HTTP
+      request.
 
 
    .. attribute:: rfile
 
-      入力ストリームが入っており、そのファイルポインタはオプション入力データ部の先頭を指しています。
+      Contains an input stream, positioned at the start of the optional input
+      data.
 
 
    .. attribute:: wfile
 
-      クライアントに返送する応答を書き込むための出力ストリームが入っています。
-      このストリームに書き込む際には、HTTP プロトコルに従った形式をとらなければなりません。
+      Contains the output stream for writing a response back to the
+      client. Proper adherence to the HTTP protocol must be used when writing to
+      this stream.
 
-   :class:`BaseHTTPRequestHandler` は以下のクラス変数を持っています:
+
+   :class:`BaseHTTPRequestHandler` has the following class variables:
 
 
    .. attribute:: server_version
 
-      サーバのソフトウェアバージョンを指定します。
-      この値は上書きする必要が生じるかもしれません。
-      書式は複数の文字列を空白で分割したもので、各文字列はソフトウェア名[/バージョン] の形式をとります。
-      例えば、 ``'BaseHTTP/0.2'`` です。
+      Specifies the server software version.  You may want to override this. The
+      format is multiple whitespace-separated strings, where each string is of
+      the form name[/version]. For example, ``'BaseHTTP/0.2'``.
 
 
    .. attribute:: sys_version
 
-      Python 処理系のバージョンが, :attr:`version_string` メソッドや :attr:`server_version`
-      クラス変数で利用可能な形式で入っています。例えば ``'Python/1.4'`` です。
+      Contains the Python system version, in a form usable by the
+      :attr:`version_string` method and the :attr:`server_version` class
+      variable. For example, ``'Python/1.4'``.
 
 
    .. attribute:: error_message_format
 
-      クライアントに返すエラー応答を構築するための書式化文字列を指定します。この文字列は丸括弧で囲ったキー文字列で指定する形式を
-      使うので、書式化の対象となる値は辞書でなければなりません。キー *code* は整数で、HTTP エラーコードを特定する数値です。 *message*
-      は文字列で、何が発生したかを表す (詳細な)  エラーメッセージが入ります。 *explain* はエラーコード番号の説明です。 *message* および
-      *explain* の標準の値は *response* クラス変数でみつけることができます。
+      Specifies a format string for building an error response to the client. It
+      uses parenthesized, keyed format specifiers, so the format operand must be
+      a dictionary. The *code* key should be an integer, specifying the numeric
+      HTTP error code value. *message* should be a string containing a
+      (detailed) error message of what occurred, and *explain* should be an
+      explanation of the error code number. Default *message* and *explain*
+      values can found in the *responses* class variable.
+
 
    .. attribute:: error_content_type
 
-      エラーレスポンスをクライアントに送信する時に使う Content-Type HTTP ヘッダを指定します。
-      デフォルトでは ``'text/html'`` です。
+      Specifies the Content-Type HTTP header of error responses sent to the
+      client.  The default value is ``'text/html'``.
 
       .. versionadded:: 2.6
-         以前は、 Content-Type は常に ``'text/html'`` でした。
+         Previously, the content type was always ``'text/html'``.
 
 
    .. attribute:: protocol_version
 
-      この値には応答に使われる HTTP プロトコルのバージョンを指定します。
-      ``'HTTP/1.1'`` に設定されると、サーバは持続的 HTTP 接続を許可します;
-      しかしその場合、サーバは全てのクライアントに対する応答に、正確な値を持つ
-      ``Content-Length`` ヘッダを (:meth:`send_header` を使って) 含め *なければなりません* 。
-      以前のバージョンとの互換性を保つため、標準の設定値は ``'HTTP/1.0'`` です。
+      This specifies the HTTP protocol version used in responses.  If set to
+      ``'HTTP/1.1'``, the server will permit HTTP persistent connections;
+      however, your server *must* then include an accurate ``Content-Length``
+      header (using :meth:`send_header`) in all of its responses to clients.
+      For backwards compatibility, the setting defaults to ``'HTTP/1.0'``.
 
 
    .. attribute:: MessageClass
 
       .. index:: single: Message (in module mimetools)
 
-      HTTP ヘッダを解釈するための :class:`rfc822.Message` 類似のクラスを指定します。
-      通常この値が上書きされることはなく、標準の値 :class:`mimetools.Message` になっています。
+      Specifies a :class:`rfc822.Message`\ -like class to parse HTTP headers.
+      Typically, this is not overridden, and it defaults to
+      :class:`mimetools.Message`.
 
 
    .. attribute:: responses
 
-      この変数はエラーコードを表す整数を二つの要素をもつタプルに対応付けます。
-      タプルには短いメッセージと長いメッセージが入っています。
-      例えば、 ``{code: (shortmessage, longmessage)}`` といったようになります。
-      *shortmessage* は通常、エラー応答における *message* キーの値として使われ、
-      *longmessage* は *explain* キーの値として使われます
-      (:attr:`error_message_format` クラス変数を参照してください) 。
+      This variable contains a mapping of error code integers to two-element tuples
+      containing a short and long message. For example, ``{code: (shortmessage,
+      longmessage)}``. The *shortmessage* is usually used as the *message* key in an
+      error response, and *longmessage* as the *explain* key (see the
+      :attr:`error_message_format` class variable).
 
-   :class:`BaseHTTPRequestHandler` インスタンスは以下のメソッドを持っています:
+
+   A :class:`BaseHTTPRequestHandler` instance has the following methods:
 
 
    .. method:: handle()
 
-      :meth:`handle_one_request` を一度だけ
-      (持続的接続が有効になっている場合には複数回) 呼び出して、HTTPリクエストを処理します。
-      このメソッドを上書きする必要はまったくありません; そうする代わりに適切な :meth:`do_\*` を実装してください。
+      Calls :meth:`handle_one_request` once (or, if persistent connections are
+      enabled, multiple times) to handle incoming HTTP requests. You should
+      never need to override it; instead, implement appropriate :meth:`do_\*`
+      methods.
 
 
    .. method:: handle_one_request()
 
-      このメソッドはリクエストを解釈し、適切な :meth:`do_\*` メソッドに転送します。
-      このメソッドを上書きする必要はまったくありません。
+      This method will parse and dispatch the request to the appropriate
+      :meth:`do_\*` method.  You should never need to override it.
 
 
    .. method:: send_error(code[, message])
 
-      完全なエラー応答をクライアントに送信し、ログ記録します。 *code* は数値型で、HTTP エラーコードを指定します。
-      *message* はオプションで、より詳細なメッセージテキストです。
-      完全なヘッダのセットが送信された後, :attr:`error_message_format` クラス変数を使って組み立てられたテキストが送られます。
+      Sends and logs a complete error reply to the client. The numeric *code*
+      specifies the HTTP error code, with *message* as optional, more specific text. A
+      complete set of headers is sent, followed by text composed using the
+      :attr:`error_message_format` class variable.
 
 
    .. method:: send_response(code[, message])
 
-      応答ヘッダを送信し、受理したリクエストをログ記録します。HTTP 応答行が送られた後、 *Server* および *Date* ヘッダが
-      送られます。これら二つのヘッダはそれぞれ :meth:`version_string`  および :meth:`date_time_string`
-      メソッドで取り出します。
+      Sends a response header and logs the accepted request. The HTTP response
+      line is sent, followed by *Server* and *Date* headers. The values for
+      these two headers are picked up from the :meth:`version_string` and
+      :meth:`date_time_string` methods, respectively.
 
 
    .. method:: send_header(keyword, value)
 
-      出力ストリームに特定の HTTP ヘッダを書き込みます。
-      *keyword* はヘッダのキーワードを指定し、 *value* にはその値を指定します。
+      Writes a specific HTTP header to the output stream. *keyword* should
+      specify the header keyword, with *value* specifying its value.
 
 
    .. method:: end_headers()
 
-      応答中の HTTP ヘッダの終了を示す空行を送信します。
+      Sends a blank line, indicating the end of the HTTP headers in the
+      response.
 
 
    .. method:: log_request([code[, size]])
 
-      受理された (成功した) リクエストをログに記録します。
-      *code* にはこの応答に関連付けられた HTTP コード番号を指定します。
-      応答メッセージの大きさを知ることができる場合、 *size* パラメタに渡すとよいでしょう。
+      Logs an accepted (successful) request. *code* should specify the numeric
+      HTTP code associated with the response. If a size of the response is
+      available, then it should be passed as the *size* parameter.
 
 
    .. method:: log_error(...)
 
-      リクエストを遂行できなかった際に、エラーをログに記録します。
-      標準では、メッセージを :meth:`log_message` に渡します。従って同じ引数
-      (*format* と追加の値) を取ります。
+      Logs an error when a request cannot be fulfilled. By default, it passes
+      the message to :meth:`log_message`, so it takes the same arguments
+      (*format* and additional values).
 
 
    .. method:: log_message(format, ...)
 
-      任意のメッセージを ``sys.stderr`` にログ記録します。このメソッドは通常、カスタムのエラーログ記録機構を作成するために
-      上書きされます。 *format* 引数は標準の printf 形式の書式化文字列で, :meth:`log_message` に渡された追加の引数は
-      書式化の入力として適用されます。ログ記録される全てのメッセージには、クライアントのアドレスおよび現在の日付、時刻が先頭に付けられます。
+      Logs an arbitrary message to ``sys.stderr``. This is typically overridden
+      to create custom error logging mechanisms. The *format* argument is a
+      standard printf-style format string, where the additional arguments to
+      :meth:`log_message` are applied as inputs to the formatting. The client
+      ip address and current date and time are prefixed to every message logged.
 
 
    .. method:: version_string()
 
-      サーバソフトウェアのバージョン文字列を返します。この文字列はクラス変数 :attr:`server_version` および
-      :attr:`sys_version`  を組み合わせたものです。
+      Returns the server software's version string. This is a combination of the
+      :attr:`server_version` and :attr:`sys_version` class variables.
 
 
    .. method:: date_time_string([timestamp])
 
-      メッセージヘッダ向けに書式化された、 *timestamp* (:func:`time.time` のフォーマットである必要があります)で与えられた日時を返します。
-      もし *timestamp* が省略された場合には、現在の日時が使われます。
+      Returns the date and time given by *timestamp* (which must be in the
+      format returned by :func:`time.time`), formatted for a message header. If
+      *timestamp* is omitted, it uses the current date and time.
 
-      出力は ``'Sun, 06 Nov 1994 08:49:37 GMT'`` のようになります。
+      The result looks like ``'Sun, 06 Nov 1994 08:49:37 GMT'``.
 
       .. versionadded:: 2.5
-         *timestamp* パラメータ.
+         The *timestamp* parameter.
 
 
    .. method:: log_date_time_string()
 
-      ログ記録向けに書式化された、現在の日付および時刻を返します。
+      Returns the current date and time, formatted for logging.
 
 
    .. method:: address_string()
 
-      ログ記録向けに書式化された、クライアントのアドレスを返します。このときクライアントの IP アドレスに対する名前解決を行います。
+      Returns the client address, formatted for logging. A name lookup is
+      performed on the client's IP address.
 
 
-他の例
--------
+More examples
+-------------
 
-永遠ではなく、何かの条件が満たされるまでの間実行するサーバーを作るには::
+To create a server that doesn't run forever, but until some condition is
+fulfilled::
 
    def run_while_true(server_class=BaseHTTPServer.HTTPServer,
                       handler_class=BaseHTTPServer.BaseHTTPRequestHandler):
@@ -268,8 +294,9 @@
 .. seealso::
 
    Module :mod:`CGIHTTPServer`
-      CGI スクリプトをサポートするように拡張されたリクエストハンドラ。
+      Extended request handler that supports CGI scripts.
 
    Module :mod:`SimpleHTTPServer`
-      ドキュメントルートの下にあるファイルに対する要求への応答のみに制限した基本リクエストハンドラ。
+      Basic request handler that limits response to files actually under the
+      document root.
 

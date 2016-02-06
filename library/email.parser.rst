@@ -1,45 +1,40 @@
-:mod:`email.parser`: 電子メールメッセージを解析(パース)する
------------------------------------------------------------
+:mod:`email.parser`: Parsing email messages
+-------------------------------------------
 
 .. module:: email.parser
-   :synopsis: 電子メールメッセージのフラットなテキストを解析し、
-    メッセージオブジェクト構造体を生成する。
+   :synopsis: Parse flat text email messages to produce a message object structure.
 
 
-メッセージオブジェクト構造体をつくるには 2つの方法があります。
-ひとつはまったくのスクラッチから :class:`~email.message.Message` を生成して、これを
-:meth:`attach` と :meth:`set_payload` 呼び出しを介してつなげていく方法で、
-もうひとつは電子メールメッセージのフラットなテキスト表現を\
-解析 (parse、パーズ) する方法です。
+Message object structures can be created in one of two ways: they can be created
+from whole cloth by instantiating :class:`~email.message.Message` objects and
+stringing them together via :meth:`~email.message.Message.attach` and
+:meth:`~email.message.Message.set_payload` calls, or they
+can be created by parsing a flat text representation of the email message.
 
-:mod:`email` パッケージでは、MIME 文書をふくむ、
-ほとんどの電子メールの文書構造に対応できる標準的なパーザ (解析器) を提供しています。
-このパーザに文字列あるいはファイルオブジェクトを渡せば、パーザは\
-そのオブジェクト構造の基底となる (root の) :class:`~email.message.Message`
-インスタンスを返します。
-簡単な非MIMEメッセージであれば、この基底オブジェクトのペイロードは\
-たんにメッセージのテキストを格納する文字列になるでしょう。
-MIMEメッセージであれば、基底オブジェクトはその :meth:`is_multipart`
-メソッドに対して ``True`` を返します。
-そして、その各 subpart に :meth:`get_payload` メソッドおよび
-:meth:`walk` メソッドを介してアクセスすることができます。
+The :mod:`email` package provides a standard parser that understands most email
+document structures, including MIME documents.  You can pass the parser a string
+or a file object, and the parser will return to you the root
+:class:`~email.message.Message` instance of the object structure.  For simple,
+non-MIME messages the payload of this root object will likely be a string
+containing the text of the message.  For MIME messages, the root object will
+return ``True`` from its :meth:`~email.message.Message.is_multipart` method, and
+the subparts can be accessed via the :meth:`~email.message.Message.get_payload`
+and :meth:`~email.message.Message.walk` methods.
 
-実際には 2つのパーザインターフェイスが使用可能です。
-ひとつは旧式の :class:`Parser` API であり、もうひとつはインクリメンタルな
-:class:`FeedParser` API です。
-旧式の :class:`Parser` API はメッセージ全体のテキストが文字列としてすでに\
-メモリ上にあるか、それがローカルなファイルシステム上に存在しているときには\
-問題ありません。 :class:`FeedParser` はメッセージを読み込むときに、そのストリームが\
-入力待ちのためにブロックされるような場合 (ソケットから email メッセージを読み込む時など)
-に、より有効です。 :class:`FeedParser` はインクリメンタルにメッセージを読み込み、
-解析します。パーザを close したときには根っこ
-(root) のオブジェクトのみが返されます [#]_ 。
+There are actually two parser interfaces available for use, the classic
+:class:`Parser` API and the incremental :class:`FeedParser` API.  The classic
+:class:`Parser` API is fine if you have the entire text of the message in memory
+as a string, or if the entire message lives in a file on the file system.
+:class:`FeedParser` is more appropriate for when you're reading the message from
+a stream which might block waiting for more input (e.g. reading an email message
+from a socket).  The :class:`FeedParser` can consume and parse the message
+incrementally, and only returns the root object when you close the parser [#]_.
 
-このパーザは、ある制限された方法で拡張できます。
-また、もちろん自分でご自分のパーザを完全に無から実装することもできます。 :mod:`email`
-パッケージについているパーザと :class:`~email.message.Message` クラスの間に\
-隠された秘密の関係はなにもありませんので、ご自分で実装されたパーザも、
-それが必要とするやりかたでメッセージオブジェクトツリーを作成することができます。
+Note that the parser can be extended in limited ways, and of course you can
+implement your own parser completely from scratch.  There is no magical
+connection between the :mod:`email` package's bundled parser and the
+:class:`~email.message.Message` class, so your custom parser can create message
+object trees any way it finds necessary.
 
 
 FeedParser API
@@ -47,199 +42,189 @@ FeedParser API
 
 .. versionadded:: 2.4
 
-:mod:`email.feedparser` モジュールからインポートされる :class:`FeedParser` は email
-メッセージをインクリメンタルに解析するのに向いた API を提供します。
-これは email メッセージのテキストを (ソケットなどの) 読み込みがブロックされる\
-可能性のある情報源から入力するときに必要となります。もちろん :class:`FeedParser` は
-文字列またはファイルにすべて格納されている email メッセージを解析するのにも\
-使うことができますが、このような場合には旧式の :class:`Parser` API のほうが\
-便利かもしれません。これら 2つのパーザ API の意味論と得られる結果は同一です。
+The :class:`FeedParser`, imported from the :mod:`email.feedparser` module,
+provides an API that is conducive to incremental parsing of email messages, such
+as would be necessary when reading the text of an email message from a source
+that can block (e.g. a socket).  The :class:`FeedParser` can of course be used
+to parse an email message fully contained in a string or a file, but the classic
+:class:`Parser` API may be more convenient for such use cases.  The semantics
+and results of the two parser APIs are identical.
 
-:class:`FeedParser` API は簡単です。まずインスタンスをつくり、それに\
-テキストを (それ以上テキストが必要なくなるまで) 流しこみます。その後\
-パーザを close すると根っこ (root) のメッセージオブジェクトが返されます。
-標準に従ったメッセージを解析する場合、 :class:`FeedParser` は非常に\
-正確であり、標準に従っていないメッセージでもちゃんと動きます。
-そのさい、これはメッセージがどのように壊れていると認識されたかについての\
-情報を残します。これはメッセージオブジェクトの *defects* 属性に\
-リストとして現れ、メッセージ中に発見された問題が記録されます。
-パーザが検出できる障害 (defect) については :mod:`email.errors`
-モジュールを参照してください。
+The :class:`FeedParser`'s API is simple; you create an instance, feed it a bunch
+of text until there's no more to feed it, then close the parser to retrieve the
+root message object.  The :class:`FeedParser` is extremely accurate when parsing
+standards-compliant messages, and it does a very good job of parsing
+non-compliant messages, providing information about how a message was deemed
+broken.  It will populate a message object's *defects* attribute with a list of
+any problems it found in a message.  See the :mod:`email.errors` module for the
+list of defects that it can find.
 
-以下は :class:`FeedParser` の API です:
+Here is the API for the :class:`FeedParser`:
 
 
 .. class:: FeedParser([_factory])
 
-   :class:`FeedParser` インスタンスを作成します。オプション引数 *_factory* には\
-   引数なしの callable を指定し、これはつねに新しいメッセージオブジェクトの作成が\
-   必要になったときに呼び出されます。デフォルトでは、これは
-   :class:`email.message.Message` クラスになっています。
+   Create a :class:`FeedParser` instance.  Optional *_factory* is a no-argument
+   callable that will be called whenever a new message object is needed.  It
+   defaults to the :class:`email.message.Message` class.
 
 
    .. method:: feed(data)
 
-      :class:`FeedParser` にデータを供給します。 *data* は 1行または複数行からなる\
-      文字列を渡します。渡される行は完結していなくてもよく、その場合 :class:`FeedParser`
-      は部分的な行を適切につなぎ合わせます。文字列中の各行は標準的な 3種類の\
-      行末文字 (復帰 CR、改行 LF、または CR+LF)
-      どれかの組み合わせでよく、これらが混在してもかまいません。
+      Feed the :class:`FeedParser` some more data.  *data* should be a string
+      containing one or more lines.  The lines can be partial and the
+      :class:`FeedParser` will stitch such partial lines together properly.  The
+      lines in the string can have any of the common three line endings,
+      carriage return, newline, or carriage return and newline (they can even be
+      mixed).
 
 
-   .. method:: FeedParser.close()
+   .. method:: close()
 
-      :class:`FeedParser` を close し、それまでに渡されたすべてのデータの\
-      解析を完了させ根っこ (root) のメッセージオブジェクトを返します。
-      :class:`FeedParser` を close したあとにさらにデータを feed した場合の\
-      挙動は未定義です。
+      Closing a :class:`FeedParser` completes the parsing of all previously fed
+      data, and returns the root message object.  It is undefined what happens
+      if you feed more data to a closed :class:`FeedParser`.
 
 
-Parser クラス API
-^^^^^^^^^^^^^^^^^
+Parser class API
+^^^^^^^^^^^^^^^^
 
-:mod:`email.parser` モジュールからインポートされる :class:`Parser` クラ\
-スは、メッセージを表すテキストが文字列またはファイルの形で\
-完全に使用可能なときメッセージを解析するのに使われる API を提供します。
-:mod:`email.Parser` モジュールはまた、 :class:`HeaderParser` と呼ばれる\
-2番目のクラスも提供しています。これはメッセージのヘッダのみを処理したい場合に\
-使うことができ、ずっと高速な処理がおこなえます。なぜならこれはメッセージ本体を\
-解析しようとはしないからです。かわりに、そのペイロードにはメッセージ本体の\
-生の文字列が格納されます。 :class:`HeaderParser` クラスは
-:class:`Parser` クラスと同じ API をもっています。
+The :class:`Parser` class, imported from the :mod:`email.parser` module,
+provides an API that can be used to parse a message when the complete contents
+of the message are available in a string or file.  The :mod:`email.parser`
+module also provides a second class, called :class:`HeaderParser` which can be
+used if you're only interested in the headers of the message.
+:class:`HeaderParser` can be much faster in these situations, since it does not
+attempt to parse the message body, instead setting the payload to the raw body
+as a string. :class:`HeaderParser` has the same API as the :class:`Parser`
+class.
 
 
 .. class:: Parser([_class])
 
-   :class:`Parser` クラスのコンストラクタです。
-   オプション引数 *_class* をとることができます。
-   これは呼び出し可能なオブジェクト (関数やクラス) でなければならず、
-   メッセージ内コンポーネント (sub-message object) が作成されるときは\
-   常にそのファクトリクラスとして使用されます。
-   デフォルトではこれは :class:`~email.message.Message` になっています
-   (:mod:`email.message` 参照)。このファクトリクラスは引数なしで呼び出されます。
+   The constructor for the :class:`Parser` class takes an optional argument
+   *_class*.  This must be a callable factory (such as a function or a class), and
+   it is used whenever a sub-message object needs to be created.  It defaults to
+   :class:`~email.message.Message` (see :mod:`email.message`).  The factory will
+   be called without arguments.
 
-   オプション引数 *strict* は無視されます。
+   The optional *strict* flag is ignored.
 
    .. deprecated:: 2.4
-      :class:`Parser` は Python 2.4 で新しく導入された :class:`FeedParser` の\
-      後方互換性のための API ラッパで、 *すべての* 解析が事実上 non-strict です。
-      :class:`Parser` コンストラクタに *strict* フラグを渡す必要はありません。
+      Because the :class:`Parser` class is a backward compatible API wrapper
+      around the new-in-Python 2.4 :class:`FeedParser`, *all* parsing is
+      effectively non-strict.  You should simply stop passing a *strict* flag to
+      the :class:`Parser` constructor.
 
    .. versionchanged:: 2.2.2
-      *strict* フラグが追加されました.
+      The *strict* flag was added.
 
    .. versionchanged:: 2.4
-      *strict* フラグは推奨されなくなりました.
+      The *strict* flag was deprecated.
 
-   それ以外の :class:`Parser` メソッドは以下のとおりです:
+   The other public :class:`Parser` methods are:
 
 
    .. method:: parse(fp[, headersonly])
 
-      ファイルなどストリーム形式  [#]_ のオブジェクト *fp* から\
-      すべてのデータを読み込み、得られたテキストを解析して基底 (root) メッセージ\
-      オブジェクト構造を返します。
-      *fp* はストリーム形式のオブジェクトで :meth:`readline` および
-      :meth:`read` 両方のメソッドをサポートしている必要があります。
+      Read all the data from the file-like object *fp*, parse the resulting
+      text, and return the root message object.  *fp* must support both the
+      :meth:`~io.TextIOBase.readline` and the :meth:`~io.TextIOBase.read`
+      methods on file-like objects.
 
-      *fp* に格納されているテキスト文字列は、一連の :rfc:`2822` 形式の\
-      ヘッダおよびヘッダ継続行 (header continuation lines) によって構成されている\
-      必要があります。オプションとして、最初にエンペローブヘッダが来ることもできます。
-      ヘッダ部分はデータの終端か、ひとつの空行によって終了したとみなされます。
-      ヘッダ部分に続くデータはメッセージ本体となります (MIME エンコードされた
-      subpart を含んでいるかもしれません)。
+      The text contained in *fp* must be formatted as a block of :rfc:`2822`
+      style headers and header continuation lines, optionally preceded by an
+      envelope header.  The header block is terminated either by the end of the
+      data or by a blank line.  Following the header block is the body of the
+      message (which may contain MIME-encoded subparts).
 
-      オプション引数 *headersonly* はヘッダ部分を解析しただけで終了するか\
-      否かを指定します。デフォルトの値は ``False``
-      で、これはそのファイルの内容すべてを解析することを意味しています。
+      Optional *headersonly* is a flag specifying whether to stop parsing after
+      reading the headers or not.  The default is ``False``, meaning it parses
+      the entire contents of the file.
 
-   .. versionchanged:: 2.2.2
-      *headersonly* フラグが追加されました.
+      .. versionchanged:: 2.2.2
+         The *headersonly* flag was added.
 
 
-   .. method:: Parser.parsestr(text[, headersonly])
+   .. method:: parsestr(text[, headersonly])
 
-      :meth:`parse` メソッドに似ていますが、ファイルなどのストリーム形式のかわりに\
-      文字列を引数としてとるところが違います。文字列に対してこのメソッドを\
-      呼ぶことは、 *text* を :class:`StringIO` インスタンスとして作成して
-      :meth:`parse` を適用するのと同じです。
+      Similar to the :meth:`parse` method, except it takes a string object
+      instead of a file-like object.  Calling this method on a string is exactly
+      equivalent to wrapping *text* in a :class:`~StringIO.StringIO` instance first and
+      calling :meth:`parse`.
 
-      オプション引数 *headersonly* は :meth:`parse` メソッドと同じです。
+      Optional *headersonly* is as with the :meth:`parse` method.
 
-   .. versionchanged:: 2.2.2
-      *headersonly* フラグが追加されました.
+      .. versionchanged:: 2.2.2
+         The *headersonly* flag was added.
 
-ファイルや文字列からメッセージオブジェクト構造を作成するのは\
-かなりよくおこなわれる作業なので、便宜上次のような 2つの関数が\
-提供されています。これらは :mod:`email` パッケージのトップレベルの\
-名前空間で使用できます。
+Since creating a message object structure from a string or a file object is such
+a common task, two functions are provided as a convenience.  They are available
+in the top-level :mod:`email` package namespace.
 
 .. currentmodule:: email
 
 .. function:: message_from_string(s[, _class[, strict]])
 
-   文字列からメッセージオブジェクト構造を作成し返します。
-   これは ``Parser().parsestr(s)`` とまったく同じです。オプション引数
-   *_class* および *strict* は :class:`Parser` クラスの\
-   コンストラクタと同様に解釈されます。
+   Return a message object structure from a string.  This is exactly equivalent to
+   ``Parser().parsestr(s)``.  Optional *_class* and *strict* are interpreted as
+   with the :class:`~email.parser.Parser` class constructor.
 
    .. versionchanged:: 2.2.2
-      *strict* フラグが追加されました.
+      The *strict* flag was added.
 
 
 .. function:: message_from_file(fp[, _class[, strict]])
 
-   Open されたファイルオブジェクトからメッセージオブジェクト構造を作成し返します。
-   これは ``Parser().parse(fp)`` とまったく同じです。
-   オプション引数 *_class* および *strict* は :class:`Parser` クラスの\
-   コンストラクタと同様に解釈されます。
+   Return a message object structure tree from an open file object.  This is
+   exactly equivalent to ``Parser().parse(fp)``.  Optional *_class* and *strict*
+   are interpreted as with the :class:`~email.parser.Parser` class constructor.
 
    .. versionchanged:: 2.2.2
-      *strict* フラグが追加されました.
+      The *strict* flag was added.
 
-対話的な Python プロンプトでこの関数を使用するとすれば、このようになります::
+Here's an example of how you might use this at an interactive Python prompt::
 
    >>> import email
    >>> msg = email.message_from_string(myString)
 
 
-追加事項
-^^^^^^^^
+Additional notes
+^^^^^^^^^^^^^^^^
 
-以下はテキスト解析の際に適用されるいくつかの規約です:
+Here are some notes on the parsing semantics:
 
-* ほとんどの非 :mimetype:`multipart` 形式のメッセージは単一の文字列ペイロードをもつ
-  単一のメッセージオブジェクトとして解析されます。このオブジェクトは
-  :meth:`is_multipart` に対して ``False`` を返します。
-  このオブジェクトに対する :meth:`get_payload` メソッドは文字列オブジェクトを返します。
+* Most non-\ :mimetype:`multipart` type messages are parsed as a single message
+  object with a string payload.  These objects will return ``False`` for
+  :meth:`~email.message.Message.is_multipart`.  Their
+  :meth:`~email.message.Message.get_payload` method will return a string object.
 
-* :mimetype:`multipart` 形式のメッセージはすべてメッセージ内\
-  コンポーネント (sub-message object) のリストとして解析されます。
-  外側のコンテナメッセージオブジェクトは :meth:`is_multipart` に対して ``True``
-  を返し、このオブジェクトに対する :meth:`get_payload` メソッドは
-  :class:`~email.message.Message` subpart のリストを返します。
+* All :mimetype:`multipart` type messages will be parsed as a container message
+  object with a list of sub-message objects for their payload.  The outer
+  container message will return ``True`` for
+  :meth:`~email.message.Message.is_multipart` and their
+  :meth:`~email.message.Message.get_payload` method will return the list of
+  :class:`~email.message.Message` subparts.
 
-* :mimetype:`message/\*` の Content-Type をもつほとんどのメッセージ (例:
-  :mimetype:`message/delivery-status` や :mimetype:`message/rfc822` など) も
-  コンテナメッセージオブジェクトとして解析されますが、
-  ペイロードのリストの長さは 1 になります。このオブジェクトは :meth:`is_multipart`
-  メソッドに対して ``True`` を返し、
-  リスト内にあるひとつだけの要素がメッセージ内のコンポーネントオブジェクトになります。
+* Most messages with a content type of :mimetype:`message/\*` (e.g.
+  :mimetype:`message/delivery-status` and :mimetype:`message/rfc822`) will also be
+  parsed as container object containing a list payload of length 1.  Their
+  :meth:`~email.message.Message.is_multipart` method will return ``True``.
+  The single element in the list payload will be a sub-message object.
 
-* いくつかの標準的でないメッセージは、 :mimetype:`multipart` の使い方に\
-  統一がとれていない場合があります。このようなメッセージは
-  :mailheader:`Content-Type` ヘッダに :mimetype:`multipart`
-  を指定しているものの、その :meth:`is_multipart` メソッドは ``False``
-  を返すことがあります。もしこのようなメッセージが
-  :class:`FeedParser` によって解析されると、その *defects* 属性のリスト中には
-  :class:`MultipartInvariantViolationDefect` クラスの\
-  インスタンスが現れます。詳しい情報については
-  :mod:`email.errors` を参照してください。
+* Some non-standards compliant messages may not be internally consistent about
+  their :mimetype:`multipart`\ -edness.  Such messages may have a
+  :mailheader:`Content-Type` header of type :mimetype:`multipart`, but their
+  :meth:`~email.message.Message.is_multipart` method may return ``False``.
+  If such messages were parsed with the :class:`~email.parser.FeedParser`,
+  they will have an instance of the
+  :class:`~email.errors.MultipartInvariantViolationDefect` class in their
+  *defects* attribute list.  See :mod:`email.errors` for details.
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] Python 2.4 から導入された email パッケージバージョン 3.0 では、
-   旧式の :class:`Parser` は :class:`FeedParser` によって書き直されました。
-   そのためパーザの意味論と得られる結果は 2つのパーザで同一のものになります。
+.. [#] As of email package version 3.0, introduced in Python 2.4, the classic
+   :class:`~email.parser.Parser` was re-implemented in terms of the
+   :class:`~email.parser.FeedParser`, so the semantics and results are
+   identical between the two parsers.
 
-.. [#] file-like object

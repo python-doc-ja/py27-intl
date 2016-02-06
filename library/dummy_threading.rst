@@ -1,22 +1,25 @@
-
-:mod:`dummy_threading` --- :mod:`threading` の代替モジュール
-============================================================
+:mod:`dummy_threading` --- Drop-in replacement for the :mod:`threading` module
+==============================================================================
 
 .. module:: dummy_threading
-   :synopsis: threading  の代替モジュール。
+   :synopsis: Drop-in replacement for the threading module.
 
+**Source code:** :source:`Lib/dummy_threading.py`
 
-このモジュールは :mod:`threading` モジュールのインターフェースをそっくりまねるものです。
-:mod:`threading` モジュールがサポートされていないプラットフォームで import
-することを意図して作られたものです。
+--------------
 
-使用例::
+This module provides a duplicate interface to the :mod:`threading` module.  It
+is meant to be imported when the :mod:`thread` module is not provided on a
+platform.
+
+Suggested usage is::
 
    try:
        import threading as _threading
    except ImportError:
        import dummy_threading as _threading
 
-生成するスレッドが他のブロックしたスレッドを待ち、デッドロック発生の可能性がある場合には、
-このモジュールを使わないようにしてください。ブロッキング I/O を使っている場合によく起きます。
+Be careful to not use this module where deadlock might occur from a thread
+being created that blocks waiting for another thread to be created.  This  often
+occurs with blocking I/O.
 

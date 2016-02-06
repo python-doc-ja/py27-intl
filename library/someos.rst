@@ -1,15 +1,14 @@
 
 .. _someos:
 
-********************************************
-オプションのオペレーティングシステムサービス
-********************************************
+**********************************
+Optional Operating System Services
+**********************************
 
-この章で説明するモジュールでは、
-特定のオペレーティングシステムでだけ利用できるオペレーティングシステム機能へのインタフェースを提供します。
-このインタフェースは、おおむね Unix や C のインタフェースにならってモデル化してありますが、
-他のシステム上（WindowsやNTなど）でも利用できることがあります。
-次に概要を示します。
+The modules described in this chapter provide interfaces to operating system
+features that are available on selected operating systems only. The interfaces
+are generally modeled after the Unix or C interfaces but they are available on
+some other systems as well (e.g. Windows or NT).  Here's an overview:
 
 
 .. toctree::

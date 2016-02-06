@@ -1,238 +1,257 @@
 
 .. _compiler:
 
-***************************
-Python コンパイラパッケージ
-***************************
+***********************
+Python compiler package
+***********************
 
 .. deprecated:: 2.6
-   :mod:`compiler` パッケージは Python 3.0 で削除されました。
+   The :mod:`compiler` package has been removed in Python 3.
 
 .. sectionauthor:: Jeremy Hylton <jeremy@zope.com>
 
 
-Python compiler パッケージは Python のソースコードを分析したり Python バイトコードを生成するためのツールです。compiler
-は Python のソースコードから抽象的な構文木を生成し、その構文木から Python バイトコード
-(:term:`bytecode`) を生成するライブラリをそなえています。
+The Python compiler package is a tool for analyzing Python source code and
+generating Python bytecode.  The compiler contains libraries to generate an
+abstract syntax tree from Python source code and to generate Python
+:term:`bytecode` from the tree.
 
-:mod:`compiler` パッケージは、Python で書かれた Python ソースコードからバイトコードへの変換プログラムです。
-これは組み込みの構文解析器と標準ライブラリの :mod:`parser` を使って、
-構文木を生成します。
-この構文木から抽象構文木 AST (Abstract Syntax Tree) が生成され、その後 Python
-バイトコードが得られます。
+The :mod:`compiler` package is a Python source to bytecode translator written in
+Python.  It uses the built-in parser and standard :mod:`parser` module to
+generate a concrete syntax tree.  This tree is used to generate an abstract
+syntax tree (AST) and then Python bytecode.
 
-このパッケージの機能は、Python インタプリタに内蔵されている組み込みのコンパイラがすべて含んでいるものです。
-これはその機能と正確に同じものになるよう意図してつくられています。
-なぜ同じことをするコンパイラをもうひとつ作る必要があるのでしょうか?
-このパッケージはいろいろな目的に使うことができるからです。
-これは組み込みのコンパイラよりも簡単に変更できますし、これが生成する AST は Python ソースコードを解析するのに有用です。
+The full functionality of the package duplicates the built-in compiler provided
+with the Python interpreter.  It is intended to match its behavior almost
+exactly.  Why implement another compiler that does the same thing?  The package
+is useful for a variety of purposes.  It can be modified more easily than the
+built-in compiler.  The AST it generates is useful for analyzing Python source
+code.
 
-この章では :mod:`compiler` パッケージのいろいろなコンポーネントがどのように動作するのかを説明します。
-そのため説明はリファレンスマニュアル的なものと、チュートリアル的な要素がまざったものになっています。
+This chapter explains how the various components of the :mod:`compiler` package
+work.  It blends reference material with a tutorial.
 
 
-基本的なインターフェイス
-========================
+The basic interface
+===================
 
 .. module:: compiler
-   :synopsis: Python で書かれた Python コードコンパイラ。
+   :synopsis: Python code compiler written in Python.
    :deprecated:
 
 
-このパッケージのトップレベルでは4つの関数が定義されています。
-:mod:`compiler` モジュールを import すると、これらの関数およびこのパッケージに含まれている一連のモジュールが使用可能になります。
+The top-level of the package defines four functions.  If you import
+:mod:`compiler`, you will get these functions and a collection of modules
+contained in the package.
 
 
 .. function:: parse(buf)
 
-   *buf* 中の Python ソースコードから得られた抽象構文木 AST を返します。
-   ソースコード中にエラーがある場合、この関数は
-   :exc:`SyntaxError` を発生させます。
-   返り値は :class:`compiler.ast.Module` インスタンスであり、
-   この中に構文木が格納されています。
+   Returns an abstract syntax tree for the Python source code in *buf*. The
+   function raises :exc:`SyntaxError` if there is an error in the source code.  The
+   return value is a :class:`compiler.ast.Module` instance that contains the tree.
 
 
 .. function:: parseFile(path)
 
-   *path* で指定されたファイル中の Python ソースコードから得られた抽象構文木 AST を返します。
-   これは ``parse(open(path).read())`` と等価な働きをします。
+   Return an abstract syntax tree for the Python source code in the file specified
+   by *path*.  It is equivalent to ``parse(open(path).read())``.
 
 
 .. function:: walk(ast, visitor[, verbose])
 
-   *ast* に格納された抽象構文木の各ノードを先行順序 (pre-order) でたどっていきます。
-   各ノードごとに *visitor* インスタンスの該当するメソッドが呼ばれます。
+   Do a pre-order walk over the abstract syntax tree *ast*.  Call the appropriate
+   method on the *visitor* instance for each node encountered.
 
 
 .. function:: compile(source, filename, mode, flags=None,  dont_inherit=None)
 
-   文字列 *source* 、Python モジュール、文あるいは式を exec 文あるいは
-   :func:`eval` 関数で実行可能なバイトコードオブジェクトにコンパイルします。
-   この関数は組み込みの :func:`compile` 関数を置き換えるものです。
+   Compile the string *source*, a Python module, statement or expression, into a
+   code object that can be executed by the exec statement or :func:`eval`. This
+   function is a replacement for the built-in :func:`compile` function.
 
-   *filename* は実行時のエラーメッセージに使用されます。
+   The *filename* will be used for run-time error messages.
 
-   *mode* は、モジュールをコンパイルする場合は 'exec'、
-   (対話的に実行される)単一の文をコンパイルする場合は 'single'、
-   式をコンパイルする場合には 'eval' を渡します。
+   The *mode* must be 'exec' to compile a module, 'single' to compile a single
+   (interactive) statement, or 'eval' to compile an expression.
 
-   引数 *flags* および *dont_inherit* は将来的に使用される文に影響しますが、いまのところはサポートされていません。
+   The *flags* and *dont_inherit* arguments affect future-related statements, but
+   are not supported yet.
 
 
 .. function:: compileFile(source)
 
-   ファイル *source* をコンパイルし、.pyc ファイルを生成します。
+   Compiles the file *source* and generates a .pyc file.
 
-:mod:`compiler` パッケージは以下のモジュールを含んでいます: :mod:`ast`,
+The :mod:`compiler` package contains the following modules: :mod:`ast`,
 :mod:`consts`, :mod:`future`, :mod:`misc`, :mod:`pyassem`, :mod:`pycodegen`,
-:mod:`symbols`, :mod:`transformer`, そして :mod:`visitor` 。
+:mod:`symbols`, :mod:`transformer`, and :mod:`visitor`.
 
 
-制限
-====
+Limitations
+===========
 
-compiler パッケージにはエラーチェックにいくつか問題が存在します。
-構文エラーはインタープリタの2つの別々のフェーズによって認識されます。
-ひとつはインタープリタのパーザによって認識されるもので、もうひとつはコンパイラによって認識されるものです。
-compiler パッケージはインタープリタのパーザに依存しているので、最初の段階のエラーチェックは労せずして実現できています。
-しかしその次の段階は、実装されてはいますが、その実装は不完全です。
-たとえば compiler パッケージは引数に同じ名前が 2度以上出てきていてもエラーを出しません: ``def f(x, x): ...``
+There are some problems with the error checking of the compiler package.  The
+interpreter detects syntax errors in two distinct phases.  One set of errors is
+detected by the interpreter's parser, the other set by the compiler.  The
+compiler package relies on the interpreter's parser, so it get the first phases
+of error checking for free.  It implements the second phase itself, and that
+implementation is incomplete.  For example, the compiler package does not raise
+an error if a name appears more than once in an argument list:  ``def f(x, x):
+...``
 
-compiler の将来のバージョンでは、これらの問題は修正される予定です。
+A future version of the compiler should fix these problems.
 
 
-Python 抽象構文
-===============
+Python Abstract Syntax
+======================
 
-:mod:`compiler.ast` モジュールは Python の抽象構文木 AST を定義します。
-AST では各ノードがそれぞれの構文要素をあらわします。
-木の根は :class:`Module` オブジェクトです。
+The :mod:`compiler.ast` module defines an abstract syntax for Python.  In the
+abstract syntax tree, each node represents a syntactic construct.  The root of
+the tree is :class:`Module` object.
 
-抽象構文木 AST は、パーズされた Python ソースコードに対する高水準のインターフェイスを提供します。
-Python インタプリタにおける :mod:`parser` モジュールとコンパイラは C で書かれおり、具体的な構文木を使っています。
-具体的な構文木は Python のパーザ中で使われている構文と密接に関連しています。
-ひとつの要素に単一のノードを割り当てる代わりに、ここでは Python の優先順位に従って、何層にもわたるネストしたノードがしばしば使われています。
+The abstract syntax offers a higher level interface to parsed Python source
+code.  The :mod:`parser` module and the compiler written in C for the Python
+interpreter use a concrete syntax tree.  The concrete syntax is tied closely to
+the grammar description used for the Python parser.  Instead of a single node
+for a construct, there are often several levels of nested nodes that are
+introduced by Python's precedence rules.
 
-抽象構文木 AST は、 :mod:`compiler.transformer` (変換器) モジュールによって生成されます。
-transformer は組み込みの Python パーザに依存しており、これを使って具体的な構文木をまず生成します。
-つぎにそこから抽象構文木 AST を生成します。
+The abstract syntax tree is created by the :mod:`compiler.transformer` module.
+The transformer relies on the built-in Python parser to generate a concrete
+syntax tree.  It generates an abstract syntax tree from the concrete tree.
 
 .. index::
    single: Stein, Greg
    single: Tutt, Bill
 
-:mod:`transformer` モジュールは、実験的な Python-to-C コンパイラ用に Greg Stein と Bill Tutt によって作られました。
-現行のバージョンではいくつもの修正と改良がなされていますが、抽象構文木 AST と transformer の基本的な構造は Stein と Tutt によるものです。
+The :mod:`transformer` module was created by Greg Stein and Bill Tutt for an
+experimental Python-to-C compiler.  The current version contains a number of
+modifications and improvements, but the basic form of the abstract syntax and of
+the transformer are due to Stein and Tutt.
 
 
-AST ノード
-----------
+AST Nodes
+---------
 
 .. module:: compiler.ast
 
 
-:mod:`compiler.ast` モジュールは、各ノードのタイプとその要素を記述したテキストファイルからつくられます。
-各ノードのタイプはクラスとして表現され、そのクラスは抽象基底クラス
-:class:`compiler.ast.Node` を継承し子ノードの名前属性を定義しています。
+The :mod:`compiler.ast` module is generated from a text file that describes each
+node type and its elements.  Each node type is represented as a class that
+inherits from the abstract base class :class:`compiler.ast.Node` and defines a
+set of named attributes for child nodes.
 
 
 .. class:: Node()
 
-   :class:`Node` インスタンスはパーザジェネレータによって自動的に作成されます。
-   ある特定の :class:`Node` インスタンスに対する推奨されるインターフェイスとは、
-   子ノードにアクセスするために public な (訳注: 公開された) 属性を使うことです。
-   public な属性は単一のノード、あるいは一連のノードのシーケンスに束縛されている
-   (訳注: バインドされている) かもしれませんが、これは :class:`Node`
-   のタイプによって違います。たとえば :class:`Class` ノードの :attr:`bases` 属性は\
-   基底クラスのノードのリストに束縛されており、
-   :attr:`doc` 属性は単一のノードのみに束縛されている、といった具合です。
+   The :class:`Node` instances are created automatically by the parser generator.
+   The recommended interface for specific :class:`Node` instances is to use the
+   public attributes to access child nodes.  A public attribute may be bound to a
+   single node or to a sequence of nodes, depending on the :class:`Node` type.  For
+   example, the :attr:`bases` attribute of the :class:`Class` node, is bound to a
+   list of base class nodes, and the :attr:`doc` attribute is bound to a single
+   node.
 
-   各 :class:`Node` インスタンスは :attr:`lineno` 属性をもっており、
-   これは ``None`` かもしれません。
-   XXX どういったノードが使用可能な lineno をもっているかの規則は定かではない。
+   Each :class:`Node` instance has a :attr:`lineno` attribute which may be
+   ``None``.  XXX Not sure what the rules are for which nodes will have a useful
+   lineno.
 
-   :class:`Node` オブジェクトはすべて以下のメソッドをもっています:
+   All :class:`Node` objects offer the following methods:
 
 
    .. method:: getChildren()
 
-      子ノードと子オブジェクトを、これらが出てきた順で、平らなリスト形式にして返します。
-      とくにノードの順序は、 Python 文法中に現れるものと同じになっています。
-      すべての子が :class:`Node` インスタンスなわけではありません。
-      たとえば関数名やクラス名といったものは、ただの文字列として表されます。
+      Returns a flattened list of the child nodes and objects in the order they
+      occur.  Specifically, the order of the nodes is the order in which they
+      appear in the Python grammar.  Not all of the children are :class:`Node`
+      instances.  The names of functions and classes, for example, are plain
+      strings.
 
 
    .. method:: getChildNodes()
 
-      子ノードをこれらが出てきた順で平らなリスト形式にして返します。
-      このメソッドは :meth:`getChildren` に似ていますが、
-      :class:`Node` インスタンスしか返さないという点で異なっています。
+      Returns a flattened list of the child nodes in the order they occur.  This
+      method is like :meth:`getChildren`, except that it only returns those
+      children that are :class:`Node` instances.
 
-:class:`Node` クラスの一般的な構造を説明するため、以下に 2つの例を示します。
-:keyword:`while` 文は以下のような文法規則により定義されています::
+
+Two examples illustrate the general structure of :class:`Node` classes.  The
+:keyword:`while` statement is defined by the following grammar production::
 
    while_stmt:     "while" expression ":" suite
                   ["else" ":" suite]
 
-:class:`While` ノードは 3つの属性をもっています: :attr:`test`, :attr:`body` および :attr:`else_` です。
-(ある属性にふさわしい名前が Python の予約語としてすでに使われているとき、その名前を属性名にすることはできません。
-そのため、ここでは名前が正規のものとして受けつけられるようにアンダースコアを後につけてあります、そのため :attr:`else_` は :keyword:`else` のかわりです。)
+The :class:`While` node has three attributes: :attr:`test`, :attr:`body`, and
+:attr:`else_`.  (If the natural name for an attribute is also a Python reserved
+word, it can't be used as an attribute name.  An underscore is appended to the
+word to make it a legal identifier, hence :attr:`else_` instead of
+:keyword:`else`.)
 
-:keyword:`if` 文はもっとこみ入っています。
-なぜならこれはいくつもの条件判定を含む可能性があるからです。 ::
+The :keyword:`if` statement is more complicated because it can include several
+tests.   ::
 
    if_stmt: 'if' test ':' suite ('elif' test ':' suite)* ['else' ':' suite]
 
-:class:`If` ノードでは、 :attr:`tests` および :attr:`else_` の
-2つだけの属性が定義されています。 :attr:`tests` 属性には条件式とその後の動作のタプルがリスト形式で入っています。
-おのおのの :keyword:`if` / :keyword:`elif` 節ごとに 1タプルです。
-各タプルの最初の要素は条件式で、2番目の要素はもしその式が真ならば実行されるコードをふくんだ :class:`Stmt` ノードになっています。
+The :class:`If` node only defines two attributes: :attr:`tests` and
+:attr:`else_`.  The :attr:`tests` attribute is a sequence of test expression,
+consequent body pairs.  There is one pair for each :keyword:`if`/:keyword:`elif`
+clause.  The first element of the pair is the test expression.  The second
+elements is a :class:`Stmt` node that contains the code to execute if the test
+is true.
 
-:class:`If` の :meth:`getChildren` メソッドは、子ノードの平らなリストを返します。
-:keyword:`if` / :keyword:`elif` 節が 3つあって :keyword:`else`
-節がない場合なら、 :meth:`getChildren` は 6要素のリストを返すでしょう: 最初の条件式、最初の
-:class:`Stmt` 、2番目の条件式…といった具合です。
+The :meth:`getChildren` method of :class:`If` returns a flat list of child
+nodes.  If there are three :keyword:`if`/:keyword:`elif` clauses and no
+:keyword:`else` clause, then :meth:`getChildren` will return a list of six
+elements: the first test expression, the first :class:`Stmt`, the second text
+expression, etc.
 
-以下の表は :mod:`compiler.ast` で定義されている :class:`Node` サブクラスと、
-それらのインスタンスに対して使用可能なパブリックな属性です。
-ほとんどの属性の値じたいは :class:`Node` インスタンスか、インスタンスのリストです。
-この値がインスタンス型以外の場合、その型は備考の中で記されています。
-これら属性の順序は、 :meth:`getChildren` および
-:meth:`getChildNodes` が返す順です。
+The following table lists each of the :class:`Node` subclasses defined in
+:mod:`compiler.ast` and each of the public attributes available on their
+instances.  The values of most of the attributes are themselves :class:`Node`
+instances or sequences of instances.  When the value is something other than an
+instance, the type is noted in the comment.  The attributes are listed in the
+order in which they are returned by :meth:`getChildren` and
+:meth:`getChildNodes`.
 
 +-----------------------+--------------------+---------------------------------+
-| ノード型              | 属性               | 値                              |
+| Node type             | Attribute          | Value                           |
 +=======================+====================+=================================+
-| :class:`Add`          | :attr:`left`       | 左オペランド                    |
+| :class:`Add`          | :attr:`left`       | left operand                    |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`right`      | 右オペランド                    |
+|                       | :attr:`right`      | right operand                   |
 +-----------------------+--------------------+---------------------------------+
-| :class:`And`          | :attr:`nodes`      | オペランドのリスト              |
+| :class:`And`          | :attr:`nodes`      | list of operands                |
 +-----------------------+--------------------+---------------------------------+
-| :class:`AssAttr`      |                    | *代入のターゲットとなる属性*    |
+| :class:`AssAttr`      |                    | *attribute as target of         |
+|                       |                    | assignment*                     |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`expr`       | ドットの左側の式                |
+|                       | :attr:`expr`       | expression on the left-hand     |
+|                       |                    | side of the dot                 |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`attrname`   | 属性名, 文字列                  |
-+-----------------------+--------------------+---------------------------------+
-|                       | :attr:`flags`      | XXX                             |
-+-----------------------+--------------------+---------------------------------+
-| :class:`AssList`      | :attr:`nodes`      | 代入先のリスト要素のリスト      |
-+-----------------------+--------------------+---------------------------------+
-| :class:`AssName`      | :attr:`name`       | 代入先の名前                    |
+|                       | :attr:`attrname`   | the attribute name, a string    |
 +-----------------------+--------------------+---------------------------------+
 |                       | :attr:`flags`      | XXX                             |
 +-----------------------+--------------------+---------------------------------+
-| :class:`AssTuple`     | :attr:`nodes`      | 代入先のタプル要素のリスト      |
+| :class:`AssList`      | :attr:`nodes`      | list of list elements being     |
+|                       |                    | assigned to                     |
 +-----------------------+--------------------+---------------------------------+
-| :class:`Assert`       | :attr:`test`       | テストされる式                  |
+| :class:`AssName`      | :attr:`name`       | name being assigned to          |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`fail`       | :exc:`AssertionError` の値      |
+|                       | :attr:`flags`      | XXX                             |
 +-----------------------+--------------------+---------------------------------+
-| :class:`Assign`       | :attr:`nodes`      | 代入ターゲットのリスト、        |
-|                       |                    | 等号ごとに一つ                  |
+| :class:`AssTuple`     | :attr:`nodes`      | list of tuple elements being    |
+|                       |                    | assigned to                     |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`expr`       | 代入される値                    |
+| :class:`Assert`       | :attr:`test`       | the expression to be tested     |
++-----------------------+--------------------+---------------------------------+
+|                       | :attr:`fail`       | the value of the                |
+|                       |                    | :exc:`AssertionError`           |
++-----------------------+--------------------+---------------------------------+
+| :class:`Assign`       | :attr:`nodes`      | a list of assignment targets,   |
+|                       |                    | one per equal sign              |
++-----------------------+--------------------+---------------------------------+
+|                       | :attr:`expr`       | the value being assigned        |
 +-----------------------+--------------------+---------------------------------+
 | :class:`AugAssign`    | :attr:`node`       |                                 |
 +-----------------------+--------------------+---------------------------------+
@@ -250,22 +269,22 @@ AST ノード
 +-----------------------+--------------------+---------------------------------+
 | :class:`Break`        |                    |                                 |
 +-----------------------+--------------------+---------------------------------+
-| :class:`CallFunc`     | :attr:`node`       | 呼び出される式                  |
+| :class:`CallFunc`     | :attr:`node`       | expression for the callee       |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`args`       | 引数のリスト                    |
+|                       | :attr:`args`       | a list of arguments             |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`star_args`  | 拡張された \*-引数の値          |
+|                       | :attr:`star_args`  | the extended \*-arg value       |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`dstar_args` | 拡張された \*\*-引数の値        |
+|                       | :attr:`dstar_args` | the extended \*\*-arg value     |
 +-----------------------+--------------------+---------------------------------+
-| :class:`Class`        | :attr:`name`       | クラス名, 文字列                |
+| :class:`Class`        | :attr:`name`       | the name of the class, a string |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`bases`      | 基底クラスのリスト              |
+|                       | :attr:`bases`      | a list of base classes          |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`doc`        | ドキュメント文字列,             |
-|                       |                    | 文字列または ``None``           |
+|                       | :attr:`doc`        | doc string, a string or         |
+|                       |                    | ``None``                        |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`code`       | クラス文の本体                  |
+|                       | :attr:`code`       | the body of the class statement |
 +-----------------------+--------------------+---------------------------------+
 | :class:`Compare`      | :attr:`expr`       |                                 |
 +-----------------------+--------------------+---------------------------------+
@@ -275,7 +294,8 @@ AST ノード
 +-----------------------+--------------------+---------------------------------+
 | :class:`Continue`     |                    |                                 |
 +-----------------------+--------------------+---------------------------------+
-| :class:`Decorators`   | :attr:`nodes`      | 関数デコレータ式のリスト        |
+| :class:`Decorators`   | :attr:`nodes`      | List of function decorator      |
+|                       |                    | expressions                     |
 +-----------------------+--------------------+---------------------------------+
 | :class:`Dict`         | :attr:`items`      |                                 |
 +-----------------------+--------------------+---------------------------------+
@@ -311,20 +331,21 @@ AST ノード
 +-----------------------+--------------------+---------------------------------+
 |                       | :attr:`names`      |                                 |
 +-----------------------+--------------------+---------------------------------+
-| :class:`Function`     | :attr:`decorators` | :class:`Decorators` か ``None`` |
+| :class:`Function`     | :attr:`decorators` | :class:`Decorators` or ``None`` |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`name`       | def に使われた名前, 文字列      |
+|                       | :attr:`name`       | name used in def, a string      |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`argnames`   | 引数名の文字列としてのリスト    |
+|                       | :attr:`argnames`   | list of argument names, as      |
+|                       |                    | strings                         |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`defaults`   | デフォルト値のリスト            |
+|                       | :attr:`defaults`   | list of default values          |
 +-----------------------+--------------------+---------------------------------+
 |                       | :attr:`flags`      | xxx                             |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`doc`        | ドキュメント文字列,             |
-|                       |                    | 文字列または ``None``           |
+|                       | :attr:`doc`        | doc string, a string or         |
+|                       |                    | ``None``                        |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`code`       | 関数の本体                      |
+|                       | :attr:`code`       | the body of the function        |
 +-----------------------+--------------------+---------------------------------+
 | :class:`GenExpr`      | :attr:`code`       |                                 |
 +-----------------------+--------------------+---------------------------------+
@@ -388,10 +409,11 @@ AST ノード
 +-----------------------+--------------------+---------------------------------+
 |                       | :attr:`right`      |                                 |
 +-----------------------+--------------------+---------------------------------+
-| :class:`Module`       | :attr:`doc`        | ドキュメント文字列,             |
-|                       |                    | 文字列または ``None``           |
+| :class:`Module`       | :attr:`doc`        | doc string, a string or         |
+|                       |                    | ``None``                        |
 +-----------------------+--------------------+---------------------------------+
-|                       | :attr:`node`       | モジュールの本体, :class:`Stmt` |
+|                       | :attr:`node`       | body of the module, a           |
+|                       |                    | :class:`Stmt`                   |
 +-----------------------+--------------------+---------------------------------+
 | :class:`Mul`          | :attr:`left`       |                                 |
 +-----------------------+--------------------+---------------------------------+
@@ -437,7 +459,7 @@ AST ノード
 +-----------------------+--------------------+---------------------------------+
 |                       | :attr:`upper`      |                                 |
 +-----------------------+--------------------+---------------------------------+
-| :class:`Sliceobj`     | :attr:`nodes`      | 文のリスト                      |
+| :class:`Sliceobj`     | :attr:`nodes`      | list of statements              |
 +-----------------------+--------------------+---------------------------------+
 | :class:`Stmt`         | :attr:`nodes`      |                                 |
 +-----------------------+--------------------+---------------------------------+
@@ -483,41 +505,42 @@ AST ノード
 +-----------------------+--------------------+---------------------------------+
 
 
+Assignment nodes
+----------------
 
-代入ノード
-----------
+There is a collection of nodes used to represent assignments.  Each assignment
+statement in the source code becomes a single :class:`Assign` node in the AST.
+The :attr:`nodes` attribute is a list that contains a node for each assignment
+target.  This is necessary because assignment can be chained, e.g. ``a = b =
+2``. Each :class:`Node` in the list will be one of the following classes:
+:class:`AssAttr`, :class:`AssList`, :class:`AssName`, or :class:`AssTuple`.
 
-代入をあらわすのに使われる一群のノードが存在します。
-ソースコードにおけるそれぞれの代入文は、抽象構文木 AST では単一のノード
-:class:`Assign` になっています。
-:attr:`nodes` 属性は各代入の対象にたいするノードのリストです。
-これが必要なのは、たとえば ``a = b = 2`` のように代入が連鎖的に起こるためです。
-このリスト中における各 :class:`Node` は、次のうちどれかのクラスになります:
-:class:`AssAttr`, :class:`AssList`, :class:`AssName` または
-:class:`AssTuple` 。
+Each target assignment node will describe the kind of object being assigned to:
+:class:`AssName` for a simple name, e.g. ``a = 1``. :class:`AssAttr` for an
+attribute assigned, e.g. ``a.x = 1``. :class:`AssList` and :class:`AssTuple` for
+list and tuple expansion respectively, e.g. ``a, b, c = a_tuple``.
 
-代入対象の各ノードには代入されるオブジェクトの種類が記録されています。
-:class:`AssName` は ``a = 1`` などの単純な変数名、
-:class:`AssAttr` は ``a.x = 1`` などの属性に対する代入、 :class:`AssList` および
-:class:`AssTuple` はそれぞれ、 ``a, b, c = a_tuple`` などのようなリストとタプルの展開をあらわします。
+The target assignment nodes also have a :attr:`flags` attribute that indicates
+whether the node is being used for assignment or in a delete statement.  The
+:class:`AssName` is also used to represent a delete statement, e.g. :class:`del
+x`.
 
-代入対象ノードはまた、そのノードが代入で使われるのか、それとも del 文で使われるのかをあらわす属性 :attr:`flags` も持っています。
-:class:`AssName` は ``del x`` などのような del 文をあらわすのにも使われます。
-
-ある式がいくつかの属性への参照をふくんでいるときは、代入あるいは del 文はただひとつだけの :class:`AssAttr` ノードをもちます --
-最終的な属性への参照としてです。
-それ以外の属性への参照は :class:`AssAttr` インスタンスの :attr:`expr` 属性にある
-:class:`Getattr` ノードによってあらわされます。
+When an expression contains several attribute references, an assignment or
+delete statement will contain only one :class:`AssAttr` node -- for the final
+attribute reference.  The other attribute references will be represented as
+:class:`Getattr` nodes in the :attr:`expr` attribute of the :class:`AssAttr`
+instance.
 
 
-サンプル
+Examples
 --------
 
-この節では、Python ソースコードに対する抽象構文木 AST のかんたんな例をいくつかご紹介します。
-これらの例では :func:`parse` 関数をどうやって使うか、AST の repr 表現はどんなふうになっているか、そしてある AST ノードの属性にアクセスするにはどうするかを説明します。
+This section shows several simple examples of ASTs for Python source code.  The
+examples demonstrate how to use the :func:`parse` function, what the repr of an
+AST looks like, and how to access attributes of an AST node.
 
-最初のモジュールでは単一の関数を定義しています。
-かりにこれは :file:`/tmp/doublelib.py` に格納されていると仮定しましょう。 ::
+The first module defines a single function.  Assume it is stored in
+:file:`doublelib.py`.  ::
 
    """This is an example module.
 
@@ -528,12 +551,13 @@ AST ノード
        "Return twice the argument"
        return x * 2
 
-以下の対話的インタプリタのセッションでは、見やすさのため長い AST の repr を整形しなおしてあります。
-AST の repr では qualify されていないクラス名が使われています。
-repr 表現からインスタンスを作成したい場合は、 :mod:`compiler.ast` モジュールからそれらのクラス名を import しなければなりません。 ::
+In the interactive interpreter session below, I have reformatted the long AST
+reprs for readability.  The AST reprs use unqualified class names.  If you want
+to create an instance from a repr, you must import the class names from the
+:mod:`compiler.ast` module. ::
 
    >>> import compiler
-   >>> mod = compiler.parseFile("/tmp/doublelib.py")
+   >>> mod = compiler.parseFile("doublelib.py")
    >>> mod
    Module('This is an example module.\n\nThis is the docstring.\n',
           Stmt([Function(None, 'double', ['x'], [], 0,
@@ -560,19 +584,21 @@ repr 表現からインスタンスを作成したい場合は、 :mod:`compiler
    Stmt([Return(Mul((Name('x'), Const(2))))])
 
 
-Visitor を使って AST をわたり歩く
-=================================
+Using Visitors to Walk ASTs
+===========================
 
 .. module:: compiler.visitor
 
 
-visitor パターンは… :mod:`compiler` パッケージは、Python のイントロスペクション機能を利用して visitor のために必要な大部分のインフラを省略した、visitor パターンの変種を使っています。
+The visitor pattern is ...  The :mod:`compiler` package uses a variant on the
+visitor pattern that takes advantage of Python's introspection features to
+eliminate the need for much of the visitor's infrastructure.
 
-visit されるクラスは、visitor を受け入れるようにプログラムされている必要はありません。
-visitor が必要なのはただそれがとくに興味あるクラスに対して visit メソッドを定義することだけです。
-それ以外はデフォルトの visit メソッドが処理します。
+The classes being visited do not need to be programmed to accept visitors.  The
+visitor need only define visit methods for classes it is specifically interested
+in; a default visit method can handle the rest.
 
-XXX visitor 用の魔法の :meth:`visit` メソッド。
+XXX The magic :meth:`visit` method for visitors.
 
 
 .. function:: walk(tree, visitor[, verbose])
@@ -580,22 +606,22 @@ XXX visitor 用の魔法の :meth:`visit` メソッド。
 
 .. class:: ASTVisitor()
 
-   :class:`ASTVisitor` は構文木を正しい順序でわたり歩くようにします。
-   それぞれのノードはまず :meth:`preorder` の呼び出しではじまります。
-   各ノードに対して、これは 'visitNodeType' という名前のメソッドに対する
-   :meth:`preorder` 関数への *visitor* 引数をチェックします。
-   ここで NodeType の部分はそのノードのクラス名です。
-   たとえば :class:`While` ノードなら、 :meth:`visitWhile` が呼ばれるわけです。
-   もしそのメソッドが存在している場合、それはそのノードを第一引数として呼び出されます。
+   The :class:`ASTVisitor` is responsible for walking over the tree in the correct
+   order.  A walk begins with a call to :meth:`preorder`.  For each node, it checks
+   the *visitor* argument to :meth:`preorder` for a method named 'visitNodeType,'
+   where NodeType is the name of the node's class, e.g. for a :class:`While` node a
+   :meth:`visitWhile` would be called.  If the method exists, it is called with the
+   node as its first argument.
 
-   ある特定のノード型に対する visitor メソッドでは、その子ノードをどのようにわたり歩くかが制御できます。
-   :class:`ASTVisitor` は visitor に visit メソッドを追加することで、その visitor 引数を修正します。
-   特定のノード型に対する visitor が存在しない場合、
-   :meth:`default` メソッドが呼び出されます。
+   The visitor method for a particular node type can control how child nodes are
+   visited during the walk.  The :class:`ASTVisitor` modifies the visitor argument
+   by adding a visit method to the visitor; this method can be used to visit a
+   particular child node.  If no visitor is found for a particular node type, the
+   :meth:`default` method is called.
 
-   :class:`ASTVisitor` オブジェクトには以下のようなメソッドがあります:
+   :class:`ASTVisitor` objects have the following methods:
 
-   XXX 追加の引数を記述
+   XXX describe extra arguments
 
 
    .. method:: default(node[, ...])
@@ -607,12 +633,12 @@ XXX visitor 用の魔法の :meth:`visit` メソッド。
    .. method:: preorder(tree, visitor)
 
 
-バイトコード生成
-================
+Bytecode Generation
+===================
 
-バイトコード生成器はバイトコードを出力する visitor です。
-visit メソッドが呼ばれるたびにこれは :meth:`emit` メソッドを呼び出し、バイトコードを出力します。
-基本的なバイトコード生成器はモジュール、クラス、および関数によって拡張できます。
-アセンブラがこれらの出力された命令を低レベルのバイトコードに変換します。
-これはコードオブジェクトからなる定数のリスト生成や、分岐のオフセット計算といった処理をおこないます。
+The code generator is a visitor that emits bytecodes.  Each visit method can
+call the :meth:`emit` method to emit a new bytecode.  The basic code generator
+is specialized for modules, classes, and functions.  An assembler converts that
+emitted instructions to the low-level bytecode format.  It handles things like
+generation of constant lists of code objects and calculation of jump offsets.
 

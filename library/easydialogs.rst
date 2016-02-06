@@ -1,236 +1,215 @@
 
-:mod:`EasyDialogs` --- 基本的な Macintosh ダイアログ
-====================================================
+:mod:`EasyDialogs` --- Basic Macintosh dialogs
+==============================================
 
 .. module:: EasyDialogs
    :platform: Mac
-   :synopsis: 基本的な Macintosh ダイアログ。
+   :synopsis: Basic Macintosh dialogs.
    :deprecated:
 
 
-:mod:`EasyDialogs` モジュールには、Macintosh で単純なダイアログ操作\
-を行うためのルーチンが入っています。ダイアログはドックに現れる別の\
-アプリケーションとして起動され、ダイアログが表示されるにはクリック\
-されなければなりません。
-全てのルーチンは、オプションとしてリソース ID パラメタ *id* をとり\
-ます。デフォルトの :const:`DLOG` のリソース (タイプとアイテムナンバの\
-両方) が一致するようなダイアログがあれば、 *id* を使ってダイアログ\
-操作に使われるダイアログオブジェクト情報を上書きできます。詳細は\
-ソースコードを参照してください。
-
-:mod:`EasyDialogs` モジュールでは以下の関数を定義しています。
+The :mod:`EasyDialogs` module contains some simple dialogs for the Macintosh.
+The dialogs get launched in a separate application which appears in the dock and
+must be clicked on for the dialogs be displayed.  All routines take an optional
+resource ID parameter *id* with which one can override the :const:`DLOG`
+resource used for the dialog, provided that the dialog items correspond (both
+type and item number) to those in the default :const:`DLOG` resource. See source
+code for details.
 
 .. note::
 
-   このモジュールは Python 3.x では削除されます。
+   This module has been removed in Python 3.x.
+
+
+The :mod:`EasyDialogs` module defines the following functions:
+
 
 .. function:: Message(str[, id[, ok]])
 
-   メッセージテキスト *str* 付きのモーダルダイアログを表示します。テキス\
-   トの長さは最大255文字です。
-   ボタンのテキストはデフォルトでは"OK"ですが、文字列の引数 *ok* を\
-   指定して変更できます。ユーザが"OK"ボタンをクリックすると処理を戻します。
+   Displays a modal dialog with the message text *str*, which should be at most 255
+   characters long. The button text defaults to "OK", but is set to the string
+   argument *ok* if the latter is supplied. Control is returned when the user
+   clicks the "OK" button.
 
 
 .. function:: AskString(prompt[, default[, id[, ok[, cancel]]]])
 
-   ユーザに文字列値の入力を促すモーダルダイアログを表示します。
-   *prompt* はプロンプトメッセージで、オプションの *default* 引数は\
-   入力文字列の初期値です（指定しなければ ``""`` を使います)。
-   "OK"と"Cancel"ボタンの文字列は *ok* と *cancel* の引数で\
-   変更できます。文字列の長さは全て最大255文字です。
-   入力された文字列か、ユーザがキャンセルした場合には :const:`None` を返します。
+   Asks the user to input a string value via a modal dialog. *prompt* is the prompt
+   message, and the optional *default* supplies the initial value for the string
+   (otherwise ``""`` is used). The text of the "OK" and "Cancel" buttons can be
+   changed with the *ok* and *cancel* arguments. All strings can be at most 255
+   bytes long. :func:`AskString` returns the string entered or :const:`None` in
+   case the user cancelled.
 
 
 .. function:: AskPassword(prompt[, default[, id[, ok[, cancel]]]])
 
-   ユーザに文字列値の入力を促すモーダルダイアログを表示します。
-   :func:`AskString` に似ていますが、ユーザの入力したテキストは点で\
-   表示されます。引数は :func:`AskString` のものと同じ意味です。
+   Asks the user to input a string value via a modal dialog. Like
+   :func:`AskString`, but with the text shown as bullets. The arguments have the
+   same meaning as for :func:`AskString`.
 
 
 .. function:: AskYesNoCancel(question[, default[, yes[, no[, cancel[, id]]]]])
 
-   プロンプト *question* と"Yes"、"No"、"Cancel"というラベルの3つ\
-   ボタンが付いたダイアログを表示します。ユーザが\
-   "Yes"を押した場合には ``1`` を、"No" ならば ``0`` を、
-   "Cancel" ならば ``-1`` を返します。
-   :kbd:`RETURN` キーを押した場合は *default* の値 (*default* を指定\
-   しない場合は ``0``)を返します。
-   ボタンのテキストはそれぞれ引数 *yes* 、 *no* 、 *cancel* で変更できます。
-   ボタンを表示したくなければ引数に ``""`` を指定します。
+   Presents a dialog with prompt *question* and three buttons labelled "Yes", "No",
+   and "Cancel". Returns ``1`` for "Yes", ``0`` for "No" and ``-1`` for "Cancel".
+   The value of *default* (or ``0`` if *default* is not supplied) is returned when
+   the :kbd:`RETURN` key is pressed. The text of the buttons can be changed with
+   the *yes*, *no*, and *cancel* arguments; to prevent a button from appearing,
+   supply ``""`` for the corresponding argument.
 
 
 .. function:: ProgressBar([title[, maxval[, label[, id]]]])
 
-   プログレスバー付きのモードレスダイアログを表示します。
-   これは後で述べる :class:`ProgressBar` クラスのコンストラクタです。
-   *title* はダイアログに表示するテキスト文字列 (デフォルトの値は "Working...") で、
-   *maxval* は処理が完了するときの値です
-   (デフォルトは ``0`` で、残りの作業量が不確定であることを示します)。
-   *label* はプログレスバー自体の上に表示するテキストです。
+   Displays a modeless progress-bar dialog. This is the constructor for the
+   :class:`ProgressBar` class described below. *title* is the text string displayed
+   (default "Working..."), *maxval* is the value at which progress is complete
+   (default ``0``, indicating that an indeterminate amount of work remains to be
+   done), and *label* is the text that is displayed above the progress bar itself.
 
 
 .. function:: GetArgv([optionlist[ commandlist[, addoldfile[, addnewfile[, addfolder[, id]]]]]])
 
-   コマンドライン引数リストの作成を補助するためのダイアログを表示します。
-   得られた引数リストを ``sys.argv`` の形式にします。これは
-   :func:`getopt.getopt` の引数として渡すのに適した形式です。
-   *addoldfile* 、 *addnewfile* 、 *addfolder* はブール型の引数\
-   です。これらの引数が真の場合、それぞれ実在のファイル、まだ (おそらく) 存在\
-   しないファイル、フォルダへのパスをコマンドラインのパスとして設定できます。
-   (注意: :func:`getopt.getopt` がファイルやフォルダ引数を認識できる\
-   ようにするためには、オブションの引数がそれらより前に現れるように\
-   しなければなりません。)
-   空白を含む引数は、空白をシングルクォートあるいはダブルクォートで囲んで\
-   指定できます。
+   Displays a dialog which aids the user in constructing a command-line argument
+   list.  Returns the list in ``sys.argv`` format, suitable for passing as an
+   argument to :func:`getopt.getopt`.  *addoldfile*, *addnewfile*, and *addfolder*
+   are boolean arguments.  When nonzero, they enable the user to insert into the
+   command line paths to an existing file, a (possibly) not-yet-existent file, and
+   a folder, respectively.  (Note: Option arguments must appear in the command line
+   before file and folder arguments in order to be recognized by
+   :func:`getopt.getopt`.)  Arguments containing spaces can be specified by
+   enclosing them within single or double quotes.  A :exc:`SystemExit` exception is
+   raised if the user presses the "Cancel" button.
 
-   ユーザが"Cancel"ボタンを押した場合、 :exc:`SystemExit` 例外を\
-   送出します。
+   *optionlist* is a list that determines a popup menu from which the allowed
+   options are selected.  Its items can take one of two forms: *optstr* or
+   ``(optstr, descr)``.  When present, *descr* is a short descriptive string that
+   is displayed in the dialog while this option is selected in the popup menu.  The
+   correspondence between *optstr*\s and command-line arguments is:
 
-   *optionlist* には、ポップアップメニューで選べる選択肢を定義した\
-   リストを指定します。ポップアップメニューの要素には、次の2つの形式、
-   *optstr* または ``(optstr, descr)`` があります。
-   *descr* に短い説明文字列を指定すると、該当の選択肢をポップアップ\
-   メニューで選択しいる間その文字列をダイアログに表示します。
-   *optstr* とコマンドライン引数の対応を以下に示します:
+   +----------------------+------------------------------------------+
+   | *optstr* format      | Command-line format                      |
+   +======================+==========================================+
+   | ``x``                | :option:`-x` (short option)              |
+   +----------------------+------------------------------------------+
+   | ``x:`` or ``x=``     | :option:`-x` (short option with value)   |
+   +----------------------+------------------------------------------+
+   | ``xyz``              | :option:`--xyz` (long option)            |
+   +----------------------+------------------------------------------+
+   | ``xyz:`` or ``xyz=`` | :option:`--xyz` (long option with value) |
+   +----------------------+------------------------------------------+
 
-   +----------------------------+------------------------------------------+
-   | *optstr* format            | Command-line format                      |
-   +============================+==========================================+
-   | ``x``                      | :option:`-x` (短いオプション)            |
-   +----------------------------+------------------------------------------+
-   | ``x:`` あるいは ``x=``     | :option:`-x` (値を持つ短いオプション)    |
-   +----------------------------+------------------------------------------+
-   | ``xyz``                    | :option:`--xyz`  (長いオプション)        |
-   +----------------------------+------------------------------------------+
-   | ``xyz:`` あるいは ``xyz=`` | :option:`--xyz` (値を持つ長いオプション) |
-   +----------------------------+------------------------------------------+
-
-   *commandlist* は *cmdstr* あるいは ``(cmdstr, descr)``
-   の形のアイテムからなるリストです。 *descr* は上と同じです。
-   *cmdstr* はポップアップメニューに表示されます。
-   メニューを選択すると *cmdstr* はコマンドラインに追加されますが、それに続く ``':'``
-   や ``'='`` は (存在していれば) 取り除かれます。
+   *commandlist* is a list of items of the form *cmdstr* or ``(cmdstr, descr)``,
+   where *descr* is as above.  The *cmdstr*\ s will appear in a popup menu.  When
+   chosen, the text of *cmdstr* will be appended to the command line as is, except
+   that a trailing ``':'`` or ``'='`` (if present) will be trimmed off.
 
    .. versionadded:: 2.0
 
 
 .. function:: AskFileForOpen( [message] [, typeList] [, defaultLocation] [, defaultOptionFlags] [, location] [, clientName] [, windowTitle] [, actionButtonLabel] [, cancelButtonLabel] [, preferenceKey] [, popupExtension] [, eventProc] [, previewProc] [, filterProc] [, wanted] )
 
-   どのファイルを開くかをユーザに尋ねるダイアログを表示し、ユーザが選択した\
-   ファイルを返します。ユーザがダイアログをキャンセルした場合には
-   :const:`None` を返します。
-   *message* はダイアログに表示するテキストメッセージです。
-   *typeList* は選択できるファイルタイプを表す 4 文字の文字列からなるリスト、
-   *defaultLocation* は最初に表示すルフォルダで、パス名、
-   :class:`FSSpec` あるいは :class:`FSRef` で指定します。
-   *location* はダイアログを表示するスクリーン上の位置 ``(x, y)`` です。
-   *actionButtonLabel* はOKボタンの位置に"Open"の代わり\
-   に表示する文字列、
-   *cancelButtonLabel* は"Cancel"ボタンの位置に"Cancel"の代わりに表示する文字列です。
-   *wanted* は返したい値のタイプで、 :class:`str` 、 :class:`unicode` 、
-   :class:`FSSpec` 、 :class:`FSRef` およびそれらのサブタイプを指定できます。
+   Post a dialog asking the user for a file to open, and return the file selected
+   or :const:`None` if the user cancelled. *message* is a text message to display,
+   *typeList* is a list of 4-char filetypes allowable, *defaultLocation* is the
+   pathname, :class:`FSSpec` or :class:`FSRef` of the folder to show initially,
+   *location* is the ``(x, y)`` position on the screen where the dialog is shown,
+   *actionButtonLabel* is a string to show instead of "Open" in the OK button,
+   *cancelButtonLabel* is a string to show instead of "Cancel" in the cancel
+   button, *wanted* is the type of value wanted as a return: :class:`str`,
+   :class:`unicode`, :class:`FSSpec`, :class:`FSRef` and subtypes thereof are
+   acceptable.
 
    .. index:: single: Navigation Services
 
-   その他の引数の説明についてはApple Navigation Servicesのドキュメントと
-   :mod:`EasyDialogs` のソースコードを参照してください。
+   For a description of the other arguments please see the Apple Navigation
+   Services documentation and the :mod:`EasyDialogs` source code.
 
 
 .. function:: AskFileForSave( [message] [, savedFileName] [, defaultLocation] [, defaultOptionFlags] [, location] [, clientName] [, windowTitle] [, actionButtonLabel] [, cancelButtonLabel] [, preferenceKey] [, popupExtension] [, fileType] [, fileCreator] [, eventProc] [, wanted] )
 
-   保存先のファイルをユーザに尋ねるダイアログを表示して、ユーザが選択した\
-   ファイルを返します。
-   ユーザがダイアログをキャンセルした場合には :const:`None` を返します。
-   *savedFileName* は保存先のファイル名 (戻り値) のデフォルト値です。
-   その他の引数の説明については :func:`AskFileForOpen` を参照してください。
+   Post a dialog asking the user for a file to save to, and return the file
+   selected or :const:`None` if the user cancelled. *savedFileName* is the default
+   for the file name to save to (the return value). See :func:`AskFileForOpen` for
+   a description of the other arguments.
 
 
 .. function:: AskFolder( [message] [, defaultLocation] [, defaultOptionFlags] [, location] [, clientName] [, windowTitle] [, actionButtonLabel] [, cancelButtonLabel] [, preferenceKey] [, popupExtension] [, eventProc] [, filterProc] [, wanted] )
 
-   フォルダの選択をユーザに促すダイアログを表示して、ユーザが選択したフォルダ\
-   を返します。ユーザがダイアログをキャンセルした場合には :const:`None` を\
-   返します。引数についての説明は :func:`AskFileForOpen` を参照してください。
+   Post a dialog asking the user to select a folder, and return the folder selected
+   or :const:`None` if the user cancelled. See :func:`AskFileForOpen` for a
+   description of the arguments.
 
 
 .. seealso::
 
-   `Navigation Services Reference <http://developer.apple.com/documentation/Carbon/Reference/Navigation_Services_Ref/>`_
-      Programmer's reference documentation の Carbon framework の Navigation Services
-      の項。
+   `Navigation Services Reference <http://developer.apple.com/legacy/mac/library/#documentation/Carbon/Conceptual/NavServicesIntro/ns_intro_carb/ns_into_carb.html>`_
+      Programmer's reference documentation for the Navigation Services, a part of the
+      Carbon framework.
 
 
 .. _progressbar-objects:
 
-プログレスバーオブジェクト
---------------------------
+ProgressBar Objects
+-------------------
 
-:class:`ProgressBar` オブジェクトでは、モードレスなプログレスバーダイアログ\
-のサポートを提供しています。定量プログレスバー (温度計スタイル)
-と不定量プログレスバー (床屋の螺旋看板スタイル) がサポートされています。
-プログレスバーの最大値がゼロ以上の場合には定量インジケータに、
-そうでない場合は不定量インジケータになります。
+:class:`ProgressBar` objects provide support for modeless progress-bar dialogs.
+Both determinate (thermometer style) and indeterminate (barber-pole style)
+progress bars are supported.  The bar will be determinate if its maximum value
+is greater than zero; otherwise it will be indeterminate.
 
 .. versionchanged:: 2.2
-   不定量プログレスバーのサポートを追加しました。
+   Support for indeterminate-style progress bars was added.
 
-ダイアログは作られるとすぐに表示されます。
-ダイアログの"Cancel"ボタンを押すか、 :kbd:`Cmd-.` (コマンドキーを押し\
-ながらピリオド(``'.'``)を押す) か、あるいは :kbd:`ESC` をタイプ\
-すると、ダイアログウィンドウを非表示にして :exc:`KeyboardInterrupt` を送出します
-(ただし、この応答は次にプログレスバーを更新するときまで、すなわち次に
-:meth:`inc` または :meth:`set` を呼び出してダイアログを\
-更新するまで発生しません) 。
-それ以外の場合、プログレスバーは :class:`ProgressBar` オブジェクトを廃棄する\
-まで表示されたままになります。
+The dialog is displayed immediately after creation. If the dialog's "Cancel"
+button is pressed, or if :kbd:`Cmd-.` or :kbd:`ESC` is typed, the dialog window
+is hidden and :exc:`KeyboardInterrupt` is raised (but note that this response
+does not occur until the progress bar is next updated, typically via a call to
+:meth:`inc` or :meth:`set`).  Otherwise, the bar remains visible until the
+:class:`ProgressBar` object is discarded.
 
-:class:`ProgressBar` オブジェクトには以下の属性とメソッドがあります。
+:class:`ProgressBar` objects possess the following attributes and methods:
 
 
 .. attribute:: ProgressBar.curval
 
-   プログレスバーの現在の値 (整数型あるいは長整数型) です。
-   プログレスバーの通常のアクセスのメソッドによって :attr:`curval` を
-   ``0`` と :attr:`maxval` の間にします。この属性を直接変更してはなりません。
+   The current value (of type integer or long integer) of the progress bar.  The
+   normal access methods coerce :attr:`curval` between ``0`` and :attr:`maxval`.
+   This attribute should not be altered directly.
 
 
 .. attribute:: ProgressBar.maxval
 
-   プログレスバーの最大値　(整数型あるいは長整数型) です;
-   プログレスバー (温度計, thermometer) では、 :attr:`curval` が
-   :attr:`maxval` に等しい時に全量に到達します。
-   :attr:`maxval` が ``0`` の場合、不定量プログレスバー (床屋の螺旋看板,
-   barbar pole) になります。この属性を直接変更してはなりません。
+   The maximum value (of type integer or long integer) of the progress bar; the
+   progress bar (thermometer style) is full when :attr:`curval` equals
+   :attr:`maxval`.  If :attr:`maxval` is ``0``, the bar will be indeterminate
+   (barber-pole).  This attribute should not be altered directly.
 
 
 .. method:: ProgressBar.title([newstr])
 
-   プログレスダイアログのタイトルバーのテキストを *newstr* に設定します。
+   Sets the text in the title bar of the progress dialog to *newstr*.
 
 
 .. method:: ProgressBar.label([newstr])
 
-   プログレスダイアログ中のプログレスボックスのテキストを *newstr* に設定します。
+   Sets the text in the progress box of the progress dialog to *newstr*.
 
 
 .. method:: ProgressBar.set(value[, max])
 
-   プログレスバーの現在値 :attr:`curval` を *value* に設定します。
-   *max* も指定した場合、 :attr:`maxval` を *max* にします。
-   *value* は前もって 0 と :attr:`maxval` の間になるよう強制的に設定\
-   されます。温度計バーの場合、変更内容を反映するよう表示を更新します。
-   変更によって定量プログレスバーから不定量プログレスバーへ、あるいは\
-   その逆への推移が起こります。
+   Sets the progress bar's :attr:`curval` to *value*, and also :attr:`maxval` to
+   *max* if the latter is provided.  *value* is first coerced between 0 and
+   :attr:`maxval`.  The thermometer bar is updated to reflect the changes,
+   including a change from indeterminate to determinate or vice versa.
 
 
 .. method:: ProgressBar.inc([n])
 
-   プログレスバーの :attr:`curval` を *n* だけ増やします。
-   *n* を指定しなければ ``1`` だけ増やします。
-   (*n* は負にもでき、その場合は :attr:`curval` を減少させます。)
-   変更内容を反映するようプログレスバーの表示を更新します。プログレスバーが\
-   不定量プログレスバーの場合、床屋の螺旋看板 (barbar pole) 模様を 1 度\
-   「回転」させます。
-   増減によって :attr:`curval` が 0 から :attr:`maxval` までの範囲を越えた場合、
-   0 と :attr:`maxval` の範囲に収まるよう強制的に値を設定します。
+   Increments the progress bar's :attr:`curval` by *n*, or by ``1`` if *n* is not
+   provided.  (Note that *n* may be negative, in which case the effect is a
+   decrement.)  The progress bar is updated to reflect the change.  If the bar is
+   indeterminate, this causes one "spin" of the barber pole.  The resulting
+   :attr:`curval` is coerced between 0 and :attr:`maxval` if incrementing causes it
+   to fall outside this range.
+

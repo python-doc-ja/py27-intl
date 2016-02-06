@@ -1,49 +1,49 @@
 
-:mod:`crypt` --- Unix パスワードをチェックするための関数
-========================================================
+:mod:`crypt` --- Function to check Unix passwords
+=================================================
 
 .. module:: crypt
    :platform: Unix
-   :synopsis: Unix パスワードをチェックするための関数 crypt()。
+   :synopsis: The crypt() function used to check Unix passwords.
 .. moduleauthor:: Steven D. Majewski <sdm7g@virginia.edu>
 .. sectionauthor:: Steven D. Majewski <sdm7g@virginia.edu>
 .. sectionauthor:: Peter Funk <pf@artcom-gmbh.de>
 
 
 .. index::
-   pair: cipher; DES
    single: crypt(3)
+   pair: cipher; DES
 
-このモジュールは DES アルゴリズムに基づいた一方向ハッシュ関数である
-:manpage:`crypt(3)`  ルーチンを実装しています。
-詳細については Unix マニュアルページを参照してください。
-このモジュールは、Python スクリプトがユーザから入力されたパスワードを\
-受理できるようにしたり、
-Unix パスワードに (脆弱性検査のための) 辞書攻撃を試みるのに使えます。
+This module implements an interface to the :manpage:`crypt(3)` routine, which is
+a one-way hash function based upon a modified DES algorithm; see the Unix man
+page for further details.  Possible uses include allowing Python scripts to
+accept typed passwords from the user, or attempting to crack Unix passwords with
+a dictionary.
 
 .. index:: single: crypt(3)
 
-このモジュールは実行環境の :manpage:`crypt(3)` の実装に依存しています。
-そのため、現在の実装で利用可能な拡張を、このモジュールでもそのまま利用できます。
+Notice that the behavior of this module depends on the actual implementation  of
+the :manpage:`crypt(3)` routine in the running system.  Therefore, any
+extensions available on the current implementation will also  be available on
+this module.
 
 
 .. function:: crypt(word, salt)
 
-   *word* は通常はユーザのパスワードで、プロンプトやグラフィカル\
-   インタフェースからタイプ入力されます。
-   *salt* は通常ランダムな 2 文字からなる文字列で、DES アルゴリズムに
-   4096 通りのうち 1 つの方法で外乱を与えるために使われます。
-   *salt* に使う文字は集合 ``[./a-zA-Z0-9]`` の要素でなければなりません。
-   ハッシュされたパスワードを文字列として返します。パスワード文字列は *salt*
-   と同じ文字集合に含まれる文字からなります (最初の 2 文字は *salt* 自体です).
+   *word* will usually be a user's password as typed at a prompt or  in a graphical
+   interface.  *salt* is usually a random two-character string which will be used
+   to perturb the DES algorithm in one of 4096 ways.  The characters in *salt* must
+   be in the set ``[./a-zA-Z0-9]``.  Returns the hashed password as a string, which
+   will be composed of characters from the same alphabet as the salt (the first two
+   characters represent the salt itself).
 
    .. index:: single: crypt(3)
 
-   いくつかの拡張された :manpage:`crypt(3)` は異なる値と *salt*
-   の長さを許しているので、パスワードをチェックする際には crypt
-   されたパスワード文字列全体を *salt* として渡すよう勧めます。
+   Since a few :manpage:`crypt(3)` extensions allow different values, with
+   different sizes in the *salt*, it is recommended to use  the full crypted
+   password as salt when checking for a password.
 
-典型的な使用例のサンプルコード::
+A simple example illustrating typical use::
 
    import crypt, getpass, pwd
 

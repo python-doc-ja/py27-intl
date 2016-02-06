@@ -1,38 +1,38 @@
-:mod:`ScrolledText` --- スクロールするテキストウィジェット
-==========================================================
+:mod:`ScrolledText` --- Scrolled Text Widget
+============================================
 
 .. module:: ScrolledText
    :platform: Tk
-   :synopsis: 垂直スクロールバーを持つテキストウィジェット。
+   :synopsis: Text widget with a vertical scroll bar.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
-:mod:`ScrolledText` モジュールは"正しい動作"をするように設定された垂直\
-スクロールバーをもつ基本的なテキストウィジェットを実装する同じ名前のク\
-ラスを提供します。 :class:`ScrolledText` クラスを使うことは、テキストウィ\
-ジェットとスクロールバーを直接設定するより簡単です。コンストラクタは
-:class:`Tkinter.Text` クラスのものを同じです。
+The :mod:`ScrolledText` module provides a class of the same name which
+implements a basic text widget which has a vertical scroll bar configured to do
+the "right thing."  Using the :class:`ScrolledText` class is a lot easier than
+setting up a text widget and scroll bar directly.  The constructor is the same
+as that of the :class:`Tkinter.Text` class.
 
 .. note::
 
-   :mod:`ScrolledText` は Python 3.0 で :mod:`tkinter.scrolledtext`
-   に改名されました。 :term:`2to3` ツールはソースの 3.0 への変換時に自動的に
-   import を対応させます。
+   :mod:`ScrolledText` has been renamed to :mod:`tkinter.scrolledtext` in Python
+   3.  The :term:`2to3` tool will automatically adapt imports when converting
+   your sources to Python 3.
 
-テキストウィジェットとスクロールバーは :class:`Frame` の中に一緒にpack\
-され、 :class:`Grid` と :class:`Pack` ジオメトリマネジャのメソッドは\
-:class:`Frame` オブジェクトから得られます。これによって、もっとも標準的\
-なジオメトリマネジャの振る舞いにするために、直接 :class:`ScrolledText`
-ウィジェットを使えるようになります。
+The text widget and scrollbar are packed together in a :class:`Frame`, and the
+methods of the :class:`Grid` and :class:`Pack` geometry managers are acquired
+from the :class:`Frame` object.  This allows the :class:`ScrolledText` widget to
+be used directly to achieve most normal geometry management behavior.
 
-特定の制御が必要ならば、以下の属性が利用できます:
+Should more specific control be necessary, the following attributes are
+available:
 
 
 .. attribute:: ScrolledText.frame
 
-   テキストとスクロールバーウィジェットを取り囲むフレーム。
+   The frame which surrounds the text and scroll bar widgets.
 
 
 .. attribute:: ScrolledText.vbar
 
-   スクロールバーウィジェット。
+   The scroll bar widget.

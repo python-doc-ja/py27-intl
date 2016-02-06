@@ -1,26 +1,23 @@
-
 .. _markup:
 
-************************
-構造化マークアップツール
-************************
+**********************************
+Structured Markup Processing Tools
+**********************************
 
-Python は様々な構造化データマークアップ形式を扱うための、
-様々なモジュールをサポートしています。
-これらは標準化一般マークアップ言語 (SGML)
-およびハイパーテキストマークアップ言語 (HTML)、
-そして可拡張性マークアップ言語 (XML) を扱うためのいくつかのインタフェースからなります。
+Python supports a variety of modules to work with various forms of structured
+data markup.  This includes modules to work with the Standard Generalized Markup
+Language (SGML) and the Hypertext Markup Language (HTML), and several interfaces
+for working with the Extensible Markup Language (XML).
 
-注意すべき重要な点として、
-:mod:`xml` パッケージは少なくとも一つの SAX に対応した XML パーザが利用可能でなければなりません。
-Python 2.3 からは Expat パーザが Python に取り込まれているので、
-:mod:`xml.parsers.expat` モジュールは常に利用できます。
-また、 `PyXML 追加パッケージ <http://pyxml.sourceforge.net/>`_
-についても知りたいと思うかもしれません;
-このパッケージは Python 用の拡張された XML ライブラリセットを提供します。
+It is important to note that modules in the :mod:`xml` package require that
+there be at least one SAX-compliant XML parser available. Starting with Python
+2.3, the Expat parser is included with Python, so the :mod:`xml.parsers.expat`
+module will always be available. You may still want to be aware of the `PyXML
+add-on package <http://pyxml.sourceforge.net/>`_; that package provides an
+extended set of XML libraries for Python.
 
-:mod:`xml.dom` および :mod:`xml.sax` パッケージのドキュメントは
-Python による DOM および SAX インタフェースへのバインディングに関する定義です。
+The documentation for the :mod:`xml.dom` and :mod:`xml.sax` packages are the
+definition of the Python bindings for the DOM and SAX interfaces.
 
 
 .. toctree::
@@ -28,7 +25,8 @@ Python による DOM および SAX インタフェースへのバインディン
    htmlparser.rst
    sgmllib.rst
    htmllib.rst
-   pyexpat.rst
+   xml.rst
+   xml.etree.elementtree.rst
    xml.dom.rst
    xml.dom.minidom.rst
    xml.dom.pulldom.rst
@@ -36,4 +34,4 @@ Python による DOM および SAX インタフェースへのバインディン
    xml.sax.handler.rst
    xml.sax.utils.rst
    xml.sax.reader.rst
-   xml.etree.elementtree.rst
+   pyexpat.rst

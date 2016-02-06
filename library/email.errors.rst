@@ -1,98 +1,95 @@
-:mod:`email`: 例外及び障害クラス
---------------------------------
+:mod:`email.errors`: Exception and Defect classes
+-------------------------------------------------
 
 .. module:: email.errors
-   :synopsis: email パッケージで使われる例外クラス
+   :synopsis: The exception classes used by the email package.
 
 
-:mod:`email.errors` モジュールでは、以下の例外クラスが定義されています:
+The following exception classes are defined in the :mod:`email.errors` module:
 
 
 .. exception:: MessageError()
 
-   これは :mod:`email` パッケージが発生しうるすべての例外の基底クラスです。
-   これは標準の :exc:`Exception` クラスから派生しており、
-   追加のメソッドはまったく定義されていません。
+   This is the base class for all exceptions that the :mod:`email` package can
+   raise.  It is derived from the standard :exc:`Exception` class and defines no
+   additional methods.
 
 
 .. exception:: MessageParseError()
 
-   これは :class:`~email.parser.Parser` クラスが発生しうる例外の基底クラスです。
-   :exc:`MessageError` から派生しています。
+   This is the base class for exceptions raised by the :class:`~email.parser.Parser`
+   class.  It is derived from :exc:`MessageError`.
 
 
 .. exception:: HeaderParseError()
 
-   メッセージの :rfc:`2822` ヘッダを解析している途中にある条件でエラーがおこると\
-   発生します。これは :exc:`MessageParseError` から派生しています。
-   この例外が起こる可能性があるのは :meth:`Parser.parse` メソッドと :meth:`Parser.parsestr`
-   メソッドです。
+   Raised under some error conditions when parsing the :rfc:`2822` headers of a
+   message, this class is derived from :exc:`MessageParseError`. It can be raised
+   from the :meth:`Parser.parse <email.parser.Parser.parse>` or
+   :meth:`Parser.parsestr <email.parser.Parser.parsestr>` methods.
 
-   この例外が発生するのはメッセージ中で最初の :rfc:`2822` ヘッダが現れたあとに\
-   エンベロープヘッダが見つかったとか、最初の :rfc:`2822`
-   ヘッダが現れる前に前のヘッダからの継続行が見つかったとかいう状況を含みます。
-   あるいはヘッダでも継続行でもない行がヘッダ中に見つかった場合でも\
-   この例外が発生します。
+   Situations where it can be raised include finding an envelope header after the
+   first :rfc:`2822` header of the message, finding a continuation line before the
+   first :rfc:`2822` header is found, or finding a line in the headers which is
+   neither a header or a continuation line.
 
 
 .. exception:: BoundaryError()
 
-   メッセージの :rfc:`2822` ヘッダを解析している途中にある条件でエラーがおこると\
-   発生します。これは :exc:`MessageParseError` から派生しています。
-   この例外が起こる可能性があるのは :meth:`Parser.parse` メソッドと
-   :meth:`Parser.parsestr` メソッドです。
+   Raised under some error conditions when parsing the :rfc:`2822` headers of a
+   message, this class is derived from :exc:`MessageParseError`. It can be raised
+   from the :meth:`Parser.parse <email.parser.Parser.parse>` or
+   :meth:`Parser.parsestr <email.parser.Parser.parsestr>` methods.
 
-   この例外が発生するのは、厳格なパーズ方式が用いられているときに、
-   :mimetype:`multipart/*`
-   形式の開始あるいは終了の文字列が見つからなかった場合などです。
+   Situations where it can be raised include not being able to find the starting or
+   terminating boundary in a :mimetype:`multipart/\*` message when strict parsing
+   is used.
 
 
 .. exception:: MultipartConversionError()
 
-   この例外は、 :class:`Message` オブジェクトに :meth:`add_payload` メソッドを使って
-   ペイロードを追加するとき、そのペイロードがすでに単一の値である
-   (訳注: リストでない) にもかかわらず、そのメッセージの
-   :mailheader:`Content-Type` ヘッダのメインタイプがすでに設定されていて、
-   それが :mimetype:`multipart` 以外になってしまっている場合にこの例外が発生します。
-   :exc:`MultipartConversionError` は
-   :exc:`MessageError` と組み込みの :exc:`TypeError` を両方継承しています。
+   Raised when a payload is added to a :class:`~email.message.Message` object
+   using :meth:`add_payload`, but the payload is already a scalar and the
+   message's :mailheader:`Content-Type` main type is not either
+   :mimetype:`multipart` or missing.  :exc:`MultipartConversionError` multiply
+   inherits from :exc:`MessageError` and the built-in :exc:`TypeError`.
 
-   :meth:`Message.add_payload` はもはや推奨されないメソッドのため、
-   この例外はめったに発生しません。しかしこの例外は
-   :meth:`attach` メソッドが :class:`~email.mime.nonmultipart.MIMENonMultipart`
-   から派生したクラスのインスタンス (例: :class:`~email.mime.image.MIMEImage`
-   など) に対して呼ばれたときにも発生することがあります。
+   Since :meth:`Message.add_payload` is deprecated, this exception is rarely
+   raised in practice.  However the exception may also be raised if the
+   :meth:`~email.message.Message.attach`
+   method is called on an instance of a class derived from
+   :class:`~email.mime.nonmultipart.MIMENonMultipart` (e.g.
+   :class:`~email.mime.image.MIMEImage`).
 
-以下は :class:`~email.mime.FeedParser` がメッセージの解析中に検出する障害
-(defect) の一覧です。
-これらの障害は、問題が見つかったメッセージに追加されるため、たとえば
-:mimetype:`multipart/alternative`
-内にあるネストしたメッセージが異常なヘッダをもっていた場合には、
-そのネストしたメッセージが障害を持っているが、その親メッセージには障害はないと
-みなされることに注意してください。
+Here's the list of the defects that the :class:`~email.parser.FeedParser`
+can find while parsing messages.  Note that the defects are added to the message
+where the problem was found, so for example, if a message nested inside a
+:mimetype:`multipart/alternative` had a malformed header, that nested message
+object would have a defect, but the containing messages would not.
 
-すべての障害クラスは :class:`email.errors.MessageDefect` のサブクラスですが、
-これは例外とは *違います* ので注意してください。
+All defect classes are subclassed from :class:`email.errors.MessageDefect`, but
+this class is *not* an exception!
 
 .. versionadded:: 2.4
-   全ての障害クラスが追加された。
+   All the defect classes were added.
 
-* :class:`NoBoundaryInMultipartDefect` -- メッセージが multipart だと宣言されているのに、
-  :mimetype:`boundary` パラメータがない。
+* :class:`NoBoundaryInMultipartDefect` -- A message claimed to be a multipart,
+  but had no :mimetype:`boundary` parameter.
 
-* :class:`StartBoundaryNotFoundDefect` -- :mailheader:`Content-Type` ヘッダで宣言された
-  開始境界がない。
+* :class:`StartBoundaryNotFoundDefect` -- The start boundary claimed in the
+  :mailheader:`Content-Type` header was never found.
 
-* :class:`FirstHeaderLineIsContinuationDefect` -- メッセージの最初のヘッダが\
-  継続行から始まっている。
+* :class:`FirstHeaderLineIsContinuationDefect` -- The message had a continuation
+  line as its first header line.
 
-* :class:`MisplacedEnvelopeHeaderDefect` -- ヘッダブロックの途中に "Unix From" ヘッダがある。
+* :class:`MisplacedEnvelopeHeaderDefect` - A "Unix From" header was found in the
+  middle of a header block.
 
-* :class:`MalformedHeaderDefect` -- コロンのないヘッダがある、あるいはそれ以外の異常なヘッダである。
+* :class:`MalformedHeaderDefect` -- A header was found that was missing a colon,
+  or was otherwise malformed.
 
-* :class:`MultipartInvariantViolationDefect` -- メッセージが :mimetype:`multipart`
-  だと宣言されているのに、サブパートが存在しない。
-  注意: メッセージがこの障害を持っているとき、 :meth:`is_multipart` メソッドは\
-  たとえその content-type が :mimetype:`multipart` であっても false を返すこと\
-  があります。
+* :class:`MultipartInvariantViolationDefect` -- A message claimed to be a
+  :mimetype:`multipart`, but no subparts were found.  Note that when a message
+  has this defect, its :meth:`~email.message.Message.is_multipart` method may
+  return false even though its content type claims to be :mimetype:`multipart`.
 

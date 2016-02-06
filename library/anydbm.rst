@@ -1,115 +1,122 @@
-:mod:`anydbm` ---  DBM 形式のデータベースへの汎用アクセスインタフェース
-=======================================================================
+:mod:`anydbm` --- Generic access to DBM-style databases
+=======================================================
 
 .. module:: anydbm
-   :synopsis: DBM 形式のデータベースモジュールに対する汎用インタフェース。
+   :synopsis: Generic interface to DBM-style database modules.
+
 
 .. note::
-   .. The :mod:`anydbm` module has been renamed to :mod:`dbm` in Python 3.0.  The
-      :term:`2to3` tool will automatically adapt imports when converting your
-      sources to 3.0.
-
-   :mod:`anydbm` モジュールはPython 3.0では :mod:`dbm` に名前が変更されました。
-   :term:`2to3` ツールが自動的に import を変換します。
-
+   The :mod:`anydbm` module has been renamed to :mod:`dbm` in Python 3.  The
+   :term:`2to3` tool will automatically adapt imports when converting your
+   sources to Python 3.
 
 .. index::
-   module: bsddb
    module: dbhash
+   module: bsddb
    module: gdbm
    module: dbm
    module: dumbdbm
 
-:mod:`anydbm` は種々の DBM データベース ---  (:mod:`bsddb` を使う)  :mod:`dbhash` 、
-:mod:`gdbm` 、および :mod:`dbm` --- への汎用インタフェースです。これらのモジュールがどれもインストールされていない場合、
-:mod:`dumbdbm` モジュールの低速で単純な DBM 実装が使われます。
+:mod:`anydbm` is a generic interface to variants of the DBM database ---
+:mod:`dbhash` (requires :mod:`bsddb`), :mod:`gdbm`, or :mod:`dbm`.  If none of
+these modules is installed, the slow-but-simple implementation in module
+:mod:`dumbdbm` will be used.
 
 
 .. function:: open(filename[, flag[, mode]])
 
-   データベースファイル *filename* を開き、対応するオブジェクトを返します。
+   Open the database file *filename* and return a corresponding object.
 
-   データベースファイルがすでに存在する場合、 :mod:`whichdb` モジュールを使って
-   ファイルタイプが判定され、適切なモジュールが使われます;
-   既存のデータベースファイルが存在しなかった場合、上に挙げたモジュール中で
-   最初にインポートすることができたものが使われます。
+   If the database file already exists, the :mod:`whichdb` module is used to
+   determine its type and the appropriate module is used; if it does not exist,
+   the first module listed above that can be imported is used.
 
-   オプションの *flag* は以下の値のいずれかです:
+   The optional *flag* argument must be one of these values:
 
    +---------+-------------------------------------------+
-   | 値      | 意味                                      |
+   | Value   | Meaning                                   |
    +=========+===========================================+
-   | ``'r'`` | 既存のデータベースを読み込み専用で開く    |
-   |         | (デフォルト)                              |
+   | ``'r'`` | Open existing database for reading only   |
+   |         | (default)                                 |
    +---------+-------------------------------------------+
-   | ``'w'`` | 既存のデータベースを読み書き用に開く      |
+   | ``'w'`` | Open existing database for reading and    |
+   |         | writing                                   |
    +---------+-------------------------------------------+
-   | ``'c'`` | データベースを読み書き用に開く。          |
-   |         | ただし存在しない場合には新たに作成する    |
+   | ``'c'`` | Open database for reading and writing,    |
+   |         | creating it if it doesn't exist           |
    +---------+-------------------------------------------+
-   | ``'n'`` | 常に新たに読み書き用の新規の              |
-   |         | データベースを作成する                    |
+   | ``'n'`` | Always create a new, empty database, open |
+   |         | for reading and writing                   |
    +---------+-------------------------------------------+
 
-   この引数が指定されない場合、標準の値は ``'r'`` になります。
+   If not specified, the default value is ``'r'``.
 
-   オプションの *mode* 引数は、新たにデータベースを作成しなければならない場合に使われる
-   Unix のファイルモードです。標準の値は 8 進数の
-   ``0666`` です (この値は現在有効な umask で修飾されます)。
+   The optional *mode* argument is the Unix mode of the file, used only when the
+   database has to be created.  It defaults to octal ``0666`` (and will be
+   modified by the prevailing umask).
 
 
 .. exception:: error
 
-   サポートされているモジュールのどれかによって送出されうる例外が収められるタプルで、
-   先頭の要素は同じ名前の例外 :exc:`anydbm.error` になっています
-   --- :exc:`anydbm.error` が送出された場合、後者が使われます。
+   A tuple containing the exceptions that can be raised by each of the supported
+   modules, with a unique exception also named :exc:`anydbm.error` as the first
+   item --- the latter is used when :exc:`anydbm.error` is raised.
 
-:func:`.open` によって返されたオブジェクトは辞書とほとんど同じ同じ機能をサポートします;
-キーとそれに対応付けられた値を記憶し、引き出し、削除することができ、
-:meth:`has_key` および :meth:`keys` メソッドを使うことができます。キーおよび値は
-常に文字列です。
+The object returned by :func:`.open` supports most of the same functionality as
+dictionaries; keys and their corresponding values can be stored, retrieved, and
+deleted, and the :meth:`has_key` and :meth:`keys` methods are available.  Keys
+and values must always be strings.
 
-以下の例ではホスト名と対応するタイトルがいくつか登録し、データベースの内容を表示します::
+The following example records some hostnames and a corresponding title,  and
+then prints out the contents of the database::
 
    import anydbm
 
-   # データベースを開く、必要なら作成する
+   # Open database, creating it if necessary.
    db = anydbm.open('cache', 'c')
 
-   # いくつかの値を設定する
+   # Record some values
    db['www.python.org'] = 'Python Website'
    db['www.cnn.com'] = 'Cable News Network'
 
-   # 内容についてループ。
-   # .keys(), .values() のような他の辞書メソッドもつかえます。
+   # Loop through contents.  Other dictionary methods
+   # such as .keys(), .values() also work.
    for k, v in db.iteritems():
        print k, '\t', v
 
-   # 文字列でないキーまたは値は例外を
-   # おこします（ほとんどのばあい TypeErrorです)。
+   # Storing a non-string key or value will raise an exception (most
+   # likely a TypeError).
    db['www.yahoo.com'] = 4
 
-   # 終了したらcloseします。
+   # Close when done.
    db.close()
+
+
+In addition to the dictionary-like methods, ``anydbm`` objects
+provide the following method:
+
+.. function:: close()
+
+   Close the ``anydbm`` database.
 
 
 .. seealso::
 
    Module :mod:`dbhash`
-      BSD ``db`` データベースインタフェース。
+      BSD ``db`` database interface.
 
    Module :mod:`dbm`
-      標準の Unix データベースインタフェース。
+      Standard Unix database interface.
 
    Module :mod:`dumbdbm`
-      ``dbm`` インタフェースの移植性のある実装。
+      Portable implementation of the ``dbm`` interface.
 
    Module :mod:`gdbm`
-      ``dbm`` インタフェースに基づいた GNU データベースインタフェース。
+      GNU database interface, based on the ``dbm`` interface.
 
    Module :mod:`shelve`
-      Python ``dbm`` インタフェース上に構築された汎用オブジェクト永続化機構。
+      General object persistence built on top of  the Python ``dbm`` interface.
 
    Module :mod:`whichdb`
-      既存のデータベースがどの形式のデータベースか判定するユーティリティモジュール。
+      Utility module used to determine the type of an existing database.
 

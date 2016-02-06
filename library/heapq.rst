@@ -1,9 +1,8 @@
-
-:mod:`heapq` --- ヒープキューアルゴリズム
-=========================================
+:mod:`heapq` --- Heap queue algorithm
+=====================================
 
 .. module:: heapq
-   :synopsis: ヒープキュー (別名優先度キュー) アルゴリズム。
+   :synopsis: Heap queue algorithm (a.k.a. priority queue).
 .. moduleauthor:: Kevin O'Connor
 .. sectionauthor:: Guido van Rossum <guido@python.org>
 .. sectionauthor:: François Pinard
@@ -11,133 +10,134 @@
 
 .. versionadded:: 2.3
 
-このモジュールではヒープキューアルゴリズムの一実装を提供しています。
-優先度キューアルゴリズムとしても知られています。
+**Source code:** :source:`Lib/heapq.py`
 
-.. seealso::
+--------------
 
-   Latest version of the `heapq Python source code
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/heapq.py?view=markup>`_
+This module provides an implementation of the heap queue algorithm, also known
+as the priority queue algorithm.
 
-ヒープとは、全ての親ノードの値が、その全ての子の値以下であるような
-バイナリツリーです。
-この実装は、全ての *k* に対して、ゼロから要素を数えていった際に、
-``heap[k] <= heap[2*k+1]`` かつ ``heap[k] <= heap[2*k+2]``
-となる配列を使っています。
-比較のために、存在しない要素は無限大として扱われます。ヒープの興味深い性質は、
-最小の要素が常にルート、つまり ``heap[0]`` になることです。
+Heaps are binary trees for which every parent node has a value less than or
+equal to any of its children.  This implementation uses arrays for which
+``heap[k] <= heap[2*k+1]`` and ``heap[k] <= heap[2*k+2]`` for all *k*, counting
+elements from zero.  For the sake of comparison, non-existing elements are
+considered to be infinite.  The interesting property of a heap is that its
+smallest element is always the root, ``heap[0]``.
 
-以下の API は教科書におけるヒープアルゴリズムとは 2 つの側面で異なっています:
-(a) ゼロベースのインデクス化を行っています。
-これにより、ノードに対するインデクスとその子ノードのインデクスの関係がやや明瞭でなくなりますが、
-Python はゼロベースのインデクス化を使っているのでよりしっくりきます。
-(b) われわれの pop メソッドは最大の要素ではなく最小の要素 (教科書では
-"min heap:最小ヒープ" と呼ばれています;
-教科書では並べ替えをインプレースで行うのに適した "max heap:最大ヒープ"
-が一般的です)。
+The API below differs from textbook heap algorithms in two aspects: (a) We use
+zero-based indexing.  This makes the relationship between the index for a node
+and the indexes for its children slightly less obvious, but is more suitable
+since Python uses zero-based indexing. (b) Our pop method returns the smallest
+item, not the largest (called a "min heap" in textbooks; a "max heap" is more
+common in texts because of its suitability for in-place sorting).
 
-これらの 2 点によって、ユーザに戸惑いを与えることなく、ヒープを通常の
-Python リストとして見ることができます: ``heap[0]`` が最小の要素となり、
-``heap.sort()`` はヒープ不変式を保ちます!
+These two make it possible to view the heap as a regular Python list without
+surprises: ``heap[0]`` is the smallest item, and ``heap.sort()`` maintains the
+heap invariant!
 
-ヒープを作成するには、 ``[]`` に初期化されたリストを使うか、
-:func:`heapify` を用いて要素の入ったリストを変換します。
+To create a heap, use a list initialized to ``[]``, or you can transform a
+populated list into a heap via function :func:`heapify`.
 
-以下の関数が提供されています:
+The following functions are provided:
 
 
 .. function:: heappush(heap, item)
 
-   *item* を *heap* に push します。ヒープ不変式を保ちます。
+   Push the value *item* onto the *heap*, maintaining the heap invariant.
 
 
 .. function:: heappop(heap)
 
-   pop を行い、 *heap* から最初の要素を返します。ヒープ不変式は保たれます。
-   ヒープが空の場合、 :exc:`IndexError` が送出されます。
-
+   Pop and return the smallest item from the *heap*, maintaining the heap
+   invariant.  If the heap is empty, :exc:`IndexError` is raised.  To access the
+   smallest item without popping it, use ``heap[0]``.
 
 .. function:: heappushpop(heap, item)
 
-   *item* を *heap* に push した後、pop を行って *heap* から最初の要素を返します。
-   この一続きの動作を :func:`heappush` に引き続いて :func:`heappop`
-   を別々に呼び出すよりも効率的に実行します。
+   Push *item* on the heap, then pop and return the smallest item from the
+   *heap*.  The combined action runs more efficiently than :func:`heappush`
+   followed by a separate call to :func:`heappop`.
 
    .. versionadded:: 2.6
 
 .. function:: heapify(x)
 
-   リスト *x* をインプレース処理し、線形時間でヒープに変換します。
+   Transform list *x* into a heap, in-place, in linear time.
 
 
 .. function:: heapreplace(heap, item)
 
-   *heap* から最小の要素を pop して返し、新たに *item* を push します。ヒープのサイズは変更されません。ヒープが空の場合、
-   :exc:`IndexError` が送出されます。この一息の演算は :func:`heappop` に次いで :func:`heappush`
-   を送出するよりも効率的で、固定サイズのヒープを用いている場合にはより適しています。
-   pop/push の組み合わせは必ずヒープから要素を一つ返し、それを *item* と
-   置き換えます。
+   Pop and return the smallest item from the *heap*, and also push the new *item*.
+   The heap size doesn't change. If the heap is empty, :exc:`IndexError` is raised.
 
-   返される値は加えられた *item* よりも大きくなるかもしれません。
-   それを望まないなら、代わりに :func:`heappushpop` を使うことを
-   考えてください。この push/pop の組み合わせは二つの値の小さい方を返し、
-   大きい方の値をヒープに残します。
+   This one step operation is more efficient than a :func:`heappop` followed by
+   :func:`heappush` and can be more appropriate when using a fixed-size heap.
+   The pop/push combination always returns an element from the heap and replaces
+   it with *item*.
+
+   The value returned may be larger than the *item* added.  If that isn't
+   desired, consider using :func:`heappushpop` instead.  Its push/pop
+   combination returns the smaller of the two values, leaving the larger value
+   on the heap.
 
 
-このモジュールではさらに3つのヒープに基く汎用関数を提供します。
+The module also offers three general purpose functions based on heaps.
 
 
 .. function:: merge(*iterables)
 
-   複数のソートされた入力をマージ(merge)して一つのソートされた出力にします
-   (たとえば、複数のログファイルの時刻の入ったエントリーをマージします)。
-   ソートされた値にわたる :term:`iterator` を返します。
+   Merge multiple sorted inputs into a single sorted output (for example, merge
+   timestamped entries from multiple log files).  Returns an :term:`iterator`
+   over the sorted values.
 
-   ``sorted(itertools.chain(*iterables))`` と似ていますが、
-   イテレータを返し、
-   一度にはデータをメモリに読み込みまず、
-   それぞれの入力が(最小から最大へ)ソートされていることを仮定します。
+   Similar to ``sorted(itertools.chain(*iterables))`` but returns an iterable, does
+   not pull the data into memory all at once, and assumes that each of the input
+   streams is already sorted (smallest to largest).
 
    .. versionadded:: 2.6
 
 
 .. function:: nlargest(n, iterable[, key])
 
-   *iterable* で定義されるデータセットのうち、最大値から降順に *n* 個の値のリストを返します。
-   (あたえられた場合) *key* は、引数を一つとる、 *iterable* のそれぞれの要素から比較キーを生成する関数を指定します:
-   ``key=str.lower`` 以下のコードと同等です: ``sorted(iterable, key=key, reverse=True)[:n]``
+   Return a list with the *n* largest elements from the dataset defined by
+   *iterable*.  *key*, if provided, specifies a function of one argument that is
+   used to extract a comparison key from each element in the iterable:
+   ``key=str.lower`` Equivalent to:  ``sorted(iterable, key=key,
+   reverse=True)[:n]``
 
    .. versionadded:: 2.4
 
    .. versionchanged:: 2.5
-      省略可能な *key* 引数を追加.
+      Added the optional *key* argument.
 
 
 .. function:: nsmallest(n, iterable[, key])
 
-   *iterable* で定義されるデータセットのうち、最小値から昇順に *n* 個の値のリストを返します。
-   (あたえられた場合) *key* は、引数を一つとる、 *iterable* のそれぞれの要素から比較キーを生成する関数を指定します:
-   ``key=str.lower`` 以下のコードと同等です: ``sorted(iterable, key=key)[:n]``
+   Return a list with the *n* smallest elements from the dataset defined by
+   *iterable*.  *key*, if provided, specifies a function of one argument that is
+   used to extract a comparison key from each element in the iterable:
+   ``key=str.lower`` Equivalent to:  ``sorted(iterable, key=key)[:n]``
 
    .. versionadded:: 2.4
 
    .. versionchanged:: 2.5
-      省略可能な *key* 引数を追加.
+      Added the optional *key* argument.
 
-後ろ二つの関数は *n* の値が小さな場合に最適な動作をします。
-大きな値の時には :func:`sorted` 関数の方が効率的です。
-さらに、 ``n==1`` の時には :func:`min` および :func:`max` 関数の方が効率的です。
+The latter two functions perform best for smaller values of *n*.  For larger
+values, it is more efficient to use the :func:`sorted` function.  Also, when
+``n==1``, it is more efficient to use the built-in :func:`min` and :func:`max`
+functions.  If repeated usage of these functions is required, consider turning
+the iterable into an actual heap.
 
 
-基本的な例
-----------
+Basic Examples
+--------------
 
-`ヒープソート <http://ja.wikipedia.org/wiki/%E3%83%92%E3%83%BC%E3%83%97%E3%82%BD%E3%83%BC%E3%83%88>`_ は、
-すべての値をヒープに push し、それから最小の値を一つづつ pop することで
-実装できます::
+A `heapsort <http://en.wikipedia.org/wiki/Heapsort>`_ can be implemented by
+pushing all values onto a heap and then popping off the smallest values one at a
+time::
 
    >>> def heapsort(iterable):
-   ...     'Equivalent to sorted(iterable)'
    ...     h = []
    ...     for value in iterable:
    ...         heappush(h, value)
@@ -146,8 +146,11 @@ Python リストとして見ることができます: ``heap[0]`` が最小の�
    >>> heapsort([1, 3, 5, 7, 9, 2, 4, 6, 8, 0])
    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-ヒープの要素はタプルに出来ます。これは、追跡される主レコードとは別に
-(タスクの優先度のような) 比較値を指定するときに便利です::
+This is similar to ``sorted(iterable)``, but unlike :func:`sorted`, this
+implementation is not stable.
+
+Heap elements can be tuples.  This is useful for assigning comparison values
+(such as task priorities) alongside the main record being tracked::
 
     >>> h = []
     >>> heappush(h, (5, 'write code'))
@@ -158,74 +161,78 @@ Python リストとして見ることができます: ``heap[0]`` が最小の�
     (1, 'write spec')
 
 
-優先度キュー実装の注釈
-----------------------
+Priority Queue Implementation Notes
+-----------------------------------
 
-`優先度つきキュー <http://ja.wikipedia.org/wiki/%E5%84%AA%E5%85%88%E5%BA%A6%E3%81%A4%E3%81%8D%E3%82%AD%E3%83%A5%E3%83%BC>`_ は、
-ヒープの一般的な使い方で、実装にはいくつか困難な点があります:
+A `priority queue <http://en.wikipedia.org/wiki/Priority_queue>`_ is common use
+for a heap, and it presents several implementation challenges:
 
-* ソート安定性: 優先度が等しい二つのタスクが、もともと追加された順序で
-  返されるためにはどうしたらいいでしょうか？
+* Sort stability:  how do you get two tasks with equal priorities to be returned
+  in the order they were originally added?
 
-* 将来の Python 3 では、優先度が等しくてタスクにデフォルトの比較順序がないと、
-  タプルの比較は (priority, task) 対に分けられます。
+* In the future with Python 3, tuple comparison breaks for (priority, task)
+  pairs if the priorities are equal and the tasks do not have a default
+  comparison order.
 
-* あるタスクの優先度が変化したら、どうやってそれをヒープの新しい位置に
-  移動させるのでしょうか？
+* If the priority of a task changes, how do you move it to a new position in
+  the heap?
 
-* 未解決のタスクが削除される必要があるとき、どのようにそれをキューから
-  探して削除するのでしょうか？
+* Or if a pending task needs to be deleted, how do you find it and remove it
+  from the queue?
 
-最初の二つの困難の解決策は、項目を優先度、項目番号、そしてタスクを含む
-3 要素のリストとして保存することです。この項目番号は、同じ優先度の二つの
-タスクが、追加された順序で返されるようにするための同点決勝戦として働きます。
-そして二つの項目番号が等しくなることはありませんので、タプルの比較が
-二つのタスクを直接比べようとすることはありえません。
+A solution to the first two challenges is to store entries as 3-element list
+including the priority, an entry count, and the task.  The entry count serves as
+a tie-breaker so that two tasks with the same priority are returned in the order
+they were added. And since no two entry counts are the same, the tuple
+comparison will never attempt to directly compare two tasks.
 
-残りの困難は主に、未解決のタスクを探して、その優先度を変更したり、
-完全に削除することです。タスクを探すことは、キュー内の項目を指し示す
-辞書によってなされます。
+The remaining challenges revolve around finding a pending task and making
+changes to its priority or removing it entirely.  Finding a task can be done
+with a dictionary pointing to an entry in the queue.
 
-項目を削除したり、優先度を変更することは、ヒープ構造の不変関係を壊すことに
-なるので、もっと難しいです。ですから、可能な解決策は、その項目が無効である
-ものとしてマークし、必要なら変更された優先度の項目を加えることです::
+Removing the entry or changing its priority is more difficult because it would
+break the heap structure invariants.  So, a possible solution is to mark the
+existing entry as removed and add a new entry with the revised priority::
 
-    pq = []                         # 優先度キューリスト
-    counter = itertools.count(1)    # ユニークなシーケンス番号
-    task_finder = {}                # タスクから項目へのマッピング
-    INVALID = 0                     # 項目が削除されたものとしてマークする
+    pq = []                         # list of entries arranged in a heap
+    entry_finder = {}               # mapping of tasks to entries
+    REMOVED = '<removed-task>'      # placeholder for a removed task
+    counter = itertools.count()     # unique sequence count
 
-    def add_task(priority, task, count=None):
-        if count is None:
-            count = next(counter)
+    def add_task(task, priority=0):
+        'Add a new task or update the priority of an existing task'
+        if task in entry_finder:
+            remove_task(task)
+        count = next(counter)
         entry = [priority, count, task]
-        task_finder[task] = entry
+        entry_finder[task] = entry
         heappush(pq, entry)
 
-    def get_top_priority():
-        while True:
+    def remove_task(task):
+        'Mark an existing task as REMOVED.  Raise KeyError if not found.'
+        entry = entry_finder.pop(task)
+        entry[-1] = REMOVED
+
+    def pop_task():
+        'Remove and return the lowest priority task. Raise KeyError if empty.'
+        while pq:
             priority, count, task = heappop(pq)
-            del task_finder[task]
-            if count is not INVALID:
+            if task is not REMOVED:
+                del entry_finder[task]
                 return task
-
-    def delete_task(task):
-        entry = task_finder[task]
-        entry[1] = INVALID
-
-    def reprioritize(priority, task):
-        entry = task_finder[task]
-        add_task(priority, task, entry[1])
-        entry[1] = INVALID
+        raise KeyError('pop from an empty priority queue')
 
 
-理論
-----
+Theory
+------
 
-ヒープとは、全ての *k* について、要素を 0 から数えたときに、 ``a[k] <= a[2*k+1]`` かつ  ``a[k] <= a[2*k+2]``
-となる配列です。比較のために、存在しない要素を無限大と考えます。ヒープの興味深い属性は ``heap[0]`` が常に最小の要素になることです。
+Heaps are arrays for which ``a[k] <= a[2*k+1]`` and ``a[k] <= a[2*k+2]`` for all
+*k*, counting elements from 0.  For the sake of comparison, non-existing
+elements are considered to be infinite.  The interesting property of a heap is
+that ``a[0]`` is always its smallest element.
 
-上記の奇妙な不変式は、勝ち抜き戦判定の際に効率的なメモリ表現を行うためのものです。以下の番号は ``a[k]`` ではなく *k* とします::
+The strange invariant above is meant to be an efficient memory representation
+for a tournament.  The numbers below are *k*, not ``a[k]``::
 
                                   0
 
@@ -237,51 +244,67 @@ Python リストとして見ることができます: ``heap[0]`` が最小の�
 
    15 16   17 18   19 20   21 22   23 24   25 26   27 28   29 30
 
-上の木構造では、各セル *k* は ``2*k+1`` および ``2*k+2`` を最大値としています。
-スポーツに見られるような通常の 2
-つ組勝ち抜き戦では、各セルはその下にある二つのセルに対する勝者となっていて、個々のセルの勝者を追跡していくことにより、そのセルに対する全ての相手を見ることができます。
-しかしながら、このような勝ち抜き戦を使う計算機アプリケーションの多くでは、勝歴を追跡する必要はりません。
-メモリ効率をより高めるために、勝者が上位に進級した際、下のレベルから持ってきて置き換えることにすると、あるセルとその下位にある二つのセルは異なる三つの要素を含み、かつ上位のセルは二つの下位のセルに対して "勝者と" なります。
+In the tree above, each cell *k* is topping ``2*k+1`` and ``2*k+2``. In an usual
+binary tournament we see in sports, each cell is the winner over the two cells
+it tops, and we can trace the winner down the tree to see all opponents s/he
+had.  However, in many computer applications of such tournaments, we do not need
+to trace the history of a winner. To be more memory efficient, when a winner is
+promoted, we try to replace it by something else at a lower level, and the rule
+becomes that a cell and the two cells it tops contain three different items, but
+the top cell "wins" over the two topped cells.
 
-このヒープ不変式が常に守られれば、インデクス 0 は明らかに最勝者となります。
-最勝者の要素を除去し、"次の" 勝者を見つけるための最も単純なアルゴリズム的手法は、ある敗者要素 (ここでは上図のセル 30 とします) を 0 の場所に持っていき、この新しい 0 を濾過するようにしてツリーを下らせて値を交換してゆきます。
-不変関係が再構築されるまでこれを続けます。
-この操作は明らかに、ツリー内の全ての要素数に対して対数的な計算量となります。
-全ての要素について繰り返すと、 O(n log n) のソート(並べ替え)になります。
+If this heap invariant is protected at all time, index 0 is clearly the overall
+winner.  The simplest algorithmic way to remove it and find the "next" winner is
+to move some loser (let's say cell 30 in the diagram above) into the 0 position,
+and then percolate this new 0 down the tree, exchanging values, until the
+invariant is re-established. This is clearly logarithmic on the total number of
+items in the tree. By iterating over all items, you get an O(n log n) sort.
 
-このソートの良い点は、新たに挿入する要素が、その最に取り出す 0 番目の要素よりも "良い値" でない限り、ソートを行っている最中に新たな要素を効率的に追加できるというところです。
+A nice feature of this sort is that you can efficiently insert new items while
+the sort is going on, provided that the inserted items are not "better" than the
+last 0'th element you extracted.  This is especially useful in simulation
+contexts, where the tree holds all incoming events, and the "win" condition
+means the smallest scheduled time.  When an event schedules other events for
+execution, they are scheduled into the future, so they can easily go into the
+heap.  So, a heap is a good structure for implementing schedulers (this is what
+I used for my MIDI sequencer :-).
 
-この性質は、シミュレーション的な状況で、ツリーで全ての入力イベントを保持し、"勝者となる状況" を最小のスケジュール時刻にするような場合に特に便利です。
-あるイベントが他のイベント群の実行をスケジュールする際、それらは未来にスケジュールされることになるので、それらのイベント群を容易にヒープに積むことができます。
-すなわち、ヒープはスケジューラを実装する上で良いデータ構造であるといえます (私は MIDI
-シーケンサで使っているものです。 :-)
+Various structures for implementing schedulers have been extensively studied,
+and heaps are good for this, as they are reasonably speedy, the speed is almost
+constant, and the worst case is not much different than the average case.
+However, there are other representations which are more efficient overall, yet
+the worst cases might be terrible.
 
-これまでスケジューラを実装するための様々なデータ構造が広範に研究されています。
-ヒープは十分高速で、速度もおおむね一定であり、最悪の場合でも平均的な速度とさほど変わらないため良いデータ構造といえます。
-しかし、最悪の場合がひどい速度になることを除き、たいていでより効率の高い他のデータ構造表現も存在します。
+Heaps are also very useful in big disk sorts.  You most probably all know that a
+big sort implies producing "runs" (which are pre-sorted sequences, whose size is
+usually related to the amount of CPU memory), followed by a merging passes for
+these runs, which merging is often very cleverly organised [#]_. It is very
+important that the initial sort produces the longest runs possible.  Tournaments
+are a good way to achieve that.  If, using all the memory available to hold a
+tournament, you replace and percolate items that happen to fit the current run,
+you'll produce runs which are twice the size of the memory for random input, and
+much better for input fuzzily ordered.
 
-ヒープはまた、巨大なディスクのソートでも非常に有用です。
-おそらくご存知のように、巨大なソートを行うと、複数の "ラン (run)"
-(予めソートされた配列で、そのサイズは通常 CPU メモリの量に関係しています) が生成され、続いて統合処理 (merging) がこれらのランを判定します。
-この統合処理はしばしば非常に巧妙に組織されています [#]_ 。
-重要なのは、最初のソートが可能な限り長いランを生成することです。
-勝ち抜き戦はこれを行うための良い方法です。
-もし利用可能な全てのメモリを使って勝ち抜き戦を行い、要素を置換および濾過処理して現在のランに収めれば、ランダムな入力に対してメモリの二倍のサイズのランを生成することになり、大体順序づけがなされている入力に対してはもっと高い効率になります。
+Moreover, if you output the 0'th item on disk and get an input which may not fit
+in the current tournament (because the value "wins" over the last output value),
+it cannot fit in the heap, so the size of the heap decreases.  The freed memory
+could be cleverly reused immediately for progressively building a second heap,
+which grows at exactly the same rate the first heap is melting.  When the first
+heap completely vanishes, you switch heaps and start a new run.  Clever and
+quite effective!
 
-さらに、ディスク上の 0 番目の要素を出力して、現在の勝ち抜き戦に (最後に出力した値に "勝って" しまうために) 収められない入力を得たなら、ヒープには収まらないため、ヒープのサイズは減少します。
-解放されたメモリは二つ目のヒープを段階的に構築するために巧妙に再利用することができ、この二つ目のヒープは最初のヒープが崩壊していくのと同じ速度で成長します。
-最初のヒープが完全に消滅したら、ヒープを切り替えて新たなランを開始します。
-なんと巧妙で効率的なのでしょう！
+In a word, heaps are useful memory structures to know.  I use them in a few
+applications, and I think it is good to keep a 'heap' module around. :-)
 
-一言で言うと、ヒープは知って得するメモリ構造です。
-私はいくつかのアプリケーションでヒープを使っていて、
-'ヒープ' モジュールを常備するのはいい事だと考えています。 :-)
+.. rubric:: Footnotes
 
-.. rubric:: 注記
-
-.. [#] 現在使われているディスクバランス化アルゴリズムは、最近はもはや巧妙というよりも目障りであり、このためにディスクに対するシーク機能が重要になっています。
-   巨大な容量を持つテープのようにシーク不能なデバイスでは、事情は全く異なり、個々のテープ上の移動が可能な限り効率的に行われるように非常に巧妙な処理を (相当前もって) 行わねばなりません (すなわち、もっとも統合処理の "進行" に関係があります)。
-   テープによっては逆方向に読むことさえでき、巻き戻しに時間を取られるのを避けるために使うこともできます。
-   正直、本当に良いテープソートは見ていて素晴らしく驚異的なものです！
-   ソートというのは常に偉大な芸術なのです！:-)
+.. [#] The disk balancing algorithms which are current, nowadays, are more annoying
+   than clever, and this is a consequence of the seeking capabilities of the disks.
+   On devices which cannot seek, like big tape drives, the story was quite
+   different, and one had to be very clever to ensure (far in advance) that each
+   tape movement will be the most effective possible (that is, will best
+   participate at "progressing" the merge).  Some tapes were even able to read
+   backwards, and this was also used to avoid the rewinding time. Believe me, real
+   good tape sorts were quite spectacular to watch! From all times, sorting has
+   always been a Great Art! :-)
 

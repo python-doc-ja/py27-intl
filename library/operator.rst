@@ -1,9 +1,8 @@
-
-:mod:`operator` --- 関数形式の標準演算子
-========================================
+:mod:`operator` --- Standard operators as functions
+===================================================
 
 .. module:: operator
-   :synopsis: 標準演算子に対応する関数
+   :synopsis: Functions corresponding to the standard operators.
 .. sectionauthor:: Skip Montanaro <skip@automatrix.com>
 
 
@@ -13,16 +12,18 @@
    from operator import itemgetter
 
 
-:mod:`operator` モジュールは、Python 固有の各演算子に対応している
-C 言語で実装された関数セットを提供します。例えば、
-``operator.add(x, y)`` は式 ``x+y`` と等価です。
-関数名は特殊なクラスメソッドとして扱われます; 便宜上、先頭と末尾の
-``__``  を取り除いたものも提供されています。
+The :mod:`operator` module exports a set of efficient functions corresponding to
+the intrinsic operators of Python.  For example, ``operator.add(x, y)`` is
+equivalent to the expression ``x+y``.  The function names are those used for
+special class methods; variants without leading and trailing ``__`` are also
+provided for convenience.
 
-これらの関数はそれぞれ、オブジェクトの比較、論理演算、数学演算、
-シーケンス操作、および抽象型テストに分類されます。
+The functions fall into categories that perform object comparisons, logical
+operations, mathematical operations, sequence operations, and abstract type
+tests.
 
-オブジェクト比較関数は全てのオブジェクトで有効で、関数の名前はサポートする大小比較演算子からとられています:
+The object comparison functions are useful for all objects, and are named after
+the rich comparison operators they support:
 
 
 .. function:: lt(a, b)
@@ -38,135 +39,143 @@ C 言語で実装された関数セットを提供します。例えば、
               __ge__(a, b)
               __gt__(a, b)
 
-   これらは  *a* および *b* の大小比較を行います。
-   特に、 ``lt(a, b)`` は ``a < b`` 、 ``le(a, b)`` は ``a <= b`` 、
-   ``eq(a, b)`` は ``a == b`` 、 ``ne(a, b)`` は ``a != b`` 、
-   ``gt(a, b)`` は ``a > b`` 、そして ``ge(a, b)`` は ``a >= b`` と等価です。
-   組み込み関数 :func:`cmp` と違って、これらの関数はどのような値を返してもよく、
-   ブール代数値として解釈できてもできなくてもかまいません。
-   大小比較の詳細については :ref:`comparisons` を参照してください。
+   Perform "rich comparisons" between *a* and *b*. Specifically, ``lt(a, b)`` is
+   equivalent to ``a < b``, ``le(a, b)`` is equivalent to ``a <= b``, ``eq(a,
+   b)`` is equivalent to ``a == b``, ``ne(a, b)`` is equivalent to ``a != b``,
+   ``gt(a, b)`` is equivalent to ``a > b`` and ``ge(a, b)`` is equivalent to ``a
+   >= b``.  Note that unlike the built-in :func:`cmp`, these functions can
+   return any value, which may or may not be interpretable as a Boolean value.
+   See :ref:`comparisons` for more information about rich comparisons.
 
    .. versionadded:: 2.2
 
-論理演算もまた全てのオブジェクトに対して適用することができ、真値テスト、同一性テストおよびブール演算をサポートします:
+The logical operations are also generally applicable to all objects, and support
+truth tests, identity tests, and boolean operations:
 
 
 .. function:: not_(obj)
               __not__(obj)
 
-   :keyword:`not` *obj* の結果を返します。(オブジェクトのインスタンスには :meth:`__not__`
-   メソッドは適用されないので注意してください; この操作を定義しているのはインタプリタコアだけです。結果は :meth:`__nonzero__` および
-   :meth:`__len__` メソッドによって影響されます。)
+   Return the outcome of :keyword:`not` *obj*.  (Note that there is no
+   :meth:`__not__` method for object instances; only the interpreter core defines
+   this operation.  The result is affected by the :meth:`__nonzero__` and
+   :meth:`__len__` methods.)
 
 
 .. function:: truth(obj)
 
-   *obj* が真の場合 ``True`` を返し、そうでない場合 ``False``
-   を返します。この関数は :class:`bool` のコンストラクタ呼び出しと同等です。
+   Return :const:`True` if *obj* is true, and :const:`False` otherwise.  This is
+   equivalent to using the :class:`bool` constructor.
 
 
 .. function:: is_(a, b)
 
-   ``a is b`` を返します。オブジェクトの同一性をテストします。
+   Return ``a is b``.  Tests object identity.
+
+   .. versionadded:: 2.3
 
 
 .. function:: is_not(a, b)
 
-   ``a is not b`` を返します。オブジェクトの同一性をテストします。
+   Return ``a is not b``.  Tests object identity.
 
-演算子で最も多いのは数学演算およびビット単位の演算です:
+   .. versionadded:: 2.3
+
+The mathematical and bitwise operations are the most numerous:
 
 
 .. function:: abs(obj)
               __abs__(obj)
 
-   *obj* の絶対値を返します。
+   Return the absolute value of *obj*.
 
 
 .. function:: add(a, b)
               __add__(a, b)
 
-   数値 *a* および *b* について ``a + b`` を返します。
+   Return ``a + b``, for *a* and *b* numbers.
 
 
 .. function:: and_(a, b)
               __and__(a, b)
 
-   *a* と *b* の論理積を返します。
+   Return the bitwise and of *a* and *b*.
 
 
 .. function:: div(a, b)
               __div__(a, b)
 
-   ``__future__.division`` が有効でない場合には ``a / b`` を返します。
-   "古い(classic)" 除算としても知られています。
+   Return ``a / b`` when ``__future__.division`` is not in effect.  This is
+   also known as "classic" division.
 
 
 .. function:: floordiv(a, b)
               __floordiv__(a, b)
 
-   ``a // b`` を返します。
+   Return ``a // b``.
 
    .. versionadded:: 2.2
+
 
 .. function:: index(a)
               __index__(a)
 
-   整数に変換された *a* を返します。 ``a.__index__()`` と同等です。
+   Return *a* converted to an integer.  Equivalent to ``a.__index__()``.
 
    .. versionadded:: 2.5
+
 
 .. function:: inv(obj)
               invert(obj)
               __inv__(obj)
               __invert__(obj)
 
-   *obj* のビット単位反転を返します。 ``~obj`` と同じです。
+   Return the bitwise inverse of the number *obj*.  This is equivalent to ``~obj``.
 
    .. versionadded:: 2.0
-      名前 :func:`invert` および :func:`__invert__` が追加されました。
+      The names :func:`invert` and :func:`__invert__`.
 
 
 .. function:: lshift(a, b)
               __lshift__(a, b)
 
-   *a* の *b* ビット左シフトを返します。
+   Return *a* shifted left by *b*.
 
 
 .. function:: mod(a, b)
               __mod__(a, b)
 
-   ``a % b`` を返します。
+   Return ``a % b``.
 
 
 .. function:: mul(a, b)
               __mul__(a, b)
 
-   数値 *a* および *b* について ``a * b`` を返します。
+   Return ``a * b``, for *a* and *b* numbers.
 
 
 .. function:: neg(obj)
               __neg__(obj)
 
-   *obj* の符号反転 (``-obj``) を返します。
+   Return *obj* negated (``-obj``).
 
 
 .. function:: or_(a, b)
               __or__(a, b)
 
-   *a* と *b* の論理和を返します。
+   Return the bitwise or of *a* and *b*.
 
 
 .. function:: pos(obj)
               __pos__(obj)
 
-   *obj* の符号非反転 (``+obj``) を返します。
+   Return *obj* positive (``+obj``).
 
 
 .. function:: pow(a, b)
               __pow__(a, b)
 
-   数値 *a* および *b* について ``a ** b`` を返します。
+   Return ``a ** b``, for *a* and *b* numbers.
 
    .. versionadded:: 2.3
 
@@ -174,20 +183,20 @@ C 言語で実装された関数セットを提供します。例えば、
 .. function:: rshift(a, b)
               __rshift__(a, b)
 
-   *a* の *b* ビット右シフトを返します。
+   Return *a* shifted right by *b*.
 
 
 .. function:: sub(a, b)
               __sub__(a, b)
 
-   ``a - b`` を返します。
+   Return ``a - b``.
 
 
 .. function:: truediv(a, b)
               __truediv__(a, b)
 
-   ``__future__.division`` が有効な場合 ``a / b``  を返します。
-   "真の"除算としても知られています。
+   Return ``a / b`` when ``__future__.division`` is in effect.  This is also
+   known as "true" division.
 
    .. versionadded:: 2.2
 
@@ -195,99 +204,101 @@ C 言語で実装された関数セットを提供します。例えば、
 .. function:: xor(a, b)
               __xor__(a, b)
 
-   *a* および *b* の排他的論理和を返します。
+   Return the bitwise exclusive or of *a* and *b*.
 
 
-シーケンスを扱う演算子（いくつかの演算子は map 型も扱います）には以下のようなものがあります:
+Operations which work with sequences (some of them with mappings too) include:
 
 .. function:: concat(a, b)
               __concat__(a, b)
 
-   シーケンス *a* および *b* について ``a + b`` を返します。
+   Return ``a + b`` for *a* and *b* sequences.
 
 
 .. function:: contains(a, b)
               __contains__(a, b)
 
-   ``b in a`` を調べた結果を返します。演算対象が左右反転しているので注意してください。
+   Return the outcome of the test ``b in a``. Note the reversed operands.
 
    .. versionadded:: 2.0
-      関数名 :func:`__contains__` が追加されました。
+      The name :func:`__contains__`.
 
 
 .. function:: countOf(a, b)
 
-   *a* の中に *b* が出現する回数を返します。
+   Return the number of occurrences of *b* in *a*.
 
 
 .. function:: delitem(a, b)
               __delitem__(a, b)
 
-   *a* でインデクスが *b* の要素を削除します。
+   Remove the value of *a* at index *b*.
 
 
 .. function:: delslice(a, b, c)
               __delslice__(a, b, c)
 
-   *a* でインデクスが *b* から *c-1* のスライス要素を削除します。
+   Delete the slice of *a* from index *b* to index *c-1*.
 
    .. deprecated:: 2.6
-      この関数は Python 3.x で削除されます。
-      :func:`delitem` をスライスインデクスで使って下さい。
+      This function is removed in Python 3.x.  Use :func:`delitem` with a slice
+      index.
+
 
 .. function:: getitem(a, b)
               __getitem__(a, b)
 
-   *a* でインデクスが *b* の要素を返します。
+   Return the value of *a* at index *b*.
 
 
 .. function:: getslice(a, b, c)
               __getslice__(a, b, c)
 
-   *a* でインデクスが *b* から *c-1* のスライス要素を返します。
+   Return the slice of *a* from index *b* to index *c-1*.
 
    .. deprecated:: 2.6
-      この関数は Python 3.x で削除されます。
-      :func:`getitem` をスライスインデクスで使って下さい。
+      This function is removed in Python 3.x.  Use :func:`getitem` with a slice
+      index.
+
 
 .. function:: indexOf(a, b)
 
-   *a* で最初に *b* が出現する場所のインデクスを返します。
+   Return the index of the first of occurrence of *b* in *a*.
 
 
 .. function:: repeat(a, b)
               __repeat__(a, b)
 
    .. deprecated:: 2.7
-      代わりに :func:`__mul__` を使って下さい。
+      Use :func:`__mul__` instead.
 
-   シーケンス *a* と整数 *b* について ``a * b`` を返します。
+   Return ``a * b`` where *a* is a sequence and *b* is an integer.
 
 
 .. function:: sequenceIncludes(...)
 
    .. deprecated:: 2.0
-      :func:`contains` を使ってください。
+      Use :func:`contains` instead.
 
-   :func:`contains` の別名です。
+   Alias for :func:`contains`.
 
 
 .. function:: setitem(a, b, c)
               __setitem__(a, b, c)
 
-   *a* でインデクスが *b* の要素の値を *c* に設定します。
+   Set the value of *a* at index *b* to *c*.
 
 
 .. function:: setslice(a, b, c, v)
               __setslice__(a, b, c, v)
 
-   *a* でインデクスが *b* から *c-1* のスライス要素の値をシーケンス *v* に設定します。
+   Set the slice of *a* from index *b* to index *c-1* to the sequence *v*.
 
    .. deprecated:: 2.6
-      この関数は Python 3.x で削除されます。
-      :func:`setitem` をスライスインデクスで使って下さい。
+      This function is removed in Python 3.x.  Use :func:`setitem` with a slice
+      index.
 
-operator の関数を使う例を挙げます::
+Example use of operator functions::
 
     >>> # Elementwise multiplication
     >>> map(mul, [0, 1, 2, 3], [10, 20, 30, 40])
@@ -297,18 +308,17 @@ operator の関数を使う例を挙げます::
     >>> sum(map(mul, [0, 1, 2, 3], [10, 20, 30, 40]))
     200
 
-多くの演算に「その場」バージョンがあります。
-以下の関数はそうした演算子の通常の文法に比べてより素朴な呼び出し方を提供します。
-たとえば、文(:term:`statement`) ``x += y`` は
-``x = operator.iadd(x, y)`` と等価です。
-別の言い方をすると、 ``z = operator.iadd(x, y)``
-は複合文 ``z = x; z += y`` と等価です。
-
+Many operations have an "in-place" version.  The following functions provide a
+more primitive access to in-place operators than the usual syntax does; for
+example, the :term:`statement` ``x += y`` is equivalent to
+``x = operator.iadd(x, y)``.  Another way to put it is to say that
+``z = operator.iadd(x, y)`` is equivalent to the compound statement
+``z = x; z += y``.
 
 .. function:: iadd(a, b)
               __iadd__(a, b)
 
-   ``a = iadd(a, b)`` は ``a += b`` と等価です。
+   ``a = iadd(a, b)`` is equivalent to ``a += b``.
 
    .. versionadded:: 2.5
 
@@ -316,7 +326,7 @@ operator の関数を使う例を挙げます::
 .. function:: iand(a, b)
               __iand__(a, b)
 
-   ``a = iand(a, b)`` は ``a &= b`` と等価です。
+   ``a = iand(a, b)`` is equivalent to ``a &= b``.
 
    .. versionadded:: 2.5
 
@@ -324,7 +334,7 @@ operator の関数を使う例を挙げます::
 .. function:: iconcat(a, b)
               __iconcat__(a, b)
 
-   ``a = iconcat(a, b)`` は二つのシーケンス *a* と *b* に対し ``a += b`` と等価です。
+   ``a = iconcat(a, b)`` is equivalent to ``a += b`` for *a* and *b* sequences.
 
    .. versionadded:: 2.5
 
@@ -332,7 +342,8 @@ operator の関数を使う例を挙げます::
 .. function:: idiv(a, b)
               __idiv__(a, b)
 
-   ``a = idiv(a, b)`` は ``__future__.division`` が有効でないときに ``a /= b`` と等価です。
+   ``a = idiv(a, b)`` is equivalent to ``a /= b`` when ``__future__.division`` is
+   not in effect.
 
    .. versionadded:: 2.5
 
@@ -340,7 +351,7 @@ operator の関数を使う例を挙げます::
 .. function:: ifloordiv(a, b)
               __ifloordiv__(a, b)
 
-   ``a = ifloordiv(a, b)`` は ``a //= b`` と等価です。
+   ``a = ifloordiv(a, b)`` is equivalent to ``a //= b``.
 
    .. versionadded:: 2.5
 
@@ -348,7 +359,7 @@ operator の関数を使う例を挙げます::
 .. function:: ilshift(a, b)
               __ilshift__(a, b)
 
-   ``a = ilshift(a, b)`` は ``a <`` \ ``<= b`` と等価です。
+   ``a = ilshift(a, b)`` is equivalent to ``a <<= b``.
 
    .. versionadded:: 2.5
 
@@ -356,7 +367,7 @@ operator の関数を使う例を挙げます::
 .. function:: imod(a, b)
               __imod__(a, b)
 
-   ``a = imod(a, b)`` は ``a %= b`` と等価です。
+   ``a = imod(a, b)`` is equivalent to ``a %= b``.
 
    .. versionadded:: 2.5
 
@@ -364,7 +375,7 @@ operator の関数を使う例を挙げます::
 .. function:: imul(a, b)
               __imul__(a, b)
 
-   ``a = imul(a, b)`` は ``a *= b`` と等価です。
+   ``a = imul(a, b)`` is equivalent to ``a *= b``.
 
    .. versionadded:: 2.5
 
@@ -372,7 +383,7 @@ operator の関数を使う例を挙げます::
 .. function:: ior(a, b)
               __ior__(a, b)
 
-   ``a = ior(a, b)`` は ``a |= b`` と等価です。
+   ``a = ior(a, b)`` is equivalent to ``a |= b``.
 
    .. versionadded:: 2.5
 
@@ -380,7 +391,7 @@ operator の関数を使う例を挙げます::
 .. function:: ipow(a, b)
               __ipow__(a, b)
 
-   ``a = ipow(a, b)`` は ``a **= b`` と等価です。
+   ``a = ipow(a, b)`` is equivalent to ``a **= b``.
 
    .. versionadded:: 2.5
 
@@ -389,9 +400,10 @@ operator の関数を使う例を挙げます::
               __irepeat__(a, b)
 
    .. deprecated:: 2.7
-      代わりに :func:`__imul__` を使って下さい。
+      Use :func:`__imul__` instead.
 
-   ``a = irepeat(a, b)`` は *a* がシーケンスで *b* が整数であるとき ``a *= b`` と等価です。
+   ``a = irepeat(a, b)`` is equivalent to ``a *= b`` where *a* is a sequence and
+   *b* is an integer.
 
    .. versionadded:: 2.5
 
@@ -399,7 +411,7 @@ operator の関数を使う例を挙げます::
 .. function:: irshift(a, b)
               __irshift__(a, b)
 
-   ``a = irshift(a, b)`` は ``a >>= b`` と等価です。
+   ``a = irshift(a, b)`` is equivalent to ``a >>= b``.
 
    .. versionadded:: 2.5
 
@@ -407,7 +419,7 @@ operator の関数を使う例を挙げます::
 .. function:: isub(a, b)
               __isub__(a, b)
 
-   ``a = isub(a, b)`` は ``a -= b`` と等価です。
+   ``a = isub(a, b)`` is equivalent to ``a -= b``.
 
    .. versionadded:: 2.5
 
@@ -415,7 +427,8 @@ operator の関数を使う例を挙げます::
 .. function:: itruediv(a, b)
               __itruediv__(a, b)
 
-   ``a = itruediv(a, b)`` は ``__future__.division`` が有効なときに ``a /= b`` と等価です。
+   ``a = itruediv(a, b)`` is equivalent to ``a /= b`` when ``__future__.division``
+   is in effect.
 
    .. versionadded:: 2.5
 
@@ -423,64 +436,76 @@ operator の関数を使う例を挙げます::
 .. function:: ixor(a, b)
               __ixor__(a, b)
 
-   ``a = ixor(a, b)`` は ``a ^= b`` と等価です。
+   ``a = ixor(a, b)`` is equivalent to ``a ^= b``.
 
    .. versionadded:: 2.5
 
-:mod:`operator` モジュールでは、オブジェクトの型を調べるための述語演算子も定義しています。
-しかしながらこれらはいつでも信頼できるというわけではありません。
-代わりに抽象基底クラスをテストするのが望ましい方法です
-(詳しくは :mod:`collections` や :mod:`numbers` を参照して下さい)。
 
+The :mod:`operator` module also defines a few predicates to test the type of
+objects; however, these are not all reliable.  It is preferable to test
+abstract base classes instead (see :mod:`collections` and
+:mod:`numbers` for details).
 
 .. function:: isCallable(obj)
 
    .. deprecated:: 2.0
-      :func:`isinstance(x, collections.Callable)` を使ってください。
+      Use ``isinstance(x, collections.Callable)`` instead.
 
-   オブジェクト *obj* を関数のように呼び出すことができる場合真を返し、
-   それ以外の場合偽を返します。関数、バインドおよび非バインドメソッド、
-   クラスオブジェクト、および :meth:`__call__` メソッドをサポートするインスタンスオブジェクトは真を返します。
+   Returns true if the object *obj* can be called like a function, otherwise it
+   returns false.  True is returned for functions, bound and unbound methods, class
+   objects, and instance objects which support the :meth:`__call__` method.
 
 
 .. function:: isMappingType(obj)
 
    .. deprecated:: 2.7
-      代わりに ``isinstance(x, collections.Mapping)`` を使って下さい。
+      Use ``isinstance(x, collections.Mapping)`` instead.
 
-   オブジェクト *obj* がマップ型インタフェースをサポートする場合に真を返します。
-   辞書および :meth:`__getitem__`
-   メソッドが定義された全てのインスタンスオブジェクトに対しては、この値は真になります。
+   Returns true if the object *obj* supports the mapping interface. This is true for
+   dictionaries and all instance objects defining :meth:`__getitem__`.
+
 
 .. function:: isNumberType(obj)
 
    .. deprecated:: 2.7
-      代わりに ``isinstance(x, numbers.Number)`` を使って下さい。
+      Use ``isinstance(x, numbers.Number)`` instead.
 
-   オブジェクト *obj* が数値を表現している場合に真を返します。
-   C で実装された全ての数値型対して、この値は真になります。
+   Returns true if the object *obj* represents a number.  This is true for all
+   numeric types implemented in C.
+
 
 .. function:: isSequenceType(obj)
 
    .. deprecated:: 2.7
-      代わりに ``isinstance(x, collections.Sequence)`` を使って下さい。
+      Use ``isinstance(x, collections.Sequence)`` instead.
 
-   *obj* がシーケンス型プロトコルをサポートする場合に真を返します。
-   シーケンス型メソッドを C で定義している全てのオブジェクトおよび
-   :meth:`__getitem__` メソッドが定義された全てのインスタンスオブジェクトに対して、この値は真になります。
-
-:mod:`operator` モジュールはアトリビュートとアイテムの汎用的な検索のための道具も定義しています。 :func:`map`,
-:func:`sorted`, :meth:`itertools.groupby`,  や関数を引数に取るその他の関数に対して高速にフィールドを抽出する際に
-引数として使うと便利です。
+   Returns true if the object *obj* supports the sequence protocol. This returns true
+   for all objects which define sequence methods in C, and for all instance objects
+   defining :meth:`__getitem__`.
 
 
-.. function:: attrgetter(attr[, args...])
+The :mod:`operator` module also defines tools for generalized attribute and item
+lookups.  These are useful for making fast field extractors as arguments for
+:func:`map`, :func:`sorted`, :meth:`itertools.groupby`, or other functions that
+expect a function argument.
 
-   演算対象から *attr* を取得する呼び出し可能なオブジェクトを返します。二つ以上のアトリビュートを要求された場合には、アトリビュートのタプルを返します。
-   ``f = attrgetter('name')`` とした後で、 ``f(b)`` を呼び出すと ``b.name`` を返します。
-   ``f = attrgetter('name', 'date')`` とした後で、 ``f(b)`` を呼び出すと ``(b.name, b.date)``
-   を返します。
-   以下と等価です::
+
+.. function:: attrgetter(attr)
+              attrgetter(*attrs)
+
+   Return a callable object that fetches *attr* from its operand.
+   If more than one attribute is requested, returns a tuple of attributes.
+   The attribute names can also contain dots. For example:
+
+   * After ``f = attrgetter('name')``, the call ``f(b)`` returns ``b.name``.
+
+   * After ``f = attrgetter('name', 'date')``, the call ``f(b)`` returns
+     ``(b.name, b.date)``.
+
+   * After ``f = attrgetter('name.first', 'name.last')``, the call ``f(b)``
+     returns ``(b.name.first, b.name.last)``.
+
+   Equivalent to::
 
       def attrgetter(*items):
           if len(items) == 1:
@@ -489,7 +514,7 @@ operator の関数を使う例を挙げます::
                   return resolve_attr(obj, attr)
           else:
               def g(obj):
-                  return tuple(resolve_att(obj, attr) for attr in items)
+                  return tuple(resolve_attr(obj, attr) for attr in items)
           return g
 
       def resolve_attr(obj, attr):
@@ -498,24 +523,28 @@ operator の関数を使う例を挙げます::
           return obj
 
 
-   アトリビュート名にドットを含んでも構いません。
-   ``f = attrgetter('date.month')`` とした後で、 ``f(b)`` を呼び出すと ``b.date.month`` を返します。
-
    .. versionadded:: 2.4
 
    .. versionchanged:: 2.5
-      複数のアトリビュートがサポートされました。
+      Added support for multiple attributes.
 
    .. versionchanged:: 2.6
-      ドット付きアトリビュートがサポートされました。
+      Added support for dotted attributes.
 
 
-.. function:: itemgetter(item[, args...])
+.. function:: itemgetter(item)
+              itemgetter(*items)
 
-   演算対象からその :meth:`__getitem__` メソッドを使って
-   *item* を取得する呼び出し可能なオブジェクトを返します。
-   二つ以上のアイテムを要求された場合には、アイテムのタプルを返します。
-   以下のコードと等価です::
+   Return a callable object that fetches *item* from its operand using the
+   operand's :meth:`__getitem__` method.  If multiple items are specified,
+   returns a tuple of lookup values.  For example:
+
+   * After ``f = itemgetter(2)``, the call ``f(r)`` returns ``r[2]``.
+
+   * After ``g = itemgetter(2, 5, 3)``, the call ``g(r)`` returns
+     ``(r[2], r[5], r[3])``.
+
+   Equivalent to::
 
       def itemgetter(*items):
           if len(items) == 1:
@@ -527,9 +556,9 @@ operator の関数を使う例を挙げます::
                   return tuple(obj[item] for item in items)
           return g
 
-   アイテムは演算対象の :meth:`__getitem__` メソッドが受け付けるどんな型でも構いません。
-   辞書ならば任意のハッシュ可能な値を受け付けますし、
-   リスト、タプル、文字列などはインデクスかスライスを受け付けます:
+   The items can be any type accepted by the operand's :meth:`__getitem__`
+   method.  Dictionaries accept any hashable value.  Lists, tuples, and
+   strings accept an index or a slice:
 
       >>> itemgetter(1)('ABCDEFG')
       'B'
@@ -541,9 +570,10 @@ operator の関数を使う例を挙げます::
    .. versionadded:: 2.4
 
    .. versionchanged:: 2.5
-      複数のアトリビュートがサポートされました.
+      Added support for multiple item extraction.
 
-   :func:`itemgetter` を使って特定のフィールドをタプルから取り出す例:
+   Example of using :func:`itemgetter` to retrieve specific fields from a
+   tuple record:
 
       >>> inventory = [('apple', 3), ('banana', 2), ('pear', 5), ('orange', 1)]
       >>> getcount = itemgetter(1)
@@ -555,98 +585,108 @@ operator の関数を使う例を挙げます::
 
 .. function:: methodcaller(name[, args...])
 
-   引数の *name* メソッドを呼び出す呼び出し可能オブジェクトを返します。
-   追加の引数および/またはキーワード引数が与えられると、
-   これらもそのメソッドに引き渡されます。
-   ``f = methodcaller('name')`` とした後で、 ``f(b)`` を呼び出すと ``b.name()`` を返します。
-   ``f = methodcaller('name', 'foo', bar=1)`` とした後で、 ``f(b)`` を呼び出すと ``b.name('foo', bar=1)`` を返します。
-   以下と等価です::
+   Return a callable object that calls the method *name* on its operand.  If
+   additional arguments and/or keyword arguments are given, they will be given
+   to the method as well.  For example:
+
+   * After ``f = methodcaller('name')``, the call ``f(b)`` returns ``b.name()``.
+
+   * After ``f = methodcaller('name', 'foo', bar=1)``, the call ``f(b)``
+     returns ``b.name('foo', bar=1)``.
+
+   Equivalent to::
 
       def methodcaller(name, *args, **kwargs):
           def caller(obj):
               return getattr(obj, name)(*args, **kwargs)
           return caller
 
+   .. versionadded:: 2.6
+
 
 .. _operator-map:
 
-演算子から関数への対応表
-------------------------
+Mapping Operators to Functions
+------------------------------
 
-下のテーブルでは、個々の抽象的な操作が、どのように Python 構文上の各演算子や :mod:`operator` モジュールの関数に対応しているか
-を示しています。
+This table shows how abstract operations correspond to operator symbols in the
+Python syntax and the functions in the :mod:`operator` module.
 
-+----------------------+-------------------------+----------------------------------------+
-| 操作                 | 構文                    | 関数                                   |
-+======================+=========================+========================================+
-| 加算                 | ``a + b``               | ``add(a, b)``                          |
-+----------------------+-------------------------+----------------------------------------+
-| 結合                 | ``seq1 + seq2``         | ``concat(seq1, seq2)``                 |
-+----------------------+-------------------------+----------------------------------------+
-| 包含テスト           | ``obj in seq``          | ``contains(seq, obj)``                 |
-+----------------------+-------------------------+----------------------------------------+
-| 除算                 | ``a / b``               | ``div(a, b)``                          |
-|                      |                         | (``__future__.division`` が無効な場合) |
-+----------------------+-------------------------+----------------------------------------+
-| 除算                 | ``a / b``               | ``truediv(a, b)``                      |
-|                      |                         | (``__future__.division`` が有効な場合) |
-+----------------------+-------------------------+----------------------------------------+
-| 除算                 | ``a // b``              | ``floordiv(a, b)``                     |
-+----------------------+-------------------------+----------------------------------------+
-| 論理積               | ``a & b``               | ``and_(a, b)``                         |
-+----------------------+-------------------------+----------------------------------------+
-| 排他的論理和         | ``a ^ b``               | ``xor(a, b)``                          |
-+----------------------+-------------------------+----------------------------------------+
-| ビット反転           | ``~ a``                 | ``invert(a)``                          |
-+----------------------+-------------------------+----------------------------------------+
-| 論理和               | ``a | b``               | ``or_(a, b)``                          |
-+----------------------+-------------------------+----------------------------------------+
-| べき乗               | ``a ** b``              | ``pow(a, b)``                          |
-+----------------------+-------------------------+----------------------------------------+
-| インデクス指定の代入 | ``obj[k] = v``          | ``setitem(obj, k, v)``                 |
-+----------------------+-------------------------+----------------------------------------+
-| インデクス指定の削除 | ``del obj[k]``          | ``delitem(obj, k)``                    |
-+----------------------+-------------------------+----------------------------------------+
-| インデクス指定       | ``obj[k]``              | ``getitem(obj, k)``                    |
-+----------------------+-------------------------+----------------------------------------+
-| 左シフト             | ``a << b``              | ``lshift(a, b)``                       |
-+----------------------+-------------------------+----------------------------------------+
-| 剰余                 | ``a % b``               | ``mod(a, b)``                          |
-+----------------------+-------------------------+----------------------------------------+
-| 乗算                 | ``a * b``               | ``mul(a, b)``                          |
-+----------------------+-------------------------+----------------------------------------+
-| (算術)否             | ``- a``                 | ``neg(a)``                             |
-+----------------------+-------------------------+----------------------------------------+
-| (論理)否             | ``not a``               | ``not_(a)``                            |
-+----------------------+-------------------------+----------------------------------------+
-| 符号反転             | ``+ a``                 | ``pos(a)``                             |
-+----------------------+-------------------------+----------------------------------------+
-| 右シフト             | ``a >> b``              | ``rshift(a, b)``                       |
-+----------------------+-------------------------+----------------------------------------+
-| シーケンスの反復     | ``seq * i``             | ``repeat(seq, i)``                     |
-+----------------------+-------------------------+----------------------------------------+
-| スライス指定の代入   | ``seq[i:j] = values``   | ``setslice(seq, i, j, values)``        |
-+----------------------+-------------------------+----------------------------------------+
-| スライス指定の削除   | ``del seq[i:j]``        | ``delslice(seq, i, j)``                |
-+----------------------+-------------------------+----------------------------------------+
-| スライス指定         | ``seq[i:j]``            | ``getslice(seq, i, j)``                |
-+----------------------+-------------------------+----------------------------------------+
-| 文字列書式化         | ``s % obj``             | ``mod(s, obj)``                        |
-+----------------------+-------------------------+----------------------------------------+
-| 減算                 | ``a - b``               | ``sub(a, b)``                          |
-+----------------------+-------------------------+----------------------------------------+
-| 真値テスト           | ``obj``                 | ``truth(obj)``                         |
-+----------------------+-------------------------+----------------------------------------+
-| 順序付け             | ``a < b``               | ``lt(a, b)``                           |
-+----------------------+-------------------------+----------------------------------------+
-| 順序付け             | ``a <= b``              | ``le(a, b)``                           |
-+----------------------+-------------------------+----------------------------------------+
-| 等価性               | ``a == b``              | ``eq(a, b)``                           |
-+----------------------+-------------------------+----------------------------------------+
-| 不等性               | ``a != b``              | ``ne(a, b)``                           |
-+----------------------+-------------------------+----------------------------------------+
-| 順序付け             | ``a >= b``              | ``ge(a, b)``                           |
-+----------------------+-------------------------+----------------------------------------+
-| 順序付け             | ``a > b``               | ``gt(a, b)``                           |
-+----------------------+-------------------------+----------------------------------------+
++-----------------------+-------------------------+---------------------------------------+
+| Operation             | Syntax                  | Function                              |
++=======================+=========================+=======================================+
+| Addition              | ``a + b``               | ``add(a, b)``                         |
++-----------------------+-------------------------+---------------------------------------+
+| Concatenation         | ``seq1 + seq2``         | ``concat(seq1, seq2)``                |
++-----------------------+-------------------------+---------------------------------------+
+| Containment Test      | ``obj in seq``          | ``contains(seq, obj)``                |
++-----------------------+-------------------------+---------------------------------------+
+| Division              | ``a / b``               | ``div(a, b)`` (without                |
+|                       |                         | ``__future__.division``)              |
++-----------------------+-------------------------+---------------------------------------+
+| Division              | ``a / b``               | ``truediv(a, b)`` (with               |
+|                       |                         | ``__future__.division``)              |
++-----------------------+-------------------------+---------------------------------------+
+| Division              | ``a // b``              | ``floordiv(a, b)``                    |
++-----------------------+-------------------------+---------------------------------------+
+| Bitwise And           | ``a & b``               | ``and_(a, b)``                        |
++-----------------------+-------------------------+---------------------------------------+
+| Bitwise Exclusive Or  | ``a ^ b``               | ``xor(a, b)``                         |
++-----------------------+-------------------------+---------------------------------------+
+| Bitwise Inversion     | ``~ a``                 | ``invert(a)``                         |
++-----------------------+-------------------------+---------------------------------------+
+| Bitwise Or            | ``a | b``               | ``or_(a, b)``                         |
++-----------------------+-------------------------+---------------------------------------+
+| Exponentiation        | ``a ** b``              | ``pow(a, b)``                         |
++-----------------------+-------------------------+---------------------------------------+
+| Identity              | ``a is b``              | ``is_(a, b)``                         |
++-----------------------+-------------------------+---------------------------------------+
+| Identity              | ``a is not b``          | ``is_not(a, b)``                      |
++-----------------------+-------------------------+---------------------------------------+
+| Indexed Assignment    | ``obj[k] = v``          | ``setitem(obj, k, v)``                |
++-----------------------+-------------------------+---------------------------------------+
+| Indexed Deletion      | ``del obj[k]``          | ``delitem(obj, k)``                   |
++-----------------------+-------------------------+---------------------------------------+
+| Indexing              | ``obj[k]``              | ``getitem(obj, k)``                   |
++-----------------------+-------------------------+---------------------------------------+
+| Left Shift            | ``a << b``              | ``lshift(a, b)``                      |
++-----------------------+-------------------------+---------------------------------------+
+| Modulo                | ``a % b``               | ``mod(a, b)``                         |
++-----------------------+-------------------------+---------------------------------------+
+| Multiplication        | ``a * b``               | ``mul(a, b)``                         |
++-----------------------+-------------------------+---------------------------------------+
+| Negation (Arithmetic) | ``- a``                 | ``neg(a)``                            |
++-----------------------+-------------------------+---------------------------------------+
+| Negation (Logical)    | ``not a``               | ``not_(a)``                           |
++-----------------------+-------------------------+---------------------------------------+
+| Positive              | ``+ a``                 | ``pos(a)``                            |
++-----------------------+-------------------------+---------------------------------------+
+| Right Shift           | ``a >> b``              | ``rshift(a, b)``                      |
++-----------------------+-------------------------+---------------------------------------+
+| Sequence Repetition   | ``seq * i``             | ``repeat(seq, i)``                    |
++-----------------------+-------------------------+---------------------------------------+
+| Slice Assignment      | ``seq[i:j] = values``   | ``setitem(seq, slice(i, j), values)`` |
++-----------------------+-------------------------+---------------------------------------+
+| Slice Deletion        | ``del seq[i:j]``        | ``delitem(seq, slice(i, j))``         |
++-----------------------+-------------------------+---------------------------------------+
+| Slicing               | ``seq[i:j]``            | ``getitem(seq, slice(i, j))``         |
++-----------------------+-------------------------+---------------------------------------+
+| String Formatting     | ``s % obj``             | ``mod(s, obj)``                       |
++-----------------------+-------------------------+---------------------------------------+
+| Subtraction           | ``a - b``               | ``sub(a, b)``                         |
++-----------------------+-------------------------+---------------------------------------+
+| Truth Test            | ``obj``                 | ``truth(obj)``                        |
++-----------------------+-------------------------+---------------------------------------+
+| Ordering              | ``a < b``               | ``lt(a, b)``                          |
++-----------------------+-------------------------+---------------------------------------+
+| Ordering              | ``a <= b``              | ``le(a, b)``                          |
++-----------------------+-------------------------+---------------------------------------+
+| Equality              | ``a == b``              | ``eq(a, b)``                          |
++-----------------------+-------------------------+---------------------------------------+
+| Difference            | ``a != b``              | ``ne(a, b)``                          |
++-----------------------+-------------------------+---------------------------------------+
+| Ordering              | ``a >= b``              | ``ge(a, b)``                          |
++-----------------------+-------------------------+---------------------------------------+
+| Ordering              | ``a > b``               | ``gt(a, b)``                          |
++-----------------------+-------------------------+---------------------------------------+
 

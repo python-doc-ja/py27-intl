@@ -1,315 +1,318 @@
-
-:mod:`random` --- 擬似乱数を生成する
-====================================
+:mod:`random` --- Generate pseudo-random numbers
+================================================
 
 .. module:: random
-   :synopsis: よく知られている様々な分布をもつ擬似乱数を生成する。
+   :synopsis: Generate pseudo-random numbers with various common distributions.
 
+**Source code:** :source:`Lib/random.py`
 
-このモジュールでは様々な分布をもつ擬似乱数生成器を実装しています。
+--------------
 
-.. seealso::
+This module implements pseudo-random number generators for various
+distributions.
 
-   最新バージョンの `random モジュールの Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/random.py?view=markup>`_
+For integers, uniform selection from a range. For sequences, uniform selection
+of a random element, a function to generate a random permutation of a list
+in-place, and a function for random sampling without replacement.
 
+On the real line, there are functions to compute uniform, normal (Gaussian),
+lognormal, negative exponential, gamma, and beta distributions. For generating
+distributions of angles, the von Mises distribution is available.
 
-整数用では、ある値域内の数の選択を一様にします。
-シーケンス用には、シーケンスからのランダムな要素の一様な選択、\
-リストの要素の順列をランダムに置き換える関数、\
-順列を入れ替えずにランダムに取り出す関数があります。
+Almost all module functions depend on the basic function :func:`random`, which
+generates a random float uniformly in the semi-open range [0.0, 1.0).  Python
+uses the Mersenne Twister as the core generator.  It produces 53-bit precision
+floats and has a period of 2\*\*19937-1.  The underlying implementation in C is
+both fast and threadsafe.  The Mersenne Twister is one of the most extensively
+tested random number generators in existence.  However, being completely
+deterministic, it is not suitable for all purposes, and is completely unsuitable
+for cryptographic purposes.
 
-実数用としては、一様分布、正規分布 (ガウス分布)、\
-対数正規分布、負の指数分布、ガンマおよびベータ分布を計算する\
-関数があります。
-角度分布の生成用には、von Mises 分布が利用可能です。
+The functions supplied by this module are actually bound methods of a hidden
+instance of the :class:`random.Random` class.  You can instantiate your own
+instances of :class:`Random` to get generators that don't share state.  This is
+especially useful for multi-threaded programs, creating a different instance of
+:class:`Random` for each thread, and using the :meth:`jumpahead` method to make
+it likely that the generated sequences seen by each thread don't overlap.
 
-ほとんど全てのモジュール関数は基礎となる関数 :func:`random` に依存\
-します。この関数は半開区間 [0.0, 1.0) の値域を持つ一様な浮動小数点数を生\
-成します。Python は中心となる乱数生成器として Mersenne Twister を使いま\
-す。これは 53 ビットの浮動小数点を生成し、周期が  2\*\*19937-1、本体は C \
-で実装されていて、高速でスレッドセーフです。Mersenne Twister は、現存す\
-る中で、最も大規模にテストされた乱数生成器のひとつです。しかし、完全に決\
-定論的であるため、この乱数生成器は全ての目的に合致しているわけではなく、\
-暗号化の目的には全く向いていません。
-
-このモジュールで提供されている関数は、実際には :class:`random.Random`
-クラスの隠蔽されたインスタンスのメソッドにバインドされています。
-内部状態を共有しない生成器を取得するため、自分で :class:`Random`
-のインスタンスを生成することができます。異なる :class:`Random`
-のインスタンスを各スレッド毎に生成し、 :meth:`jumpahead`
-メソッドを使うことで各々のスレッドにおいて生成された乱数列が\
-できるだけ重複しないようにすれば、マルチスレッドプログラムを作成する上で\
-特に便利になります。
-
-自分で考案した基本乱数生成器を使いたいなら、クラス :class:`Random` を\
-サブクラス化することもできます: この場合、メソッド
-:meth:`random` 、 :meth:`seed` 、 :meth:`getstate` 、 :meth:`setstate` 、および
-:meth:`jumpahead` をオーバライドしてください。
-オプションとして、新しいジェネレータは :meth:`getrandbits`
-メソッドを提供できます --- これにより :meth:`randrange` メソッドが\
-任意に大きな範囲から選択を行えるようになります。
+Class :class:`Random` can also be subclassed if you want to use a different
+basic generator of your own devising: in that case, override the :meth:`random`,
+:meth:`seed`, :meth:`getstate`, :meth:`setstate` and :meth:`jumpahead` methods.
+Optionally, a new generator can supply a :meth:`getrandbits` method --- this
+allows :meth:`randrange` to produce selections over an arbitrarily large range.
 
 .. versionadded:: 2.4
-   :meth:`getrandbits` メソッド.
+   the :meth:`getrandbits` method.
 
-サブクラス化の例として、 :mod:`random` モジュールは :class:`WichmannHill`
-クラスを提供します。このクラスは Python だけで書かれた代替生成器を実装し\
-ています。このクラスは、乱数生成器に Wichmann-Hill 法を使っていた古いバ\
-ージョンの Python から得られた結果を再現するための、後方互換の手段になり\
-ます。ただし、この Wichmann-Hill 生成器はもはや推奨することができない\
-ということに注意してください。現在の水準では生成される周期が短すぎ、また\
-厳密な乱数性試験に合格しないことが知られています。こうした欠点を修正した\
-最近の改良についてはページの最後に挙げた参考文献を参照してください。
+As an example of subclassing, the :mod:`random` module provides the
+:class:`WichmannHill` class that implements an alternative generator in pure
+Python.  The class provides a backward compatible way to reproduce results from
+earlier versions of Python, which used the Wichmann-Hill algorithm as the core
+generator.  Note that this Wichmann-Hill generator can no longer be recommended:
+its period is too short by contemporary standards, and the sequence generated is
+known to fail some stringent randomness tests.  See the references below for a
+recent variant that repairs these flaws.
 
 .. versionchanged:: 2.3
-   MersenneTwister が Wichmann-Hill の代わりにデフォルト生成器になりました。
+   MersenneTwister replaced Wichmann-Hill as the default generator.
 
-:mod:`random` モジュールは :class:`SystemRandom` クラスも提供していますが、
-このクラスは OS が提供している乱数発生源を利用して乱数を生成するシステム関数
-:func:`os.urandom` を使うものです。
+The :mod:`random` module also provides the :class:`SystemRandom` class which
+uses the system function :func:`os.urandom` to generate random numbers
+from sources provided by the operating system.
 
-保守関数:
+.. warning::
+
+   The pseudo-random generators of this module should not be used for
+   security purposes.  Use :func:`os.urandom` or :class:`SystemRandom` if
+   you require a cryptographically secure pseudo-random number generator.
+
+
+Bookkeeping functions:
 
 
 .. function:: seed([x])
 
-   基本乱数生成器を初期化します。
-   オプション引数 *x* はハッシュ可能(:term:`hashable`)な任意のオブジェクトを\
-   とり得ます。 *x* が省略されるか ``None`` の場合、現在のシステム\
-   時間が使われます; 現在のシステム時間はモジュールが最初にインポート\
-   された時に乱数生成器を初期化するためにも使われます。
-
-   乱数の発生源をオペレーティングシステムが提供している場合、システム時刻の\
-   代わりにその発生源が使われます（詳細については :func:`os.urandom`
-   関数を参照）。
+   Initialize the basic random number generator. Optional argument *x* can be any
+   :term:`hashable` object. If *x* is omitted or ``None``, current system time is used;
+   current system time is also used to initialize the generator when the module is
+   first imported.  If randomness sources are provided by the operating system,
+   they are used instead of the system time (see the :func:`os.urandom` function
+   for details on availability).
 
    .. versionchanged:: 2.4
-      以前は、オペレーティングシステムのリソースは使われませんでした。
+      formerly, operating system resources were not used.
 
 .. function:: getstate()
 
-   乱数生成器の現在の内部状態を記憶したオブジェクトを返します。
-   このオブジェクトを :func:`setstate` に渡して内部状態を\
-   復帰することができます。
+   Return an object capturing the current internal state of the generator.  This
+   object can be passed to :func:`setstate` to restore the state.
 
    .. versionadded:: 2.1
+
    .. versionchanged:: 2.6
-      Python 2.6 が作り出す状態オブジェクトは以前のバージョンには読み込めません。
+      State values produced in Python 2.6 cannot be loaded into earlier versions.
 
 
 .. function:: setstate(state)
 
-   *state* は予め :func:`getstate` を呼び出して得ておかなくては\
-   なりません。 :func:`setstate` は :func:`setstate` が呼び出\
-   された時の乱数生成器の内部状態を復帰します。
+   *state* should have been obtained from a previous call to :func:`getstate`, and
+   :func:`setstate` restores the internal state of the generator to what it was at
+   the time :func:`getstate` was called.
 
    .. versionadded:: 2.1
 
 
 .. function:: jumpahead(n)
 
-   内部状態を、現在の状態から、非常に離れているであろう状態に変更します。
-   *n* は非負の整数です。
-   これはマルチスレッドのプログラムが複数の :class:`Random` クラス\
-   のインスタンスと結合されている場合に非常に便利です:
-   :meth:`setstate` や :meth:`seed`
-   は全てのインスタンスを同じ内部状態にするのに\
-   使うことができ、その後 :meth:`jumpahead` を使って各インスタンスの\
-   内部状態を引き離すことができます。
+   Change the internal state to one different from and likely far away from the
+   current state.  *n* is a non-negative integer which is used to scramble the
+   current state vector.  This is most useful in multi-threaded programs, in
+   conjunction with multiple instances of the :class:`Random` class:
+   :meth:`setstate` or :meth:`seed` can be used to force all instances into the
+   same internal state, and then :meth:`jumpahead` can be used to force the
+   instances' states far apart.
 
    .. versionadded:: 2.1
 
    .. versionchanged:: 2.3
-      *n* ステップ先の特定の状態になるのではなく、
-      ``jumpahead(n)`` は何ステップも離れているであろう別の状態にする。
+      Instead of jumping to a specific state, *n* steps ahead, ``jumpahead(n)``
+      jumps to another state likely to be separated by many steps.
 
 
 .. function:: getrandbits(k)
 
-   *k* ビット分の乱数ビットを納めた Python の :class:`long` 整数を返します。
-   このメソッドは MersenneTwister 生成器で提供されており、その他の\
-   乱数生成器でもオプションのAPIとして提供されているかもしれません。
-   このメソッドが使えるとき、 :meth:`randrange` メソッドは大きな\
-   範囲を扱えるようになります。
+   Returns a python :class:`long` int with *k* random bits. This method is supplied
+   with the MersenneTwister generator and some other generators may also provide it
+   as an optional part of the API. When available, :meth:`getrandbits` enables
+   :meth:`randrange` to handle arbitrarily large ranges.
 
    .. versionadded:: 2.4
 
-整数用の関数:
+Functions for integers:
 
 
-.. function:: randrange([start,] stop[, step])
+.. function:: randrange(stop)
+              randrange(start, stop[, step])
 
-   ``range(start, stop, step)`` の要素からランダムに選ばれた要素を返します。
-   この関数は  ``choice(range(start, stop, step))``
-   と等価ですが、実際には range オブジェクトを生成しません。
+   Return a randomly selected element from ``range(start, stop, step)``.  This is
+   equivalent to ``choice(range(start, stop, step))``, but doesn't actually build a
+   range object.
 
    .. versionadded:: 1.5.2
 
 
 .. function:: randint(a, b)
 
-   ``a <= N <= b`` であるようなランダムな整数 *N* を返します。
+   Return a random integer *N* such that ``a <= N <= b``.
 
-シーケンス用の関数:
+Functions for sequences:
 
 
 .. function:: choice(seq)
 
-   空でないシーケンス *seq* からランダムに要素を返します。
-   *seq* が空のときは、 :exc:`IndexError` が送出されます。
+   Return a random element from the non-empty sequence *seq*. If *seq* is empty,
+   raises :exc:`IndexError`.
 
 
 .. function:: shuffle(x[, random])
 
-   シーケンス *x* を直接変更によって混ぜます。
-   オプションの引数 *random* は、値域が [0.0, 1.0) のランダムな\
-   浮動小数点数を返すような引数を持たない関数です; 標準では、
-   この関数は :func:`random` です。
+   Shuffle the sequence *x* in place. The optional argument *random* is a
+   0-argument function returning a random float in [0.0, 1.0); by default, this is
+   the function :func:`random`.
 
-   かなり小さい ``len(x)`` であっても、 *x* の順列は\
-   ほとんどの乱数生成器の周期よりも大きくなるので注意してください;
-   このことは長いシーケンスに対してはほとんどの順列は生成されないことを\
-   意味します。
+   Note that for even rather small ``len(x)``, the total number of permutations of
+   *x* is larger than the period of most random number generators; this implies
+   that most permutations of a long sequence can never be generated.
 
 
 .. function:: sample(population, k)
 
-   母集団のシーケンスから選ばれた長さ *k* の一意な要素からなるリスト\
-   を返します。値の置換を行わないランダムサンプリングに用いられます。
+   Return a *k* length list of unique elements chosen from the population sequence.
+   Used for random sampling without replacement.
 
    .. versionadded:: 2.3
 
-   母集団自体を変更せずに、母集団内の要素を含む新たなリストを返します。返さ\
-   れたリストは選択された順に並んでいるので、このリストの部分スライスもラン\
-   ダムなサンプルになります。これにより、くじの当選者を1等賞と2等賞（の部分\
-   スライス）に分けるといったことも可能です。母集団の要素はハッシュ可能
-   (:term:`hashable`) でな\
-   くても、ユニークでなくても、かまいません。母集団が繰り返しを含む場合、返\
-   されたリストの各要素はサンプルから選択可能な要素になります。整数の並びか\
-   らサンプルを選ぶには、引数に :func:`xrange` オブジェクトを使いましょう。
-   特に、巨大な母集団からサンプルを取るとき、速度と空間効率が上がります。
-   ``sample(xrange(10000000), 60)``
+   Returns a new list containing elements from the population while leaving the
+   original population unchanged.  The resulting list is in selection order so that
+   all sub-slices will also be valid random samples.  This allows raffle winners
+   (the sample) to be partitioned into grand prize and second place winners (the
+   subslices).
 
-以下の関数は特殊な実数値分布を生成します。関数パラメタは\
-対応する分布の公式において、数学的な慣行に従って使われている\
-変数から取られた名前がつけられています; これらの公式のほとんどは\
-多くの統計学のテキストに載っています。
+   Members of the population need not be :term:`hashable` or unique.  If the population
+   contains repeats, then each occurrence is a possible selection in the sample.
+
+   To choose a sample from a range of integers, use an :func:`xrange` object as an
+   argument.  This is especially fast and space efficient for sampling from a large
+   population:  ``sample(xrange(10000000), 60)``.
+
+The following functions generate specific real-valued distributions. Function
+parameters are named after the corresponding variables in the distribution's
+equation, as used in common mathematical practice; most of these equations can
+be found in any statistics text.
 
 
 .. function:: random()
 
-   値域 [0.0, 1.0) の次のランダムな浮動小数点数を返します。
+   Return the next random floating point number in the range [0.0, 1.0).
 
 
 .. function:: uniform(a, b)
 
-   ``a <= b`` であれば ``a <= N <= b`` であるようなランダムな浮動小数点数
-   *N* を返し、 ``b < a`` であれば ``b <= N <= a`` になります。
+   Return a random floating point number *N* such that ``a <= N <= b`` for
+   ``a <= b`` and ``b <= N <= a`` for ``b < a``.
 
-   端点 b が値の範囲に含まれるかどうかは、等式
-   a + (b-a) * random() における浮動小数点の丸めに依存します。
+   The end-point value ``b`` may or may not be included in the range
+   depending on floating-point rounding in the equation ``a + (b-a) * random()``.
+
 
 .. function:: triangular(low, high, mode)
 
-   ``low <= N < high`` でありこれら境界値の間に指定された最頻値 *mode*
-   を持つようなランダムな浮動小数点数 *N* を返します。境界 *low* と *high*
-   のデフォルトは 0 と 1 です。最頻値 *mode* のデフォルトは両境界値の\
-   中点になり、対称な分布を与えます。
+   Return a random floating point number *N* such that ``low <= N <= high`` and
+   with the specified *mode* between those bounds.  The *low* and *high* bounds
+   default to zero and one.  The *mode* argument defaults to the midpoint
+   between the bounds, giving a symmetric distribution.
 
    .. versionadded:: 2.6
 
 
 .. function:: betavariate(alpha, beta)
 
-   ベータ分布です。引数の満たすべき条件は ``alpha > 0`` および
-   ``beta > 0`` です。 0 から 1 の値を返します。
+   Beta distribution.  Conditions on the parameters are ``alpha > 0`` and
+   ``beta > 0``. Returned values range between 0 and 1.
 
 
 .. function:: expovariate(lambd)
 
-   指数分布です。 *lambd* は平均にしたい値で 1.0 を割ったものです。
-   (このパラメタは "lambda" と呼ぶべきなのですが、Python の予約語
-   なので使えません。) 返される値の範囲は 0 から正の無限大です。
+   Exponential distribution.  *lambd* is 1.0 divided by the desired
+   mean.  It should be nonzero.  (The parameter would be called
+   "lambda", but that is a reserved word in Python.)  Returned values
+   range from 0 to positive infinity if *lambd* is positive, and from
+   negative infinity to 0 if *lambd* is negative.
 
 
 .. function:: gammavariate(alpha, beta)
 
-   ガンマ分布です。 (ガンマ関数 *ではありません* ！)  引数の満たすべき条件は
-   ``alpha > 0`` および ``beta > 0`` です。
+   Gamma distribution.  (*Not* the gamma function!)  Conditions on the
+   parameters are ``alpha > 0`` and ``beta > 0``.
+
+   The probability distribution function is::
+
+                 x ** (alpha - 1) * math.exp(-x / beta)
+       pdf(x) =  --------------------------------------
+                   math.gamma(alpha) * beta ** alpha
 
 
 .. function:: gauss(mu, sigma)
 
-   ガウス分布です。 *mu* は平均であり、 *sigma* は標準偏差です。
-   この関数は後で定義する関数 :func:`normalvariate` より少しだけ高速です。
+   Gaussian distribution.  *mu* is the mean, and *sigma* is the standard
+   deviation.  This is slightly faster than the :func:`normalvariate` function
+   defined below.
 
 
 .. function:: lognormvariate(mu, sigma)
 
-   対数正規分布です。この分布を自然対数を用いた分布にした場合、
-   平均 *mu* で標準偏差 *sigma* の正規分布になるでしょう。 *mu*
-   は任意の値を取ることができ、 *sigma* はゼロより\
-   大きくなければなりません。
+   Log normal distribution.  If you take the natural logarithm of this
+   distribution, you'll get a normal distribution with mean *mu* and standard
+   deviation *sigma*.  *mu* can have any value, and *sigma* must be greater than
+   zero.
 
 
 .. function:: normalvariate(mu, sigma)
 
-   正規分布です、 *mu* は平均で、 *sigma* は標準偏差です。
+   Normal distribution.  *mu* is the mean, and *sigma* is the standard deviation.
 
 
 .. function:: vonmisesvariate(mu, kappa)
 
-   *mu* は平均の角度で、0 から 2\*\ *pi* までのラジアンで\
-   表されます。 *kappa* は濃度パラメタで、ゼロまたはそれ以上\
-   でなければなりません。 *kappa* がゼロに等しい場合、\
-   この分布は範囲 0 から 2\*\ *pi* の一様でランダムな角度の\
-   分布に退化します。
+   *mu* is the mean angle, expressed in radians between 0 and 2\*\ *pi*, and *kappa*
+   is the concentration parameter, which must be greater than or equal to zero.  If
+   *kappa* is equal to zero, this distribution reduces to a uniform random angle
+   over the range 0 to 2\*\ *pi*.
 
 
 .. function:: paretovariate(alpha)
 
-   パレート分布です。 *alpha* は形状パラメタです。
+   Pareto distribution.  *alpha* is the shape parameter.
 
 
 .. function:: weibullvariate(alpha, beta)
 
-   ワイブル分布です。 *alpha* はスケールパラメタで、 *beta* は形状パラメタです。
+   Weibull distribution.  *alpha* is the scale parameter and *beta* is the shape
+   parameter.
 
-代替の乱数生成器:
 
+Alternative Generators:
 
 .. class:: WichmannHill([seed])
 
-   乱数生成器として Wichmann-Hill アルゴリズムを実装するクラスです。
-   :class:`Random` クラスと同じメソッド全てと、下で説明する :meth:`whseed`
-   メソッドを持ちます。このクラスは、Python だけで実装されているので、スレ\
-   ッドセーフではなく、呼び出しと呼び出しの間にロックが必要です。また、周期\
-   が 6,953,607,871,644 と短く、独立した2つの乱数列が重複しないように注意が\
-   必要です。
+   Class that implements the Wichmann-Hill algorithm as the core generator. Has all
+   of the same methods as :class:`Random` plus the :meth:`whseed` method described
+   below.  Because this class is implemented in pure Python, it is not threadsafe
+   and may require locks between calls.  The period of the generator is
+   6,953,607,871,644 which is small enough to require care that two independent
+   random sequences do not overlap.
 
 
 .. function:: whseed([x])
 
-   これは obsolete で、バージョン 2.1 以前の Python と、ビット・レベルの互\
-   換性のために提供されてます。詳細は :func:`seed` を参照してください。
-   :func:`whseed` は、引数に与えた整数が異なっても、内部状態が異なること\
-   を保障しません。取り得る内部状態の個数が 2\*\*24 以下になる場合もあります。
+   This is obsolete, supplied for bit-level compatibility with versions of Python
+   prior to 2.1. See :func:`seed` for details.  :func:`whseed` does not guarantee
+   that distinct integer arguments yield distinct internal states, and can yield no
+   more than about 2\*\*24 distinct internal states in all.
 
 
 .. class:: SystemRandom([seed])
 
-   オペレーティングシステムの提供する発生源によって乱数を生成する
-   :func:`os.urandom` 関数を使うクラスです。
-   すべてのシステムで使えるメソッドではありません。
-   ソフトウェアの状態に依存してはいけませんし、一連の操作は再現\
-   不能です。それに応じて、 :meth:`seed` と :meth:`jumpahead`
-   メソッドは何の影響も及ぼさず、無視されます。 :meth:`getstate` と :meth:`setstate`
-   メソッドが呼び出されると、例外 :exc:`NotImplementedError` が送出されます。
+   Class that uses the :func:`os.urandom` function for generating random numbers
+   from sources provided by the operating system. Not available on all systems.
+   Does not rely on software state and sequences are not reproducible. Accordingly,
+   the :meth:`seed` and :meth:`jumpahead` methods have no effect and are ignored.
+   The :meth:`getstate` and :meth:`setstate` methods raise
+   :exc:`NotImplementedError` if called.
 
    .. versionadded:: 2.4
 
-基本使用例::
+Examples of basic usage::
 
    >>> random.random()        # Random float x, 0.0 <= x < 1.0
    0.37444887175646646
@@ -341,3 +344,7 @@
    Wichmann, B. A. & Hill, I. D., "Algorithm AS 183: An efficient and portable
    pseudo-random number generator", Applied Statistics 31 (1982) 188-190.
 
+   `Complementary-Multiply-with-Carry recipe
+   <http://code.activestate.com/recipes/576707/>`_ for a compatible alternative
+   random number generator with a long period and comparatively simple update
+   operations.

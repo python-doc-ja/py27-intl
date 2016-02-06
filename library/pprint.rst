@@ -1,54 +1,58 @@
-
-:mod:`pprint` --- データ出力の整然化
-====================================
+:mod:`pprint` --- Data pretty printer
+=====================================
 
 .. module:: pprint
    :synopsis: Data pretty printer.
 .. moduleauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
+**Source code:** :source:`Lib/pprint.py`
 
-:mod:`pprint` モジュールを使うと、Pythonの任意のデータ構造をインタープリタへの入力で使われる形式にして"pretty-print"できます。
-フォーマット化された構造の中にPythonの基本的なタイプではないオブジェクトがあるなら、表示できないかもしれません。
-Pythonの定数として表現できない多くの組み込みオブジェクトと同様、ファイル、ソケット、クラスあるいはインスタンスのようなオブジェクトが含まれてい
-た場合は出力できません。
+--------------
 
-可能であればオブジェクトをフォーマット化して1行に出力しますが、与えられた幅に合わないなら複数行に分けて出力します。
-無理に幅を設定したいなら、 :class:`PrettyPrinter` オブジェクトを作成して明示してください。
+The :mod:`pprint` module provides a capability to "pretty-print" arbitrary
+Python data structures in a form which can be used as input to the interpreter.
+If the formatted structures include objects which are not fundamental Python
+types, the representation may not be loadable.  This may be the case if objects
+such as files, sockets, classes, or instances are included, as well as many
+other built-in objects which are not representable as Python constants.
+
+The formatted representation keeps objects on a single line if it can, and
+breaks them onto multiple lines if they don't fit within the allowed width.
+Construct :class:`PrettyPrinter` objects explicitly if you need to adjust the
+width constraint.
 
 .. versionchanged:: 2.5
-   辞書は出力を計算する前にキーでソートされます。
-   2.5以前では、辞書は1行以上必要な場合にのみソートされていましたがドキュメントには書かれていませんでした。
+   Dictionaries are sorted by key before the display is computed; before 2.5, a
+   dictionary was sorted only if its display required more than one line, although
+   that wasn't documented.
 
 .. versionchanged:: 2.6
-   :class:`set` と :class:`frozenset` がサポートされました。
+   Added support for :class:`set` and :class:`frozenset`.
 
-.. seealso::
 
-   最新バージョンの `pprint module Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/pprint.py?view=markup>`_
-
-:mod:`pprint` モジュールには1つのクラスが定義されています：
+The :mod:`pprint` module defines one class:
 
 .. First the implementation class:
 
 
-.. class:: PrettyPrinter(...)
+.. class:: PrettyPrinter(indent=1, width=80, depth=None, stream=None)
 
-   :class:`PrettyPrinter` インスタンスを作ります。このコンストラクタにはいくつかのキーワードパラメータを設定できます。
-
-   *stream* キーワードで出力ストリームを設定できます；このストリームに対して呼び出されるメソッドはファイルプロトコルの :meth:`write` メソッドだ
-   けです。もし設定されなければ、 :class:`PrettyPrinter` は ``sys.stdout`` を使用します。
-   さらに3つのパラメータで出力フォーマットをコントロールできます。そのキーワードは *indent* 、 *depth* と *width* です。
-
-   再帰的なレベルごとに加えるインデントの量は *indent* で設定できます；デフォルト値は1です。
-   他の値にすると出力が少しおかしく見えますが、ネスト化されたところが見分け易くなります。
-
-   出力されるレベルは *depth* で設定できます；出力されるデータ構造が深いなら、指定以上の深いレベルのものは ``...`` で置き換えられて表示されます。
-   デフォルトでは、オブジェクトの深さを制限しません。
-
-   *width* パラメータを使うと、出力する幅を望みの文字数に設定できます；デフォルトでは80文字です。
-   もし指定した幅にフォーマットできない場合は、できるだけ近づけます。
+   Construct a :class:`PrettyPrinter` instance.  This constructor understands
+   several keyword parameters.  An output stream may be set using the *stream*
+   keyword; the only method used on the stream object is the file protocol's
+   :meth:`write` method.  If not specified, the :class:`PrettyPrinter` adopts
+   ``sys.stdout``.  Three additional parameters may be used to control the
+   formatted representation.  The keywords are *indent*, *depth*, and *width*.  The
+   amount of indentation added for each recursive level is specified by *indent*;
+   the default is one.  Other values can cause output to look a little odd, but can
+   make nesting easier to spot.  The number of levels which may be printed is
+   controlled by *depth*; if the data structure being printed is too deep, the next
+   contained level is replaced by ``...``.  By default, there is no constraint on
+   the depth of the objects being formatted.  The desired output width is
+   constrained using the *width* parameter; the default is 80 characters.  If a
+   structure cannot be formatted within the constrained width, a best effort will
+   be made.
 
       >>> import pprint
       >>> stuff = ['spam', 'eggs', 'lumberjack', 'knights', 'ni']
@@ -65,28 +69,27 @@ Pythonの定数として表現できない多くの組み込みオブジェク�
       ... ('parrot', ('fresh fruit',))))))))
       >>> pp = pprint.PrettyPrinter(depth=6)
       >>> pp.pprint(tup)
-      (266, (267, (307, (287, (288, (...))))))
       ('spam', ('eggs', ('lumberjack', ('knights', ('ni', ('dead', (...)))))))
 
-:class:`PrettyPrinter` クラスにはいくつかの派生する関数が提供されています：
+The :class:`PrettyPrinter` class supports several derivative functions:
 
-.. Now the derivative functions:
+.. function:: pformat(object, indent=1, width=80, depth=None)
 
-
-.. function:: pformat(object[, indent[, width[, depth]]])
-
-   *object* をフォーマット化して文字列として返します。
-   *indent* 、 *width* と、 *depth* は :class:`PrettyPrinter` コンストラクタにフォーマット指定引数として渡されます。
+   Return the formatted representation of *object* as a string.  *indent*, *width*
+   and *depth* will be passed to the :class:`PrettyPrinter` constructor as
+   formatting parameters.
 
    .. versionchanged:: 2.4
-      引数 *indent* 、 *width* と、 *depth* が追加されました.
+      The parameters *indent*, *width* and *depth* were added.
 
 
-.. function:: pprint(object[, stream[, indent[, width[, depth]]]])
+.. function:: pprint(object, stream=None, indent=1, width=80, depth=None)
 
-   *object* をフォーマット化して *stream* に出力し、最後に改行します。 *stream* が省略されたら、 ``sys.stdout`` に出力します。
-   これは対話型のインタープリタ上で、求める値を :keyword:`print` する代わりに使用できます。
-   *indent* 、 *width* と、 *depth* は :class:`PrettyPrinter` コンストラクタにフォーマット指定引数として渡されます。 ::
+   Prints the formatted representation of *object* on *stream*, followed by a
+   newline.  If *stream* is ``None``, ``sys.stdout`` is used.  This may be used in
+   the interactive interpreter instead of a :keyword:`print` statement for
+   inspecting values.    *indent*, *width* and *depth* will be passed to the
+   :class:`PrettyPrinter` constructor as formatting parameters.
 
       >>> import pprint
       >>> stuff = ['spam', 'eggs', 'lumberjack', 'knights', 'ni']
@@ -100,15 +103,16 @@ Pythonの定数として表現できない多くの組み込みオブジェク�
        'ni']
 
    .. versionchanged:: 2.4
-      引数 *indent* 、 *width* と、 *depth* が追加されました.
+      The parameters *indent*, *width* and *depth* were added.
 
 
 .. function:: isreadable(object)
 
    .. index:: builtin: eval
 
-   *object* をフォーマット化して出力できる（"readable"）か、あるいは :func:`eval` を使って値を再構成できるかを返します。
-   再帰的なオブジェクトに対しては常に ``False`` を返します。 ::
+   Determine if the formatted representation of *object* is "readable," or can be
+   used to reconstruct the value using :func:`eval`.  This always returns ``False``
+   for recursive objects.
 
       >>> pprint.isreadable(stuff)
       False
@@ -116,17 +120,17 @@ Pythonの定数として表現できない多くの組み込みオブジェク�
 
 .. function:: isrecursive(object)
 
-   *object* が再帰的な表現かどうかを返します。
+   Determine if *object* requires a recursive representation.
 
-さらにもう1つ、関数が定義されています：
 
+One more support function is also defined:
 
 .. function:: saferepr(object)
 
-   *object* の文字列表現を、再帰的なデータ構造から保護した形式で返します。
-   もし *object* の文字列表現が再帰的な要素を持っているなら、再帰的な参照は
-   ``<Recursion on typename with id=number>`` で表示されます。
-   出力は他と違ってフォーマット化されません。
+   Return a string representation of *object*, protected against recursive data
+   structures.  If the representation of *object* exposes a recursive entry, the
+   recursive reference will be represented as ``<Recursion on typename with
+   id=number>``.  The representation is not otherwise formatted.
 
    >>> pprint.saferepr(stuff)
    "[<Recursion on list with id=...>, 'spam', 'eggs', 'lumberjack', 'knights', 'ni']"
@@ -134,65 +138,74 @@ Pythonの定数として表現できない多くの組み込みオブジェク�
 
 .. _prettyprinter-objects:
 
-PrettyPrinter オブジェクト
---------------------------
+PrettyPrinter Objects
+---------------------
 
-:class:`PrettyPrinter` インスタンスには以下のメソッドがあります：
+:class:`PrettyPrinter` instances have the following methods:
 
 
 .. method:: PrettyPrinter.pformat(object)
 
-   *object* のフォーマット化した表現を返します。これは :class:`PrettyPrinter` のコンストラクタに渡されたオプションを考慮し
-   てフォーマット化されます。
+   Return the formatted representation of *object*.  This takes into account the
+   options passed to the :class:`PrettyPrinter` constructor.
 
 
 .. method:: PrettyPrinter.pprint(object)
 
-   *object* のフォーマット化した表現を指定したストリームに出力し、最後に改行します。
+   Print the formatted representation of *object* on the configured stream,
+   followed by a newline.
 
-以下のメソッドは、対応する同じ名前の関数と同じ機能を持っています。
-以下のメソッドをインスタンスに対して使うと、新たに :class:`PrettyPrinter` オブジェクトを作る必要がないのでちょっぴり効果的です。
+The following methods provide the implementations for the corresponding
+functions of the same names.  Using these methods on an instance is slightly
+more efficient since new :class:`PrettyPrinter` objects don't need to be
+created.
 
 
 .. method:: PrettyPrinter.isreadable(object)
 
    .. index:: builtin: eval
 
-   *object* をフォーマット化して出力できる（"readable"）か、あるいは
-   :func:`eval` を使って値を再構成できるかを返します。
-   これは再帰的なオブジェクトに対して ``False`` を返すことに注意して下さい。
-   もし :class:`PrettyPrinter` の *depth* パラメータが設定されていて、\
-   オブジェクトのレベルが設定よりも深かったら、 ``False`` を返します。
+   Determine if the formatted representation of the object is "readable," or can be
+   used to reconstruct the value using :func:`eval`.  Note that this returns
+   ``False`` for recursive objects.  If the *depth* parameter of the
+   :class:`PrettyPrinter` is set and the object is deeper than allowed, this
+   returns ``False``.
 
 
 .. method:: PrettyPrinter.isrecursive(object)
 
-   オブジェクトが再帰的な表現かどうかを返します。
+   Determine if the object requires a recursive representation.
 
-このメソッドをフックとして、サブクラスがオブジェクトを文字列に変換する方法を修正するのが可能になっています。
-デフォルトの実装では、内部で :func:`saferepr` を呼び出しています。
+This method is provided as a hook to allow subclasses to modify the way objects
+are converted to strings.  The default implementation uses the internals of the
+:func:`saferepr` implementation.
 
 
 .. method:: PrettyPrinter.format(object, context, maxlevels, level)
 
-   3つの値を返します： *object* をフォーマット化して文字列にしたもの、その結果が読み込み可能かどうかを示すフラグ、再帰が含まれているかどうかを示
-   すフラグ。
-
-   最初の引数は表示するオブジェクトです。 2つめの引数はオブジェクトの :func:`id` をキーとして含むディクショナリ
-   で、オブジェクトを含んでいる現在の（直接、間接に *object* のコンテナとして表示に影響を与える）環境です。
-   ディクショナリ *context* の中でどのオブジェクトが表示されたか表示する必要があるなら、3つめの返り値は ``True`` になります。
-   :meth:`format` メソッドの再帰呼び出しではこのディクショナリのコンテナに対してさらにエントリを加えます。
-   3つめの引数 *maxlevels* で再帰呼び出しのレベルを設定します；もし制限しないなら、 ``0`` にします。この引数は再帰呼び出しでそのまま渡されます。
-   4つめの引数 *level* で現在のレベルを設定します；再帰呼び出しでは、現在の呼び出しより小さい値が渡されます。
+   Returns three values: the formatted version of *object* as a string, a flag
+   indicating whether the result is readable, and a flag indicating whether
+   recursion was detected.  The first argument is the object to be presented.  The
+   second is a dictionary which contains the :func:`id` of objects that are part of
+   the current presentation context (direct and indirect containers for *object*
+   that are affecting the presentation) as the keys; if an object needs to be
+   presented which is already represented in *context*, the third return value
+   should be ``True``.  Recursive calls to the :meth:`format` method should add
+   additional entries for containers to this dictionary.  The third argument,
+   *maxlevels*, gives the requested limit to recursion; this will be ``0`` if there
+   is no requested limit.  This argument should be passed unmodified to recursive
+   calls. The fourth argument, *level*, gives the current level; recursive calls
+   should be passed a value less than that of the current call.
 
    .. versionadded:: 2.3
 
 .. _pprint-example:
 
-pprint の例
+pprint Example
 --------------
 
-この例は :func:`pprint` 関数とその引数の幾つかの使い方を例示しています。
+This example demonstrates several uses of the :func:`pprint` function and its
+parameters.
 
    >>> import pprint
    >>> tup = ('spam', ('eggs', ('lumberjack', ('knights', ('ni', ('dead',

@@ -1,50 +1,49 @@
-:mod:`email.iterators`: イテレータ
-----------------------------------
+:mod:`email.iterators`: Iterators
+---------------------------------
 
 .. module:: email.iterators
-   :synopsis: メッセージオブジェクトツリーをたどる。
+   :synopsis: Iterate over a  message object tree.
 
 
-:meth:`Message.walk` メソッドを使うと、簡単にメッセージオブジェクトツリー内\
-を次から次へとたどる (iteration) ことができます。
-:mod:`email.iterators` モジュールはこのための高水準イテレータをいくつか提供\
-します。
+Iterating over a message object tree is fairly easy with the
+:meth:`Message.walk <email.message.Message.walk>` method.  The
+:mod:`email.iterators` module provides some useful higher level iterations over
+message object trees.
 
 
 .. function:: body_line_iterator(msg[, decode])
 
-   このイテレータは *msg* 中のすべてのサブパートに含まれるペイロードをすべて\
-   順にたどっていき、ペイロード内の文字列を 1行ずつ返します。
-   サブパートのヘッダはすべて無視され、Python 文字列でないペイロードからなる\
-   サブパートも無視されます。これは :meth:`readline` を使って、
-   ファイルからメッセージを (ヘッダだけとばして) フラットなテキストとして読む\
-   のにいくぶん似ているかもしれません。
+   This iterates over all the payloads in all the subparts of *msg*, returning the
+   string payloads line-by-line.  It skips over all the subpart headers, and it
+   skips over any subpart with a payload that isn't a Python string.  This is
+   somewhat equivalent to reading the flat text representation of the message from
+   a file using :meth:`~io.TextIOBase.readline`, skipping over all the
+   intervening headers.
 
-   オプション引数 *decode* は、 :meth:`Message.get_payload` にそのまま渡されます。
+   Optional *decode* is passed through to :meth:`Message.get_payload
+   <email.message.Message.get_payload>`.
 
 
 .. function:: typed_subpart_iterator(msg[, maintype[, subtype]])
 
-   このイテレータは *msg* 中のすべてのサブパートをたどり、それらの中で指定された\
-   MIME 形式 *maintype* と *subtype*
-   をもつようなパートのみを返します。
+   This iterates over all the subparts of *msg*, returning only those subparts that
+   match the MIME type specified by *maintype* and *subtype*.
 
-   *subtype* は省略可能であることに注意してください。
-   これが省略された場合、サブパートの MIME 形式は maintype のみが\
-   チェックされます。じつは *maintype* も省略可能で、
-   その場合にはデフォルトは :mimetype:`text` です。
+   Note that *subtype* is optional; if omitted, then subpart MIME type matching is
+   done only with the main type.  *maintype* is optional too; it defaults to
+   :mimetype:`text`.
 
-   つまり、デフォルトでは :func:`typed_subpart_iterator` は MIME 形式
-   :mimetype:`text/*` をもつサブパートを順に返していくというわけです。
+   Thus, by default :func:`typed_subpart_iterator` returns each subpart that has a
+   MIME type of :mimetype:`text/\*`.
 
-以下の関数は役に立つデバッグ用ツールとして追加されたもので、
-パッケージとして公式なサポートのあるインターフェイスでは *ありません* 。
+The following function has been added as a useful debugging tool.  It should
+*not* be considered part of the supported public interface for the package.
 
 
 .. function:: _structure(msg[, fp[, level]])
 
-   そのメッセージオブジェクト構造の content-type をインデントつきで\
-   表示します。たとえば::
+   Prints an indented representation of the content types of the message object
+   structure.  For example::
 
       >>> msg = email.message_from_file(somefile)
       >>> _structure(msg)
@@ -64,11 +63,6 @@
                   text/plain
           text/plain
 
-   オプション引数 *fp* は出力を渡すためのストリーム [#]_ オブジェクトです。
-   これは Python の拡張 print
-   文が対応できるようになっている必要があります。 *level* は内部的に使用されます。
-
-.. rubric:: 注記
-
-.. [#] 訳注: 原文では file-like。
+   Optional *fp* is a file-like object to print the output to.  It must be suitable
+   for Python's extended print statement.  *level* is used internally.
 

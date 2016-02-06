@@ -1,182 +1,197 @@
-
-:mod:`shutil` --- 高レベルなファイル操作
-========================================
+:mod:`shutil` --- High-level file operations
+============================================
 
 .. module:: shutil
-   :synopsis: コピーを含む高レベルなファイル操作。
+   :synopsis: High-level file operations, including copying.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
-
-
 .. partly based on the docstrings
-
-:mod:`shutil` モジュールはファイルやファイルの収集に関する多くの高レベルな操作方法を提供します。
-特にファイルのコピーや削除のための関数が用意されています。
-個別のファイルに対する操作については、 :mod:`os` モジュールを参照してください。
-
-.. seealso::
-
-   Latest version of the `shutil module Python source code
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/shutil.py?view=markup>`_
 
 .. index::
    single: file; copying
    single: copying files
 
+**Source code:** :source:`Lib/shutil.py`
+
+--------------
+
+The :mod:`shutil` module offers a number of high-level operations on files and
+collections of files.  In particular, functions are provided  which support file
+copying and removal. For operations on individual files, see also the
+:mod:`os` module.
+
 .. warning::
-   高レベルなファイルコピー関数(:func:`copy`, :func:`copy2`)でも、全てのファイルの
-   メタデータをコピーできるわけではありません。
 
-   POSIXプラットフォームでは、これはACLやファイルのオーナー、グループが失われることを意味しています。
-   Mac OSでは、リソースフォーク(resource fork)やその他のメタデータが利用されません。
-   これは、リソースが失われ、ファイルタイプや生成者コード(creator code)が正しくなくなることを意味しています。
-   Windowsでは、ファイルオーナー、ACL、代替データストリームがコピーされません。
+   Even the higher-level file copying functions (:func:`shutil.copy`,
+   :func:`shutil.copy2`) can't copy all file metadata.
+
+   On POSIX platforms, this means that file owner and group are lost as well
+   as ACLs.  On Mac OS, the resource fork and other metadata are not used.
+   This means that resources will be lost and file type and creator codes will
+   not be correct. On Windows, file owners, ACLs and alternate data streams
+   are not copied.
 
 
-ディレクトリとファイルの操作
-----------------------------
+.. _file-operations:
+
+Directory and files operations
+------------------------------
 
 .. function:: copyfileobj(fsrc, fdst[, length])
 
-   ファイル形式のオブジェクト *fsrc* の内容を *fdst* へコピーします。整数値 *length* はバッファサイズを表します。特に負の *length* は
-   チャンク内のソースデータを繰り返し操作することなくコピーします。つまり標準ではデータは制御不能なメモリ消費を避けるためにチャンク内に読み込まれます。
-   *fsrc* オブジェクトのファイルポジションが0でない場合、現在のポジションから後ろの\
-   部分だけがコピーされることに注意してください。
+   Copy the contents of the file-like object *fsrc* to the file-like object *fdst*.
+   The integer *length*, if given, is the buffer size. In particular, a negative
+   *length* value means to copy the data without looping over the source data in
+   chunks; by default the data is read in chunks to avoid uncontrolled memory
+   consumption. Note that if the current file position of the *fsrc* object is not
+   0, only the contents from the current file position to the end of the file will
+   be copied.
 
 
 .. function:: copyfile(src, dst)
 
-   *src* で指定されたファイルの内容を *dst* で指定されたファイルへとコピーします。(メタデータはコピーされません)
-   *dst* は完全なターゲットファイル名である必要があります。
-   コピー先にディレクトリ名を使用したい場合は、 :func:`copy` を参照してください。
-   もし、 *src* と *dst* が同じファイルであれば、 :exc:`Error` 例外が発生します。
-
-   コピー先は書き込み可能である必要があります。そうでなければ
-   :exc:`IOError` を発生します。もし *dst* が存在したら、置き換えられます。
-   キャラクタやブロックデバイス、パイプ等の特別なファイルはこの関数ではコピーできません。
-   *src* と *dst* にはパス名を文字列で与えられます。
+   Copy the contents (no metadata) of the file named *src* to a file named
+   *dst*.  *dst* must be the complete target file name; look at
+   :func:`shutil.copy` for a copy that accepts a target directory path.  If
+   *src* and *dst* are the same files, :exc:`Error` is raised.
+   The destination location must be writable; otherwise,  an :exc:`IOError` exception
+   will be raised. If *dst* already exists, it will be replaced.   Special files
+   such as character or block devices and pipes cannot be copied with this
+   function.  *src* and *dst* are path names given as strings.
 
 
 .. function:: copymode(src, dst)
 
-   *src* から *dst* へパーミッションをコピーします。ファイル内容や所有者、グループは影響を受けません。
-   *src* と *dst* には文字列としてパス名を与えられます。
+   Copy the permission bits from *src* to *dst*.  The file contents, owner, and
+   group are unaffected.  *src* and *dst* are path names given as strings.
 
 
 .. function:: copystat(src, dst)
 
-   *src* から *dst* へ、パーミッション、最終アクセス時間、最終更新時間、フラグをコピーします。
-   ファイル内容や所有者、グループは影響を受けません。
-   *src* と *dst* には文字列としてパス名を与えられます。
+   Copy the permission bits, last access time, last modification time, and flags
+   from *src* to *dst*.  The file contents, owner, and group are unaffected.  *src*
+   and *dst* are path names given as strings.
 
 
 .. function:: copy(src, dst)
 
-   ファイル *src* をファイルまたはディレクトリ *dist* へコピーします。もし、 *dst* がディレクトリであればファイル名は *src* と同じものが
-   指定されたディレクトリ内に作成（または上書き）されます。パーミッションはコピーされます。 *src* と *dst* には文字列としてパス名を与えられます。
+   Copy the file *src* to the file or directory *dst*.  If *dst* is a directory, a
+   file with the same basename as *src*  is created (or overwritten) in the
+   directory specified.  Permission bits are copied.  *src* and *dst* are path
+   names given as strings.
 
 
 .. function:: copy2(src, dst)
 
-   :func:`copy` と類似していますが、メタデータも同様にコピーされます。
-   実際のところ、この関数は :func:`copy` の後に :func:`copystat` しています。
-   Unix コマンドの :program:`cp -p` と同様の働きをします。
+   Similar to :func:`shutil.copy`, but metadata is copied as well -- in fact,
+   this is just :func:`shutil.copy` followed by :func:`copystat`.  This is
+   similar to the Unix command :program:`cp -p`.
 
 
 .. function:: ignore_patterns(\*patterns)
 
-   このファクトリ関数は、 :func:`copytree` 関数の *ignore* 引数に渡すための呼び出し可能
-   オブジェクトを作成します。
-   glob形式の *patterns* にマッチするファイルやディレクトリが無視されます。
-   下の例を参照してください。
+   This factory function creates a function that can be used as a callable for
+   :func:`copytree`\'s *ignore* argument, ignoring files and directories that
+   match one of the glob-style *patterns* provided.  See the example below.
 
    .. versionadded:: 2.6
 
 
 .. function:: copytree(src, dst, symlinks=False, ignore=None)
 
-   *src* を起点としたディレクトリツリーをコピーします。
-   *dst* で指定されたターゲットディレクトリは、既存のもので無い必要があります。
-   存在しない親ディレクトリも含めて作成されます。パーミッションと時刻は
-   :func:`copystat` 関数でコピーされます。個々のファイルは :func:`copy2` によってコピーされます。
+   Recursively copy an entire directory tree rooted at *src*.  The destination
+   directory, named by *dst*, must not already exist; it will be created as
+   well as missing parent directories.  Permissions and times of directories
+   are copied with :func:`copystat`, individual files are copied using
+   :func:`shutil.copy2`.
 
-   *symlinks* が真であれば、元のディレクトリ内のシンボリックリンクはコピー先のディレクトリ内へシンボリックリンクとして
-   コピーされます。偽が与えられたり省略された場合は元のディレクトリ内のリンクの対象となっているファイルがコピー先のディレクトリ内へコピーされま
-   す。
+   If *symlinks* is true, symbolic links in the source tree are represented as
+   symbolic links in the new tree, but the metadata of the original links is NOT
+   copied; if false or omitted, the contents and metadata of the linked files
+   are copied to the new tree.
 
-   *ignore* 引数を利用する場合、その呼び出し可能オブジェクトは、引数として、
-   :func:`copytree` が走査しているディレクトリと、 :func:`os.listdir` が返すそのディレクトリの内容を
-   受け取ります。
-   :func:`copytree` は再帰的に呼び出されるので、 *ignore* はコピーされる各ディレクトリ\
-   毎に呼び出されます。 *ignore* の戻り値は、ファイルやディレクトリに対する\
-   カレントディレクトリからの相対パスのシーケンス(つまり、第二引数のサブセット)である必要があります。
-   返された名前は、コピーの対象にならなくなります。
-   :func:`ignore_patterns` を使って、glob形式のパターンからこの引数のための
-   呼び出し可能オブジェクトを作成することができます。
+   If *ignore* is given, it must be a callable that will receive as its
+   arguments the directory being visited by :func:`copytree`, and a list of its
+   contents, as returned by :func:`os.listdir`.  Since :func:`copytree` is
+   called recursively, the *ignore* callable will be called once for each
+   directory that is copied.  The callable must return a sequence of directory
+   and file names relative to the current directory (i.e. a subset of the items
+   in its second argument); these names will then be ignored in the copy
+   process.  :func:`ignore_patterns` can be used to create such a callable that
+   ignores names based on glob-style patterns.
 
-   エラーが発生したときはエラー理由のリストを持った :exc:`Error` を起こします。
+   If exception(s) occur, an :exc:`Error` is raised with a list of reasons.
 
-   この関数は、究極の道具としてではなく、ソースコードが利用例になっていると捉えるべきでしょう。
+   The source code for this should be considered an example rather than the
+   ultimate tool.
 
    .. versionchanged:: 2.3
-      コピー中にエラーが発生した場合、メッセージを出力するのではなく :exc:`Error` を起こす。
+      :exc:`Error` is raised if any exceptions occur during copying, rather than
+      printing a message.
 
    .. versionchanged:: 2.5
-      *dst* を作成する際に中間のディレクトリ作成が必要な場合、エラーを起こすのではなく作成する。ディレクトリのパーミッションと時刻を
-      :func:`copystat` を利用してコピーする。
+      Create intermediate directories needed to create *dst*, rather than raising an
+      error. Copy permissions and times of directories using :func:`copystat`.
 
    .. versionchanged:: 2.6
-      何がコピーされるかを制御するための *ignore* 引数
+      Added the *ignore* argument to be able to influence what is being copied.
+
 
 .. function:: rmtree(path[, ignore_errors[, onerror]])
 
    .. index:: single: directory; deleting
 
-   ディレクトリツリー全体を削除します。
-   *path* はディレクトリを指している必要があります。（ディレクトリに対するシンボリックリンクではいけません）
-   もし *ignore_errors* が真であれば削除に失敗したことによるエラーは無視されます。
-   偽が与えられたり省略された場合はこれらのエラーは *onerror* で与えられたハンドラを呼び出して処理され、\
-   *onerror* が省略された場合は例外を引き起こします。
+   Delete an entire directory tree; *path* must point to a directory (but not a
+   symbolic link to a directory).  If *ignore_errors* is true, errors resulting
+   from failed removals will be ignored; if false or omitted, such errors are
+   handled by calling a handler specified by *onerror* or, if that is omitted,
+   they raise an exception.
 
-   *onerror* が与えられた場合、それは3つのパラメータ *function*, *path* および *excinfo* を受け入れて呼び出し可能のものでなくてはな
-   りません。最初のパラメータ *function* は例外を引き起こした関数で
-   :func:`os.listdir`, :func:`os.remove`, :func:`os.rmdir` のいずれかでしょう。
-   2番目のパラメータ *path* は *function* へ渡されたパス名です。
-   3番目のパラメータ *excinfo* は :func:`sys.exc_info` で返されるよ
-   うな例外情報になるでしょう。 *onerror* が引き起こす例外はキャッチできません。
-
-   .. .. versionchanged:: 2.6
-   ..    Explicitly check for *path* being a symbolic link and raise :exc:`OSError`
-         in that case.
+   If *onerror* is provided, it must be a callable that accepts three
+   parameters: *function*, *path*, and *excinfo*. The first parameter,
+   *function*, is the function which raised the exception; it will be
+   :func:`os.path.islink`, :func:`os.listdir`, :func:`os.remove` or
+   :func:`os.rmdir`.  The second parameter, *path*, will be the path name passed
+   to *function*.  The third parameter, *excinfo*, will be the exception
+   information return by :func:`sys.exc_info`.  Exceptions raised by *onerror*
+   will not be caught.
 
    .. versionchanged:: 2.6
-      *path* を明示的にチェックして、シンボリックリンクだった場合は :exc:`OSError`
-      を返すようになりました。
+      Explicitly check for *path* being a symbolic link and raise :exc:`OSError`
+      in that case.
+
 
 .. function:: move(src, dst)
 
-   再帰的にファイルやディレクトリを別の場所へ移動します。
+   Recursively move a file or directory (*src*) to another location (*dst*).
 
-   もし移動先が現在のファイルシステム上であれば単純に名前を変更します。
-   そうでない場合は(:func:`copy2` で)コピーを行い、その後コピー元は削除されます。
+   If the destination is an existing directory, then *src* is moved inside that
+   directory. If the destination already exists but is not a directory, it may
+   be overwritten depending on :func:`os.rename` semantics.
+
+   If the destination is on the current filesystem, then :func:`os.rename` is
+   used.  Otherwise, *src* is copied (using :func:`shutil.copy2`) to *dst* and
+   then removed.
 
    .. versionadded:: 2.3
 
 
 .. exception:: Error
 
-   この例外は複数ファイルの操作を行っているときに生じる例外をまとめたもの
-   です。 :func:`copytree` に対しては例外の引数は3つのタプル(*srcname*, *dstname*,
-   *exception*)からなるリストです。
+   This exception collects exceptions that are raised during a multi-file
+   operation. For :func:`copytree`, the exception argument is a list of 3-tuples
+   (*srcname*, *dstname*, *exception*).
 
    .. versionadded:: 2.3
 
 
-.. _shutil-example:
+.. _copytree-example:
 
-copytree の例
-:::::::::::::
+copytree example
+::::::::::::::::
 
-以下は前述の :func:`copytree` 関数のドキュメント文字列を省略した実装例です。本モジュールで提供される他の関数の使い方を示しています。 ::
+This example is the implementation of the :func:`copytree` function, described
+above, with the docstring omitted.  It demonstrates many of the other functions
+provided by this module. ::
 
    def copytree(src, dst, symlinks=False, ignore=None):
        names = os.listdir(src)
@@ -201,32 +216,32 @@ copytree の例
                else:
                    copy2(srcname, dstname)
                # XXX What about devices, sockets etc.?
-           except (IOError, os.error), why:
+           except (IOError, os.error) as why:
                errors.append((srcname, dstname, str(why)))
            # catch the Error from the recursive copytree so that we can
            # continue with other files
-           except Error, err:
+           except Error as err:
                errors.extend(err.args[0])
        try:
            copystat(src, dst)
        except WindowsError:
            # can't copy file access times on Windows
            pass
-       except OSError, why:
+       except OSError as why:
            errors.extend((src, dst, str(why)))
        if errors:
            raise Error(errors)
 
-:func:`ignore_patterns` ヘルパ関数を利用する、もう1つの例です。 ::
+Another example that uses the :func:`ignore_patterns` helper::
 
    from shutil import copytree, ignore_patterns
 
    copytree(source, destination, ignore=ignore_patterns('*.pyc', 'tmp*'))
 
-この例では、 ``.pyc`` ファイルと、 ``tmp`` で始まる全てのファイルやディレクトリを除いて、
-全てをコピーします。
+This will copy everything except ``.pyc`` files and files or directories whose
+name starts with ``tmp``.
 
-*ignore* 引数にロギングさせる別の例です。 ::
+Another example that uses the *ignore* argument to add a logging call::
 
    from shutil import copytree
    import logging
@@ -238,79 +253,87 @@ copytree の例
    copytree(source, destination, ignore=_logpath)
 
 
-アーカイブの操作
-----------------
+.. _archiving-operations:
+
+Archiving operations
+--------------------
+
+High-level utilities to create and read compressed and archived files are also
+provided.  They rely on the :mod:`zipfile` and :mod:`tarfile` modules.
 
 .. function:: make_archive(base_name, format, [root_dir, [base_dir, [verbose, [dry_run, [owner, [group, [logger]]]]]]])
 
-   アーカイブファイル (zip や tar など) を作成し、その名前を返します。
+   Create an archive file (eg. zip or tar) and returns its name.
 
-   *base_name* は作成するファイルの名前で、パスを含み、フォーマット特有の
-   拡張子はすべて除きます。 *format* はアーカイブフォーマットで、
-   "zip", "tar", "bztar" または "gztar" のいずれかです。
+   *base_name* is the name of the file to create, including the path, minus
+   any format-specific extension. *format* is the archive format: one of
+   "zip", "tar", "bztar" or "gztar".
 
-   *root_dir* は、アーカイブのルートディレクトリとなるディレクトリです。
-   すなわち、一般的には、アーカイブを作成する前に *root_dir* を
-   カレントディレクトリにします。
+   *root_dir* is a directory that will be the root directory of the
+   archive; ie. we typically chdir into *root_dir* before creating the
+   archive.
 
-   *base_dir* は、アーカイブを開始するディレクトリです。
-   すなわち、 *base_dir* は、アーカイブのすべてのファイルとディレクトリに
-   共通する接頭辞になります。
+   *base_dir* is the directory where we start archiving from;
+   ie. *base_dir* will be the common prefix of all files and
+   directories in the archive.
 
-   *root_dir* と *base_dir* のどちらも、デフォルトはカレントディレクトリです。
+   *root_dir* and *base_dir* both default to the current directory.
 
-   *owner* と *group* は、tar アーカイブを作成するときに使われます。
-   デフォルトでは、カレントのオーナとグループを使います。
+   *owner* and *group* are used when creating a tar archive. By default,
+   uses the current owner and group.
+
+   *logger* must be an object compatible with :pep:`282`, usually an instance of
+   :class:`logging.Logger`.
 
    .. versionadded:: 2.7
 
 
 .. function:: get_archive_formats()
 
-   アーカイブ化をサポートしているフォーマットのリストを返します。
-   返されるシーケンスのそれぞれの要素は、タプル ``(name, description)`` です。
+   Return a list of supported formats for archiving.
+   Each element of the returned sequence is a tuple ``(name, description)``.
 
-   デフォルトでは、 :mod:`shutil` はこれらのフォーマットを提供しています:
+   By default :mod:`shutil` provides these formats:
 
-   - *gztar*: gzip された tar ファイル
-   - *bztar*: bzip2 された tar ファイル
-   - *tar*: 圧縮されていない tar ファイル
-   - *zip*: ZIP ファイル
+   - *gztar*: gzip'ed tar-file
+   - *bztar*: bzip2'ed tar-file
+   - *tar*: uncompressed tar file
+   - *zip*: ZIP file
 
-   :func:`register_archive_format` を使って、新しいフォーマットを登録したり、
-   既存のフォーマットに独自のアーカイバを提供したりできます。
+   You can register new formats or provide your own archiver for any existing
+   formats, by using :func:`register_archive_format`.
 
    .. versionadded:: 2.7
 
 
 .. function:: register_archive_format(name, function, [extra_args, [description]])
 
-   フォーマット *name* のアーカイバを登録します。 *function* は、アーカイバを
-   呼び出すのに使われる呼び出し可能オブジェクトです。
+   Register an archiver for the format *name*. *function* is a callable that
+   will be used to invoke the archiver.
 
-   *extra_args* は、与えられるなら ``(name, value)`` のシーケンスで、
-   アーカイバ呼び出し可能オブジェクトが使われるときの追加キーワード引数に
-   使われます。
+   If given, *extra_args* is a sequence of ``(name, value)`` that will be
+   used as extra keywords arguments when the archiver callable is used.
 
-   *description* は、アーカイバのリストを返す :func:`get_archive_formats` 
-   で使われます。デフォルトでは、空のリストです。
+   *description* is used by :func:`get_archive_formats` which returns the
+   list of archivers. Defaults to an empty list.
 
    .. versionadded:: 2.7
 
 
 .. function::  unregister_archive_format(name)
 
-   アーカイブフォーマット *name* を、サポートされているフォーマットの
-   リストから取り除きます。
+   Remove the archive format *name* from the list of supported formats.
 
    .. versionadded:: 2.7
 
 
-アーカイブ化の例
-::::::::::::::::
+.. _archiving-example:
 
-この例では、ユーザの :file:`.ssh` ディレクトリにあるすべてのファイルを含む、
-gzip された tar ファイルアーカイブを作成します::
+Archiving example
+:::::::::::::::::
+
+In this example, we create a gzip'ed tar-file archive containing all files
+found in the :file:`.ssh` directory of the user::
 
     >>> from shutil import make_archive
     >>> import os
@@ -319,7 +342,7 @@ gzip された tar ファイルアーカイブを作成します::
     >>> make_archive(archive_name, 'gztar', root_dir)
     '/Users/tarek/myarchive.tar.gz'
 
-結果のアーカイブは、以下のものを含みます::
+The resulting archive contains::
 
     $ tar -tzvf /Users/tarek/myarchive.tar.gz
     drwx------ tarek/staff       0 2010-02-01 16:23:40 ./
@@ -330,5 +353,3 @@ gzip された tar ファイルアーカイブを作成します::
     -rw------- tarek/staff    1675 2008-06-09 13:26:54 ./id_rsa
     -rw-r--r-- tarek/staff     397 2008-06-09 13:26:54 ./id_rsa.pub
     -rw-r--r-- tarek/staff   37192 2010-02-06 18:23:10 ./known_hosts
-
-

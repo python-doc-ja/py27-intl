@@ -1,97 +1,94 @@
 
-:mod:`termios` --- POSIX スタイルの端末制御
-===========================================
+:mod:`termios` --- POSIX style tty control
+==========================================
 
 .. module:: termios
    :platform: Unix
-   :synopsis: POSIX スタイルの端末制御。
+   :synopsis: POSIX style tty control.
 
 
 .. index::
    pair: POSIX; I/O control
    pair: tty; I/O control
 
-このモジュールでは端末 I/O 制御のための POSIX 準拠の関数呼び出しインタフェースを提供します。
-これら呼び出しのための完全な記述については、
-POSIX または Unix マニュアルページを参照してください。
-POSIX *termios* 形式の端末制御をサポートする Unix のバージョンで
-(かつインストール時に指定した場合に) のみ利用可能です。
+This module provides an interface to the POSIX calls for tty I/O control.  For a
+complete description of these calls, see the POSIX or Unix manual pages.  It is
+only available for those Unix versions that support POSIX *termios* style tty
+I/O control (and then only if configured at installation time).
 
-このモジュールの関数は全て、ファイル記述子 *fd* を最初の引数としてとります。
-この値は、 ``sys.stdin.fileno()`` が返すような
-整数のファイル記述子でも、 ``sys.stdin`` 自体のようなファイルオブジェクトでもかまいません。
+All functions in this module take a file descriptor *fd* as their first
+argument.  This can be an integer file descriptor, such as returned by
+``sys.stdin.fileno()``, or a file object, such as ``sys.stdin`` itself.
 
-このモジュールではまた、モジュールで提供されている関数を使う上で必要となる全ての定数を定義しています;
-これらの定数は C の対応する関数と同じ名前を持っています。
-これらの端末制御インタフェースを利用する上でのさらなる情報については、あなたのシステムの
-ドキュメンテーションを参考にしてください。
+This module also defines all the constants needed to work with the functions
+provided here; these have the same name as their counterparts in C.  Please
+refer to your system documentation for more information on using these terminal
+control interfaces.
 
-このモジュールでは以下の関数を定義しています:
+The module defines the following functions:
 
 
 .. function:: tcgetattr(fd)
 
-   ファイル記述子 *fd* の端末属性を含むリストを返します。
-   その形式は: ``[iflag, oflag, cflag, lflag, ispeed, ospeed, cc]`` です。
-   *cc* は端末特殊文字のリストです (それぞれ長さ 1 の文字列です。ただしインデクス
-   :const:`VMIN` および  :const:`VTIME` の内容は、それらのフィールドが定義され\
-   ていた場合整数の値となります)。
-   端末設定フラグおよび端末速度の解釈、および配列 *cc* のインデクス検索は、
-   :mod:`termios` で定義されているシンボル定数を使って行わなければなりません。
+   Return a list containing the tty attributes for file descriptor *fd*, as
+   follows: ``[iflag, oflag, cflag, lflag, ispeed, ospeed, cc]`` where *cc* is a
+   list of the tty special characters (each a string of length 1, except the
+   items with indices :const:`VMIN` and :const:`VTIME`, which are integers when
+   these fields are defined).  The interpretation of the flags and the speeds as
+   well as the indexing in the *cc* array must be done using the symbolic
+   constants defined in the :mod:`termios` module.
 
 
 .. function:: tcsetattr(fd, when, attributes)
 
-   ファイル記述子 *fd* の端末属性を *attributes* から取り出して設定します。
-   *attributes* は :func:`tcgetattr`
-   が返すようなリストです。引数 *when* は属性がいつ変更されるかを決定します:
-   :const:`TCSANOW` は即時変更を行い、 :const:`TCSAFLUSH` は現在キュー\
-   されている出力を全て転送し、全てのキューされている入力を無視した後に変更を行います。
+   Set the tty attributes for file descriptor *fd* from the *attributes*, which is
+   a list like the one returned by :func:`tcgetattr`.  The *when* argument
+   determines when the attributes are changed: :const:`TCSANOW` to change
+   immediately, :const:`TCSADRAIN` to change after transmitting all queued output,
+   or :const:`TCSAFLUSH` to change after transmitting all queued output and
+   discarding all queued input.
 
 
 .. function:: tcsendbreak(fd, duration)
 
-   ファイル記述子 *fd* にブレークを送信します。
-   *duration* をゼロにすると、 0.25--0.5 秒間のブレークを送信します;
-   *duration* の値がゼロでない場合、その意味はシステム依存です。
+   Send a break on file descriptor *fd*.  A zero *duration* sends a break for 0.25
+   --0.5 seconds; a nonzero *duration* has a system dependent meaning.
 
 
 .. function:: tcdrain(fd)
 
-   ファイル記述子 *fd* に書き込まれた全ての出力が転送されるまで待ちます。
+   Wait until all output written to file descriptor *fd* has been transmitted.
 
 
 .. function:: tcflush(fd, queue)
 
-   ファイル記述子 *fd* にキューされたデータを無視します。
-   どのキューかは *queue* セレクタで指定します: :const:`TCIFLUSH`
-   は入力キュー、 :const:`TCOFLUSH` は出力キュー、 :const:`TCIOFLUSH`
-   は両方のキューです。
+   Discard queued data on file descriptor *fd*.  The *queue* selector specifies
+   which queue: :const:`TCIFLUSH` for the input queue, :const:`TCOFLUSH` for the
+   output queue, or :const:`TCIOFLUSH` for both queues.
 
 
 .. function:: tcflow(fd, action)
 
-   ファイル記述子 *fd* の入力または出力をサスペンドしたりレジュームしたりします。
-   引数 *action* は出力をサスペンドする
-   :const:`TCOOFF` 、出力をレジュームする :const:`TCOON` 、入力をサスペンドする
-   :const:`TCIOFF` 、入力をレジュームする :const:`TCION` をとることができます。
+   Suspend or resume input or output on file descriptor *fd*.  The *action*
+   argument can be :const:`TCOOFF` to suspend output, :const:`TCOON` to restart
+   output, :const:`TCIOFF` to suspend input, or :const:`TCION` to restart input.
 
 
 .. seealso::
 
-   :mod:`tty` モジュール
-      一般的な端末制御操作のための便利な関数。
+   Module :mod:`tty`
+      Convenience functions for common terminal control operations.
 
 
-使用例
-------
+Example
+-------
 
-.. _termios_example:
+.. _termios-example:
 
-以下はエコーバックを切った状態でパスワード入力を促す関数です。
-ユーザの入力に関わらず以前の端末属性を正確に回復するために、二つの
-:func:`tcgetattr` と :keyword:`try` ... :keyword:`finally`
-文によるテクニックが使われています::
+Here's a function that prompts for a password with echoing turned off.  Note the
+technique using a separate :func:`tcgetattr` call and a :keyword:`try` ...
+:keyword:`finally` statement to ensure that the old tty attributes are restored
+exactly no matter what happens::
 
    def getpass(prompt="Password: "):
        import termios, sys

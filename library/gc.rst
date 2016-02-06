@@ -1,133 +1,153 @@
 
-:mod:`gc` --- ガベージコレクタインターフェース
-===============================================
+:mod:`gc` --- Garbage Collector interface
+=========================================
 
 .. module:: gc
-   :synopsis: 循環検出ガベージコレクタのインターフェース。
+   :synopsis: Interface to the cycle-detecting garbage collector.
 .. moduleauthor:: Neil Schemenauer <nas@arctrix.com>
 .. sectionauthor:: Neil Schemenauer <nas@arctrix.com>
 
 
-このモジュールは、循環ガベージコレクタの無効化・検出頻度の調整・デバッグオブションの設定などを行うインターフェースを提供します。
-また、検出した到達不能オブジェクトのうち、解放する事ができないオブジェクトを参照する事もできます。
-循環ガベージコレクタはPyhonの参照カウントを補うためのものなので、もしプログラム中で循環参照が発生しない事が明らかな場合には検出をする必要はありません。
-自動検出は、 ``gc.disable()`` で停止する事ができます。メモリリークをデバッグするときには、 ``gc.set_debug(gc.DEBUG_LEAK)`` とします。
-これは ``gc.DEBUG_SAVEALL`` を含んでいることに注意しましょう。ガベージとして検出されたオブジェクトは、インスペクション用に gc.garbage
-に保存されます。
+This module provides an interface to the optional garbage collector.  It
+provides the ability to disable the collector, tune the collection frequency,
+and set debugging options.  It also provides access to unreachable objects that
+the collector found but cannot free.  Since the collector supplements the
+reference counting already used in Python, you can disable the collector if you
+are sure your program does not create reference cycles.  Automatic collection
+can be disabled by calling ``gc.disable()``.  To debug a leaking program call
+``gc.set_debug(gc.DEBUG_LEAK)``. Notice that this includes
+``gc.DEBUG_SAVEALL``, causing garbage-collected objects to be saved in
+gc.garbage for inspection.
 
-:mod:`gc` モジュールは、以下の関数を提供しています。
+The :mod:`gc` module provides the following functions:
 
 
 .. function:: enable()
 
-   自動ガベージコレクションを有効にします。
+   Enable automatic garbage collection.
 
 
 .. function:: disable()
 
-   自動ガベージコレクションを無効にします。
+   Disable automatic garbage collection.
 
 
 .. function:: isenabled()
 
-   自動ガベージコレクションが有効なら真を返します。
+   Returns true if automatic collection is enabled.
 
 
 .. function:: collect([generation])
 
-   引数を指定しない場合は、全ての検出を行います。オプションの引数 *generation* は、どの世代を検出するかを (0 から 2 までの)
-   整数値で指定します。無効な世代番号を指定した場合は :exc:`ValueError` が発生します。検出した到達不可オブジェクトの数を返します。
+   With no arguments, run a full collection.  The optional argument *generation*
+   may be an integer specifying which generation to collect (from 0 to 2).  A
+   :exc:`ValueError` is raised if the generation number  is invalid. The number of
+   unreachable objects found is returned.
 
    .. versionchanged:: 2.5
-      オプションの引数 *generation* が追加されました.
+      The optional *generation* argument was added.
 
    .. versionchanged:: 2.6
-      幾つかの組み込み型のフリーリストは、最高(第二)世代のGC、あるいはフルGCが
-      実行されるたびにクリアされます。
-      幾つかの型(特に :class:`int` と :class:`float`)では、実装によっては、
-      フリーリスト内の全てのオブジェクトが解放されるとは限りません。
+      The free lists maintained for a number of built-in types are cleared
+      whenever a full collection or collection of the highest generation (2)
+      is run.  Not all items in some free lists may be freed due to the
+      particular implementation, in particular :class:`int` and :class:`float`.
 
 
 .. function:: set_debug(flags)
 
-   ガベージコレクションのデバッグフラグを設定します。デバッグ情報は ``sys.stderr`` に出力されます。
-   デバッグフラグは、下の値の組み合わせを指定する事ができます。
+   Set the garbage collection debugging flags. Debugging information will be
+   written to ``sys.stderr``.  See below for a list of debugging flags which can be
+   combined using bit operations to control debugging.
 
 
 .. function:: get_debug()
 
-   現在のデバッグフラグを返します。
+   Return the debugging flags currently set.
 
 
 .. function:: get_objects()
 
-   現在追跡しているオブジェクトのリストを返します。このリストには、戻り値のリスト自身は含まれていません。
+   Returns a list of all objects tracked by the collector, excluding the list
+   returned.
 
    .. versionadded:: 2.2
 
 
 .. function:: set_threshold(threshold0[, threshold1[, threshold2]])
 
-   ガベージコレクションの閾値（検出頻度）を指定します。 *threshold0* を 0 にすると、検出は行われません。
+   Set the garbage collection thresholds (the collection frequency). Setting
+   *threshold0* to zero disables collection.
 
-   GCは、オブジェクトを走査された回数に従って3世代に分類します。
-   新しいオブジェクトは最も若い(``0`` 世代)に分類されます。
-   もし、そのオブジェクトがガベージコレクションで削除されなければ、次に古い世代に分類されます。
-   もっとも古い世代は ``2`` 世代で、この世代に属するオブジェクトは他の世代に移動しません。
-   ガベージコレクタは、最後に検出を行ってから生成・削除したオブジェクトの数をカウントしており、この数によって検出を開始します。
-   オブジェクトの生成数 - 削除数が *threshold0* より大きくなると、検出を開始します。
-   最初は ``0`` 世代のオブジェクトのみが検査されます。 ``0`` 世代の検査が ``threshold1`` 回実行されると、
-   ``1`` 世代のオブジェクトの検査を行います。
-   同様に、 ``1`` 世代が ``threshold2`` 回検査されると、 ``2`` 世代の検査を行います。
+   The GC classifies objects into three generations depending on how many
+   collection sweeps they have survived.  New objects are placed in the youngest
+   generation (generation ``0``).  If an object survives a collection it is moved
+   into the next older generation.  Since generation ``2`` is the oldest
+   generation, objects in that generation remain there after a collection.  In
+   order to decide when to run, the collector keeps track of the number object
+   allocations and deallocations since the last collection.  When the number of
+   allocations minus the number of deallocations exceeds *threshold0*, collection
+   starts.  Initially only generation ``0`` is examined.  If generation ``0`` has
+   been examined more than *threshold1* times since generation ``1`` has been
+   examined, then generation ``1`` is examined as well.  Similarly, *threshold2*
+   controls the number of collections of generation ``1`` before collecting
+   generation ``2``.
 
 
 .. function:: get_count()
 
-   現在の検出数を、 ``(count0, count1, count2)`` のタプルで返します。
+   Return the current collection  counts as a tuple of ``(count0, count1,
+   count2)``.
 
    .. versionadded:: 2.5
 
 
 .. function:: get_threshold()
 
-   現在の検出閾値を、 ``(threshold0, threshold1, threshold2)`` のタプルで返します。
+   Return the current collection thresholds as a tuple of ``(threshold0,
+   threshold1, threshold2)``.
 
 
 .. function:: get_referrers(*objs)
 
-   objsで指定したオブジェクトのいずれかを参照しているオブジェクトのリストを返します。この関数では、ガベージコレクションをサポートしているコンテナの
-   みを返します。他のオブジェクトを参照していても、ガベージコレクションをサポートしていない拡張型は含まれません。
+   Return the list of objects that directly refer to any of objs. This function
+   will only locate those containers which support garbage collection; extension
+   types which do refer to other objects but do not support garbage collection will
+   not be found.
 
-   尚、戻り値のリストには、すでに参照されなくなっているが、循環参照の一部でまだガベージコレクションで回収されていないオブジェクトも含まれるので注意
-   が必要です。有効なオブジェクトのみを取得する場合、 :func:`get_referrers` の前に :func:`collect` を呼び出してください。
+   Note that objects which have already been dereferenced, but which live in cycles
+   and have not yet been collected by the garbage collector can be listed among the
+   resulting referrers.  To get only currently live objects, call :func:`collect`
+   before calling :func:`get_referrers`.
 
-   :func:`get_referrers` から返されるオブジェクトは作りかけや利用できない状態である場合があるので、利用する際には注意が必要です。
-   :func:`get_referrers` をデバッグ以外の目的で利用するのは避けてください。
+   Care must be taken when using objects returned by :func:`get_referrers` because
+   some of them could still be under construction and hence in a temporarily
+   invalid state. Avoid using :func:`get_referrers` for any purpose other than
+   debugging.
 
    .. versionadded:: 2.2
 
 
 .. function:: get_referents(*objs)
 
-   引数で指定したオブジェクトのいずれかから参照されている、全てのオブジェクトのリストを返します。参照先のオブジェクトは、引数で指定したオブジェクトの
-   Cレベルメソッド :attr:`tp_traverse` で取得し、全てのオブジェクトが直接到達
-   可能な全てのオブジェクトを返すわけではありません。 :attr:`tp_traverse` は
-   ガベージコレクションをサポートするオブジェクトのみが実装しており、ここで取得できるオブジェクトは循環参照の一部となる可能性のあるオブジェクトのみ
-   です。従って、例えば整数オブジェクトが直接到達可能であっても、このオブジェクトは戻り値には含まれません。
+   Return a list of objects directly referred to by any of the arguments. The
+   referents returned are those objects visited by the arguments' C-level
+   :c:member:`~PyTypeObject.tp_traverse` methods (if any), and may not be all objects actually
+   directly reachable.  :c:member:`~PyTypeObject.tp_traverse` methods are supported only by objects
+   that support garbage collection, and are only required to visit objects that may
+   be involved in a cycle.  So, for example, if an integer is directly reachable
+   from an argument, that integer object may or may not appear in the result list.
 
    .. versionadded:: 2.3
 
 .. function:: is_tracked(obj)
 
-   ``obj`` がGCに管理されていたら True を返し、それ以外の場合は False を返します。
-   一般的なルールとして、アトミックな(訳注:他のオブジェクトを参照しないで単一で
-   値を表す型。 int や str など)型のインスタンスは管理されず、それ以外の型
-   (コンテナ型、ユーザー定義型など) のインスタンスは管理されます。
-   しかし、いくつかの型では専用の最適化を行い、シンプルなインスタンスの場合に
-   GCのオーバーヘッドを減らしています。 (例: 全ての key と value がアトミック型の
-   値である dict)
-
-   ::
+   Returns ``True`` if the object is currently tracked by the garbage collector,
+   ``False`` otherwise.  As a general rule, instances of atomic types aren't
+   tracked and instances of non-atomic types (containers, user-defined
+   objects...) are.  However, some type-specific optimizations can be present
+   in order to suppress the garbage collector footprint of simple instances
+   (e.g. dicts containing only atomic keys and values)::
 
       >>> gc.is_tracked(0)
       False
@@ -145,67 +165,78 @@
    .. versionadded:: 2.7
 
 
-以下の変数は読み込み専用です。(変更することはできますが、再バインドする事はできません。）
+The following variable is provided for read-only access (you can mutate its
+value but should not rebind it):
 
 
 .. data:: garbage
 
-   到達不能であることが検出されたが、解放する事ができないオブジェクトのリスト（回収不能オブジェクト）。デフォルトでは、 :meth:`__del__` メソッドを
-   持つオブジェクトのみが格納されます。  [#]_
+   A list of objects which the collector found to be unreachable but could not be
+   freed (uncollectable objects).  By default, this list contains only objects with
+   :meth:`__del__` methods. [#]_ Objects that have :meth:`__del__` methods and are
+   part of a reference cycle cause the entire reference cycle to be uncollectable,
+   including objects not necessarily in the cycle but reachable only from it.
+   Python doesn't collect such cycles automatically because, in general, it isn't
+   possible for Python to guess a safe order in which to run the :meth:`__del__`
+   methods.  If you know a safe order, you can force the issue by examining the
+   *garbage* list, and explicitly breaking cycles due to your objects within the
+   list.  Note that these objects are kept alive even so by virtue of being in the
+   *garbage* list, so they should be removed from *garbage* too.  For example,
+   after breaking cycles, do ``del gc.garbage[:]`` to empty the list.  It's
+   generally better to avoid the issue by not creating cycles containing objects
+   with :meth:`__del__` methods, and *garbage* can be examined in that case to
+   verify that no such cycles are being created.
 
-   :meth:`__del__` メソッドを持つオブジェクトが循環参照に含まれている場合、その循環参照全体と、循環参照からのみ到達する事ができるオブジェクトは
-   回収不能となります。このような場合には、Pythonは安全に :meth:`__del__`
-   を呼び出す順番を決定する事ができないため、自動的に解放することはできません。もし安全な解放順序がわかるのであれば、 *garbage* リストを参照して
-   循環参照を破壊する事ができます。循環参照を破壊した後でも、そのオブジェクトは *garbage* リストから参照されているため、解放されません。解放する
-   ためには、循環参照を破壊した後、 ``del gc.garbage[:]`` のように *garbage* からオブジェクトを削除する必要があります。一般的には
-   :meth:`__del__` を持つオブジェクトが循環参照の一部とはならないように配
-   慮し、 *garbage* はそのような循環参照が発生していない事を確認するために利用する方が良いでしょう。
+   If :const:`DEBUG_SAVEALL` is set, then all unreachable objects will be added to
+   this list rather than freed.
 
-   :const:`DEBUG_SAVEALL` が設定されている場合、全ての到達不能オブジェクトは解放されずにこのリストに格納されます。
-
-以下は :func:`set_debug` に指定することのできる定数です。
+The following constants are provided for use with :func:`set_debug`:
 
 
 .. data:: DEBUG_STATS
 
-   検出中に統計情報を出力します。この情報は、検出頻度を最適化する際に有益です。
+   Print statistics during collection.  This information can be useful when tuning
+   the collection frequency.
 
 
 .. data:: DEBUG_COLLECTABLE
 
-   見つかった回収可能オブジェクトの情報を出力します。
+   Print information on collectable objects found.
 
 
 .. data:: DEBUG_UNCOLLECTABLE
 
-   見つかった回収不能オブジェクト（到達不能だが、ガベージコレクションで解放する事ができないオブジェクト）の情報を出力します。回収不能オブジェクト
-   は、 ``garbade`` リストに追加されます。
+   Print information of uncollectable objects found (objects which are not
+   reachable but cannot be freed by the collector).  These objects will be added to
+   the ``garbage`` list.
 
 
 .. data:: DEBUG_INSTANCES
 
-   :const:`DEBUG_COLLECTABLE` か :const:`DEBUG_UNCOLLECTABLE` が設定されて
-   いる場合、見つかったインスタンスオブジェクトの情報を出力します。
+   When :const:`DEBUG_COLLECTABLE` or :const:`DEBUG_UNCOLLECTABLE` is set, print
+   information about instance objects found.
 
 
 .. data:: DEBUG_OBJECTS
 
-   :const:`DEBUG_COLLECTABLE` か :const:`DEBUG_UNCOLLECTABLE` が設定されて
-   いる場合、見つかったインスタンスオブジェクト以外のオブジェクトの情報を出力します。
+   When :const:`DEBUG_COLLECTABLE` or :const:`DEBUG_UNCOLLECTABLE` is set, print
+   information about objects other than instance objects found.
 
 
 .. data:: DEBUG_SAVEALL
 
-   設定されている場合、全ての到達不能オブジェクトは解放されずに *garbage* に追加されます。これはプログラムのメモリリークをデバッグするときに便利です。
+   When set, all unreachable objects found will be appended to *garbage* rather
+   than being freed.  This can be useful for debugging a leaking program.
 
 
 .. data:: DEBUG_LEAK
 
-   プログラムのメモリリークをデバッグするときに指定します。（ ``DEBUG_COLLECTABLE | DEBUG_UNCOLLECTABLE |
-   DEBUG_INSTANCES |  DEBUG_OBJECTS | DEBUG_SAVEALL`` と同じ。）
+   The debugging flags necessary for the collector to print information about a
+   leaking program (equal to ``DEBUG_COLLECTABLE | DEBUG_UNCOLLECTABLE |
+   DEBUG_INSTANCES | DEBUG_OBJECTS | DEBUG_SAVEALL``).
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] Python 2.2より前のバージョンでは、 :meth:`__del__` メソッドを持つ
-       オブジェクトだけでなく、全ての到達不能オブジェクトが格納されていた。）
+.. [#] Prior to Python 2.2, the list contained all instance objects in unreachable
+   cycles,  not only those with :meth:`__del__` methods.
 

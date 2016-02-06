@@ -1,115 +1,110 @@
 
-:mod:`mmap` --- メモリマップファイル
-====================================
+:mod:`mmap` --- Memory-mapped file support
+==========================================
 
 .. module:: mmap
-   :synopsis: Unix と Windows のメモリマップファイルへのインターフェース
+   :synopsis: Interface to memory-mapped files for Unix and Windows.
 
 
-メモリにマップされたファイルオブジェクトは、文字列とファイルオブジェクトの両方のように振舞います。
-しかし通常の文字列オブジェクトとは異なり、これらは可変です。
-文字列が期待されるほとんどの場所で mmap オブジェクトを利用できます。
-例えば、メモリマップファイルを探索するために :mod:`re`
-モジュールを使うことができます。
-それらは可変なので、 ``obj[index] = 'a'``
-のように文字を変換できますし、スライスを使うことで  ``obj[i1:i2] = '...'``
-のように部分文字列を変換することができます。
-現在のファイル位置をデータの始めとする読込みや書込み、
-ファイルの異なる位置へ :meth:`seek` することもできます。
+Memory-mapped file objects behave like both strings and like file objects.
+Unlike normal string objects, however, these are mutable.  You can use mmap
+objects in most places where strings are expected; for example, you can use
+the :mod:`re` module to search through a memory-mapped file.  Since they're
+mutable, you can change a single character by doing ``obj[index] = 'a'``, or
+change a substring by assigning to a slice: ``obj[i1:i2] = '...'``.  You can
+also read and write data starting at the current file position, and
+:meth:`seek` through the file to different positions.
 
-メモリマップファイルは Unix 上と Windows 上とでは異なる
-:class:`mmap` コンストラクタによって作られます。
-いずれの場合も、開いたファイルのファイル記述子を、更新のために提供しなければなりません。
-すでに存在する Python ファイルオブジェクトをマップしたい場合は、
-*fileno* パラメータに渡す値を手に入れるために、 :meth:`fileno`
-メソッドを使用して下さい。
-そうでなければ、ファイル記述子を直接返す :func:`os.open`
-関数 (呼び出すときにはまだファイルが閉じている必要があります) を使って、
-ファイルを開くことができます。
+A memory-mapped file is created by the :class:`mmap` constructor, which is
+different on Unix and on Windows.  In either case you must provide a file
+descriptor for a file opened for update. If you wish to map an existing Python
+file object, use its :meth:`fileno` method to obtain the correct value for the
+*fileno* parameter.  Otherwise, you can open the file using the
+:func:`os.open` function, which returns a file descriptor directly (the file
+still needs to be closed when done).
 
-Unix バージョンと Windows バージョンのどちらのコンストラクタについても、
-オプションのキーワード・パラメータとして *access* を指定することになるかもしれません。
-*access* は3つの値の内の1つを受け入れます。
-:const:`ACCESS_READ` は読み込み専用、 :const:`ACCESS_WRITE` は書き込み可能、
-:const:`ACCESS_COPY` はコピーした上での書き込みです。
-*access* は Unix と Windows の両方で使用することができます。
-*access* が指定されない場合、 Windows の mmap は書き込み可能マップを返します。
-3つのアクセス型すべてに対する初期メモリ値は、指定されたファイルから得られます。
-:const:`ACCESS_READ` 型のメモリマップに対して書き込むと
-:exc:`TypeError` 例外を送出します。
-:const:`ACCESS_WRITE` 型のメモリマップへの書き込みはメモリと元のファイルの両方に影響を与えます。
-:const:`ACCESS_COPY` 型のメモリマップへの書き込みはメモリに影響を与えますが、元のファイルを更新することはありません。
+.. note::
+   If you want to create a memory-mapping for a writable, buffered file, you
+   should :func:`~io.IOBase.flush` the file first.  This is necessary to ensure
+   that local modifications to the buffers are actually available to the
+   mapping.
+
+For both the Unix and Windows versions of the constructor, *access* may be
+specified as an optional keyword parameter. *access* accepts one of three
+values: :const:`ACCESS_READ`, :const:`ACCESS_WRITE`, or :const:`ACCESS_COPY`
+to specify read-only, write-through or copy-on-write memory respectively.
+*access* can be used on both Unix and Windows.  If *access* is not specified,
+Windows mmap returns a write-through mapping.  The initial memory values for
+all three access types are taken from the specified file.  Assignment to an
+:const:`ACCESS_READ` memory map raises a :exc:`TypeError` exception.
+Assignment to an :const:`ACCESS_WRITE` memory map affects both memory and the
+underlying file.  Assignment to an :const:`ACCESS_COPY` memory map affects
+memory but does not update the underlying file.
 
 .. versionchanged:: 2.5
-   無名メモリ(anonymous memory)にマップするためには fileno として -1
-   を渡し、length を与えてください。
+   To map anonymous memory, -1 should be passed as the fileno along with the
+   length.
 
 .. versionchanged:: 2.6
-   mmap.mmap はこれまで mmap オブジェクトを生成するファクトリ関数でした。
-   これからは mmap.mmap がクラスそのものになります。
+   mmap.mmap has formerly been a factory function creating mmap objects. Now
+   mmap.mmap is the class itself.
 
 .. class:: mmap(fileno, length[, tagname[, access[, offset]]])
 
-   **(Windows バージョン)** ファイルハンドル *fileno*
-   によって指定されたファイルから *length* バイトをマップして、
-   mmap オブジェクトを生成します。
-   *length* が現在のファイルサイズより大きな場合、
-   ファイルサイズは *length* を含む大きさにまで拡張されます。
-   *length* が ``0`` の場合、マップの最大の長さは現在のファイルサイズになります。
-   ただし、ファイル自体が空のときは Windows が例外を送出します
-   (Windows では空のマップを作成することができません)。
+   **(Windows version)** Maps *length* bytes from the file specified by the
+   file handle *fileno*, and creates a mmap object.  If *length* is larger
+   than the current size of the file, the file is extended to contain *length*
+   bytes.  If *length* is ``0``, the maximum length of the map is the current
+   size of the file, except that if the file is empty Windows raises an
+   exception (you cannot create an empty mapping on Windows).
 
-   *tagname* は、 ``None`` 以外で指定された場合、
-   マップのタグ名を与える文字列となります。
-   Windows は同じファイルに対する様々なマップを持つことを可能にします。
-   既存のタグの名前を指定すればそのタグがオープンされ、
-   そうでなければこの名前の新しいタグが作成されます。
-   もしこのパラメータを省略したり ``None`` を与えたりしたならば、
-   マップは名前なしで作成されます。
-   タグ・パラメータの使用の回避は、あなたのコードを Unix と Windows
-   の間で移植可能にしておくのを助けてくれるでしょう。
+   *tagname*, if specified and not ``None``, is a string giving a tag name for
+   the mapping.  Windows allows you to have many different mappings against
+   the same file.  If you specify the name of an existing tag, that tag is
+   opened, otherwise a new tag of this name is created.  If this parameter is
+   omitted or ``None``, the mapping is created without a name.  Avoiding the
+   use of the tag parameter will assist in keeping your code portable between
+   Unix and Windows.
 
-   *offset* は非負整数のオフセットとして指定できます。
-   mmap の参照はファイルの先頭からのオフセットに相対的になります。
-   *offset* のデフォルトは 0 です。
-   *offset* は ALLOCATIONGRANULARITY の倍数でなければなりません。
+   *offset* may be specified as a non-negative integer offset. mmap references
+   will be relative to the offset from the beginning of the file. *offset*
+   defaults to 0.  *offset* must be a multiple of the ALLOCATIONGRANULARITY.
+
 
 .. class:: mmap(fileno, length[, flags[, prot[, access[, offset]]]])
    :noindex:
 
-   **(Unix バージョン)** ファイル記述子 *fileno*
-   によって指定されたファイルから *length* バイトをマップし、
-   mmap オブジェクトを返します。
-   *length* が ``0`` の場合、マップの最大長は
-   :class:`mmap` が呼び出された時点のファイルサイズになります。
+   **(Unix version)** Maps *length* bytes from the file specified by the file
+   descriptor *fileno*, and returns a mmap object.  If *length* is ``0``, the
+   maximum length of the map will be the current size of the file when
+   :class:`mmap` is called.
 
-   *flags* はマップの種類を指定します。 :const:`MAP_PRIVATE`
-   はプライベートな copy-on-write(書込み時コピー)のマップを作成します。
-   従って、mmap オブジェクトの内容への変更はこのプロセス内にのみ有効です。
-   :const:`MAP_SHARED` はファイルの同じ領域をマップする他のすべてのプロセス\
-   と共有されたマップを作成します。デフォルトは :const:`MAP_SHARED` です。
+   *flags* specifies the nature of the mapping. :const:`MAP_PRIVATE` creates a
+   private copy-on-write mapping, so changes to the contents of the mmap
+   object will be private to this process, and :const:`MAP_SHARED` creates a
+   mapping that's shared with all other processes mapping the same areas of
+   the file.  The default value is :const:`MAP_SHARED`.
 
-   *prot* が指定された場合、希望のメモリ保護を与えます。
-   2つの最も有用な値は、 :const:`PROT_READ` と :const:`PROT_WRITE` です。
-   これは、読込み可能または書込み可能を指定するものです。
-   *prot* のデフォルトは :const:`PROT_READ \| PROT_WRITE` です。
+   *prot*, if specified, gives the desired memory protection; the two most
+   useful values are :const:`PROT_READ` and :const:`PROT_WRITE`, to specify
+   that the pages may be read or written.  *prot* defaults to
+   :const:`PROT_READ \| PROT_WRITE`.
 
-   *access* はオプションのキーワード・パラメータとして、
-   *flags* と *prot* の代わりに指定してもかまいません。
-   *flags*, *prot* と *access* の両方を指定することは間違っています。
-   このパラメーターを使用法についての情報は、
-   先に述べた *access* の記述を参照してください。
+   *access* may be specified in lieu of *flags* and *prot* as an optional
+   keyword parameter.  It is an error to specify both *flags*, *prot* and
+   *access*.  See the description of *access* above for information on how to
+   use this parameter.
 
-   *offset* は非負整数のオフセットとして指定できます。
-   mmap の参照はファイルの先頭からのオフセットに相対的になります。
-   *offset* のデフォルトは 0 です。
-   *offset* は PAGESIZE または ALLOCATIONGRANULARITY の倍数でなければなりません。
+   *offset* may be specified as a non-negative integer offset. mmap references
+   will be relative to the offset from the beginning of the file. *offset*
+   defaults to 0.  *offset* must be a multiple of the PAGESIZE or
+   ALLOCATIONGRANULARITY.
 
-   Mac OS X と OpenVMS において、作成された memory mapping の正当性を確実にするために
-   *fileno* で指定されたファイルディスクリプタは内部で自動的に物理的な
-   ストレージ (physical backing store) と同期されます。
+   To ensure validity of the created memory mapping the file specified
+   by the descriptor *fileno* is internally automatically synchronized
+   with physical backing store on Mac OS X and OpenVMS.
 
-   以下の例は :class:`mmap` の簡単な使い方です::
+   This example shows a simple way of using :class:`mmap`::
 
       import mmap
 
@@ -119,134 +114,143 @@ Unix バージョンと Windows バージョンのどちらのコンストラク
 
       with open("hello.txt", "r+b") as f:
           # memory-map the file, size 0 means whole file
-          map = mmap.mmap(f.fileno(), 0)
+          mm = mmap.mmap(f.fileno(), 0)
           # read content via standard file methods
-          print map.readline()  # prints "Hello Python!"
+          print mm.readline()  # prints "Hello Python!"
           # read content via slice notation
-          print map[:5]  # prints "Hello"
+          print mm[:5]  # prints "Hello"
           # update content using slice notation;
           # note that new content must have same size
-          map[6:] = " world!\n"
+          mm[6:] = " world!\n"
           # ... and read again using standard file methods
-          map.seek(0)
-          print map.readline()  # prints "Hello  world!"
+          mm.seek(0)
+          print mm.readline()  # prints "Hello  world!"
           # close the map
-          map.close()
+          mm.close()
 
 
-   次の例では無名マップを作り親プロセスと子プロセスの間でデータのやりとりをしてみせます::
+   The next example demonstrates how to create an anonymous map and exchange
+   data between the parent and child processes::
 
       import mmap
       import os
 
-      map = mmap.mmap(-1, 13)
-      map.write("Hello world!")
+      mm = mmap.mmap(-1, 13)
+      mm.write("Hello world!")
 
       pid = os.fork()
 
       if pid == 0: # In a child process
-          map.seek(0)
-          print map.readline()
+          mm.seek(0)
+          print mm.readline()
 
-          map.close()
+          mm.close()
 
 
-   メモリマップファイルオブジェクトは以下のメソッドをサポートしています:
+   Memory-mapped file objects support the following methods:
 
 
    .. method:: close()
 
-      ファイルを閉じます。この呼出しの後にオブジェクトの他のメソッドの呼出すことは、
-      例外の送出を引き起こすでしょう。
+      Closes the mmap. Subsequent calls to other methods of the object will
+      result in a ValueError exception being raised. This will not close
+      the open file.
 
 
    .. method:: find(string[, start[, end]])
 
-      オブジェクト内の [*start*, *end*] の範囲に含まれている部分文字列
-      *string* が見つかった場所の最も小さいインデックスを返します。
-      オプションの引数 *start* と *end* はスライスに使われるときのように解釈されます。
-      失敗したときには ``-1`` を返します。
+      Returns the lowest index in the object where the substring *string* is
+      found, such that *string* is contained in the range [*start*, *end*].
+      Optional arguments *start* and *end* are interpreted as in slice notation.
+      Returns ``-1`` on failure.
 
 
    .. method:: flush([offset, size])
 
-      ファイルのメモリコピー内での変更をディスクへフラッシュします。
-      この呼出しを使わなかった場合、オブジェクトが破壊される前に変更が書き込まれる保証はありません。
-      もし *offset* と *size* が指定された場合、与えられたバイトの範囲の変更だけがディスクにフラッシュされます。
-      指定されない場合、マップ全体がフラッシュされます。
+      Flushes changes made to the in-memory copy of a file back to disk. Without
+      use of this call there is no guarantee that changes are written back before
+      the object is destroyed.  If *offset* and *size* are specified, only
+      changes to the given range of bytes will be flushed to disk; otherwise, the
+      whole extent of the mapping is flushed.
 
-      **(Windows バージョン)** ゼロ以外の値が返されたら成功を、ゼロは失敗を意味します。
+      **(Windows version)** A nonzero value returned indicates success; zero
+      indicates failure.
 
-      **(Unix バージョン)** ゼロの値が返されたら成功を意味します。
-      呼び出しが失敗すると例外が送出されます。
+      **(Unix version)** A zero value is returned to indicate success. An
+      exception is raised when the call failed.
+
 
    .. method:: move(dest, src, count)
 
-      オフセット *src* から始まる *count* バイトをインデックス *dest*
-      の位置へコピーします。もし mmap が :const:`ACCESS_READ` で作成されていた場合、
-      :exc:`TypeError` 例外を発生させます。
+      Copy the *count* bytes starting at offset *src* to the destination index
+      *dest*.  If the mmap was created with :const:`ACCESS_READ`, then calls to
+      move will raise a :exc:`TypeError` exception.
 
 
    .. method:: read(num)
 
-      現在のファイル位置から最大で *num* バイト分の文字列を返します。
-      ファイル位置は返したバイトの分だけ後ろの位置へ更新されます。
+      Return a string containing up to *num* bytes starting from the current
+      file position; the file position is updated to point after the bytes that
+      were returned.
 
 
    .. method:: read_byte()
 
-      現在のファイル位置から長さ1の文字列を返します。ファイル位置は1だけ進みます。
+      Returns a string of length 1 containing the character at the current file
+      position, and advances the file position by 1.
 
 
    .. method:: readline()
 
-      現在のファイル位置から次の改行までの、1行を返します。
+      Returns a single line, starting at the current file position and up to the
+      next newline.
 
 
    .. method:: resize(newsize)
 
-      マップと元ファイル(がもしあれば)のサイズを変更します。
-      もし mmap が :const:`ACCESS_READ` または :const:`ACCESS_COPY`
-      で作成されたならば、マップサイズの変更は :exc:`TypeError` 例外を発生させます。
+      Resizes the map and the underlying file, if any. If the mmap was created
+      with :const:`ACCESS_READ` or :const:`ACCESS_COPY`, resizing the map will
+      raise a :exc:`TypeError` exception.
 
 
    .. method:: rfind(string[, start[, end]])
 
-      オブジェクト内の [*start*, *end*] の範囲に含まれている部分文字列
-      *string* が見つかった場所の最も大きいインデックスを返します。
-      オプションの引数 *start* と *end* はスライスに使われるときのように解釈されます。
-      失敗したときには ``-1`` を返します。
+      Returns the highest index in the object where the substring *string* is
+      found, such that *string* is contained in the range [*start*, *end*].
+      Optional arguments *start* and *end* are interpreted as in slice notation.
+      Returns ``-1`` on failure.
+
 
    .. method:: seek(pos[, whence])
 
-      ファイルの現在位置をセットします。 *whence* 引数はオプションであり、
-      デフォルトは ``os.SEEK_SET`` つまり ``0`` (絶対位置)です。
-      その他の値として、
-      ``os.SEEK_CUR`` つまり ``1`` (現在位置からの相対位置)と
-      ``os.SEEK_END`` つまり ``2`` (ファイルの終わりからの相対位置)があります。
+      Set the file's current position.  *whence* argument is optional and
+      defaults to ``os.SEEK_SET`` or ``0`` (absolute file positioning); other
+      values are ``os.SEEK_CUR`` or ``1`` (seek relative to the current
+      position) and ``os.SEEK_END`` or ``2`` (seek relative to the file's end).
 
 
    .. method:: size()
 
-      ファイルの長さを返します。メモリマップ領域のサイズより大きいかもしれません。
+      Return the length of the file, which can be larger than the size of the
+      memory-mapped area.
 
 
    .. method:: tell()
 
-      ファイル・ポインタの現在位置を返します。
+      Returns the current position of the file pointer.
 
 
    .. method:: write(string)
 
-      メモリ内のファイル・ポインタの現在位置に *string* のバイト列を書き込みます。
-      ファイル位置はバイト列が書き込まれた後の位置へ更新されます。
-      もし mmap が :const:`ACCESS_READ` で作成されていた場合、
-      書き込み時に :exc:`TypeError` 例外を発生させるでしょう。
+      Write the bytes in *string* into memory at the current position of the
+      file pointer; the file position is updated to point after the bytes that
+      were written. If the mmap was created with :const:`ACCESS_READ`, then
+      writing to it will raise a :exc:`TypeError` exception.
 
 
    .. method:: write_byte(byte)
 
-      メモリ内のファイル・ポインタの現在位置に単一文字の文字列 *byte* を書き込みます。
-      ファイル位置は ``1`` だけ進みます。
-      もし mmap が :const:`ACCESS_READ` で作成されていた場合、
-      書き込み時に :exc:`TypeError` 例外を発生させるでしょう。
+      Write the single-character string *byte* into memory at the current
+      position of the file pointer; the file position is advanced by ``1``. If
+      the mmap was created with :const:`ACCESS_READ`, then writing to it will
+      raise a :exc:`TypeError` exception.

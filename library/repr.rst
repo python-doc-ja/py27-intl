@@ -1,55 +1,62 @@
-
-:mod:`repr` --- もう一つの :func:`repr` の実装
-==============================================
+:mod:`repr` --- Alternate :func:`repr` implementation
+=====================================================
 
 .. module:: repr
-   :synopsis: 大きさに制限のある別のrepr()の実装。
+   :synopsis: Alternate repr() implementation with size limits.
+   :noindex:
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 .. note::
+   The :mod:`repr` module has been renamed to :mod:`reprlib` in Python 3.  The
+   :term:`2to3` tool will automatically adapt imports when converting your
+   sources to Python 3.
 
-   :mod:`repr` モジュールは Python 3.0 では :mod:`reprlib` にリネームされました。
-   :term:`2to3` ツールはソースコード内の import 文を自動で 3.0 に適応させます。
+**Source code:** :source:`Lib/repr.py`
 
-:mod:`repr` モジュールは結果の文字列の大きさを制限したオブジェクト表現を作り出すための方法を提供します。これはPythonデバッガで使われていますが、他の状況でも同じように役に立つかもしれません。
+--------------
 
-.. seealso::
+The :mod:`repr` module provides a means for producing object representations
+with limits on the size of the resulting strings. This is used in the Python
+debugger and may be useful in other contexts as well.
 
-   最新バージョンの `repr module Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/repr.py?view=markup>`_
-
-このモジュールはクラスとインスタンス、それに関数を提供します:
+This module provides a class, an instance, and a function:
 
 
 .. class:: Repr()
 
-   組み込みクラス :func:`repr` によく似た関数を実装するために役に立つ書式化サービスを提供します。過度に長い表現を作り出さないように、異なるオブジェクト型に対する大きさの制限が追加されます。
+   Class which provides formatting services useful in implementing functions
+   similar to the built-in :ref:`repr() <func-repr>`; size limits for different
+   object types are added to avoid the generation of representations which are
+   excessively long.
 
 
 .. data:: aRepr
 
-   これは下で説明される :func:`.repr` 関数を提供するために使われる :class:`Repr`
-   のインスタンスです。このオブジェクトの属性を変更すると、 :func:`.repr` と
-   Python デバッガが使うサイズ制限に影響します。
+   This is an instance of :class:`Repr` which is used to provide the :func:`.repr`
+   function described below.  Changing the attributes of this object will affect
+   the size limits used by :func:`.repr` and the Python debugger.
 
 
 .. function:: repr(obj)
 
-   これは ``aRepr`` の :meth:`~Repr.repr` メソッドです。同じ名前の組み込み
-   関数が返す文字列と似ていますが、最大サイズに制限のある文字列を返します。
+   This is the :meth:`~Repr.repr` method of ``aRepr``.  It returns a string
+   similar to that returned by the built-in function of the same name, but with
+   limits on most sizes.
 
 
 .. _repr-objects:
 
-Reprオブジェクト
-----------------
+Repr Objects
+------------
 
-:class:`Repr` インスタンスは様々なオブジェクト型の表現にサイズ制限を与えるために使えるいくつかのメンバーと、特定のオブジェクト型を書式化するメソッドを提供します。
+:class:`Repr` instances provide several attributes which can be used to provide
+size limits for the representations of different object types,  and methods
+which format specific object types.
 
 
 .. attribute:: Repr.maxlevel
 
-   再帰的な表現を作る場合の深さ制限。デフォルトは ``6`` です。
+   Depth limit on the creation of recursive representations.  The default is ``6``.
 
 
 .. attribute:: Repr.maxdict
@@ -60,59 +67,68 @@ Reprオブジェクト
                Repr.maxdeque
                Repr.maxarray
 
-   指定されたオブジェクト型に対するエントリ表現の数についての制限。
-   :attr:`maxdict` に対するデフォルトは ``4`` で、 :attr:`maxarray` は ``5`` 、その他に対しては ``6`` です。
+   Limits on the number of entries represented for the named object type.  The
+   default is ``4`` for :attr:`maxdict`, ``5`` for :attr:`maxarray`, and  ``6`` for
+   the others.
 
    .. versionadded:: 2.4
-      :attr:`maxset`, :attr:`maxfrozenset`, :attr:`set`.
+      :attr:`maxset`, :attr:`maxfrozenset`, and :attr:`set`.
 
 
 .. attribute:: Repr.maxlong
 
-   長整数の表現のおける文字数の最大値。中央の数字が抜け落ちます。デフォルトは ``40`` です。
+   Maximum number of characters in the representation for a long integer.  Digits
+   are dropped from the middle.  The default is ``40``.
 
 
 .. attribute:: Repr.maxstring
 
-   文字列の表現における文字数の制限。文字列の"通常の"表現は文字の材料だということに注意してください:
-   表現にエスケープシーケンスが必要とされる場合は、表現が短縮されたときにこれらはマングルされます。デフォルトは ``30`` です。
+   Limit on the number of characters in the representation of the string.  Note
+   that the "normal" representation of the string is used as the character source:
+   if escape sequences are needed in the representation, these may be mangled when
+   the representation is shortened.  The default is ``30``.
 
 
 .. attribute:: Repr.maxother
 
-   この制限は :class:`Repr` オブジェクトに利用できる特定の書式化メソッドがないオブジェクト型のサイズをコントロールするために使われます。 :attr:`maxstring` と同じようなやり方で適用されます。デフォルトは ``20`` です。
+   This limit is used to control the size of object types for which no specific
+   formatting method is available on the :class:`Repr` object. It is applied in a
+   similar manner as :attr:`maxstring`.  The default is ``20``.
 
 
 .. method:: Repr.repr(obj)
 
-   インスタンスが強制する書式化を使う組み込み :func:`repr` と等価なもの。
+   The equivalent to the built-in :ref:`repr() <func-repr>` that uses the
+   formatting imposed by the instance.
 
 
 .. method:: Repr.repr1(obj, level)
 
-   :meth:`.repr` が使う再帰的な実装。これはどの書式化メソッドを呼び出すかを決定するために *obj* の型を使い、それを *obj* と *level* に渡します。再帰呼び出しにおいて *level* の値に対して
-   ``level - 1`` を与える再帰的な書式化を実行するために、型に固有のメソッドは :meth:`repr1` を呼び出します。
+   Recursive implementation used by :meth:`.repr`.  This uses the type of *obj* to
+   determine which formatting method to call, passing it *obj* and *level*.  The
+   type-specific methods should call :meth:`repr1` to perform recursive formatting,
+   with ``level - 1`` for the value of *level* in the recursive  call.
 
 
 .. method:: Repr.repr_TYPE(obj, level)
    :noindex:
 
-   型名に基づく名前をもつメソッドとして、特定の型に対する書式化メソッドは実装されます。
-   メソッド名では、 **TYPE** は ``string.join(string.split(type(obj).__name__, '_'))``
-   に置き換えられます。
-   これらのメソッドへのディスパッチは :meth:`repr1` によって処理されます。
-   再帰的に値の書式を整える必要がある型固有のメソッドは、 ``self.repr1(subobj, level - 1)``
-   を呼び出します。
+   Formatting methods for specific types are implemented as methods with a name
+   based on the type name.  In the method name, **TYPE** is replaced by
+   ``string.join(string.split(type(obj).__name__, '_'))``. Dispatch to these
+   methods is handled by :meth:`repr1`. Type-specific methods which need to
+   recursively format a value should call ``self.repr1(subobj, level - 1)``.
 
 
 .. _subclassing-reprs:
 
-Reprオブジェクトをサブクラス化する
-----------------------------------
+Subclassing Repr Objects
+------------------------
 
-更なる組み込みオブジェクト型へのサポートを追加するためや、すでにサポートされている型の扱いを変更するために、
-:meth:`Repr.repr1` による動的なディスパッチを使って :class:`Repr` をサブクラス化することができます。
-この例はファイルオブジェクトのための特別なサポートを追加する方法を示しています::
+The use of dynamic dispatching by :meth:`Repr.repr1` allows subclasses of
+:class:`Repr` to add support for additional built-in object types or to modify
+the handling of types already supported. This example shows how special support
+for file objects could be added::
 
    import repr as reprlib
    import sys

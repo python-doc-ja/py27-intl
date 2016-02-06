@@ -1,47 +1,51 @@
-:mod:`shelve` --- Python オブジェクトの永続化
-=============================================
+:mod:`shelve` --- Python object persistence
+===========================================
 
 .. module:: shelve
-   :synopsis: Python オブジェクトの永続化。
+   :synopsis: Python object persistence.
 
 
 .. index:: module: pickle
 
-"シェルフ (shelf, 棚)" は辞書に似た永続性を持つオブジェクトです。 "dbm" データベースとの違いは、シェルフの値 (キーではありません！)
-は実質上どんな Python オブジェクトにも --- :mod:`pickle` モジュールが扱えるなら何でも ---
-できるということです。これにはほとんどのクラスインスタンス、再帰的なデータ型、沢山の共有されたサブオブジェクト
-を含むオブジェクトが含まれます。キーは通常の文字列です。
+**Source code:** :source:`Lib/shelve.py`
 
-.. seealso::
+--------------
 
-   最新バージョンの `shelve モジュールの Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/shelve.py?view=markup>`_
+A "shelf" is a persistent, dictionary-like object.  The difference with "dbm"
+databases is that the values (not the keys!) in a shelf can be essentially
+arbitrary Python objects --- anything that the :mod:`pickle` module can handle.
+This includes most class instances, recursive data types, and objects containing
+lots of shared  sub-objects.  The keys are ordinary strings.
 
-.. function:: open(filename[, flag='c'[, protocol=None[, writeback=False]]])
 
-   永続的な辞書を開きます。指定された *filename* は、根底にあるデータベースの基本ファイル名となります。副作用として、 *filename*
-   には拡張子がつけられる場合があり、ひとつ以上のファイルが生成される可能性もあります。デフォルトでは、根底にあるデータベースファイルは
-   読み書き可能なように開かれます。オプションの *flag* パラメタは :func:`anydbm.open` における *flag* パラメタと同様に
-   解釈されます。
+.. function:: open(filename, flag='c', protocol=None, writeback=False)
 
-   デフォルトでは、値を整列化する際にはバージョン 0 の pickle 化が用いられます。pickle 化プロトコルのバージョンは *protocol*
-   パラメタで指定することができます。
+   Open a persistent dictionary.  The filename specified is the base filename for
+   the underlying database.  As a side-effect, an extension may be added to the
+   filename and more than one file may be created.  By default, the underlying
+   database file is opened for reading and writing.  The optional *flag* parameter
+   has the same interpretation as the *flag* parameter of :func:`anydbm.open`.
+
+   By default, version 0 pickles are used to serialize values.  The version of the
+   pickle protocol can be specified with the *protocol* parameter.
 
    .. versionchanged:: 2.3
-      *protocol* パラメタが追加されました。
+      The *protocol* parameter was added.
 
-   Python の意味論から、シェルフには永続的な辞書の可変エントリに対する変更を知る術が
-   ありません。デフォルトでは、変更されたオブジェクトはシェルフに代入されたとき
-   *だけ* 書き込まれます (:ref:`shelve-example` 参照)。
-   オプションの *writeback* パラメタが  *True* に設定されていれば、
-   アクセスされたすべてのエントリはメモリ上にキャッシュされ、
-   :meth:`~Shelf.sync` および :meth:`~Shelf.close` を呼び出した際に書き戻されます。
-   この機能は永続的な辞書上の可変の要素に対する変更を容易にしますが、
-   多数のエントリがアクセスされた場合、膨大な量のメモリがキャッシュの
-   ために消費され、アクセスされた全てのエントリを書き戻す
-   (アクセスされたエントリが可変であるか、
-   あるいは実際に変更されたかを決定する方法は存在しないのです)
-   ために、ファイルを閉じる操作を非常に低速にしてしまいます。
+   Because of Python semantics, a shelf cannot know when a mutable
+   persistent-dictionary entry is modified.  By default modified objects are
+   written *only* when assigned to the shelf (see :ref:`shelve-example`).  If the
+   optional *writeback* parameter is set to *True*, all entries accessed are also
+   cached in memory, and written back on :meth:`~Shelf.sync` and
+   :meth:`~Shelf.close`; this can make it handier to mutate mutable entries in
+   the persistent dictionary, but, if many entries are accessed, it can consume
+   vast amounts of memory for the cache, and it can make the close operation
+   very slow since all accessed entries are written back (there is no way to
+   determine which accessed entries are mutable, nor which ones were actually
+   mutated).
+
+   Like file objects, shelve objects should be closed explicitly to ensure
+   that the persistent data is flushed to disk.
 
 .. warning::
 
@@ -49,105 +53,101 @@
    to load a shelf from an untrusted source.  Like with pickle, loading a shelf
    can execute arbitrary code.
 
-   :mod:`shelve` モジュールは裏で :mod:`pickle` を使っているので、信頼できない
-   ソースから shelf を読み込むのは危険です。
-   pickle と同じく、 shelf の読み込みでも任意のコードを実行できるからです。
+Shelf objects support all methods supported by dictionaries.  This eases the
+transition from dictionary based scripts to those requiring persistent storage.
 
-シェルフオブジェクトは辞書がサポートする全てのメソッドをサポートしています。
-これにより、辞書ベースのスクリプトから永続的な記憶媒体を必要とする
-スクリプトに容易に移行できるようになります。
-
-追加でサポートされるメソッドが二つあります:
+Two additional methods are supported:
 
 .. method:: Shelf.sync()
 
-   シェルフが *writeback* を :const:`True` にセットして開かれている場合に、
-   キャッシュ中の全てのエントリを書き戻します。また容易にできるならば、
-   キャッシュを空にしてディスク上の永続的な辞書を同期します。
-   このメソッドはシェルフを :meth:`close` によって閉じるとき自動的に呼び出されます。
+   Write back all entries in the cache if the shelf was opened with *writeback*
+   set to :const:`True`.  Also empty the cache and synchronize the persistent
+   dictionary on disk, if feasible.  This is called automatically when the shelf
+   is closed with :meth:`close`.
 
 .. method:: Shelf.close()
 
-   永続的な *辞書* オブジェクトを同期して閉じます。
-   既に閉じられているシェルフに対して呼び出すと :exc:`ValueError`
-   に終わります。
+   Synchronize and close the persistent *dict* object.  Operations on a closed
+   shelf will fail with a :exc:`ValueError`.
+
 
 .. seealso::
 
-   .. `Persistent dictionary recipe <http://code.activestate.com/recipes/576642/>`_
-      with widely supported storage formats and having the speed of native
-      dictionaries.
-
-   通常の辞書に近い速度をもち、いろいろなストレージフォーマットに対応した、
-   `永続化辞書のレシピ <http://code.activestate.com/recipes/576642/>`_
+   `Persistent dictionary recipe <http://code.activestate.com/recipes/576642/>`_
+   with widely supported storage formats and having the speed of native
+   dictionaries.
 
 
-
-制限事項
---------
+Restrictions
+------------
 
   .. index::
      module: dbm
      module: gdbm
      module: bsddb
 
-* どのデータベースパッケージが使われるか (例えば :mod:`dbm` 、 :mod:`gdbm` 、 :mod:`bsddb`) は、どのインタフェースが
-  利用可能かに依存します。従って、データベースを :mod:`dbm`  を使って直接開く方法は安全ではありません。データベースはまた、 :mod:`dbm`
-  が使われた場合 (不幸なことに) その制約に縛られます --- これはデータベースに記録されたオブジェクト (の pickle 化された表現) はかなり小さく
-  なければならず、キー衝突が生じた場合に、稀にデータベースを更新することができなくなるということを意味します。
+* The choice of which database package will be used (such as :mod:`dbm`,
+  :mod:`gdbm` or :mod:`bsddb`) depends on which interface is available.  Therefore
+  it is not safe to open the database directly using :mod:`dbm`.  The database is
+  also (unfortunately) subject to the limitations of :mod:`dbm`, if it is used ---
+  this means that (the pickled representation of) the objects stored in the
+  database should be fairly small, and in rare cases key collisions may cause the
+  database to refuse updates.
 
-* :mod:`shelve` モジュールは、シェルフに置かれたオブジェクトの *並列した* 読み出し/書き込みアクセスをサポートしません
-  (複数の同時読み出しアクセスは安全です)。あるプログラムが書き込みために開かれたシェルフを持っているとき、他のプログラムは
-  そのシェルフを読み書きのために開いてはいけません。この問題を解決するために Unix のファイルロック機構を使うことができますが、この機構は Unix
-  のバージョン間で異なり、使われているデータベースの実装について知識が必要となります。
+* The :mod:`shelve` module does not support *concurrent* read/write access to
+  shelved objects.  (Multiple simultaneous read accesses are safe.)  When a
+  program has a shelf open for writing, no other program should have it open for
+  reading or writing.  Unix file locking can be used to solve this, but this
+  differs across Unix versions and requires knowledge about the database
+  implementation used.
 
 
-.. class:: Shelf(dict[, protocol=None[, writeback=False]])
+.. class:: Shelf(dict, protocol=None, writeback=False)
 
-   :class:`UserDict.DictMixin` のサブクラスで、pickle 化された値を  *dict* オブジェクトに保存します。
+   A subclass of :class:`UserDict.DictMixin` which stores pickled values in the
+   *dict* object.
 
-   デフォルトでは、値を整列化する際にはバージョン 0 の pickle 化が用いられます。pickle 化プロトコルのバージョンは *protocol*
-   パラメタで指定することができます。pickle 化プロトコルについては :mod:`pickle` のドキュメントを参照してください。
+   By default, version 0 pickles are used to serialize values.  The version of the
+   pickle protocol can be specified with the *protocol* parameter. See the
+   :mod:`pickle` documentation for a discussion of the pickle protocols.
 
    .. versionchanged:: 2.3
-      *protocol* パラメタが追加されました。
+      The *protocol* parameter was added.
 
-   *writeback* パラメタが *True* に設定されていれば、アクセスされたすべての
-   エントリはメモリ上にキャッシュされ、ファイルを閉じる際に書き戻されます; この機能により、可変のエントリに対して自然な操作が可能になりますが、
-   さらに多くのメモリを消費し、辞書をファイルと同期して閉じる際に長い時間がかかるようになります。
-
-
-.. class:: BsdDbShelf(dict[, protocol=None[, writeback=False]])
-
-   :class:`Shelf` のサブクラスで、 :meth:`first`, :meth:`!next`, 
-   :meth:`previous`, :meth:`last`, :meth:`set_location` 
-   メソッドを公開しています。これらのメソッドは :mod:`bsddb`
-   モジュールでは利用可能ですが、他のデータベースモジュールでは利用できません。
-   コンストラクタに渡された *dict* オブジェクトは上記のメソッドを
-   サポートしていなくてはなりません。通常は、 :func:`bsddb.hashopen`,
-   :func:`bsddb.btopen` または :func:`bsddb.rnopen` 
-   のいずれかを呼び出して得られるオブジェクトが条件を満たしています。
-   オプションの *protocol* および *writeback* パラメタは
-   :class:`Shelf` クラスにおけるパラメタと同様に解釈されます。
+   If the *writeback* parameter is ``True``, the object will hold a cache of all
+   entries accessed and write them back to the *dict* at sync and close times.
+   This allows natural operations on mutable entries, but can consume much more
+   memory and make sync and close take a long time.
 
 
-.. class:: DbfilenameShelf(filename[, flag='c'[, protocol=None[, writeback=False]]])
+.. class:: BsdDbShelf(dict, protocol=None, writeback=False)
 
-   :class:`Shelf` のサブクラスで、辞書様オブジェクトの代わりに
-   *filename* を受理します。根底にあるファイルは
-   :func:`anydbm.open` を使って開かれます。
-   デフォルトでは、ファイルは読み書き可能な状態で開かれます。
-   オプションの *flag* パラメタは :func:`.open` 
-   関数におけるパラメタと同様に解釈されます。
-   オプションの *protocol* および *writeback* パラメタは
-   :class:`Shelf` クラスにおけるパラメタと同様に解釈されます。
+   A subclass of :class:`Shelf` which exposes :meth:`first`, :meth:`!next`,
+   :meth:`previous`, :meth:`last` and :meth:`set_location` which are available in
+   the :mod:`bsddb` module but not in other database modules.  The *dict* object
+   passed to the constructor must support those methods.  This is generally
+   accomplished by calling one of :func:`bsddb.hashopen`, :func:`bsddb.btopen` or
+   :func:`bsddb.rnopen`.  The optional *protocol* and *writeback* parameters have
+   the same interpretation as for the :class:`Shelf` class.
+
+
+.. class:: DbfilenameShelf(filename, flag='c', protocol=None, writeback=False)
+
+   A subclass of :class:`Shelf` which accepts a *filename* instead of a dict-like
+   object.  The underlying file will be opened using :func:`anydbm.open`.  By
+   default, the file will be created and opened for both read and write.  The
+   optional *flag* parameter has the same interpretation as for the :func:`.open`
+   function.  The optional *protocol* and *writeback* parameters have the same
+   interpretation as for the :class:`Shelf` class.
+
 
 .. _shelve-example:
 
-使用例
-------
+Example
+-------
 
-インタフェースは以下のコードに集約されています (``key`` は文字列で、 ``data`` は任意のオブジェクトです)::
+To summarize the interface (``key`` is a string, ``data`` is an arbitrary
+object)::
 
    import shelve
 
@@ -182,27 +182,27 @@
 .. seealso::
 
    Module :mod:`anydbm`
-      ``dbm`` スタイルのデータベースに対する汎用インタフェース。
+      Generic interface to ``dbm``\ -style databases.
 
    Module :mod:`bsddb`
-      BSD ``db`` データベースインタフェース。
+      BSD ``db`` database interface.
 
    Module :mod:`dbhash`
-      :mod:`bsddb` をラップする薄いレイヤで、
-      他のデータベースモジュールのように関数 :func:`~dbhash.open` を提供しています。
+      Thin layer around the :mod:`bsddb` which provides an :func:`~dbhash.open`
+      function like the other database modules.
 
    Module :mod:`dbm`
-      標準の Unix データベースインタフェース。
+      Standard Unix database interface.
 
    Module :mod:`dumbdbm`
-      ``dbm`` インタフェースの移植性のある実装。
+      Portable implementation of the ``dbm`` interface.
 
    Module :mod:`gdbm`
-      ``dbm`` インタフェースに基づいた GNU データベースインタフェース。
+      GNU database interface, based on the ``dbm`` interface.
 
    Module :mod:`pickle`
-      :mod:`shelve` によって使われるオブジェクト整列化機構。
+      Object serialization used by :mod:`shelve`.
 
    Module :mod:`cPickle`
-      :mod:`pickle` の高速版。
+      High-performance version of :mod:`pickle`.
 

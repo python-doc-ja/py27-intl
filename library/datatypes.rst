@@ -1,20 +1,21 @@
 
 .. _datatypes:
 
-********
-データ型
-********
+**********
+Data Types
+**********
 
-この章で解説されるモジュールは日付や時間、型が固定された配列、ヒープキュー、
-同期キュー、集合のような種々の特殊なデータ型を提供します。
+The modules described in this chapter provide a variety of specialized data
+types such as dates and times, fixed-type arrays, heap queues, synchronized
+queues, and sets.
 
-Python にはその他にもいくつかの組み込みデータ型があります。特に、
-:class:`dict` 、 :class:`list` 、 :class:`set` (:class:`frozenset`
-とともに古い :mod:`sets` モジュールを置き換えます)、そして :class:`tuple`
-があります。 :class:`str` クラスはバイナリデータや８ビットテキストを扱うことができ、
-:class:`unicode` クラスは Unicode テキストを扱うことができます。
+Python also provides some built-in data types, in particular,
+:class:`dict`, :class:`list`, :class:`set` (which along with
+:class:`frozenset`, replaces the deprecated :mod:`sets` module), and
+:class:`tuple`. The :class:`str` class can be used to handle binary data
+and 8-bit text, and the :class:`unicode` class to handle Unicode text.
 
-この章で解説されるモジュールの完全な一覧は:
+The following modules are documented in this chapter:
 
 
 .. toctree::

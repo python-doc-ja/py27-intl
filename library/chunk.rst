@@ -1,9 +1,9 @@
 
-:mod:`chunk` --- IFFチャンクデータの読み込み
-============================================
+:mod:`chunk` --- Read IFF chunked data
+======================================
 
 .. module:: chunk
-   :synopsis: IFFチャンクデータの読み込み。
+   :synopsis: Module to read IFF chunks.
 .. moduleauthor:: Sjoerd Mullender <sjoerd@acm.org>
 .. sectionauthor:: Sjoerd Mullender <sjoerd@acm.org>
 
@@ -15,106 +15,118 @@
    single: Real Media File Format
    single: RMFF
 
-このモジュールはEA IFF 85チャンクを使用しているファイルの読み込みのためのインターフェースを提供します。 [#]_
-このフォーマットは少なくとも、Audio Interchange File Format (AIFF/AIFF-C) とReal Media File
-Format (RMFF)で使われています。
-WAVEオーディオファイルフォーマットも厳密に対応しているので、このモジュールで読み込みできます。
-チャンクは以下の構造を持っています：
+This module provides an interface for reading files that use EA IFF 85 chunks.
+[#]_  This format is used in at least the Audio Interchange File Format
+(AIFF/AIFF-C) and the Real Media File Format (RMFF).  The WAVE audio file format
+is closely related and can also be read using this module.
 
-+----------+--------+-------------------------------------------------------+
-| Offset値 | 長さ   | 内容                                                  |
-+==========+========+=======================================================+
-| 0        | 4      | チャンクID                                            |
-+----------+--------+-------------------------------------------------------+
-| 4        | 4      | big-                                                  |
-|          |        | endianで示したチャンクのサイズで、ヘッダは含みません  |
-+----------+--------+-------------------------------------------------------+
-| 8        | *n*    | バイトデータで、 *n* はこれより先のフィールドのサイズ |
-+----------+--------+-------------------------------------------------------+
-| 8 + *n*  | 0 or 1 | *n* が奇数ならチャンクの整頓のために埋められるバイト  |
-+----------+--------+-------------------------------------------------------+
+A chunk has the following structure:
 
-IDはチャンクの種類を識別する4バイトの文字列です。
++---------+--------+-------------------------------+
+| Offset  | Length | Contents                      |
++=========+========+===============================+
+| 0       | 4      | Chunk ID                      |
++---------+--------+-------------------------------+
+| 4       | 4      | Size of chunk in big-endian   |
+|         |        | byte order, not including the |
+|         |        | header                        |
++---------+--------+-------------------------------+
+| 8       | *n*    | Data bytes, where *n* is the  |
+|         |        | size given in the preceding   |
+|         |        | field                         |
++---------+--------+-------------------------------+
+| 8 + *n* | 0 or 1 | Pad byte needed if *n* is odd |
+|         |        | and chunk alignment is used   |
++---------+--------+-------------------------------+
 
-サイズフィールド（big-endianでエンコードされた32ビット値）は、8バイトのヘッダを含まないチャンクデータのサイズを示します。
+The ID is a 4-byte string which identifies the type of chunk.
 
-普通、IFFタイプのファイルは1個かそれ以上のチャンクからなります。
-このモジュールで定義される :class:`Chunk` クラスの使い方として提案しているのは、
-それぞれのチャンクの始めにインスタンスを作り、終わりに達するまでそのインスタンスから読み取り、
-その後で新しいインスタンスを作るということです。
-ファイルの終わりで新しいインスタンスを作ろうとすると、 :exc:`EOFError` の例外が発生して失敗します。
+The size field (a 32-bit value, encoded using big-endian byte order) gives the
+size of the chunk data, not including the 8-byte header.
+
+Usually an IFF-type file consists of one or more chunks.  The proposed usage of
+the :class:`Chunk` class defined here is to instantiate an instance at the start
+of each chunk and read from the instance until it reaches the end, after which a
+new instance can be instantiated. At the end of the file, creating a new
+instance will fail with a :exc:`EOFError` exception.
 
 
 .. class:: Chunk(file[, align, bigendian, inclheader])
 
-   チャンクを表現するクラス。引数 *file* はファイルのようなオブジェクトであることが想定されています。
-   このクラスのインスタンスは一つだけ特別に許可されています。
-   必要とされるメソッドは :meth:`read` だけです。
-   もし :meth:`seek` と :meth:`tell` メソッドが呼び出されて例外を発生させなかったら、これらのメソッドも動作します。
-   これらのメソッドが呼び出されて例外を発生させても、オブジェクトを変化させないようになっています。
+   Class which represents a chunk.  The *file* argument is expected to be a
+   file-like object.  An instance of this class is specifically allowed.  The
+   only method that is needed is :meth:`~file.read`.  If the methods
+   :meth:`~file.seek` and :meth:`~file.tell` are present and don't
+   raise an exception, they are also used.
+   If these methods are present and raise an exception, they are expected to not
+   have altered the object.  If the optional argument *align* is true, chunks
+   are assumed to be aligned on 2-byte boundaries.  If *align* is false, no
+   alignment is assumed.  The default value is true.  If the optional argument
+   *bigendian* is false, the chunk size is assumed to be in little-endian order.
+   This is needed for WAVE audio files. The default value is true.  If the
+   optional argument *inclheader* is true, the size given in the chunk header
+   includes the size of the header.  The default value is false.
 
-   省略可能な引数 *align* がtrueなら、チャンクデータが偶数個で2バイトごとに整頓されていると想定します。
-   もし *align* がfalseなら、チャンクデータが奇数個になっていると想定します。デフォルト値はtrueです。
-
-   もし省略可能な引数 *bigendian* がfalseなら、チャンクサイズは little-endianであると想定します。
-   この引数の設定はWAVEオーディオファイルで必要です。デフォルト値はtrueです。
-
-   もし省略可能な引数 *inclheader* がtrueなら、チャンクのヘッダから得られるサイズはヘッダのサイズを含んでいると想定します。
-   デフォルト値はfalseです。
-
-   :class:`Chunk` オブジェクトには以下のメソッドが定義されています：
+   A :class:`Chunk` object supports the following methods:
 
 
    .. method:: getname()
 
-      チャンクの名前（ID）を返します。これはチャンクの始めの4バイトです。
+      Returns the name (ID) of the chunk.  This is the first 4 bytes of the
+      chunk.
 
 
    .. method:: getsize()
 
-      チャンクのサイズを返します。
+      Returns the size of the chunk.
 
 
    .. method:: close()
 
-      オブジェクトを閉じて、チャンクの終わりまで飛びます。これは元のファイル自体は閉じません。
+      Close and skip to the end of the chunk.  This does not close the
+      underlying file.
 
-   残りの以下のメソッドは、 :meth:`close` メソッドを呼び出した後に呼び出すと例外 :exc:`IOError` を発生します。
+   The remaining methods will raise :exc:`IOError` if called after the
+   :meth:`close` method has been called.
 
 
    .. method:: isatty()
 
-      ``False`` を返します。
+      Returns ``False``.
 
 
    .. method:: seek(pos[, whence])
 
-      チャンクの現在位置を設定します。引数 *whence* は省略可能で、デフォルト値は ``0``
-      （ファイルの絶対位置）です；他に ``1`` （現在位置から相対的にシークします）と ``2``
-      （ファイルの末尾から相対的にシークします）の値を取ります。何も値は返しません。
-      もし元のファイルがシークに対応していなければ、前方へのシークのみが可能です。
+      Set the chunk's current position.  The *whence* argument is optional and
+      defaults to ``0`` (absolute file positioning); other values are ``1``
+      (seek relative to the current position) and ``2`` (seek relative to the
+      file's end).  There is no return value. If the underlying file does not
+      allow seek, only forward seeks are allowed.
 
 
    .. method:: tell()
 
-      チャンク内の現在位置を返します。
+      Return the current position into the chunk.
 
 
    .. method:: read([size])
 
-      チャンクから最大で *size* バイト（
-      *size* バイトを読み込むまで、少なくともチャンクの最後に行き着くまで）読み込みます。
-      もし引数 *size* が負か省略されたら、チャンクの最後まで全てのデータを読み込みます。
-      バイト値は文字列のオブジェクトとして返されます。
-      チャンクの最後に行き着いたら、空文字列を返します。
+      Read at most *size* bytes from the chunk (less if the read hits the end of
+      the chunk before obtaining *size* bytes).  If the *size* argument is
+      negative or omitted, read all data until the end of the chunk.  The bytes
+      are returned as a string object.  An empty string is returned when the end
+      of the chunk is encountered immediately.
 
 
    .. method:: skip()
 
-      チャンクの最後まで飛びます。さらにチャンクの :meth:`read` を呼び出すと、 ``''`` が返されます。
-      もしチャンクの内容に興味がないなら、このメソッドを呼び出してファイルポインタを次のチャンクの始めに設定します。
+      Skip to the end of the chunk.  All further calls to :meth:`read` for the
+      chunk will return ``''``.  If you are not interested in the contents of
+      the chunk, this method should be called so that the file points to the
+      start of the next chunk.
 
-.. rubric:: 注記
+
+.. rubric:: Footnotes
 
 .. [#] "EA IFF 85" Standard for Interchange Format Files, Jerry Morrison, Electronic
    Arts, January 1985.

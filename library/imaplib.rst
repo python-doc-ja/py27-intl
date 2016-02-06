@@ -1,5 +1,5 @@
-:mod:`imaplib` --- IMAP4 プロトコルクライアント
-===============================================
+:mod:`imaplib` --- IMAP4 protocol client
+========================================
 
 .. module:: imaplib
    :synopsis: IMAP4 protocol client (requires sockets).
@@ -16,322 +16,357 @@
    pair: IMAP4_SSL; protocol
    pair: IMAP4_stream; protocol
 
-このモジュールでは三つのクラス、 :class:`IMAP4`, :class:`IMAP4_SSL` と :class:`IMAP4_stream`
-を定義します。これらのクラスは IMAP4 サーバへの接続をカプセル化し、 :rfc:`2060` に定義されている IMAP4rev1
-クライアントプロトコルの大規模なサブセットを実装しています。このクラスは IMAP4 (:rfc:`1730`) 準拠の
-サーバと後方互換性がありますが、 ``STATUS`` コマンドは IMAP4 ではサポートされていないので注意してください。
+**Source code:** :source:`Lib/imaplib.py`
 
-:mod:`imaplib` モジュール内では三つのクラスを提供しており、 :class:`IMAP4` は基底クラスとなります:
+--------------
+
+This module defines three classes, :class:`IMAP4`, :class:`IMAP4_SSL` and
+:class:`IMAP4_stream`, which encapsulate a connection to an IMAP4 server and
+implement a large subset of the IMAP4rev1 client protocol as defined in
+:rfc:`2060`. It is backward compatible with IMAP4 (:rfc:`1730`) servers, but
+note that the ``STATUS`` command is not supported in IMAP4.
+
+Three classes are provided by the :mod:`imaplib` module, :class:`IMAP4` is the
+base class:
 
 
 .. class:: IMAP4([host[, port]])
 
-   このクラスは実際の IMAP4 プロトコルを実装しています。インスタンスが初期化された際に接続が生成され、プロトコルバージョン (IMAP4 または
-   IMAP4rev1) が決定されます。 *host* が指定されていない場合、 ``''`` (ローカルホスト) が用いられます。 *port*
-   が省略された場合、標準の IMAP4 ポート番号 (143)  が用いられます。
+   This class implements the actual IMAP4 protocol.  The connection is created and
+   protocol version (IMAP4 or IMAP4rev1) is determined when the instance is
+   initialized. If *host* is not specified, ``''`` (the local host) is used. If
+   *port* is omitted, the standard IMAP4 port (143) is used.
 
-例外は :class:`IMAP4` クラスの属性として定義されています:
+Three exceptions are defined as attributes of the :class:`IMAP4` class:
 
 
 .. exception:: IMAP4.error
 
-   何らかのエラー発生の際に送出される例外です。例外の理由は文字列としてコンストラクタに渡されます。
+   Exception raised on any errors.  The reason for the exception is passed to the
+   constructor as a string.
 
 
 .. exception:: IMAP4.abort
 
-   IMAP4 サーバのエラーが生じると、この例外が送出されます。この例外は :exc:`IMAP4.error` のサブクラスです。
-   通常、インスタンスを閉じ、新たなインスタンスを再び生成することで、この例外から復旧できます。
+   IMAP4 server errors cause this exception to be raised.  This is a sub-class of
+   :exc:`IMAP4.error`.  Note that closing the instance and instantiating a new one
+   will usually allow recovery from this exception.
 
 
 .. exception:: IMAP4.readonly
 
-   この例外は書き込み可能なメールボックスの状態がサーバによって変更された際に送出されます。この例外は :exc:`IMAP4.error` のサブクラスです。
-   他の何らかのクライアントが現在書き込み権限を獲得しており、メールボックスを開きなおして書き込み権限を再獲得する必要があります。
+   This exception is raised when a writable mailbox has its status changed by the
+   server.  This is a sub-class of :exc:`IMAP4.error`.  Some other client now has
+   write permission, and the mailbox will need to be re-opened to re-obtain write
+   permission.
 
-このモジュールではもう一つ、安全 (secure) な接続を使ったサブクラスがあります:
+There's also a subclass for secure connections:
 
 
 .. class:: IMAP4_SSL([host[, port[, keyfile[, certfile]]]])
 
-   :class:`IMAP4` から派生したサブクラスで、SSL 暗号化ソケットを介して接続を行います (このクラスを利用するためには SSL サポート付きで
-   コンパイルされた socket モジュールが必要です) 。 *host* が指定されていない場合、 ``''`` (ローカルホスト) が用いられます。
-   *port* が省略された場合、標準の IMAP4-over-SSL ポート番号 (993)  が用いられます。 *keyfile* および
-   *certfile* もオプションです - これらは SSL 接続のための PEM 形式の秘密鍵 (private key) と認証チェイン
-   (certificate chain) ファイルです。
+   This is a subclass derived from :class:`IMAP4` that connects over an SSL
+   encrypted socket (to use this class you need a socket module that was compiled
+   with SSL support).  If *host* is not specified, ``''`` (the local host) is used.
+   If *port* is omitted, the standard IMAP4-over-SSL port (993) is used.  *keyfile*
+   and *certfile* are also optional - they can contain a PEM formatted private key
+   and certificate chain file for the SSL connection.
 
-さらにもう一つのサブクラスは、子プロセスで確立した接続を使用する場合に使用します。
+The second subclass allows for connections created by a child process:
 
 
 .. class:: IMAP4_stream(command)
 
-   :class:`IMAP4` から派生したサブクラスで、 *command* を ``os.popen2()`` に渡して作成される
-   ``stdin/stdout`` ディスクリプタと接続します。
+   This is a subclass derived from :class:`IMAP4` that connects to the
+   ``stdin/stdout`` file descriptors created by passing *command* to
+   ``os.popen2()``.
 
    .. versionadded:: 2.3
 
-以下のユーティリティ関数が定義されています:
+The following utility functions are defined:
 
 
 .. function:: Internaldate2tuple(datestr)
 
-   IMAP4 の ``INTERNALDATE`` 文字列を解析してそれに相当するローカルタイムを返します。
-   戻り値は :class:`time.struct_time` のインスタンスか、文字列のフォーマットが不正な
-   場合は None です。
-
+   Parse an IMAP4 ``INTERNALDATE`` string and return corresponding local
+   time.  The return value is a :class:`time.struct_time` instance or
+   None if the string has wrong format.
 
 .. function:: Int2AP(num)
 
-   整数を [``A`` .. ``P``] からなる文字集合を用いて表現した文字列に変換します。
+   Converts an integer into a string representation using characters from the set
+   [``A`` .. ``P``].
 
 
 .. function:: ParseFlags(flagstr)
 
-   IMAP4 ``FLAGS`` 応答を個々のフラグからなるタプルに変換します。
+   Converts an IMAP4 ``FLAGS`` response to a tuple of individual flags.
 
 
 .. function:: Time2Internaldate(date_time)
 
-   *date_time* を IMAP4 の ``INTERNALDATE`` 表現形式に変換します。
-   戻り値は ``"DD-Mmm-YYYY HH:MM:SS +HHMM"`` (ダブルクォートを含む) の形をした
-   文字列です。
-   *date_time* 引数は (:func:`time.time` が返す) epoch からの経過秒数を表す数値
-   (int か float) か、(:func:`time.localtime` が返す) ローカルタイムを表現する
-   9要素タプルか、ダブルクォートされた文字列です。文字列だった場合、それがすでに
-   正しいフォーマットになっていると仮定されます。
+   Convert *date_time* to an IMAP4 ``INTERNALDATE`` representation.  The
+   return value is a string in the form: ``"DD-Mmm-YYYY HH:MM:SS
+   +HHMM"`` (including double-quotes).  The *date_time* argument can be a
+   number (int or float) representing seconds since epoch (as returned
+   by :func:`time.time`), a 9-tuple representing local time (as returned by
+   :func:`time.localtime`), or a double-quoted string.  In the last case, it
+   is assumed to already be in the correct format.
 
-IMAP4 メッセージ番号は、メールボックスに対する変更が行われた後には変化します; 特に、 ``EXPUNGE`` 命令はメッセージの削除を
-行いますが、残ったメッセージには再度番号を振りなおします。従って、メッセージ番号ではなく、 UID 命令を使い、その UID を利用するよう強く勧めます。
+Note that IMAP4 message numbers change as the mailbox changes; in particular,
+after an ``EXPUNGE`` command performs deletions the remaining messages are
+renumbered. So it is highly advisable to use UIDs instead, with the UID command.
 
-モジュールの末尾に、より拡張的な使用例が収められたテストセクションがあります。
+At the end of the module, there is a test section that contains a more extensive
+example of usage.
 
 
 .. seealso::
 
-   プロトコルに関する記述、およびプロトコルを実装したサーバのソースとバイナリは、全てワシントン大学の *IMAP Information Center*
-   (http://www.washington.edu/imap/) にあります。
+   Documents describing the protocol, and sources and binaries  for servers
+   implementing it, can all be found at the University of Washington's *IMAP
+   Information Center* (http://www.washington.edu/imap/).
 
 
 .. _imap4-objects:
 
-IMAP4 オブジェクト
-------------------
+IMAP4 Objects
+-------------
 
-全ての IMAP4rev1 命令は、同じ名前のメソッドで表されており、大文字のものも小文字のものもあります。
+All IMAP4rev1 commands are represented by methods of the same name, either
+upper-case or lower-case.
 
-命令に対する引数は全て文字列に変換されます。例外は ``AUTHENTICATE`` の引数と ``APPEND`` の最後の引数で、これは IMAP4
-リテラルとして渡されます。必要に応じて (IMAP4 プロトコルが感知対象としている文字が文字列に入っており、かつ丸括弧か二重引用符で囲われていなかった
-場合) 文字列はクオートされます。しかし、 ``LOGIN`` 命令の  *password* 引数は常にクオートされます。文字列がクオートされないようにしたい
-(例えば ``STORE`` 命令の *flags* 引数) 場合、文字列を丸括弧で囲んでください (例: ``r'(\Deleted)'``)。
+All arguments to commands are converted to strings, except for ``AUTHENTICATE``,
+and the last argument to ``APPEND`` which is passed as an IMAP4 literal.  If
+necessary (the string contains IMAP4 protocol-sensitive characters and isn't
+enclosed with either parentheses or double quotes) each string is quoted.
+However, the *password* argument to the ``LOGIN`` command is always quoted. If
+you want to avoid having an argument string quoted (eg: the *flags* argument to
+``STORE``) then enclose the string in parentheses (eg: ``r'(\Deleted)'``).
 
-各命令はタプル: ``(type, [data, ...])`` を返し、 *type* は通常 ``'OK'`` または ``'NO'`` です。
-*data* は命令に対する応答をテキストにしたものか、命令に対する実行結果です。各 *data* は文字列かタプルとなります。タプルの場合、
-最初の要素はレスポンスのヘッダで、次の要素にはデータが格納されます。 (ie: 'literal' value)
+Each command returns a tuple: ``(type, [data, ...])`` where *type* is usually
+``'OK'`` or ``'NO'``, and *data* is either the text from the command response,
+or mandated results from the command. Each *data* is either a string, or a
+tuple. If a tuple, then the first part is the header of the response, and the
+second part contains the data (ie: 'literal' value).
 
-以下のコマンドにおける *message_set* オプションは、操作の対象となるひとつあるいは複数のメッセージを指す文字列です。単一のメッセージ番号
-(``'1'``) かメッセージ番号の範囲 (``'2:4'``)、あるいは連続していないメッセージをカンマでつなげたもの (``'1:3,6:9'``)
-となります。範囲指定でアスタリスクを使用すると、上限を無限とすることができます (``'3:*'``)。
+The *message_set* options to commands below is a string specifying one or more
+messages to be acted upon.  It may be a simple message number (``'1'``), a range
+of message numbers (``'2:4'``), or a group of non-contiguous ranges separated by
+commas (``'1:3,6:9'``).  A range can contain an asterisk to indicate an infinite
+upper bound (``'3:*'``).
 
-:class:`IMAP4` のインスタンスは以下のメソッドを持っています:
+An :class:`IMAP4` instance has the following methods:
 
 
 .. method:: IMAP4.append(mailbox, flags, date_time, message)
 
-   指定された名前のメールボックスに *message* を追加します。
+   Append *message* to named mailbox.
 
 
 .. method:: IMAP4.authenticate(mechanism, authobject)
 
-   認証命令です --- 応答の処理が必要です。
+   Authenticate command --- requires response processing.
 
-   *mechanism* は利用する認証メカニズムを与えます。認証メカニズムはインスタンス変数 ``capabilities`` の中に
-   ``AUTH=mechanism`` という形式で現れる必要があります。
+   *mechanism* specifies which authentication mechanism is to be used - it should
+   appear in the instance variable ``capabilities`` in the form ``AUTH=mechanism``.
 
-   *authobject* は呼び出し可能なオブジェクトである必要があります。 ::
+   *authobject* must be a callable object::
 
       data = authobject(response)
 
-   これはサーバで継続応答を処理するためによばれます。これは(おそらく)暗号化されて、サーバへ送られた ``data`` を返します。もしクライアントが中断応答
-   ``*`` を送信した場合にはこれは ``None`` を返します。
+   It will be called to process server continuation responses. It should return
+   ``data`` that will be encoded and sent to server. It should return ``None`` if
+   the client abort response ``*`` should be sent instead.
 
 
 .. method:: IMAP4.check()
 
-   サーバ上のメールボックスにチェックポイントを設定します。 Checkpoint mailbox on server.
+   Checkpoint mailbox on server.
 
 
 .. method:: IMAP4.close()
 
-   現在選択されているメールボックスを閉じます。削除されたメッセージは書き込み可能メールボックスから除去されます。 ``LOGOUT`` 前に
-   実行することを勧めます。
+   Close currently selected mailbox. Deleted messages are removed from writable
+   mailbox. This is the recommended command before ``LOGOUT``.
 
 
 .. method:: IMAP4.copy(message_set, new_mailbox)
 
-   *message_set* で指定したメッセージ群を *new_mailbox* の末尾にコピーします。
+   Copy *message_set* messages onto end of *new_mailbox*.
 
 
 .. method:: IMAP4.create(mailbox)
 
-   *mailbox* と名づけられた新たなメールボックスを生成します。
+   Create new mailbox named *mailbox*.
 
 
 .. method:: IMAP4.delete(mailbox)
 
-   *mailbox* と名づけられた古いメールボックスを削除します。
+   Delete old mailbox named *mailbox*.
 
 
 .. method:: IMAP4.deleteacl(mailbox, who)
 
-   mailbox における who についてのACLを削除(権限を削除)します。
+   Delete the ACLs (remove any rights) set for who on mailbox.
 
    .. versionadded:: 2.4
 
 
 .. method:: IMAP4.expunge()
 
-   選択されたメールボックスから削除された要素を永久に除去します。各々の削除されたメッセージに対して、 ``EXPUNGE`` 応答を
-   生成します。返されるデータには ``EXPUNGE`` メッセージ番号を受信した順番に並べたリストが入っています。
+   Permanently remove deleted items from selected mailbox. Generates an ``EXPUNGE``
+   response for each deleted message. Returned data contains a list of ``EXPUNGE``
+   message numbers in order received.
 
 
 .. method:: IMAP4.fetch(message_set, message_parts)
 
-   メッセージ (の一部) を取りよせます。 *message_parts* はメッセージパートの名前を表す文字列を丸括弧で囲ったもので、例えば: ``"(UID
-   BODY[TEXT])"`` のようになります。返されるデータはメッセージパートのエンベロープ情報とデータからなるタプルです。
+   Fetch (parts of) messages.  *message_parts* should be a string of message part
+   names enclosed within parentheses, eg: ``"(UID BODY[TEXT])"``.  Returned data
+   are tuples of message part envelope and data.
 
 
 .. method:: IMAP4.getacl(mailbox)
 
-   *mailbox* に対する ``ACL`` を取得します。このメソッドは非標準ですが、 ``Cyrus`` サーバでサポートされています。
+   Get the ``ACL``\ s for *mailbox*. The method is non-standard, but is supported
+   by the ``Cyrus`` server.
 
 
 .. method:: IMAP4.getannotation(mailbox, entry, attribute)
 
-   *mailbox* に対する ``ANNOTATION`` を取得します。このメソッドは非標準ですが、 ``Cyrus`` サーバでサポートされています。
+   Retrieve the specified ``ANNOTATION``\ s for *mailbox*. The method is
+   non-standard, but is supported by the ``Cyrus`` server.
 
    .. versionadded:: 2.5
 
 
 .. method:: IMAP4.getquota(root)
 
-   ``quota`` *root* により、リソース使用状況と制限値を取得します。このメソッドは :rfc:`2087` で定義されている IMAP4
-   QUOTA 拡張の一部です。
+   Get the ``quota`` *root*'s resource usage and limits. This method is part of the
+   IMAP4 QUOTA extension defined in rfc2087.
 
    .. versionadded:: 2.3
 
 
 .. method:: IMAP4.getquotaroot(mailbox)
 
-   *mailbox* に対して ``quota`` *root* を実行した結果のリストを取得します。このメソッドは :rfc:`2087` で定義されている
-   IMAP4 QUOTA 拡張の一部です。
+   Get the list of ``quota`` ``roots`` for the named *mailbox*. This method is part
+   of the IMAP4 QUOTA extension defined in rfc2087.
 
    .. versionadded:: 2.3
 
 
 .. method:: IMAP4.list([directory[, pattern]])
 
-   *pattern* にマッチする *directory* メールボックス名を列挙します。 *directory* の標準の設定値は最上レベルのメールフォルダで、
-   *pattern* は標準の設定では全てにマッチします。返されるデータには ``LIST`` 応答のリストが入っています。
+   List mailbox names in *directory* matching *pattern*.  *directory* defaults to
+   the top-level mail folder, and *pattern* defaults to match anything.  Returned
+   data contains a list of ``LIST`` responses.
 
 
 .. method:: IMAP4.login(user, password)
 
-   平文パスワードを使ってクライアントを照合します。 *password* はクオートされます。
+   Identify the client using a plaintext password. The *password* will be quoted.
 
 
 .. method:: IMAP4.login_cram_md5(user, password)
 
-   パスワードの保護のため、クライアント認証時に ``CRAM-MD5`` だけを使用します。これは、 ``CAPABILITY`` レスポンスに
-   ``AUTH=CRAM-MD5`` が含まれる場合のみ有効です。
+   Force use of ``CRAM-MD5`` authentication when identifying the client to protect
+   the password.  Will only work if the server ``CAPABILITY`` response includes the
+   phrase ``AUTH=CRAM-MD5``.
 
    .. versionadded:: 2.3
 
 
 .. method:: IMAP4.logout()
 
-   サーバへの接続を遮断します。サーバからの ``BYE`` 応答を返します。
+   Shutdown connection to server. Returns server ``BYE`` response.
 
 
 .. method:: IMAP4.lsub([directory[, pattern]])
 
-   購読しているメールボックス名のうち、ディレクトリ内でパターンにマッチするものを列挙します。 *directory*
-   の標準の設定値は最上レベルのメールフォルダで、 *pattern* は標準の設定では全てにマッチします。返されるデータには
-   返されるデータはメッセージパートエンベロープ情報とデータからなるタプルです。
+   List subscribed mailbox names in directory matching pattern. *directory*
+   defaults to the top level directory and *pattern* defaults to match any mailbox.
+   Returned data are tuples of message part envelope and data.
 
 
 .. method:: IMAP4.myrights(mailbox)
 
-   mailboxにおける自分のACLを返します。(すなわち自分がmailboxで持っている権限を返します。)
+   Show my ACLs for a mailbox (i.e. the rights that I have on mailbox).
 
    .. versionadded:: 2.4
 
 
 .. method:: IMAP4.namespace()
 
-   RFC2342で定義されるIMAP名前空間を返します。
+   Returns IMAP namespaces as defined in RFC2342.
 
    .. versionadded:: 2.3
 
 
 .. method:: IMAP4.noop()
 
-   サーバに ``NOOP`` を送信します。
+   Send ``NOOP`` to server.
 
 
 .. method:: IMAP4.open(host, port)
 
-   *host* 上の *port* に対するソケットを開きます。
-   このメソッドは :class:`IMAP4` のコンストラクタから暗黙的に呼び出されます。
-   このメソッドで確立された接続オブジェクトは ``read``,
-   ``readline``, ``send``, ``shutdown`` メソッドで使われます。
-   このメソッドはオーバライドすることができます。
+   Opens socket to *port* at *host*.  This method is implicitly called by
+   the :class:`IMAP4` constructor.  The connection objects established by this
+   method will be used in the :meth:`IMAP4.read`, :meth:`IMAP4.readline`,
+   :meth:`IMAP4.send`, and :meth:`IMAP4.shutdown` methods.  You may override
+   this method.
 
 
 .. method:: IMAP4.partial(message_num, message_part, start, length)
 
-   メッセージの後略された部分を取り寄せます。返されるデータはメッセージパートエンベロープ情報とデータからなるタプルです。
+   Fetch truncated part of a message. Returned data is a tuple of message part
+   envelope and data.
 
 
 .. method:: IMAP4.proxyauth(user)
 
-   *user* として認証されたものとします。認証された管理者がユーザの代理としてメールボックスにアクセスする際に使用します。
+   Assume authentication as *user*. Allows an authorised administrator to proxy
+   into any user's mailbox.
 
    .. versionadded:: 2.3
 
 
 .. method:: IMAP4.read(size)
 
-   遠隔のサーバから *size* バイト読み出します。このメソッドはオーバライドすることができます。
+   Reads *size* bytes from the remote server. You may override this method.
 
 
 .. method:: IMAP4.readline()
 
-   遠隔のサーバから一行読み出します。このメソッドはオーバライドすることができます。
+   Reads one line from the remote server. You may override this method.
 
 
 .. method:: IMAP4.recent()
 
-   サーバに更新を促します。新たなメッセージがない場合応答は ``None`` になり、そうでない場合 ``RECENT`` 応答の値になります。
+   Prompt server for an update. Returned data is ``None`` if no new messages, else
+   value of ``RECENT`` response.
 
 
 .. method:: IMAP4.rename(oldmailbox, newmailbox)
 
-   *oldmailbox* という名前のメールボックスを *newmailbox* に名称変更します。
+   Rename mailbox named *oldmailbox* to *newmailbox*.
 
 
 .. method:: IMAP4.response(code)
 
-   応答 *code* を受信していれば、そのデータを返し、そうでなければ ``None`` を返します。通常の形式 (usual type)
-   ではなく指定したコードを返します。
+   Return data for response *code* if received, or ``None``. Returns the given
+   code, instead of the usual type.
 
 
 .. method:: IMAP4.search(charset, criterion[, ...])
 
-   条件に合致するメッセージをメールボックスから検索します。 *charset* は ``None`` でもよく、この場合にはサーバへの要求内に
-   ``CHARSET`` は指定されません。IMAP プロトコルは少なくとも一つの条件 (criterion) が指定されるよう要求しています;
-   サーバがエラーを返した場合、例外が送出されます。
+   Search mailbox for matching messages.  *charset* may be ``None``, in which case
+   no ``CHARSET`` will be specified in the request to the server.  The IMAP
+   protocol requires that at least one criterion be specified; an exception will be
+   raised when the server returns an error.
 
-   例::
+   Example::
 
       # M is a connected IMAP4 instance...
       typ, msgnums = M.search(None, 'FROM', '"LDJ"')
@@ -342,70 +377,79 @@ IMAP4 オブジェクト
 
 .. method:: IMAP4.select([mailbox[, readonly]])
 
-   メールボックスを選択します。返されるデータは *mailbox* 内のメッセージ数 (``EXISTS`` 応答) です。標準の設定では *mailbox*
-   は ``'INBOX'`` です。 *readonly* が設定された場合、メールボックスに対する変更はできません。
+   Select a mailbox. Returned data is the count of messages in *mailbox*
+   (``EXISTS`` response).  The default *mailbox* is ``'INBOX'``.  If the *readonly*
+   flag is set, modifications to the mailbox are not allowed.
 
 
 .. method:: IMAP4.send(data)
 
-   遠隔のサーバに ``data`` を送信します。このメソッドはオーバライドすることができます。
+   Sends ``data`` to the remote server. You may override this method.
 
 
 .. method:: IMAP4.setacl(mailbox, who, what)
 
-   ``ACL`` を *mailbox* に設定します。このメソッドは非標準ですが、 ``Cyrus`` サーバでサポートされています。
+   Set an ``ACL`` for *mailbox*. The method is non-standard, but is supported by
+   the ``Cyrus`` server.
 
 
 .. method:: IMAP4.setannotation(mailbox, entry, attribute[, ...])
 
-   ``ANNOTATION`` を *mailbox* に設定します。このメソッドは非標準ですが、 ``Cyrus`` サーバでサポートされています。
+   Set ``ANNOTATION``\ s for *mailbox*. The method is non-standard, but is
+   supported by the ``Cyrus`` server.
 
    .. versionadded:: 2.5
 
 
 .. method:: IMAP4.setquota(root, limits)
 
-   ``quota`` *root* のリソースを *limits* に設定します。このメソッドは :rfc:`2087` で定義されている IMAP4
-   QUOTA 拡張の一部です。
+   Set the ``quota`` *root*'s resource *limits*. This method is part of the IMAP4
+   QUOTA extension defined in rfc2087.
 
    .. versionadded:: 2.3
 
 
 .. method:: IMAP4.shutdown()
 
-   ``open`` で確立された接続を閉じます。
-   :meth:`IMAP4.logout` は暗黙的にこのメソッドを呼び出します。
-   このメソッドはオーバライドすることができます。
+   Close connection established in ``open``.  This method is implicitly
+   called by :meth:`IMAP4.logout`.  You may override this method.
 
 
 .. method:: IMAP4.socket()
 
-   サーバへの接続に使われているソケットインスタンスを返します。
+   Returns socket instance used to connect to server.
 
 
 .. method:: IMAP4.sort(sort_criteria, charset, search_criterion[, ...])
 
-   ``sort`` 命令は ``search`` に結果の並べ替え (sort) 機能をつけた
-   変種です。返されるデータには、条件に合致するメッセージ番号をスペースで分割したリストが入っています。 sort 命令は *search_criterium*
-   の前に二つの引数を持ちます;  *sort_criteria* のリストを丸括弧で囲ったものと、検索時の *charset* です。 ``search``
-   と違って、検索時の *charset* は必須です。 ``uid sort`` 命令もあり、 ``search`` に対する ``uid search``
-   と同じように ``sort`` 命令に対応します。 ``sort`` 命令はまず、charset 引数の指定に従って searching criteria
-   の文字列を解釈し、メールボックスから与えられた検索条件に合致するメッセージを探します。次に、合致したメッセージの数を返します。
+   The ``sort`` command is a variant of ``search`` with sorting semantics for the
+   results.  Returned data contains a space separated list of matching message
+   numbers.
 
-   ``IMAP4rev1`` 拡張命令です。
+   Sort has two arguments before the *search_criterion* argument(s); a
+   parenthesized list of *sort_criteria*, and the searching *charset*.  Note that
+   unlike ``search``, the searching *charset* argument is mandatory.  There is also
+   a ``uid sort`` command which corresponds to ``sort`` the way that ``uid search``
+   corresponds to ``search``.  The ``sort`` command first searches the mailbox for
+   messages that match the given searching criteria using the charset argument for
+   the interpretation of strings in the searching criteria.  It then returns the
+   numbers of matching messages.
+
+   This is an ``IMAP4rev1`` extension command.
 
 
 .. method:: IMAP4.status(mailbox, names)
 
-   *mailbox* の指定ステータス名の状態情報を要求します。
+   Request named status conditions for *mailbox*.
 
 
 .. method:: IMAP4.store(message_set, command, flag_list)
 
-   メールボックス内のメッセージ群のフラグ設定を変更します。 *command* は :rfc:`2060` のセクション 6.4.6 で指定されているもので、
-   "FLAGS", "+FLAGS", あるいは "-FLAGS" のいずれかとなります。オプションで末尾に ".SILENT" がつくこともあります。
+   Alters flag dispositions for messages in mailbox.  *command* is specified by
+   section 6.4.6 of :rfc:`2060` as being one of "FLAGS", "+FLAGS", or "-FLAGS",
+   optionally with a suffix of ".SILENT".
 
-   たとえば、すべてのメッセージに削除フラグを設定するには次のようにします。 ::
+   For example, to set the delete flag on all messages::
 
       typ, data = M.search(None, 'ALL')
       for num in data[0].split():
@@ -415,69 +459,78 @@ IMAP4 オブジェクト
 
 .. method:: IMAP4.subscribe(mailbox)
 
-   新たなメールボックスを購読 (subscribe) します。
+   Subscribe to new mailbox.
 
 
 .. method:: IMAP4.thread(threading_algorithm, charset, search_criterion[, ...])
 
-   ``thread`` コマンドは ``search`` にスレッドの概念を加えた変形版です。
-   返されるデータは空白で区切られたスレッドメンバのリストを含んでいます。
+   The ``thread`` command is a variant of ``search`` with threading semantics for
+   the results.  Returned data contains a space separated list of thread members.
 
-   各スレッドメンバは0以上のメッセージ番号からなり、空白で区切られており、親子関係を示しています。
+   Thread members consist of zero or more messages numbers, delimited by spaces,
+   indicating successive parent and child.
 
-   ``thread`` コマンドは *search_criterion* 引数の前に2つの引数を持っています。
-   *threading_algorithm* と *charset* です。 ``search`` コマンドとは違い、 *charset* は必須です。
-   ``search`` に対する ``uid search`` と同様に、 ``thread`` にも ``uid thread`` があります。
+   Thread has two arguments before the *search_criterion* argument(s); a
+   *threading_algorithm*, and the searching *charset*.  Note that unlike
+   ``search``, the searching *charset* argument is mandatory.  There is also a
+   ``uid thread`` command which corresponds to ``thread`` the way that ``uid
+   search`` corresponds to ``search``.  The ``thread`` command first searches the
+   mailbox for messages that match the given searching criteria using the charset
+   argument for the interpretation of strings in the searching criteria. It then
+   returns the matching messages threaded according to the specified threading
+   algorithm.
 
-   ``thread`` コマンドはまずメールボックス中のメッセージを、charsetを用いた検索条件で検索します。その後マッチしたメッセージを指定された
-   スレッドアルゴリズムでスレッド化して返します.
-
-   これは ``IMAP4rev1`` の拡張コマンドです。
+   This is an ``IMAP4rev1`` extension command.
 
    .. versionadded:: 2.4
 
 
 .. method:: IMAP4.uid(command, arg[, ...])
 
-   command args を、メッセージ番号ではなく UID で指定されたメッセージ群に対して実行します。命令内容に応じた応答を返します。少なくとも
-   一つの引数を与えなくてはなりません; 何も与えない場合、サーバはエラーを返し、例外が送出されます。
+   Execute command args with messages identified by UID, rather than message
+   number.  Returns response appropriate to command.  At least one argument must be
+   supplied; if none are provided, the server will return an error and an exception
+   will be raised.
 
 
 .. method:: IMAP4.unsubscribe(mailbox)
 
-   古いメールボックスの購読を解除 (unsubscribe) します。
+   Unsubscribe from old mailbox.
 
 
 .. method:: IMAP4.xatom(name[, arg[, ...]])
 
-   サーバから ``CAPABILITY`` 応答で通知された単純な拡張命令を許容 (allow) します。
+   Allow simple extension commands notified by server in ``CAPABILITY`` response.
 
-:class:`IMAP4_SSL` のインスタンスは追加のメソッドを一つだけ持ちます:
+Instances of :class:`IMAP4_SSL` have just one additional method:
 
 
 .. method:: IMAP4_SSL.ssl()
 
-   サーバへの安全な接続に使われる SSLObject インスタンスを返します。
+   Returns SSLObject instance used for the secure connection with the server.
 
-以下の属性が :class:`IMAP4` のインスタンス上で定義されています:
+The following attributes are defined on instances of :class:`IMAP4`:
 
 
 .. attribute:: IMAP4.PROTOCOL_VERSION
 
-   サーバから返された ``CAPABILITY`` 応答にある、サポートされている最新のプロトコルです。
+   The most recent supported protocol in the ``CAPABILITY`` response from the
+   server.
 
 
 .. attribute:: IMAP4.debug
 
-   デバッグ出力を制御するための整数値です。初期値はモジュール変数 ``Debug`` から取られます。3 以上の値にすると各命令をトレースします。
+   Integer value to control debugging output.  The initialize value is taken from
+   the module variable ``Debug``.  Values greater than three trace each command.
 
 
 .. _imap4-example:
 
-IMAP4 の使用例
---------------
+IMAP4 Example
+-------------
 
-以下にメールボックスを開き、全てのメッセージを取得して印刷する最小の (エラーチェックをしない) 使用例を示します::
+Here is a minimal example (without error checking) that opens a mailbox and
+retrieves and prints all messages::
 
    import getpass, imaplib
 

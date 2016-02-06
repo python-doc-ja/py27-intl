@@ -1,8 +1,9 @@
-:mod:`codecs` --- codec レジストリと基底クラス
-==============================================
+
+:mod:`codecs` --- Codec registry and base classes
+=================================================
 
 .. module:: codecs
-   :synopsis: データやストリームのエンコード・デコード。
+   :synopsis: Encode and decode data and streams.
 .. moduleauthor:: Marc-Andre Lemburg <mal@lemburg.com>
 .. sectionauthor:: Marc-Andre Lemburg <mal@lemburg.com>
 .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
@@ -16,301 +17,290 @@
    single: streams
    pair: stackable; streams
 
-このモジュールでは、内部的な Python codec レジストリに対するアクセス手
-段を提供しています。codec レジストリは、標準の Python
-codec(エンコーダとデコーダ)の基底クラスを定義し、 codec およびエラー処
-理の検索手順を管理しています。
+This module defines base classes for standard Python codecs (encoders and
+decoders) and provides access to the internal Python codec registry which
+manages the codec and error handling lookup process.
 
-:mod:`codecs` では以下の関数を定義しています:
+It defines the following functions:
 
 .. function:: encode(obj, [encoding[, errors]])
 
-   *obj* を *encoding* に登録された codec を使用してエンコードします。
-   デフォルトのエンコーディングは ``'ascii'`` です。
+   Encodes *obj* using the codec registered for *encoding*. The default
+   encoding is ``'ascii'``.
 
-   *Errors* を与えることで望むエラー処理方式を登録できます。
-   デフォルトのエラーハンドラは ``'strict'`` で、エンコーディングエラーの
-   際に :exc:`ValueError` (または :exc:`UnicodeEncodeError` など、
-   codec 特有のサブクラス) を送出します。codec エラー処理についての詳細は、
-   :ref:`codec-base-classes` を参照してください。
+   *Errors* may be given to set the desired error handling scheme. The
+   default error handler is ``'strict'`` meaning that encoding errors raise
+   :exc:`ValueError` (or a more codec specific subclass, such as
+   :exc:`UnicodeEncodeError`). Refer to :ref:`codec-base-classes` for more
+   information on codec error handling.
 
    .. versionadded:: 2.4
 
 .. function:: decode(obj, [encoding[, errors]])
 
-   *obj* を *encoding* に登録された codec を使用してデコードします。
-   デフォルトのエンコーディングは ``'ascii'`` です。
+   Decodes *obj* using the codec registered for *encoding*. The default
+   encoding is ``'ascii'``.
 
-   *Errors* を与えることで望むエラー処理方式を登録できます。
-   デフォルトのエラーハンドラは ``'strict'`` で、エンコーディングエラーの
-   際に :exc:`ValueError` (または :exc:`UnicodeEncodeError` など、
-   codec 特有のサブクラス) を送出します。codec エラー処理についての詳細は、
-   :ref:`codec-base-classes` を参照してください。
+   *Errors* may be given to set the desired error handling scheme. The
+   default error handler is ``'strict'`` meaning that decoding errors raise
+   :exc:`ValueError` (or a more codec specific subclass, such as
+   :exc:`UnicodeDecodeError`). Refer to :ref:`codec-base-classes` for more
+   information on codec error handling.
 
    .. versionadded:: 2.4
 
 .. function:: register(search_function)
 
-   codec 検索関数を登録します。検索関数は第 1 引数にアルファベットの小
-   文字から成るエンコーディング名を取り、以下の属性を持つ
+   Register a codec search function. Search functions are expected to take one
+   argument, the encoding name in all lower case letters, and return a
+   :class:`CodecInfo` object having the following attributes:
 
-   :class:`CodecInfo` オブジェクトを返します。
+   * ``name`` The name of the encoding;
 
-   * ``name`` エンコーディング名
+   * ``encode`` The stateless encoding function;
 
-   * ``encode`` 内部状態を持たないエンコード関数
+   * ``decode`` The stateless decoding function;
 
-   * ``decode`` 内部状態を持たないデコード関数
+   * ``incrementalencoder`` An incremental encoder class or factory function;
 
-   * ``incrementalencoder`` 漸増的エンコーダクラスまたはファクトリ関数
+   * ``incrementaldecoder`` An incremental decoder class or factory function;
 
-   * ``incrementaldecoder`` 漸増的デコーダクラスまたはファクトリ関数
+   * ``streamwriter`` A stream writer class or factory function;
 
-   * ``streamwriter`` ストリームライタクラスまたはファクトリ関数
+   * ``streamreader`` A stream reader class or factory function.
 
-   * ``streamreader`` ストリームリーダクラスまたはファクトリ関数
+   The various functions or classes take the following arguments:
 
-   種々の関数やクラスが以下の引数をとります。
+   *encode* and *decode*: These must be functions or methods which have the same
+   interface as the :meth:`~Codec.encode`/:meth:`~Codec.decode` methods of Codec
+   instances (see :ref:`Codec Interface <codec-objects>`). The functions/methods
+   are expected to work in a stateless mode.
 
-   *encode* と *decode*: これらの引数は、 Codec インスタンスの
-   :meth:`encode` と :meth:`decode`
-   (Codec Interface 参照) と同じインタフェースを持つ関数、またはメソッドでなければなりません。
-   これらの関数・メソッドは内部状態を持たずに動作する (stateless mode) と想定されています。
-
-   *incrementalencoder* と *incrementaldecoder*: これらは
-   以下のインタフェースを持つファクトリ関数でなければなりません。
+   *incrementalencoder* and *incrementaldecoder*: These have to be factory
+   functions providing the following interface:
 
       ``factory(errors='strict')``
 
-   ファクトリ関数は、それぞれ基底クラスの :class:`IncrementalEncoder`
-   や :class:`IncrementalDecoder` が定義しているインタフェースを提供す
-   るオブジェクトを返さねばなりません。漸増的 codecs は内部状態を維持
-   できます。
+   The factory functions must return objects providing the interfaces defined by
+   the base classes :class:`IncrementalEncoder` and :class:`IncrementalDecoder`,
+   respectively. Incremental codecs can maintain state.
 
-   *streamreader* と *streamwriter*: これらの引数は、次のようなインタ
-   フェースを持つファクトリ関数でなければなりません:
+   *streamreader* and *streamwriter*: These have to be factory functions providing
+   the following interface:
 
       ``factory(stream, errors='strict')``
 
-   ファクトリ関数は、基底クラスの :class:`StreamWriter` や
-   :class:`StreamReader` が定義しているインタフェースを提供するオブジェ
-   クトを返さねばなりません。ストリーム codecs は内部状態を維持できます。
+   The factory functions must return objects providing the interfaces defined by
+   the base classes :class:`StreamReader` and :class:`StreamWriter`, respectively.
+   Stream codecs can maintain state.
 
-   *errors* が取り得る値は
+   Possible values for errors are
 
-   * ``'strict'`` エンコーディングエラーの際に例外を発生
-   * ``'replace'`` 奇形データを ``'?'`` や ``'\ufffd'`` 等の
-     適切な文字で置換
-   * ``'ignore'`` 奇形データを無視し何も通知せずに処理を継続
-   * ``'xmlcharrefreplace'`` 適切な XML 文字参照で置換
-     (エンコーディングのみ))
-   * ``'backslashreplace'`` (バックスラッシュつきのエスケープシーケンス
-     (エンコーディングのみ)) 
+   * ``'strict'``: raise an exception in case of an encoding error
+   * ``'replace'``: replace malformed data with a suitable replacement marker,
+     such as ``'?'`` or ``'\ufffd'``
+   * ``'ignore'``: ignore malformed data and continue without further notice
+   * ``'xmlcharrefreplace'``: replace with the appropriate XML character
+     reference (for encoding only)
+   * ``'backslashreplace'``: replace with backslashed escape sequences (for
+     encoding only)
 
-   と :func:`register_error` で定義されたその他のエラー処理名になります。
+   as well as any other error handling name defined via :func:`register_error`.
 
-   検索関数は、与えられたエンコーディングを見つけられなかった場合、
-   ``None`` を返さねばなりません。
+   In case a search function cannot find a given encoding, it should return
+   ``None``.
+
 
 .. function:: lookup(encoding)
 
-   Python codec レジストリから codec 情報を探し、上で定義したような
-   :class:`CodecInfo` オブジェクトを返します。
+   Looks up the codec info in the Python codec registry and returns a
+   :class:`CodecInfo` object as defined above.
 
-   エンコーディングの検索は、まずレジストリのキャッシュから行います。
-   見つからなければ、登録されている検索関数のリストから探します。
-   :class:`CodecInfo` オブジェクトが一つも見つからなければ
-   :exc:`LookupError` を送出します。見つかったら、その
-   :class:`CodecInfo` オブジェクトはキャッシュに保存され、呼び出し側に
-   返されます。
+   Encodings are first looked up in the registry's cache. If not found, the list of
+   registered search functions is scanned. If no :class:`CodecInfo` object is
+   found, a :exc:`LookupError` is raised. Otherwise, the :class:`CodecInfo` object
+   is stored in the cache and returned to the caller.
 
-さまざまな codec へのアクセスを簡便化するために、このモジュールは以下
-のような関数を提供しています。これらの関数は、 codec の検索に
-:func:`lookup` を使います。
+To simplify access to the various codecs, the module provides these additional
+functions which use :func:`lookup` for the codec lookup:
 
 
 .. function:: getencoder(encoding)
 
-   *encoding* に指定した codec を検索し、エンコーダ関数を返します。
+   Look up the codec for the given encoding and return its encoder function.
 
-   *encoding* が見つからなければ :exc:`LookupError` を送出します。
+   Raises a :exc:`LookupError` in case the encoding cannot be found.
 
 
 .. function:: getdecoder(encoding)
 
-   *encoding* に指定した codec を検索し、デコーダ関数を返します。
+   Look up the codec for the given encoding and return its decoder function.
 
-   *encoding* が見つからなければ :exc:`LookupError` を送出します。
+   Raises a :exc:`LookupError` in case the encoding cannot be found.
 
 
 .. function:: getincrementalencoder(encoding)
 
-   *encoding* に指定した codec を検索し、漸増的エンコーダクラス、また
-    はファクトリ関数を返します。
+   Look up the codec for the given encoding and return its incremental encoder
+   class or factory function.
 
-   *encoding* が見つからない、もしくは codec が漸増的エンコーダをサポー
-    トしないとき :exc:`LookupError` を送出します。
+   Raises a :exc:`LookupError` in case the encoding cannot be found or the codec
+   doesn't support an incremental encoder.
 
    .. versionadded:: 2.5
 
 
 .. function:: getincrementaldecoder(encoding)
 
-   *encoding* に指定した codec を検索し、漸増的デコーダクラス、または
-    ファクトリ関数を返します。
+   Look up the codec for the given encoding and return its incremental decoder
+   class or factory function.
 
-   *encoding* が見つからない、もしくは codec が漸増的デコーダをサポー
-    トしないとき :exc:`LookupError` を送出します。
+   Raises a :exc:`LookupError` in case the encoding cannot be found or the codec
+   doesn't support an incremental decoder.
 
    .. versionadded:: 2.5
 
 
 .. function:: getreader(encoding)
 
-   *encoding* に指定した codec を検索し、StreamReader クラス、またはファ
-    クトリ関数を返します。
+   Look up the codec for the given encoding and return its StreamReader class or
+   factory function.
 
-   *encoding* が見つからなければ :exc:`LookupError` を送出します。
+   Raises a :exc:`LookupError` in case the encoding cannot be found.
 
 
 .. function:: getwriter(encoding)
 
-   *encoding* に指定した codec を検索し、 StreamWriter クラス、または
-    ファクトリ関数を返します。
+   Look up the codec for the given encoding and return its StreamWriter class or
+   factory function.
 
-   *encoding* が見つからなければ :exc:`LookupError` を送出します。
+   Raises a :exc:`LookupError` in case the encoding cannot be found.
 
 
 .. function:: register_error(name, error_handler)
 
-   エラー処理関数 *error_handler* を名前 *name* で登録します。エンコー
-   ド中およびデコード中にエラーが送出された場合、 *errors* パラメタに
-   *name* を指定していれば *error_handler* を呼び出すようになります。
+   Register the error handling function *error_handler* under the name *name*.
+   *error_handler* will be called during encoding and decoding in case of an error,
+   when *name* is specified as the errors parameter.
 
-   *error_handler* はエラーの場所に関する情報の入った
-   :exc:`UnicodeEncodeError` インスタンスとともに呼び出されます。
-   エラー処理関数はこの例外を送出するか、別の例外を送出するか、または
-   入力のエンコードができなかった部分の代替文字列とエンコードを再開す
-   る場所の指定が入ったタプルを返すかしなければなりません。最後の場合、
-   エンコーダは代替文字列をエンコードし、元の入力中の指定位置からエン
-   コードを再開します。位置を負の値にすると、入力文字列の末端からの相
-   対位置として扱われます。境界の外側にある位置を返した場合には
-   :exc:`IndexError` が送出されます。
+   For encoding *error_handler* will be called with a :exc:`UnicodeEncodeError`
+   instance, which contains information about the location of the error. The error
+   handler must either raise this or a different exception or return a tuple with a
+   replacement for the unencodable part of the input and a position where encoding
+   should continue. The encoder will encode the replacement and continue encoding
+   the original input at the specified position. Negative position values will be
+   treated as being relative to the end of the input string. If the resulting
+   position is out of bound an :exc:`IndexError` will be raised.
 
-   デコードと翻訳は同様に働きますが、エラー処理関数に渡されるのが
-   :exc:`UnicodeDecodeError` か :exc:`UnicodeTranslateError` である点
-   と、エラー処理関数の置換した内容が直接出力になる点が異なります。
+   Decoding and translating works similar, except :exc:`UnicodeDecodeError` or
+   :exc:`UnicodeTranslateError` will be passed to the handler and that the
+   replacement from the error handler will be put into the output directly.
 
 
 .. function:: lookup_error(name)
 
-   名前 *name* で登録済みのエラー処理関数を返します。
+   Return the error handler previously registered under the name *name*.
 
-   エラー処理関数が見つからなければ :exc:`LookupError` を送出します。
+   Raises a :exc:`LookupError` in case the handler cannot be found.
 
 
 .. function:: strict_errors(exception)
 
-   ``strict`` エラー処理の実装です:
-   エンコード又はデコードエラーは各々 :exc:`UnicodeError` を送出します.
+   Implements the ``strict`` error handling: each encoding or decoding error
+   raises a :exc:`UnicodeError`.
 
 
 .. function:: replace_errors(exception)
 
-   ``replace`` エラー処理の実装です: 奇形データは適切な文字列に置換されます。
-   バイト文字列では ``'?'`` 、 Unicode 文字列では ``'\ufffd'`` に置換されます。
+   Implements the ``replace`` error handling: malformed data is replaced with a
+   suitable replacement character such as ``'?'`` in bytestrings and
+   ``'\ufffd'`` in Unicode strings.
 
 
 .. function:: ignore_errors(exception)
 
-   ``ignore`` エラー処理の実装です:
-   奇形データは無視されエンコード又はデコードは何も通知せず、継続されます。
+   Implements the ``ignore`` error handling: malformed data is ignored and
+   encoding or decoding is continued without further notice.
 
 
 .. function:: xmlcharrefreplace_errors(exception)
 
-   ``xmlcharrefreplace`` エラー処理の実装です(エンコードのみ):
-   エンコードできなかった文字は適切な XML 文字参照に置き換えます。
-   
+   Implements the ``xmlcharrefreplace`` error handling (for encoding only): the
+   unencodable character is replaced by an appropriate XML character reference.
 
 
 .. function:: backslashreplace_errors(exception)
 
-   ``backslashreplace`` エラー処理の実装です (エンコードのみ):
-   エンコードできなかった文字はバックスラッシュつきのエスケープシーケンスに置き換えられます。
+   Implements the ``backslashreplace`` error handling (for encoding only): the
+   unencodable character is replaced by a backslashed escape sequence.
 
-エンコードされたファイルやストリームの処理を簡便化するため、このモジュー
-ルは次のようなユーティリティ関数を定義しています。
+To simplify working with encoded files or stream, the module also defines these
+utility functions:
 
 
 .. function:: open(filename, mode[, encoding[, errors[, buffering]]])
 
-   *mode* でエンコードされたファイルを開き、透過的にエンコード・デコー
-    ドを行うようにラップしたファイルオブジェクトを返します。デフォルト
-    のファイルモードは ``'r'`` 、つまり、読み出しモードでファイルを開
-    きます。
+   Open an encoded file using the given *mode* and return a wrapped version
+   providing transparent encoding/decoding.  The default file mode is ``'r'``
+   meaning to open the file in read mode.
 
    .. note::
 
-      ラップ版のファイルオブジェクトを操作する関数は、該当する codec
-      が定義している形式のオブジェクトだけを受け付けます。多くの組み込
-      み codec では Unicode オブジェクトです。関数の戻り値も codec に
-      依存し、通常は Unicode オブジェクトです。
+      The wrapped version will only accept the object format defined by the codecs,
+      i.e. Unicode objects for most built-in codecs.  Output is also codec-dependent
+      and will usually be Unicode as well.
 
    .. note::
 
-      非バイナリモードが指定されても、ファイルは常にバイナリモードで開
-      かれます。これは、 8-bit の値を使うエンコーディングでデータが消
-      失するのを防ぐためです。つまり、読み出しや書き込み時に、
-      ``'\n'`` の自動変換はされないということです。
+      Files are always opened in binary mode, even if no binary mode was
+      specified.  This is done to avoid data loss due to encodings using 8-bit
+      values.  This means that no automatic conversion of ``'\n'`` is done
+      on reading and writing.
 
+   *encoding* specifies the encoding which is to be used for the file.
 
-   *encoding* にはファイルのエンコーディングを指定します。
+   *errors* may be given to define the error handling. It defaults to ``'strict'``
+   which causes a :exc:`ValueError` to be raised in case an encoding error occurs.
 
-   *errors* を指定して、エラー処理を定義することもできます。デフォルト
-    では ``'strict'`` で、エンコード時にエラーがあれば
-    :exc:`ValueError` を送出します。
-
-   *buffering* は、組み込み関数 :func:`open` と同じです。デフォルトで
-    は行バッファリングです。
+   *buffering* has the same meaning as for the built-in :func:`open` function.  It
+   defaults to line buffered.
 
 
 .. function:: EncodedFile(file, input[, output[, errors]])
 
-   ラップしたファイルオブジェクトを返します。このオブジェクトは透過な
-   エンコード変換を提供します。
+   Return a wrapped version of file which provides transparent encoding
+   translation.
 
-   ラップされたファイルに書かれた文字列は、 *input* に指定したエンコー
-   ディングに従って変換され、 *output* に指定したエンコーディングを使っ
-   て string 型に変換され、ファイルに書き込まれます。中間エンコーディ
-   ングは指定された codecs に依存しますが、普通は Unicode です。
+   Strings written to the wrapped file are interpreted according to the given
+   *input* encoding and then written to the original file as strings using the
+   *output* encoding. The intermediate encoding will usually be Unicode but depends
+   on the specified codecs.
 
-   *output* が与えられなければ、 *input* がデフォルトになります。
+   If *output* is not given, it defaults to *input*.
 
-   *errors* を与えて、エラー処理を定義することもできます。デフォルトで
-    は ``'strict'`` で、エンコード時にエラーがあれば :exc:`ValueError`
-    を送出します。
+   *errors* may be given to define the error handling. It defaults to ``'strict'``,
+   which causes :exc:`ValueError` to be raised in case an encoding error occurs.
 
 
 .. function:: iterencode(iterable, encoding[, errors])
 
-   漸増的エンコーダを使って、 *iterable* から供給される入力を反復的に
-   エンコードします。この関数は :term:`generator` です。 *errors* は (そして他の
-   キーワード引数も同様に) 漸増的エンコーダにそのまま引き渡されます。
+   Uses an incremental encoder to iteratively encode the input provided by
+   *iterable*. This function is a :term:`generator`.  *errors* (as well as any
+   other keyword argument) is passed through to the incremental encoder.
 
    .. versionadded:: 2.5
 
 
 .. function:: iterdecode(iterable, encoding[, errors])
 
-   漸増的デコーダを使って、 *iterable* から供給される入力を反復的にデ
-   コードします。この関数は :term:`generator` です。 *errors* は
-   (そして他のキーワード引数も同様に) 漸増的デコーダにそのまま引き渡されます。
+   Uses an incremental decoder to iteratively decode the input provided by
+   *iterable*. This function is a :term:`generator`.  *errors* (as well as any
+   other keyword argument) is passed through to the incremental decoder.
 
    .. versionadded:: 2.5
 
-このモジュールは以下のような定数も定義しています。プラットフォーム依存
-なファイルを読み書きするのに役立ちます。
+The module also provides the following constants which are useful for reading
+and writing to platform dependent files:
 
 
 .. data:: BOM
@@ -324,554 +314,539 @@ codec(エンコーダとデコーダ)の基底クラスを定義し、 codec お
           BOM_UTF32_BE
           BOM_UTF32_LE
 
-   ここで定義された定数は、様々なエンコーディングの Unicode のバイトオー
-   ダマーカ (BOM) で、 UTF-16 と UTF-32 におけるデータストリームやファ
-   イルストリームのバイトオーダを指定したり、 UTF-8 における Unicode
-   signature として使われます。
-   :const:`BOM_UTF16` は :const:`BOM_UTF16_BE` と :const:`BOM_UTF16_LE`
-   のいずれかで、プラットフォームのネイティブバイトオーダに依存します。
-   :const:`BOM` は :const:`BOM_UTF16` の別名です。同様に
-   :const:`BOM_LE` は :const:`BOM_UTF16_LE` の、 :const:`BOM_BE` は
-   :const:`BOM_UTF16_BE` の別名です。他は UTF-8 と UTF-32 エンコーディ
-   ングの BOM を表します。
+   These constants define various encodings of the Unicode byte order mark (BOM)
+   used in UTF-16 and UTF-32 data streams to indicate the byte order used in the
+   stream or file and in UTF-8 as a Unicode signature. :const:`BOM_UTF16` is either
+   :const:`BOM_UTF16_BE` or :const:`BOM_UTF16_LE` depending on the platform's
+   native byte order, :const:`BOM` is an alias for :const:`BOM_UTF16`,
+   :const:`BOM_LE` for :const:`BOM_UTF16_LE` and :const:`BOM_BE` for
+   :const:`BOM_UTF16_BE`. The others represent the BOM in UTF-8 and UTF-32
+   encodings.
 
 
 .. _codec-base-classes:
 
-Codec 基底クラス
-----------------
+Codec Base Classes
+------------------
 
-:mod:`codecs` モジュールでは、 codec のインタフェースを定義する一連の
-基底クラスを用意して、 Python 用 codec を簡単に自作できるようにしています。
+The :mod:`codecs` module defines a set of base classes which define the
+interface and can also be used to easily write your own codecs for use in
+Python.
 
-Python で何らかの codec を使えるようにするには、状態なしエンコーダ、状
-態なしデコーダ、ストリームリーダ、ストリームライタの 4 つのインタフェー
-スを定義せねばなりません。通常は、状態なしエンコーダとデコーダを再利用
-してストリームリーダとライタのファイル・プロトコルを実装します。
+Each codec has to define four interfaces to make it usable as codec in Python:
+stateless encoder, stateless decoder, stream reader and stream writer. The
+stream reader and writers typically reuse the stateless encoder/decoder to
+implement the file protocols.
 
-:class:`Codec` クラスは、状態なしエンコーダ・デコーダのインタフェース
-を定義しています。
+The :class:`Codec` class defines the interface for stateless encoders/decoders.
 
-エラー処理の簡便化と標準化のため、 :meth:`encode` メソッドと
-:meth:`decode` メソッドでは、 *errors* 文字列引数を指定した
-場合に別のエラー処理を行うような仕組みを実装してもかまいません。全て
-の標準 Python codec では以下の文字列が定義され、実装されています。
+To simplify and standardize error handling, the :meth:`~Codec.encode` and
+:meth:`~Codec.decode` methods may implement different error handling schemes by
+providing the *errors* string argument.  The following string values are defined
+and implemented by all standard Python codecs:
 
-+-------------------------+--------------------------------------------------------------------------+
-| Value                   | Meaning                                                                  |
-+=========================+==========================================================================+
-| ``'strict'``            | :exc:`UnicodeError` (または、そのサブクラス) を送出します --             |
-|                         | デフォルトの動作です。                                                   |
-+-------------------------+--------------------------------------------------------------------------+
-| ``'ignore'``            | その文字を無視し、次の文字から変換を再開します。                         |
-+-------------------------+--------------------------------------------------------------------------+
-| ``'replace'``           | 適当な文字で置換します -- Python の組み込み  Unicode codec               |
-|                         | のデコード時には公式の U+FFFD REPLACEMENT CHARACTER を、                 |
-|                         | エンコード時には '?' を使います。                                        |
-+-------------------------+--------------------------------------------------------------------------+
-| ``'xmlcharrefreplace'`` | 適切な XML 文字参照で置換します (エンコードのみ)                         |
-+-------------------------+--------------------------------------------------------------------------+
-| ``'backslashreplace'``  | バックスラッシュつきのエスケープシーケンスで置換します (エンコードのみ)  |
-+-------------------------+--------------------------------------------------------------------------+
+.. tabularcolumns:: |l|L|
 
-codecs がエラーハンドラとして受け入れる値は :meth:`register_error` を使っ
-て追加できます。
++-------------------------+-----------------------------------------------+
+| Value                   | Meaning                                       |
++=========================+===============================================+
+| ``'strict'``            | Raise :exc:`UnicodeError` (or a subclass);    |
+|                         | this is the default.                          |
++-------------------------+-----------------------------------------------+
+| ``'ignore'``            | Ignore the character and continue with the    |
+|                         | next.                                         |
++-------------------------+-----------------------------------------------+
+| ``'replace'``           | Replace with a suitable replacement           |
+|                         | character; Python will use the official       |
+|                         | U+FFFD REPLACEMENT CHARACTER for the built-in |
+|                         | Unicode codecs on decoding and '?' on         |
+|                         | encoding.                                     |
++-------------------------+-----------------------------------------------+
+| ``'xmlcharrefreplace'`` | Replace with the appropriate XML character    |
+|                         | reference (only for encoding).                |
++-------------------------+-----------------------------------------------+
+| ``'backslashreplace'``  | Replace with backslashed escape sequences     |
+|                         | (only for encoding).                          |
++-------------------------+-----------------------------------------------+
+
+The set of allowed values can be extended via :meth:`register_error`.
 
 
 .. _codec-objects:
 
-Codec オブジェクト
-^^^^^^^^^^^^^^^^^^
+Codec Objects
+^^^^^^^^^^^^^
 
-:class:`Codec` クラスは以下のメソッドを定義します。これらのメソッドは、
-内部状態を持たないエンコーダ／デコーダ関数のインタフェースを定義します。
+The :class:`Codec` class defines these methods which also define the function
+interfaces of the stateless encoder and decoder:
 
 
 .. method:: Codec.encode(input[, errors])
 
-   オブジェクト *input* エンコードし、(出力オブジェクト, 消費した長さ)
-   のタプルを返します。 codecs は Unicode 専用ではありませんが、
-   Unicode の文脈では、エンコーディングは Unicode オブジェクトを特定の
-   文字集合エンコーディング(たとえば ``cp1252`` や ``iso-8859-1``) を
-   使って文字列オブジェクトに変換します。
+   Encodes the object *input* and returns a tuple (output object, length consumed).
+   While codecs are not restricted to use with Unicode, in a Unicode context,
+   encoding converts a Unicode object to a plain string using a particular
+   character set encoding (e.g., ``cp1252`` or ``iso-8859-1``).
 
-   *errors* は適用するエラー処理を定義します。 ``'strict'`` 処理がデフォ
-   ルトです。
+   *errors* defines the error handling to apply. It defaults to ``'strict'``
+   handling.
 
-   このメソッドは :class:`Codec` に内部状態を保存してはなりません。効
-   率よくエンコード／デコードするために状態を保持しなければならないよ
-   うな codecs には :class:`StreamCodec` を使ってください。
+   The method may not store state in the :class:`Codec` instance. Use
+   :class:`StreamWriter` for codecs which have to keep state in order to make
+   encoding efficient.
 
-   エンコーダは長さが 0 の入力を処理できねばなりません。この場合、空の
-   オブジェクトを出力オブジェクトとして返さねばなりません。
+   The encoder must be able to handle zero length input and return an empty object
+   of the output object type in this situation.
 
 
 .. method:: Codec.decode(input[, errors])
 
-   オブジェクト *input* をデコードし、(出力オブジェクト, 消費した長さ)
-   のタプルを返します。 Unicode の文脈では、デコードは特定の文字集合
-   エンコーディングでエンコードされた文字列を Unicode オブジェクトに変
-   換します。
+   Decodes the object *input* and returns a tuple (output object, length consumed).
+   In a Unicode context, decoding converts a plain string encoded using a
+   particular character set encoding to a Unicode object.
 
-   *input* は ``bf_getreadbuf`` バッファスロットを提供するオブジェ
-   クトでなければなりません。バッファスロットを提供しているオブジェク
-   トには Python 文字列オブジェクト、バッファオブジェクト、メモリマッ
-   プファイルがあります。
+   *input* must be an object which provides the ``bf_getreadbuf`` buffer slot.
+   Python strings, buffer objects and memory mapped files are examples of objects
+   providing this slot.
 
-   *errors* は適用するエラー処理を定義します。
-   ``'strict'`` がデフォルト値です。
+   *errors* defines the error handling to apply. It defaults to ``'strict'``
+   handling.
 
-   このメソッドは、 :class:`Codec` インスタンスに内部状態を保存してはな
-   りません。効率よくエンコード／デコードするために状態を保持しなけれ
-   ばならないような codecs には :class:`StreamCodec` を使ってください。
+   The method may not store state in the :class:`Codec` instance. Use
+   :class:`StreamReader` for codecs which have to keep state in order to make
+   decoding efficient.
 
-   デコーダは長さが 0 の入力を処理できねばなりません。この場合、空のオ
-   ブジェクトを出力オブジェクトとして返さねばなりません。
+   The decoder must be able to handle zero length input and return an empty object
+   of the output object type in this situation.
 
-:class:`IncrementalEncoder` クラスおよび :class:`IncrementalDecoder`
-クラスはそれぞれ漸増的エンコーディングおよびデコーディングのための基本
-的なインタフェースを提供します。エンコーディング／デコーディングは内部
-状態を持たないエンコーダ／デコーダを一度呼び出すことで行なわれるので
-はなく、漸増的エンコーダ／デコーダの :meth:`encode`/:meth:`decode` メ
-ソッドを複数回呼び出すことで行なわれます。漸増的エンコーダ／デコーダは
-メソッド呼び出しの間エンコーディング／デコーディング処理の進行を管理
-します。 :meth:`encode`/:meth:`decode` メソッド呼び出しの出力結果をま
-とめたものは、入力をひとまとめにして内部状態を持たないエンコーダ／デコー
-ダでエンコード／デコードしたものと同じになります。
+The :class:`IncrementalEncoder` and :class:`IncrementalDecoder` classes provide
+the basic interface for incremental encoding and decoding. Encoding/decoding the
+input isn't done with one call to the stateless encoder/decoder function, but
+with multiple calls to the
+:meth:`~IncrementalEncoder.encode`/:meth:`~IncrementalDecoder.decode` method of
+the incremental encoder/decoder. The incremental encoder/decoder keeps track of
+the encoding/decoding process during method calls.
 
-.. % keep track
+The joined output of calls to the
+:meth:`~IncrementalEncoder.encode`/:meth:`~IncrementalDecoder.decode` method is
+the same as if all the single inputs were joined into one, and this input was
+encoded/decoded with the stateless encoder/decoder.
 
 
 .. _incremental-encoder-objects:
 
-IncrementalEncoder オブジェクト
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IncrementalEncoder Objects
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. versionadded:: 2.5
 
-:class:`IncrementalEncoder` クラスは入力を複数ステップでエンコードする
-のに使われます。全ての漸増的エンコーダが Python codec レジストリと互換
-性を持つために定義すべきメソッドとして、このクラスには以下のメソッドが
-定義されています。
+The :class:`IncrementalEncoder` class is used for encoding an input in multiple
+steps. It defines the following methods which every incremental encoder must
+define in order to be compatible with the Python codec registry.
 
 
 .. class:: IncrementalEncoder([errors])
 
-   :class:`IncrementalEncoder` インスタンスのコンストラクタ。
+   Constructor for an :class:`IncrementalEncoder` instance.
 
-   全ての漸増的エンコーダはこのコンストラクタインタフェースを提供しな
-   ければなりません。さらにキーワード引数を付け加えるのは構いませんが、
-   Python codec レジストリで利用されるのはここで定義されているものだけ
-   です。
+   All incremental encoders must provide this constructor interface. They are free
+   to add additional keyword arguments, but only the ones defined here are used by
+   the Python codec registry.
 
-   :class:`IncrementalEncoder` は *errors* キーワード引数を提供して異
-   なったエラー取扱方法を実装することもできます。あらかじめ定義されて
-   いるパラメータは以下の通りです。
+   The :class:`IncrementalEncoder` may implement different error handling schemes
+   by providing the *errors* keyword argument. These parameters are predefined:
 
-   * ``'strict'`` :exc:`ValueError` (またはそのサブクラス) を送出します。これがデフォルトです。
+   * ``'strict'`` Raise :exc:`ValueError` (or a subclass); this is the default.
 
-   * ``'ignore'`` 一文字無視して次に進みます。
+   * ``'ignore'`` Ignore the character and continue with the next.
 
-   * ``'replace'`` 適当な代替文字で置き換えます。
+   * ``'replace'`` Replace with a suitable replacement character
 
-   * ``'xmlcharrefreplace'`` 適切な XML 文字参照に置き換えます。
+   * ``'xmlcharrefreplace'`` Replace with the appropriate XML character reference
 
-   * ``'backslashreplace'`` バックスラッシュ付きのエスケープシーケンスで置き換えます。
+   * ``'backslashreplace'`` Replace with backslashed escape sequences.
 
-   引数 *errors* は同名の属性に割り当てられます。属性に割り当てること
-   で :class:`IncrementalEncoder` オブジェクトが生きている間にエラー取
-   扱戦略を違うものに切り替えることができるようになります。
+   The *errors* argument will be assigned to an attribute of the same name.
+   Assigning to this attribute makes it possible to switch between different error
+   handling strategies during the lifetime of the :class:`IncrementalEncoder`
+   object.
 
-   *errors* 引数に許される値の集合は :func:`register_error` で拡張できます。
+   The set of allowed values for the *errors* argument can be extended with
+   :func:`register_error`.
 
 
    .. method:: encode(object[, final])
 
-      *object* を(エンコーダの現在の状態を考慮に入れて)エンコードし、
-      得られたエンコードされたオブジェクトを返します。 :meth:`encode`
-      呼び出しがこれで最後という時には *final* は真でなければなりませ
-      ん(デフォルトは偽です)。
+      Encodes *object* (taking the current state of the encoder into account)
+      and returns the resulting encoded object. If this is the last call to
+      :meth:`encode` *final* must be true (the default is false).
 
 
    .. method:: reset()
 
-      エンコーダを初期状態にリセットします。
+      Reset the encoder to the initial state.
 
 
 .. _incremental-decoder-objects:
 
-IncrementalDecoder オブジェクト
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+IncrementalDecoder Objects
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:class:`IncrementalDecoder` クラスは入力を複数ステップでデコードするの
-に使われます。全ての漸増的デコーダが Python codec レジストリと互換性を
-持つために定義すべきメソッドとして、このクラスには以下のメソッドが定義
-されています。
+The :class:`IncrementalDecoder` class is used for decoding an input in multiple
+steps. It defines the following methods which every incremental decoder must
+define in order to be compatible with the Python codec registry.
 
 
 .. class:: IncrementalDecoder([errors])
 
-   :class:`IncrementalDecoder` インスタンスのコンストラクタ。
+   Constructor for an :class:`IncrementalDecoder` instance.
 
-   全ての漸増的デコーダはこのコンストラクタインタフェースを提供しなけ
-   ればなりません。さらにキーワード引数を付け加えるのは構いませんが、
-   Python codec レジストリで利用されるのはここで定義されているものだけ
-   です。
+   All incremental decoders must provide this constructor interface. They are free
+   to add additional keyword arguments, but only the ones defined here are used by
+   the Python codec registry.
 
-   :class:`IncrementalDecoder` は *errors* キーワード引数を提供して異
-   なったエラー取扱方法を実装することもできます。あらかじめ定義されて
-   いるパラメータは以下の通りです。
+   The :class:`IncrementalDecoder` may implement different error handling schemes
+   by providing the *errors* keyword argument. These parameters are predefined:
 
-   * ``'strict'`` :exc:`ValueError` (またはそのサブクラス) を送出します。これがデフォルトです。
+   * ``'strict'`` Raise :exc:`ValueError` (or a subclass); this is the default.
 
-   * ``'ignore'`` 一文字無視して次に進みます。
+   * ``'ignore'`` Ignore the character and continue with the next.
 
-   * ``'replace'`` 適当な代替文字で置き換えます。
+   * ``'replace'`` Replace with a suitable replacement character.
 
-   引数 *errors* は同名の属性に割り当てられます。属性に割り当てること
-   で :class:`IncrementalDecoder` オブジェクトが生きている間にエラー取
-   扱戦略を違うものに切り替えることができるようになります。
+   The *errors* argument will be assigned to an attribute of the same name.
+   Assigning to this attribute makes it possible to switch between different error
+   handling strategies during the lifetime of the :class:`IncrementalDecoder`
+   object.
 
-   *errors* 引数に許される値の集合は :func:`register_error` で拡張でき
-   ます。
+   The set of allowed values for the *errors* argument can be extended with
+   :func:`register_error`.
 
 
    .. method:: decode(object[, final])
 
-      *object* を(デコーダの現在の状態を考慮に入れて)デコードし、得ら
-      れたデコードされたオブジェクトを返します。 :meth:`decode` 呼び出
-      しがこれで最後という時には *final* は真でなければなりません(デ
-      フォルトは偽です)。もし *final* が真ならばデコーダは入力をデコー
-      ドし切り全てのバッファをフラッシュしなければなりません。そうで
-      きない場合(たとえば入力の最後に不完全なバイト列があるから)、デ
-      コーダは内部状態を持たない場合と同じようにエラーの取り扱いを開
-      始しなければなりません(例外を送出するかもしれません)。
+      Decodes *object* (taking the current state of the decoder into account)
+      and returns the resulting decoded object. If this is the last call to
+      :meth:`decode` *final* must be true (the default is false). If *final* is
+      true the decoder must decode the input completely and must flush all
+      buffers. If this isn't possible (e.g. because of incomplete byte sequences
+      at the end of the input) it must initiate error handling just like in the
+      stateless case (which might raise an exception).
 
 
    .. method:: reset()
 
-      デコーダを初期状態にリセットします。
+      Reset the decoder to the initial state.
 
-:class:`StreamWriter` と :class:`StreamReader` クラスは、新しいエンコー
-ディングモジュールを、非常に簡単に実装するのに使用できる、一般的なイン
-ターフェイス提供します。実装例は :mod:`encodings.utf_8` をご覧ください。
+
+The :class:`StreamWriter` and :class:`StreamReader` classes provide generic
+working interfaces which can be used to implement new encoding submodules very
+easily. See :mod:`encodings.utf_8` for an example of how this is done.
 
 
 .. _stream-writer-objects:
 
-StreamWriter オブジェクト
-^^^^^^^^^^^^^^^^^^^^^^^^^
+StreamWriter Objects
+^^^^^^^^^^^^^^^^^^^^
 
-:class:`StreamWriter` クラスは :class:`Codec` のサブクラスで、以下のメ
-ソッドを定義しています。全てのストリームライタは、 Python の codec レ
-ジストリとの互換性を保つために、これらのメソッドを定義する必要がありま
-す。
+The :class:`StreamWriter` class is a subclass of :class:`Codec` and defines the
+following methods which every stream writer must define in order to be
+compatible with the Python codec registry.
 
 
 .. class:: StreamWriter(stream[, errors])
 
-   :class:`StreamWriter` インスタンスのコンストラクタです。
+   Constructor for a :class:`StreamWriter` instance.
 
-   全てのストリームライタはコンストラクタとしてこのインタフェースを提
-   供せねばなりません。キーワード引数を追加しても構いませんが、 Python
-   の codec レジストリはここで定義されている引数だけを使います。
+   All stream writers must provide this constructor interface. They are free to add
+   additional keyword arguments, but only the ones defined here are used by the
+   Python codec registry.
 
-   *stream* は、(バイナリで) 書き込み可能なファイル類似のオブジェクト
-   でなくてはなりません。
+   *stream* must be a file-like object open for writing binary data.
 
-   :class:`StreamWriter` は、 *errors* キーワード引数を受けて、異なっ
-   たエラー処理の仕組みを実装しても構いません。定義済みのパラメタを以
-   下に示します。
+   The :class:`StreamWriter` may implement different error handling schemes by
+   providing the *errors* keyword argument. These parameters are predefined:
 
-   * ``'strict'`` :exc:`ValueError` (または、そのサブクラス) 送出します。デフォルトの動作です。
+   * ``'strict'`` Raise :exc:`ValueError` (or a subclass); this is the default.
 
-   * ``'ignore'`` 文字を無視して、次の文字から続けます。
+   * ``'ignore'`` Ignore the character and continue with the next.
 
-   * ``'replace'`` 適切な置換文字で置換します。
+   * ``'replace'`` Replace with a suitable replacement character
 
-   * ``'xmlcharrefreplace'`` 適切な XML 文字参照で置換します。
+   * ``'xmlcharrefreplace'`` Replace with the appropriate XML character reference
 
-   * ``'backslashreplace'`` バックスラッシュ付きのエスケープシーケンスで置換します。
+   * ``'backslashreplace'`` Replace with backslashed escape sequences.
 
-   *errors* 引数は、同名の属性に代入されます。この属性を変更すると、
-   :class:`StreamWriter` オブジェクトが生きている間に、異なるエラー処
-   理に変更できます。
+   The *errors* argument will be assigned to an attribute of the same name.
+   Assigning to this attribute makes it possible to switch between different error
+   handling strategies during the lifetime of the :class:`StreamWriter` object.
 
-   *errors* 引数が取り得る値の種類は :func:`register_error` で拡張できます。
+   The set of allowed values for the *errors* argument can be extended with
+   :func:`register_error`.
 
 
    .. method:: write(object)
 
-      *object* の内容をエンコードしてストリームに書き出します。
+      Writes the object's contents encoded to the stream.
 
 
    .. method:: writelines(list)
 
-      文字列からなるリストを連結して、(必要に応じて :meth:`write` を何度も使って) ストリームに書き出します。
+      Writes the concatenated list of strings to the stream (possibly by reusing
+      the :meth:`write` method).
 
 
    .. method:: reset()
 
-      状態保持に使われていた codec のバッファを強制的に出力してリセットします。
+      Flushes and resets the codec buffers used for keeping state.
 
-      このメソッドが呼び出された場合、出力先データをきれいな状態にし、わ
-      ざわざストリーム全体を再スキャンして状態を元に戻さなくても新しくデー
-      タを追加できるようにせねばなりません。
+      Calling this method should ensure that the data on the output is put into
+      a clean state that allows appending of new fresh data without having to
+      rescan the whole stream to recover state.
 
-ここまでで挙げたメソッドの他にも、 :class:`StreamWriter` では背後にあ
-るストリームの他の全てのメソッドや属性を継承せねばなりません。
+
+In addition to the above methods, the :class:`StreamWriter` must also inherit
+all other methods and attributes from the underlying stream.
 
 
 .. _stream-reader-objects:
 
-StreamReader オブジェクト
-^^^^^^^^^^^^^^^^^^^^^^^^^
+StreamReader Objects
+^^^^^^^^^^^^^^^^^^^^
 
-:class:`StreamReader` クラスは :class:`Codec` のサブクラスで、以下のメ
-ソッドを定義しています。全てのストリームリーダは、 Python の codec レ
-ジストリとの互換性を保つために、これらのメソッドを定義する必要がありま
-す。
+The :class:`StreamReader` class is a subclass of :class:`Codec` and defines the
+following methods which every stream reader must define in order to be
+compatible with the Python codec registry.
 
 
 .. class:: StreamReader(stream[, errors])
 
-   :class:`StreamReader` インスタンスのコンストラクタです。
+   Constructor for a :class:`StreamReader` instance.
 
-   全てのストリームリーダはコンストラクタとしてこのインタフェースを提
-   供せねばなりません。キーワード引数を追加しても構いませんが、 Python
-   の codec レジストリはここで定義されている引数だけを使います。
+   All stream readers must provide this constructor interface. They are free to add
+   additional keyword arguments, but only the ones defined here are used by the
+   Python codec registry.
 
-   *stream* は、(バイナリで) 読み出し可能なファイル類似のオブジェクト
-   でなくてはなりません。
+   *stream* must be a file-like object open for reading (binary) data.
 
-   :class:`StreamReader` は、 *errors* キーワード引数を受けて、異なっ
-   たエラー処理の仕組みを実装しても構いません。定義済みのパラメタを以
-   下に示します。
+   The :class:`StreamReader` may implement different error handling schemes by
+   providing the *errors* keyword argument. These parameters are defined:
 
-   * ``'strict'`` :exc:`ValueError` (または、そのサブクラス) を送出します。デフォルトの処理です。
+   * ``'strict'`` Raise :exc:`ValueError` (or a subclass); this is the default.
 
-   * ``'ignore'`` 文字を無視して、次の文字から続けます。
+   * ``'ignore'`` Ignore the character and continue with the next.
 
-   * ``'replace'`` 適切な置換文字で置換します。
+   * ``'replace'`` Replace with a suitable replacement character.
 
-   *errors* 引数は、同名の属性に代入されます。この属性を変更すると、
-   :class:`StreamReader` オブジェクトが生きている間に、異なるエラー処
-   理に変更できます。
+   The *errors* argument will be assigned to an attribute of the same name.
+   Assigning to this attribute makes it possible to switch between different error
+   handling strategies during the lifetime of the :class:`StreamReader` object.
 
-   *errors* 引数が取り得る値の種類は :func:`register_error` で拡張でき
-   ます。
+   The set of allowed values for the *errors* argument can be extended with
+   :func:`register_error`.
 
 
    .. method:: read([size[, chars, [firstline]]])
 
-      ストリームからのデータをデコードし、デコード済のオブジェクトを返
-      します。
+      Decodes data from the stream and returns the resulting object.
 
-      *chars* はストリームから読み込む文字数です。 :func:`read` は
-      *chars* 以上の文字を返しませんが、それより少ない文字しか取得でき
-      ない場合には *chars* 以下の文字を返します。
+      *chars* indicates the number of characters to read from the
+      stream. :func:`read` will never return more than *chars* characters, but
+      it might return less, if there are not enough characters available.
 
-      *size* は、デコードするためにストリームから読み込む、およその最
-      大バイト数を意味します。デコーダはこの値を適切な値に変更できま
-      す。デフォルト値 -1 にすると可能な限りたくさんのデータを読み込
-      みます。 *size* の目的は、巨大なファイルの一括デコードを防ぐこ
-      とにあります。
+      *size* indicates the approximate maximum number of bytes to read from the
+      stream for decoding purposes. The decoder can modify this setting as
+      appropriate. The default value -1 indicates to read and decode as much as
+      possible.  *size* is intended to prevent having to decode huge files in
+      one step.
 
-      *firstline* は、1行目さえ返せばその後の行でデコードエラーがあっ
-      ても無視して十分だ、ということを示します。
+      *firstline* indicates that it would be sufficient to only return the first
+      line, if there are decoding errors on later lines.
 
-      このメソッドは貪欲な読み込み戦略を取るべきです。すなわち、エンコー
-      ディング定義と size の値が許す範囲で、できるだけ多くのデータを読
-      むべきだということです。たとえば、ストリーム上にエンコーディング
-      の終端や状態の目印があれば、それも読み込みます。
+      The method should use a greedy read strategy meaning that it should read
+      as much data as is allowed within the definition of the encoding and the
+      given size, e.g.  if optional encoding endings or state markers are
+      available on the stream, these should be read too.
 
       .. versionchanged:: 2.4
-         引数 *chars* が追加されました。
+         *chars* argument added.
 
       .. versionchanged:: 2.4.2
-         引数 *firstline* が追加されました。
+         *firstline* argument added.
 
 
    .. method:: readline([size[, keepends]])
 
-      入力ストリームから1行読み込み、デコード済みのデータを返します。
+      Read one line from the input stream and return the decoded data.
 
-      *size* が与えられた場合、ストリームにおける :meth:`readline` の
-      size 引数に渡されます。
+      *size*, if given, is passed as size argument to the stream's
+      :meth:`read` method.
 
-      *keepends* が偽の場合には行末の改行が削除された行が返ります。
+      If *keepends* is false line-endings will be stripped from the lines
+      returned.
 
       .. versionchanged:: 2.4
-         引数 *keepends* が追加されました。
+         *keepends* argument added.
 
 
    .. method:: readlines([sizehint[, keepends]])
 
-      入力ストリームから全ての行を読み込み、行のリストとして返します。
+      Read all lines available on the input stream and return them as a list of
+      lines.
 
-      *keepends* が真なら、改行は、 codec のデコーダメソッドを使って実
-      装され、リスト要素の中に含まれます。
+      Line-endings are implemented using the codec's decoder method and are
+      included in the list entries if *keepends* is true.
 
-      *sizehint* が与えられた場合、ストリームの :meth:`read` メソッド
-      に *size* 引数として渡されます。
+      *sizehint*, if given, is passed as the *size* argument to the stream's
+      :meth:`read` method.
 
 
    .. method:: reset()
 
-      状態保持に使われた codec のバッファをリセットします。
+      Resets the codec buffers used for keeping state.
 
-      ストリームの読み位置を再設定してはならないので注意してください。
-      このメソッドはデコードの際にエラーから復帰できるようにするための
-      ものです。
+      Note that no stream repositioning should take place.  This method is
+      primarily intended to be able to recover from decoding errors.
 
-ここまでで挙げたメソッドの他にも、 :class:`StreamReader` では背後にあ
-るストリームの他の全てのメソッドや属性を継承せねばなりません。
 
-次に挙げる2つの基底クラスは、利便性のために含まれています。codec レジ
-ストリは、これらを必要としませんが、実際のところ、あると有用なものでしょ
-う。
+In addition to the above methods, the :class:`StreamReader` must also inherit
+all other methods and attributes from the underlying stream.
+
+The next two base classes are included for convenience. They are not needed by
+the codec registry, but may provide useful in practice.
 
 
 .. _stream-reader-writer:
 
-StreamReaderWriter オブジェクト
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+StreamReaderWriter Objects
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:class:`StreamReaderWriter` を使って、読み書き両方に使えるストリームを
-ラップできます。
+The :class:`StreamReaderWriter` allows wrapping streams which work in both read
+and write modes.
 
-:func:`lookup` 関数が返すファクトリ関数を使って、インスタンスを生成す
-るという設計です。
+The design is such that one can use the factory functions returned by the
+:func:`lookup` function to construct the instance.
 
 
 .. class:: StreamReaderWriter(stream, Reader, Writer, errors)
 
-   :class:`StreamReaderWriter` インスタンスを生成します。 *stream* は
-   ファイル類似のオブジェクトです。 *Reader* と *Writer* は、それぞれ
-   :class:`StreamReader` と :class:`StreamWriter` インタフェースを提供
-   するファクトリ関数かファクトリクラスでなければなりません。エラー処
-   理は、ストリームリーダとライタで定義したものと同じように行われます。
+   Creates a :class:`StreamReaderWriter` instance. *stream* must be a file-like
+   object. *Reader* and *Writer* must be factory functions or classes providing the
+   :class:`StreamReader` and :class:`StreamWriter` interface resp. Error handling
+   is done in the same way as defined for the stream readers and writers.
 
-:class:`StreamReaderWriter` インスタンスは、 :class:`StreamReader` クラ
-スと :class:`StreamWriter` クラスを合わせたインタフェースを継承します。
-元になるストリームからは、他のメソッドや属性を継承します。
+:class:`StreamReaderWriter` instances define the combined interfaces of
+:class:`StreamReader` and :class:`StreamWriter` classes. They inherit all other
+methods and attributes from the underlying stream.
 
 
 .. _stream-recoder-objects:
 
-StreamRecoder オブジェクト
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+StreamRecoder Objects
+^^^^^^^^^^^^^^^^^^^^^
 
-:class:`StreamRecoder` はエンコーディングデータの、フロントエンド-バッ
-クエンドを観察する機能を提供します。異なるエンコーディング環境を扱うと
-き、便利な場合があります。
+The :class:`StreamRecoder` provide a frontend - backend view of encoding data
+which is sometimes useful when dealing with different encoding environments.
 
-:func:`lookup` 関数が返すファクトリ関数を使って、インスタンスを生成す
-るという設計になっています。
+The design is such that one can use the factory functions returned by the
+:func:`lookup` function to construct the instance.
 
 
 .. class:: StreamRecoder(stream, encode, decode, Reader, Writer, errors)
 
-   双方向変換を実装する :class:`StreamRecoder` インスタンスを生成しま
-   す。 *encode* と *decode* はフロントエンド (:meth:`read` への入力と
-   :meth:`write` からの出力) を処理し、 *Reader* と *Writer* はバック
-   エンド (ストリームに対する読み書き) を処理します。
+   Creates a :class:`StreamRecoder` instance which implements a two-way conversion:
+   *encode* and *decode* work on the frontend (the input to :meth:`read` and output
+   of :meth:`write`) while *Reader* and *Writer* work on the backend (reading and
+   writing to the stream).
 
-   これらのオブジェクトを使って、たとえば、 Latin-1 から UTF-8 、ある
-   いは逆向きの変換を、透過に記録できます。
+   You can use these objects to do transparent direct recodings from e.g. Latin-1
+   to UTF-8 and back.
 
-   *stream* はファイル的オブジェクトでなくてはなりません。
+   *stream* must be a file-like object.
 
-   *encode* と *decode* は :class:`Codec` のインタフェースに忠実でなく
-   てはならず、 *Reader* と *Writer* は、それぞれ
-   :class:`StreamReader` と :class:`StreamWriter` のインタフェースを提
-   供するオブジェクトのファクトリ関数かクラスでなくてはなりません。
+   *encode*, *decode* must adhere to the :class:`Codec` interface. *Reader*,
+   *Writer* must be factory functions or classes providing objects of the
+   :class:`StreamReader` and :class:`StreamWriter` interface respectively.
 
-   *encode* と *decode* はフロントエンドの変換に必要で、 *Reader* と
-   *Writer* はバックエンドの変換に必要です。中間のフォーマットはコデッ
-   クの組み合わせによって決定されます。たとえば、 Unicode コデックは
-   中間エンコーディングに Unicode を使います。
+   *encode* and *decode* are needed for the frontend translation, *Reader* and
+   *Writer* for the backend translation.  The intermediate format used is
+   determined by the two sets of codecs, e.g. the Unicode codecs will use Unicode
+   as the intermediate encoding.
 
-   エラー処理はストリーム・リーダやライタで定義されている方法と同じように行われます。
+   Error handling is done in the same way as defined for the stream readers and
+   writers.
 
-:class:`StreamRecoder` インスタンスは、 :class:`StreamReader` と
-:class:`StreamWriter` クラスを合わせたインタフェースを定義します。また、
-元のストリームのメソッドと属性も継承します。
+
+:class:`StreamRecoder` instances define the combined interfaces of
+:class:`StreamReader` and :class:`StreamWriter` classes. They inherit all other
+methods and attributes from the underlying stream.
 
 
 .. _encodings-overview:
 
-エンコーディングと Unicode
---------------------------
+Encodings and Unicode
+---------------------
 
-Unicode 文字列は内部的にはコードポイントのシーケンスとして格納されます
-(正確に言えば :c:type:`Py_UNICODE` 配列です)。
-Python がどのようにコンパイルされたか (デフォルトである
-``--enable-unicode=ucs2`` かまたは ``--enable-unicode=ucs4`` のどちらか)
-によって、 :c:type:`Py_UNICODE` は16ビットまたは32ビットのデータ型です。
-Unicode オブジェクトが CPU とメモリの外で使われることになると、
-CPU のエンディアンやこれらの配列がバイト列としてどのように格納されるかが問題になって
-きます。 Unicode オブジェクトをバイト列に変換することをエンコーディン
-グと呼び、バイト列から Unicode オブジェクトを再生することをデコーディ
-ングと呼びます。どのようにこの変換を行うかには多くの異なった方法があり
-ます (これらの方法のこともエンコーディングと言います) 。最も単純な方法
-はコードポイント 0-255 をバイト ``0x0``-``0xff`` に写すことです。これ
-は ``U+00FF`` より上のコードポイントを持つ Unicode オブジェクトはこの
-方法ではエンコードできないということを意味します (この方法を
-``'latin-1'`` とか ``'iso-8859-1'`` と呼びます)。
-:func:`unicode.encode` は次のような :exc:`UnicodeEncodeError` を送出す
-ることになります:
-``UnicodeEncodeError: 'latin-1' codec can't encode character u'\u1234'
-in position 3: ordinal not in range(256)``
+Unicode strings are stored internally as sequences of code points (to be precise
+as :c:type:`Py_UNICODE` arrays). Depending on the way Python is compiled (either
+via ``--enable-unicode=ucs2`` or ``--enable-unicode=ucs4``, with the
+former being the default) :c:type:`Py_UNICODE` is either a 16-bit or 32-bit data
+type. Once a Unicode object is used outside of CPU and memory, CPU endianness
+and how these arrays are stored as bytes become an issue.  Transforming a
+unicode object into a sequence of bytes is called encoding and recreating the
+unicode object from the sequence of bytes is known as decoding.  There are many
+different methods for how this transformation can be done (these methods are
+also called encodings). The simplest method is to map the code points 0-255 to
+the bytes ``0x0``-``0xff``. This means that a unicode object that contains
+code points above ``U+00FF`` can't be encoded with this method (which is called
+``'latin-1'`` or ``'iso-8859-1'``). :func:`unicode.encode` will raise a
+:exc:`UnicodeEncodeError` that looks like this: ``UnicodeEncodeError: 'latin-1'
+codec can't encode character u'\u1234' in position 3: ordinal not in
+range(256)``.
 
-他のエンコーディングの一群 (charmap エンコーディングと呼ばれます)があ
-りますが、 Unicode コードポイントの別の部分集合とこれらがどのように
-``0x0``-``0xff`` のバイトに写されるかを選んだものです。これがどのよう
-に行なわれるかを知るには、単にたとえば :file:`encodings/cp1252.py` (主
-に Windows で使われるエンコーディングです) を開いてみてください。256
-文字のひとつの文字列定数がありどの文字がどのバイト値に写されるかを示し
-ています。
+There's another group of encodings (the so called charmap encodings) that choose
+a different subset of all unicode code points and how these code points are
+mapped to the bytes ``0x0``-``0xff``. To see how this is done simply open
+e.g. :file:`encodings/cp1252.py` (which is an encoding that is used primarily on
+Windows). There's a string constant with 256 characters that shows you which
+character is mapped to which byte value.
 
-上に挙げた全てのエンコーディングは Unicode に定義された65536(あるいは
-1114111) あるコードポイント中256文字しかエンコードできません。全ての
-Unicode コードポイントを収める単純明快な方法は、それぞれのコードポイン
-トを二つの引き続くバイトに収めるものです。二つの可能性があります。すな
-わちビッグエンディアンかリトルエンディアンか。これら二つのエンコーディ
-ングはそれぞれ UTF-16-BE あるいは UTF-16-LE と呼ばれます。欠点は、たと
-えば UTF-16-BE をリトルエンディアンの機械で使うときに、エンコーディン
-グでもデコーディングでも常に二つのバイトを交換しなければならないことで
-す。 UTF-16 はこの問題を解消します。バイトはいつでも自然なエンディアン
-に従います。これらのバイトが異なるエンディアンの CPU で読まれる時は、
-結局交換しない訳にはいきません。 UTF-16 のバイト列のエンディアンを検知
-できるようにするために、いわゆる BOM ("Byte Order Mark") があります。
-Unicode 文字で言うと ``U+FEFF`` です。この文字は全ての UTF-16 バイト列
-の先頭に付加されます。この文字のバイト位置を交換したもの (``0xFFFE``)
-は Unicode テキストに出現しないはずの違法な文字です。そこで、 UTF-16
-バイト列の一文字目が ``U+FFFE`` に見えたなら、デコーディングの際にバイ
-トを交換しなければなりません。不幸なことに、 Unicode 4.0 までは文字
-``U+FEFF`` には第二の目的 ``ZERO WIDTH NO-BREAK SPACE`` (幅を持たず単
-語が分割されるのを許さない文字) がありました。たとえばリガチャ(合字)ア
-ルゴリズムに対するヒントを与えるために使われることがあり得ます。
-Unicode 4.0 になって ``U+FEFF`` の ``ZERO WIDTH NO-BREAK SPACE`` とし
-ての使用法は撤廃されました (``U+2060`` (``WORD JOINER``) にこの役割を
-譲りました)。しかしながら、 Unicode ソフトウェアは依然として
-``U+FEFF`` の二つの役割を扱えなければなりません。一つは BOM として、エ
-ンコードされたバイトの記憶装置上のレイアウトを決め、バイト列が Unicode
-文字列にデコードされた暁には消え去るものという役割。もう一つは ``ZERO
-WIDTH NO-BREAK SPACE`` として、通常の文字と同じようにデコードされる文
-字という役割です。
+All of these encodings can only encode 256 of the 1114112 code points
+defined in unicode. A simple and straightforward way that can store each Unicode
+code point, is to store each code point as four consecutive bytes. There are two
+possibilities: store the bytes in big endian or in little endian order. These
+two encodings are called ``UTF-32-BE`` and ``UTF-32-LE`` respectively. Their
+disadvantage is that if e.g. you use ``UTF-32-BE`` on a little endian machine you
+will always have to swap bytes on encoding and decoding. ``UTF-32`` avoids this
+problem: bytes will always be in natural endianness. When these bytes are read
+by a CPU with a different endianness, then bytes have to be swapped though. To
+be able to detect the endianness of a ``UTF-16`` or ``UTF-32`` byte sequence,
+there's the so called BOM ("Byte Order Mark"). This is the Unicode character
+``U+FEFF``. This character can be prepended to every ``UTF-16`` or ``UTF-32``
+byte sequence. The byte swapped version of this character (``0xFFFE``) is an
+illegal character that may not appear in a Unicode text. So when the
+first character in an ``UTF-16`` or ``UTF-32`` byte sequence
+appears to be a ``U+FFFE`` the bytes have to be swapped on decoding.
+Unfortunately the character ``U+FEFF`` had a second purpose as
+a ``ZERO WIDTH NO-BREAK SPACE``: a character that has no width and doesn't allow
+a word to be split. It can e.g. be used to give hints to a ligature algorithm.
+With Unicode 4.0 using ``U+FEFF`` as a ``ZERO WIDTH NO-BREAK SPACE`` has been
+deprecated (with ``U+2060`` (``WORD JOINER``) assuming this role). Nevertheless
+Unicode software still must be able to handle ``U+FEFF`` in both roles: as a BOM
+it's a device to determine the storage layout of the encoded bytes, and vanishes
+once the byte sequence has been decoded into a Unicode string; as a ``ZERO WIDTH
+NO-BREAK SPACE`` it's a normal character that will be decoded like any other.
 
-さらにもう一つ Unicode 文字全てをエンコードできるエンコーディングがあ
-り、 UTF-8 と呼ばれています。UTF-8 は8ビットエンコーディングで、したがっ
-て UTF-8 にはバイト順の問題はありません。UTF-8 バイト列の各バイトは二
-つのパートから成ります。
-二つはマーカ(上位数ビット)とペイロードです。マーカは0ビットから6ビット
-の1の列に0のビットが一つ続いたものです。 Unicode 文字は次のようにエン
-コードされます (x はペイロードを表わし、連結されると一つの Unicode 文
-字を表わします):
+There's another encoding that is able to encoding the full range of Unicode
+characters: UTF-8. UTF-8 is an 8-bit encoding, which means there are no issues
+with byte order in UTF-8. Each byte in a UTF-8 byte sequence consists of two
+parts: marker bits (the most significant bits) and payload bits. The marker bits
+are a sequence of zero to four ``1`` bits followed by a ``0`` bit. Unicode characters are
+encoded like this (with x being payload bits, which when concatenated give the
+Unicode character):
 
 +-----------------------------------+----------------------------------------------+
-| 範囲                              | エンコーディング                             |
+| Range                             | Encoding                                     |
 +===================================+==============================================+
 | ``U-00000000`` ... ``U-0000007F`` | 0xxxxxxx                                     |
 +-----------------------------------+----------------------------------------------+
@@ -879,408 +854,456 @@ WIDTH NO-BREAK SPACE`` として、通常の文字と同じようにデコード
 +-----------------------------------+----------------------------------------------+
 | ``U-00000800`` ... ``U-0000FFFF`` | 1110xxxx 10xxxxxx 10xxxxxx                   |
 +-----------------------------------+----------------------------------------------+
-| ``U-00010000`` ... ``U-001FFFFF`` | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx          |
-+-----------------------------------+----------------------------------------------+
-| ``U-00200000`` ... ``U-03FFFFFF`` | 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx |
-+-----------------------------------+----------------------------------------------+
-| ``U-04000000`` ... ``U-7FFFFFFF`` | 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx |
-|                                   | 10xxxxxx                                     |
+| ``U-00010000`` ... ``U-0010FFFF`` | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx          |
 +-----------------------------------+----------------------------------------------+
 
-Unicode 文字の最下位ビットとは最も右にある x のビットです。
+The least significant bit of the Unicode character is the rightmost x bit.
 
-UTF-8 は8ビットエンコーディングなので BOM は必要とせず、デコードされた
-Unicode 文字列中の ``U+FEFF`` は(たとえ最初の文字であったとしても)
-``ZERO WIDTH NO-BREAK SPACE`` として扱われます。
+As UTF-8 is an 8-bit encoding no BOM is required and any ``U+FEFF`` character in
+the decoded Unicode string (even if it's the first character) is treated as a
+``ZERO WIDTH NO-BREAK SPACE``.
 
-外部からの情報無しには、 Unicode 文字列のエンコーディングにどのエンコー
-ディングが使われたのか信頼できる形で決定することは不可能です。どの
-charmap エンコーディングもどんなランダムなバイト列でもデコードできます。
-しかし UTF-8 では、任意のバイト列が許される訳ではないような構造を持っ
-ているので、そのようなことは可能ではありません。 UTF-8 エンコーディン
-グであることを検知する信頼性を向上させるために、 Microsoft は Notepad
-プログラム用に UTF-8 の変種 (Python 2.5 はで ``"utf-8-sig"`` と呼んで
-います) を考案しました。まだ Unicode 文字がファイルに書き込まれない前
-に UTF-8 でエンコードした BOM (バイト列では ``0xef``, ``0xbb``,
-``0xbf`` のように見えます) を書き込んでしまいます。このようなバイト値
-で charmap エンコードされたファイルが始まることはほとんどあり得ない(た
-とえば iso-8859-1 では
+Without external information it's impossible to reliably determine which
+encoding was used for encoding a Unicode string. Each charmap encoding can
+decode any random byte sequence. However that's not possible with UTF-8, as
+UTF-8 byte sequences have a structure that doesn't allow arbitrary byte
+sequences. To increase the reliability with which a UTF-8 encoding can be
+detected, Microsoft invented a variant of UTF-8 (that Python 2.5 calls
+``"utf-8-sig"``) for its Notepad program: Before any of the Unicode characters
+is written to the file, a UTF-8 encoded BOM (which looks like this as a byte
+sequence: ``0xef``, ``0xbb``, ``0xbf``) is written. As it's rather improbable
+that any charmap encoded file starts with these byte values (which would e.g.
+map to
 
    | LATIN SMALL LETTER I WITH DIAERESIS
    | RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK
    | INVERTED QUESTION MARK
 
-のようになる)ので、 utf-8-sig エンコーディングがバイト列から正しく推測
-される確率を高めます。つまりここでは BOM はバイト列を生成する際のバイ
-ト順を決定できるように使われているのではなく、エンコーディングを推測す
-る助けになる印として使われているのです。 utf-8-sig codec はエンコーディ
-ングの際ファイルに最初の3文字として ``0xef``, ``0xbb``, ``0xbf`` を書
-き込みます。
-デコーディングの際はファイルの先頭に現れたこれら3バイトはスキップします。
+in iso-8859-1), this increases the probability that a ``utf-8-sig`` encoding can be
+correctly guessed from the byte sequence. So here the BOM is not used to be able
+to determine the byte order used for generating the byte sequence, but as a
+signature that helps in guessing the encoding. On encoding the utf-8-sig codec
+will write ``0xef``, ``0xbb``, ``0xbf`` as the first three bytes to the file. On
+decoding ``utf-8-sig`` will skip those three bytes if they appear as the first
+three bytes in the file.  In UTF-8, the use of the BOM is discouraged and
+should generally be avoided.
 
 
 .. _standard-encodings:
 
-標準エンコーディング
---------------------
+Standard Encodings
+------------------
 
-Python には数多くの codec が組み込みで付属します。これらは C 言語の関
-数、対応付けを行うテーブルの両方で提供されています。以下のテーブルで
-は codec と、いくつかの良く知られている別名と、エンコーディングが使わ
-れる言語を列挙します。別名のリスト、言語のリストともしらみつぶしに網羅
-されているわけではありません。大文字と小文字、またはアンダースコアの代
-りにハイフンにしただけの綴りも有効な別名です; そのため例として
-``'utf-8'`` は ``'utf_8'`` codec の正当な別名です。
+Python comes with a number of codecs built-in, either implemented as C functions
+or with dictionaries as mapping tables. The following table lists the codecs by
+name, together with a few common aliases, and the languages for which the
+encoding is likely used. Neither the list of aliases nor the list of languages
+is meant to be exhaustive. Notice that spelling alternatives that only differ in
+case or use a hyphen instead of an underscore are also valid aliases; therefore,
+e.g. ``'utf-8'`` is a valid alias for the ``'utf_8'`` codec.
 
-多くの文字セットは同じ言語をサポートしています。これらの文字セットは個々
-の文字 (例えば、 EURO SIGN がサポートされているかどうか) や、文字のコー
-ド部分への割り付けが異なります。特に欧州言語では、典型的に以下の変種が
-存在します:
+Many of the character sets support the same languages. They vary in individual
+characters (e.g. whether the EURO SIGN is supported or not), and in the
+assignment of characters to code positions. For the European languages in
+particular, the following variants typically exist:
 
-* ISO 8859 コードセット
+* an ISO 8859 codeset
 
-* Microsoft Windows コードページで、 8859 コード形式から導出されている
-  が、制御文字を追加のグラフィック文字と置き換えたもの
+* a Microsoft Windows code page, which is typically derived from a 8859 codeset,
+  but replaces control characters with additional graphic characters
 
-* IBM EBCDIC コードページ
+* an IBM EBCDIC code page
 
-* ASCII 互換の IBM PC コードページ
+* an IBM PC code page, which is ASCII compatible
 
-+-----------------+--------------------------------+------------------------------------------------------+
-| Codec           | 別名                           | 言語                                                 |
-+=================+================================+======================================================+
-| ascii           | 646, us-ascii                  | 英語                                                 |
-+-----------------+--------------------------------+------------------------------------------------------+
-| big5            | big5-tw, csbig5                | 繁体字中国語                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| big5hkscs       | big5-hkscs, hkscs              | 繁体字中国語                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp037           | IBM037, IBM039                 | 英語                                                 |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp424           | EBCDIC-CP-HE, IBM424           | ヘブライ語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp437           | 437, IBM437                    | 英語                                                 |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp500           | EBCDIC-CP-BE, EBCDIC-CP-CH,    | 西ヨーロッパ言語                                     |
-|                 | IBM500                         |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp720           |                                | アラビア語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp737           |                                | ギリシャ語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp775           | IBM775                         | バルト沿岸国                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp850           | 850, IBM850                    | 西ヨーロッパ                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp852           | 852, IBM852                    | 中央および東ヨーロッパ                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp855           | 855, IBM855                    | ブルガリア、ベラルーシ、マケドニア、ロシア、セルビア |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp856           |                                | ヘブライ語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp857           | 857, IBM857                    | トルコ語                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp858           | 858, IBM858                    | 西ヨーロッパ                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp860           | 860, IBM860                    | ポルトガル語                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp861           | 861, CP-IS, IBM861             | アイスランド語                                       |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp862           | 862, IBM862                    | ヘブライ語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp863           | 863, IBM863                    | カナダ                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp864           | IBM864                         | アラビア語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp865           | 865, IBM865                    | デンマーク、ノルウェー                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp866           | 866, IBM866                    | ロシア語                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp869           | 869, CP-GR, IBM869             | ギリシャ語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp874           |                                | タイ語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp875           |                                | ギリシャ語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp932           | 932, ms932, mskanji, ms-kanji  | 日本語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp949           | 949, ms949, uhc                | 韓国語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp950           | 950, ms950                     | 繁体字中国語                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1006          |                                | Urdu                                                 |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1026          | ibm1026                        | トルコ語                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1140          | ibm1140                        | 西ヨーロッパ                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1250          | windows-1250                   | 中央および東ヨーロッパ                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1251          | windows-1251                   | ブルガリア、ベラルーシ、マケドニア、ロシア、セルビア |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1252          | windows-1252                   | 西ヨーロッパ                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1253          | windows-1253                   | ギリシャ                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1254          | windows-1254                   | トルコ                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1255          | windows-1255                   | ヘブライ                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1256          | windows-1256                   | アラビア                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1257          | windows-1257                   | バルト沿岸国                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| cp1258          | windows-1258                   | ベトナム                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| euc_jp          | eucjp, ujis, u-jis             | 日本語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| euc_jis_2004    | jisx0213, eucjis2004           | 日本語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| euc_jisx0213    | eucjisx0213                    | 日本語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| euc_kr          | euckr, korean, ksc5601,        | 韓国語                                               |
-|                 | ks_c-5601, ks_c-5601-1987,     |                                                      |
-|                 | ksx1001, ks_x-1001             |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| gb2312          | chinese, csiso58gb231280, euc- | 簡体字中国語                                         |
-|                 | cn, euccn, eucgb2312-cn,       |                                                      |
-|                 | gb2312-1980, gb2312-80, iso-   |                                                      |
-|                 | ir-58                          |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| gbk             | 936, cp936, ms936              | 簡体字中国語                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| gb18030         | gb18030-2000                   | 簡体字中国語                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| hz              | hzgb, hz-gb, hz-gb-2312        | 簡体字中国語                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso2022_jp      | csiso2022jp, iso2022jp,        | 日本語                                               |
-|                 | iso-2022-jp                    |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso2022_jp_1    | iso2022jp-1, iso-2022-jp-1     | 日本語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso2022_jp_2    | iso2022jp-2, iso-2022-jp-2     | 日本語, 韓国語, 簡体字中国語, 西欧, ギリシャ語       |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso2022_jp_2004 | iso2022jp-2004,                | 日本語                                               |
-|                 | iso-2022-jp-2004               |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso2022_jp_3    | iso2022jp-3, iso-2022-jp-3     | 日本語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso2022_jp_ext  | iso2022jp-ext, iso-2022-jp-ext | 日本語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso2022_kr      | csiso2022kr, iso2022kr,        | 韓国語                                               |
-|                 | iso-2022-kr                    |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| latin_1         | iso-8859-1, iso8859-1, 8859,   | 西ヨーロッパ                                         |
-|                 | cp819, latin, latin1, L1       |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_2       | iso-8859-2, latin2, L2         | 中央および東ヨーロッパ                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_3       | iso-8859-3, latin3, L3         | エスペラント、マルタ                                 |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_4       | iso-8859-4, latin4, L4         | バルト沿岸国                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_5       | iso-8859-5, cyrillic           | ブルガリア、ベラルーシ、マケドニア、ロシア、セルビア |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_6       | iso-8859-6, arabic             | アラビア語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_7       | iso-8859-7, greek, greek8      | ギリシャ語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_8       | iso-8859-8, hebrew             | ヘブライ語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_9       | iso-8859-9, latin5, L5         | トルコ語                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_10      | iso-8859-10, latin6, L6        | 北欧                                                 |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_13      | iso-8859-13, latin7, L7        | バルト沿岸国                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_14      | iso-8859-14, latin8, L8        | ケルト                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_15      | iso-8859-15, latin9, L9        | 西ヨーロッパ                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| iso8859_16      | iso-8859-16, latin10, L10      | 南東ヨーロッパ                                       |
-+-----------------+--------------------------------+------------------------------------------------------+
-| johab           | cp1361, ms1361                 | 韓国語                                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| koi8_r          |                                | ロシア語                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| koi8_u          |                                | ウクライナ                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| mac_cyrillic    | maccyrillic                    | ブルガリア、ベラルーシ、マケドニア、ロシア、セルビア |
-+-----------------+--------------------------------+------------------------------------------------------+
-| mac_greek       | macgreek                       | ギリシャ                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| mac_iceland     | maciceland                     | アイスランド                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| mac_latin2      | maclatin2, maccentraleurope    | 中央および東ヨーロッパ                               |
-+-----------------+--------------------------------+------------------------------------------------------+
-| mac_roman       | macroman                       | 西ヨーロッパ                                         |
-+-----------------+--------------------------------+------------------------------------------------------+
-| mac_turkish     | macturkish                     | トルコ語                                             |
-+-----------------+--------------------------------+------------------------------------------------------+
-| ptcp154         | csptcp154, pt154, cp154,       | カザフ                                               |
-|                 | cyrillic-asian                 |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| shift_jis       | csshiftjis, shiftjis, sjis,    | 日本語                                               |
-|                 | s_jis                          |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| shift_jis_2004  | shiftjis2004, sjis_2004,       | 日本語                                               |
-|                 | sjis2004                       |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| shift_jisx0213  | shiftjisx0213, sjisx0213,      | 日本語                                               |
-|                 | s_jisx0213                     |                                                      |
-+-----------------+--------------------------------+------------------------------------------------------+
-| utf_32          | U32, utf32                     | 全ての言語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| utf_32_be       | UTF-32BE                       | 全ての言語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| utf_32_le       | UTF-32LE                       | 全ての言語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| utf_16          | U16, utf16                     | 全ての言語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| utf_16_be       | UTF-16BE                       | 全ての言語 (BMP only)                                |
-+-----------------+--------------------------------+------------------------------------------------------+
-| utf_16_le       | UTF-16LE                       | 全ての言語 (BMP only)                                |
-+-----------------+--------------------------------+------------------------------------------------------+
-| utf_7           | U7, unicode-1-1-utf-7          | 全ての言語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| utf_8           | U8, UTF, utf8                  | 全ての言語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
-| utf_8_sig       |                                | 全ての言語                                           |
-+-----------------+--------------------------------+------------------------------------------------------+
+.. tabularcolumns:: |l|p{0.3\linewidth}|p{0.3\linewidth}|
 
-codec のいくつかは Python 特有のものなので、それらの codec 名は Python の外では無意味なものとなります。これらの codec
-の中には Unicode 文字列からバイト文字列への変換を行わず、むしろ単一の引数をもつ全写像関数はエンコーディングとみなせるという Python codec
-の性質を利用したものもあります。
++-----------------+--------------------------------+--------------------------------+
+| Codec           | Aliases                        | Languages                      |
++=================+================================+================================+
+| ascii           | 646, us-ascii                  | English                        |
++-----------------+--------------------------------+--------------------------------+
+| big5            | big5-tw, csbig5                | Traditional Chinese            |
++-----------------+--------------------------------+--------------------------------+
+| big5hkscs       | big5-hkscs, hkscs              | Traditional Chinese            |
++-----------------+--------------------------------+--------------------------------+
+| cp037           | IBM037, IBM039                 | English                        |
++-----------------+--------------------------------+--------------------------------+
+| cp424           | EBCDIC-CP-HE, IBM424           | Hebrew                         |
++-----------------+--------------------------------+--------------------------------+
+| cp437           | 437, IBM437                    | English                        |
++-----------------+--------------------------------+--------------------------------+
+| cp500           | EBCDIC-CP-BE, EBCDIC-CP-CH,    | Western Europe                 |
+|                 | IBM500                         |                                |
++-----------------+--------------------------------+--------------------------------+
+| cp720           |                                | Arabic                         |
++-----------------+--------------------------------+--------------------------------+
+| cp737           |                                | Greek                          |
++-----------------+--------------------------------+--------------------------------+
+| cp775           | IBM775                         | Baltic languages               |
++-----------------+--------------------------------+--------------------------------+
+| cp850           | 850, IBM850                    | Western Europe                 |
++-----------------+--------------------------------+--------------------------------+
+| cp852           | 852, IBM852                    | Central and Eastern Europe     |
++-----------------+--------------------------------+--------------------------------+
+| cp855           | 855, IBM855                    | Bulgarian, Byelorussian,       |
+|                 |                                | Macedonian, Russian, Serbian   |
++-----------------+--------------------------------+--------------------------------+
+| cp856           |                                | Hebrew                         |
++-----------------+--------------------------------+--------------------------------+
+| cp857           | 857, IBM857                    | Turkish                        |
++-----------------+--------------------------------+--------------------------------+
+| cp858           | 858, IBM858                    | Western Europe                 |
++-----------------+--------------------------------+--------------------------------+
+| cp860           | 860, IBM860                    | Portuguese                     |
++-----------------+--------------------------------+--------------------------------+
+| cp861           | 861, CP-IS, IBM861             | Icelandic                      |
++-----------------+--------------------------------+--------------------------------+
+| cp862           | 862, IBM862                    | Hebrew                         |
++-----------------+--------------------------------+--------------------------------+
+| cp863           | 863, IBM863                    | Canadian                       |
++-----------------+--------------------------------+--------------------------------+
+| cp864           | IBM864                         | Arabic                         |
++-----------------+--------------------------------+--------------------------------+
+| cp865           | 865, IBM865                    | Danish, Norwegian              |
++-----------------+--------------------------------+--------------------------------+
+| cp866           | 866, IBM866                    | Russian                        |
++-----------------+--------------------------------+--------------------------------+
+| cp869           | 869, CP-GR, IBM869             | Greek                          |
++-----------------+--------------------------------+--------------------------------+
+| cp874           |                                | Thai                           |
++-----------------+--------------------------------+--------------------------------+
+| cp875           |                                | Greek                          |
++-----------------+--------------------------------+--------------------------------+
+| cp932           | 932, ms932, mskanji, ms-kanji  | Japanese                       |
++-----------------+--------------------------------+--------------------------------+
+| cp949           | 949, ms949, uhc                | Korean                         |
++-----------------+--------------------------------+--------------------------------+
+| cp950           | 950, ms950                     | Traditional Chinese            |
++-----------------+--------------------------------+--------------------------------+
+| cp1006          |                                | Urdu                           |
++-----------------+--------------------------------+--------------------------------+
+| cp1026          | ibm1026                        | Turkish                        |
++-----------------+--------------------------------+--------------------------------+
+| cp1140          | ibm1140                        | Western Europe                 |
++-----------------+--------------------------------+--------------------------------+
+| cp1250          | windows-1250                   | Central and Eastern Europe     |
++-----------------+--------------------------------+--------------------------------+
+| cp1251          | windows-1251                   | Bulgarian, Byelorussian,       |
+|                 |                                | Macedonian, Russian, Serbian   |
++-----------------+--------------------------------+--------------------------------+
+| cp1252          | windows-1252                   | Western Europe                 |
++-----------------+--------------------------------+--------------------------------+
+| cp1253          | windows-1253                   | Greek                          |
++-----------------+--------------------------------+--------------------------------+
+| cp1254          | windows-1254                   | Turkish                        |
++-----------------+--------------------------------+--------------------------------+
+| cp1255          | windows-1255                   | Hebrew                         |
++-----------------+--------------------------------+--------------------------------+
+| cp1256          | windows-1256                   | Arabic                         |
++-----------------+--------------------------------+--------------------------------+
+| cp1257          | windows-1257                   | Baltic languages               |
++-----------------+--------------------------------+--------------------------------+
+| cp1258          | windows-1258                   | Vietnamese                     |
++-----------------+--------------------------------+--------------------------------+
+| euc_jp          | eucjp, ujis, u-jis             | Japanese                       |
++-----------------+--------------------------------+--------------------------------+
+| euc_jis_2004    | jisx0213, eucjis2004           | Japanese                       |
++-----------------+--------------------------------+--------------------------------+
+| euc_jisx0213    | eucjisx0213                    | Japanese                       |
++-----------------+--------------------------------+--------------------------------+
+| euc_kr          | euckr, korean, ksc5601,        | Korean                         |
+|                 | ks_c-5601, ks_c-5601-1987,     |                                |
+|                 | ksx1001, ks_x-1001             |                                |
++-----------------+--------------------------------+--------------------------------+
+| gb2312          | chinese, csiso58gb231280, euc- | Simplified Chinese             |
+|                 | cn, euccn, eucgb2312-cn,       |                                |
+|                 | gb2312-1980, gb2312-80, iso-   |                                |
+|                 | ir-58                          |                                |
++-----------------+--------------------------------+--------------------------------+
+| gbk             | 936, cp936, ms936              | Unified Chinese                |
++-----------------+--------------------------------+--------------------------------+
+| gb18030         | gb18030-2000                   | Unified Chinese                |
++-----------------+--------------------------------+--------------------------------+
+| hz              | hzgb, hz-gb, hz-gb-2312        | Simplified Chinese             |
++-----------------+--------------------------------+--------------------------------+
+| iso2022_jp      | csiso2022jp, iso2022jp,        | Japanese                       |
+|                 | iso-2022-jp                    |                                |
++-----------------+--------------------------------+--------------------------------+
+| iso2022_jp_1    | iso2022jp-1, iso-2022-jp-1     | Japanese                       |
++-----------------+--------------------------------+--------------------------------+
+| iso2022_jp_2    | iso2022jp-2, iso-2022-jp-2     | Japanese, Korean, Simplified   |
+|                 |                                | Chinese, Western Europe, Greek |
++-----------------+--------------------------------+--------------------------------+
+| iso2022_jp_2004 | iso2022jp-2004,                | Japanese                       |
+|                 | iso-2022-jp-2004               |                                |
++-----------------+--------------------------------+--------------------------------+
+| iso2022_jp_3    | iso2022jp-3, iso-2022-jp-3     | Japanese                       |
++-----------------+--------------------------------+--------------------------------+
+| iso2022_jp_ext  | iso2022jp-ext, iso-2022-jp-ext | Japanese                       |
++-----------------+--------------------------------+--------------------------------+
+| iso2022_kr      | csiso2022kr, iso2022kr,        | Korean                         |
+|                 | iso-2022-kr                    |                                |
++-----------------+--------------------------------+--------------------------------+
+| latin_1         | iso-8859-1, iso8859-1, 8859,   | West Europe                    |
+|                 | cp819, latin, latin1, L1       |                                |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_2       | iso-8859-2, latin2, L2         | Central and Eastern Europe     |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_3       | iso-8859-3, latin3, L3         | Esperanto, Maltese             |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_4       | iso-8859-4, latin4, L4         | Baltic languages               |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_5       | iso-8859-5, cyrillic           | Bulgarian, Byelorussian,       |
+|                 |                                | Macedonian, Russian, Serbian   |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_6       | iso-8859-6, arabic             | Arabic                         |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_7       | iso-8859-7, greek, greek8      | Greek                          |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_8       | iso-8859-8, hebrew             | Hebrew                         |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_9       | iso-8859-9, latin5, L5         | Turkish                        |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_10      | iso-8859-10, latin6, L6        | Nordic languages               |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_11      | iso-8859-11, thai              | Thai languages                 |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_13      | iso-8859-13, latin7, L7        | Baltic languages               |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_14      | iso-8859-14, latin8, L8        | Celtic languages               |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_15      | iso-8859-15, latin9, L9        | Western Europe                 |
++-----------------+--------------------------------+--------------------------------+
+| iso8859_16      | iso-8859-16, latin10, L10      | South-Eastern Europe           |
++-----------------+--------------------------------+--------------------------------+
+| johab           | cp1361, ms1361                 | Korean                         |
++-----------------+--------------------------------+--------------------------------+
+| koi8_r          |                                | Russian                        |
++-----------------+--------------------------------+--------------------------------+
+| koi8_u          |                                | Ukrainian                      |
++-----------------+--------------------------------+--------------------------------+
+| mac_cyrillic    | maccyrillic                    | Bulgarian, Byelorussian,       |
+|                 |                                | Macedonian, Russian, Serbian   |
++-----------------+--------------------------------+--------------------------------+
+| mac_greek       | macgreek                       | Greek                          |
++-----------------+--------------------------------+--------------------------------+
+| mac_iceland     | maciceland                     | Icelandic                      |
++-----------------+--------------------------------+--------------------------------+
+| mac_latin2      | maclatin2, maccentraleurope    | Central and Eastern Europe     |
++-----------------+--------------------------------+--------------------------------+
+| mac_roman       | macroman                       | Western Europe                 |
++-----------------+--------------------------------+--------------------------------+
+| mac_turkish     | macturkish                     | Turkish                        |
++-----------------+--------------------------------+--------------------------------+
+| ptcp154         | csptcp154, pt154, cp154,       | Kazakh                         |
+|                 | cyrillic-asian                 |                                |
++-----------------+--------------------------------+--------------------------------+
+| shift_jis       | csshiftjis, shiftjis, sjis,    | Japanese                       |
+|                 | s_jis                          |                                |
++-----------------+--------------------------------+--------------------------------+
+| shift_jis_2004  | shiftjis2004, sjis_2004,       | Japanese                       |
+|                 | sjis2004                       |                                |
++-----------------+--------------------------------+--------------------------------+
+| shift_jisx0213  | shiftjisx0213, sjisx0213,      | Japanese                       |
+|                 | s_jisx0213                     |                                |
++-----------------+--------------------------------+--------------------------------+
+| utf_32          | U32, utf32                     | all languages                  |
++-----------------+--------------------------------+--------------------------------+
+| utf_32_be       | UTF-32BE                       | all languages                  |
++-----------------+--------------------------------+--------------------------------+
+| utf_32_le       | UTF-32LE                       | all languages                  |
++-----------------+--------------------------------+--------------------------------+
+| utf_16          | U16, utf16                     | all languages                  |
++-----------------+--------------------------------+--------------------------------+
+| utf_16_be       | UTF-16BE                       | all languages (BMP only)       |
++-----------------+--------------------------------+--------------------------------+
+| utf_16_le       | UTF-16LE                       | all languages (BMP only)       |
++-----------------+--------------------------------+--------------------------------+
+| utf_7           | U7, unicode-1-1-utf-7          | all languages                  |
++-----------------+--------------------------------+--------------------------------+
+| utf_8           | U8, UTF, utf8                  | all languages                  |
++-----------------+--------------------------------+--------------------------------+
+| utf_8_sig       |                                | all languages                  |
++-----------------+--------------------------------+--------------------------------+
 
-以下に列挙した codec では、"エンコード" 方向の結果は常にバイト文字列方向です。"デコード" 方向の結果はテーブル内の被演算子型として列挙
-されています。
+Python Specific Encodings
+-------------------------
 
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| Codec              | 別名                      | 被演算子の型   | 目的                                                   |
-+====================+===========================+================+========================================================+
-| base64_codec       | base64, base-64           | byte string    | 被演算子を MIME base64 に変換します。                  |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| bz2_codec          | bz2                       | byte string    | 被演算子をbz2を使って圧縮します。                      |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| hex_codec          | hex                       | byte string    | 被演算子をバイトあたり 2 桁の 16                       |
-|                    |                           |                | 進数の表現に変換します。                               |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| idna               |                           | Unicode string | :rfc:`3490` の実装です。                               |
-|                    |                           |                | :mod:`encodings.idna`                                  |
-|                    |                           |                | も参照してください。                                   |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| mbcs               | dbcs                      | Unicode string | Windows のみ: 被演算子を ANSI                          |
-|                    |                           |                | コードページ (CP_ACP) に従って                         |
-|                    |                           |                | エンコードします。                                     |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| palmos             |                           | Unicode string | PalmOS 3.5 のエンコーディングです。                    |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| punycode           |                           | Unicode string | :rfc:`3492` を実装しています。                         |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| quopri_codec       | quopri, quoted-printable, | byte string    | 被演算子を MIME quoted                                 |
-|                    | quotedprintable           |                | printable 形式に変換します。                           |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| raw_unicode_escape |                           | Unicode string | Python ソースコードにおける raw                        |
-|                    |                           |                | Unicode リテラルとして                                 |
-|                    |                           |                | 適切な文字列を生成します。                             |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| rot_13             | rot13                     | Unicode string | 被演算子のシーザー暗号 (Caesar-                        |
-|                    |                           |                | cypher) を返します。                                   |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| string_escape      |                           | byte string    | Python                                                 |
-|                    |                           |                | ソースコードにおける文字列リテラルとして適切な         |
-|                    |                           |                | 文字列を生成します。                                   |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| undefined          |                           | any            | 全ての変換に対して例外を送出します。バイト列と         |
-|                    |                           |                | Unicode 文字列との間で                                 |
-|                    |                           |                | :term:`coercion` (強制型変換) をおこないたくない       |
-|                    |                           |                | 時にシステムエンコーディングとして使うことができます。 |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| unicode_escape     |                           | Unicode string | Python ソースコードにおける Unicode                    |
-|                    |                           |                | リテラルとして適切な文字列を生成します。               |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| unicode_internal   |                           | Unicode string | 被演算子の内部表現を返します。                         |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| uu_codec           | uu                        | byte string    | 被演算子を uuencode を用いて変換します。               |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
-| zlib_codec         | zip, zlib                 | byte string    | 被演算子を gzip を用いて圧縮します。                   |
-+--------------------+---------------------------+----------------+--------------------------------------------------------+
+A number of predefined codecs are specific to Python, so their codec names have
+no meaning outside Python.  These are listed in the tables below based on the
+expected input and output types (note that while text encodings are the most
+common use case for codecs, the underlying codec infrastructure supports
+arbitrary data transforms rather than just text encodings).  For asymmetric
+codecs, the stated purpose describes the encoding direction.
+
+The following codecs provide unicode-to-str encoding [#encoding-note]_ and
+str-to-unicode decoding [#decoding-note]_, similar to the Unicode text
+encodings.
+
+.. tabularcolumns:: |l|L|L|
+
++--------------------+---------------------------+---------------------------+
+| Codec              | Aliases                   | Purpose                   |
++====================+===========================+===========================+
+| idna               |                           | Implements :rfc:`3490`,   |
+|                    |                           | see also                  |
+|                    |                           | :mod:`encodings.idna`     |
++--------------------+---------------------------+---------------------------+
+| mbcs               | dbcs                      | Windows only: Encode      |
+|                    |                           | operand according to the  |
+|                    |                           | ANSI codepage (CP_ACP)    |
++--------------------+---------------------------+---------------------------+
+| palmos             |                           | Encoding of PalmOS 3.5    |
++--------------------+---------------------------+---------------------------+
+| punycode           |                           | Implements :rfc:`3492`    |
++--------------------+---------------------------+---------------------------+
+| raw_unicode_escape |                           | Produce a string that is  |
+|                    |                           | suitable as raw Unicode   |
+|                    |                           | literal in Python source  |
+|                    |                           | code                      |
++--------------------+---------------------------+---------------------------+
+| rot_13             | rot13                     | Returns the Caesar-cypher |
+|                    |                           | encryption of the operand |
++--------------------+---------------------------+---------------------------+
+| undefined          |                           | Raise an exception for    |
+|                    |                           | all conversions. Can be   |
+|                    |                           | used as the system        |
+|                    |                           | encoding if no automatic  |
+|                    |                           | :term:`coercion` between  |
+|                    |                           | byte and Unicode strings  |
+|                    |                           | is desired.               |
++--------------------+---------------------------+---------------------------+
+| unicode_escape     |                           | Produce a string that is  |
+|                    |                           | suitable as Unicode       |
+|                    |                           | literal in Python source  |
+|                    |                           | code                      |
++--------------------+---------------------------+---------------------------+
+| unicode_internal   |                           | Return the internal       |
+|                    |                           | representation of the     |
+|                    |                           | operand                   |
++--------------------+---------------------------+---------------------------+
 
 .. versionadded:: 2.3
    The ``idna`` and ``punycode`` encodings.
 
+The following codecs provide str-to-str encoding and decoding
+[#decoding-note]_.
 
-:mod:`encodings.idna` --- アプリケーションにおける国際化ドメイン名 (IDNA)
--------------------------------------------------------------------------
+.. tabularcolumns:: |l|L|L|L|
+
++--------------------+---------------------------+---------------------------+------------------------------+
+| Codec              | Aliases                   | Purpose                   | Encoder/decoder              |
++====================+===========================+===========================+==============================+
+| base64_codec       | base64, base-64           | Convert operand to        | :meth:`base64.encodestring`, |
+|                    |                           | multiline MIME base64 (the| :meth:`base64.decodestring`  |
+|                    |                           | result always includes a  |                              |
+|                    |                           | trailing ``'\n'``)        |                              |
++--------------------+---------------------------+---------------------------+------------------------------+
+| bz2_codec          | bz2                       | Compress the operand      | :meth:`bz2.compress`,        |
+|                    |                           | using bz2                 | :meth:`bz2.decompress`       |
++--------------------+---------------------------+---------------------------+------------------------------+
+| hex_codec          | hex                       | Convert operand to        | :meth:`binascii.b2a_hex`,    |
+|                    |                           | hexadecimal               | :meth:`binascii.a2b_hex`     |
+|                    |                           | representation, with two  |                              |
+|                    |                           | digits per byte           |                              |
++--------------------+---------------------------+---------------------------+------------------------------+
+| quopri_codec       | quopri, quoted-printable, | Convert operand to MIME   | :meth:`quopri.encode` with   |
+|                    | quotedprintable           | quoted printable          | ``quotetabs=True``,          |
+|                    |                           |                           | :meth:`quopri.decode`        |
++--------------------+---------------------------+---------------------------+------------------------------+
+| string_escape      |                           | Produce a string that is  |                              |
+|                    |                           | suitable as string        |                              |
+|                    |                           | literal in Python source  |                              |
+|                    |                           | code                      |                              |
++--------------------+---------------------------+---------------------------+------------------------------+
+| uu_codec           | uu                        | Convert the operand using | :meth:`uu.encode`,           |
+|                    |                           | uuencode                  | :meth:`uu.decode`            |
++--------------------+---------------------------+---------------------------+------------------------------+
+| zlib_codec         | zip, zlib                 | Compress the operand      | :meth:`zlib.compress`,       |
+|                    |                           | using gzip                | :meth:`zlib.decompress`      |
++--------------------+---------------------------+---------------------------+------------------------------+
+
+.. [#encoding-note] str objects are also accepted as input in place of unicode
+   objects.  They are implicitly converted to unicode by decoding them using
+   the default encoding.  If this conversion fails, it may lead to encoding
+   operations raising :exc:`UnicodeDecodeError`.
+
+.. [#decoding-note] unicode objects are also accepted as input in place of str
+   objects.  They are implicitly converted to str by encoding them using the
+   default encoding.  If this conversion fails, it may lead to decoding
+   operations raising :exc:`UnicodeEncodeError`.
+
+
+:mod:`encodings.idna` --- Internationalized Domain Names in Applications
+------------------------------------------------------------------------
 
 .. module:: encodings.idna
-   :synopsis: 国際化ドメイン名実装
-
-
+   :synopsis: Internationalized Domain Names implementation
 .. moduleauthor:: Martin v. Löwis
 
 .. versionadded:: 2.3
 
-このモジュールでは :rfc:`3490` (アプリケーションにおける国際化ドメイン
-名、 IDNA: Internationalized Domain Names in Applications) および
-:rfc:`3492` (Nameprep: 国際化ドメイン名 (IDN) のための stringprep プロ
-ファイル) を実装しています。このモジュールは ``punycode`` エンコーディ
-ングおよび :mod:`stringprep` の上に構築されています。
+This module implements :rfc:`3490` (Internationalized Domain Names in
+Applications) and :rfc:`3492` (Nameprep: A Stringprep Profile for
+Internationalized Domain Names (IDN)). It builds upon the ``punycode`` encoding
+and :mod:`stringprep`.
 
-これらの RFC はともに、非 ASCII 文字の入ったドメイン名をサポートするた
-めのプロトコルを定義しています。 (''www.Alliancefrançaise.nu'' のよう
-な) 非 ASCII 文字を含むドメイン名は、 ASCII と互換性のあるエンコーディ
-ング (ACE、 ''www.xn--alliancefranaise-npb.nu'' のような形式) に変換さ
-れます。ドメイン名の ACE 形式は、 DNS クエリ、 HTTP :mailheader:`Host`
-フィールドなどといった、プロトコル中で任意の文字を使えないような全ての
-局面で用いられます。この変換はアプリケーション内で行われます; 可能なら
-ユーザからは不可視となります: アプリケーションは Unicode ドメインラベ
-ルをワイヤ上に載せる際に IDNA に、 ACE ドメインラベルをユーザに提供す
-る前に Unicode に、それぞれ透過的に変換しなければなりません。
+These RFCs together define a protocol to support non-ASCII characters in domain
+names. A domain name containing non-ASCII characters (such as
+``www.Alliancefrançaise.nu``) is converted into an ASCII-compatible encoding
+(ACE, such as ``www.xn--alliancefranaise-npb.nu``). The ACE form of the domain
+name is then used in all places where arbitrary characters are not allowed by
+the protocol, such as DNS queries, HTTP :mailheader:`Host` fields, and so
+on. This conversion is carried out in the application; if possible invisible to
+the user: The application should transparently convert Unicode domain labels to
+IDNA on the wire, and convert back ACE labels to Unicode before presenting them
+to the user.
 
-Python ではこの変換をいくつかの方法でサポートします: ``idna`` codec は
-Unicode と ACE 間の変換を行い、入力文字列を :rfc:`3490` の
-`section 3.1`_ (1) で定義されている区切り文字に基づいてラベルに分解し、
-各ラベルを要求通りに ACE に変換します。逆に、入力のバイト文字列を
-``.`` 区切り文字でラベルに分解し、 ACE ラベルを Unicode に変換します。
-さらに、 :mod:`socket` モジュールは Unicode ホスト名を ACE に透過的に
-変換するため、アプリケーションはホスト名を :mod:`socket`
-モジュールに渡す際にホスト名の変換に煩わされることがありません。その上
-で、ホスト名を関数パラメタとして持つ、 :mod:`httplib` や :mod:`ftplib`
-のようなモジュールでは Unicode ホスト名を受理します (:mod:`httplib` で
-もまた、 ``Host:`` フィールドにある IDNA ホスト名を、フィールド全体を
-送信する場合に透過的に送信します)。
+Python supports this conversion in several ways:  the ``idna`` codec performs
+conversion between Unicode and ACE, separating an input string into labels
+based on the separator characters defined in `section 3.1`_ (1) of :rfc:`3490`
+and converting each label to ACE as required, and conversely separating an input
+byte string into labels based on the ``.`` separator and converting any ACE
+labels found into unicode.  Furthermore, the :mod:`socket` module
+transparently converts Unicode host names to ACE, so that applications need not
+be concerned about converting host names themselves when they pass them to the
+socket module. On top of that, modules that have host names as function
+parameters, such as :mod:`httplib` and :mod:`ftplib`, accept Unicode host names
+(:mod:`httplib` then also transparently sends an IDNA hostname in the
+:mailheader:`Host` field if it sends that field at all).
 
 .. _section 3.1: http://tools.ietf.org/html/rfc3490#section-3.1
 
-(逆引きなどによって) ワイヤ越しにホスト名を受信する際、 Unicode への自
-動変換は行われません: こうしたホスト名をユーザに提供したいアプリケーショ
-ンでは、 Unicode にデコードしてやる必要があります。
+When receiving host names from the wire (such as in reverse name lookup), no
+automatic conversion to Unicode is performed: Applications wishing to present
+such host names to the user should decode them to Unicode.
 
-:mod:`encodings.idna` ではまた、 nameprep 手続きを実装しています。
-nameprep はホスト名に対してある正規化を行って、国際化ドメイン名で大小
-文字を区別しないようにするとともに、類似の文字を一元化します。
-nameprep 関数は必要なら直接使うこともできます。
+The module :mod:`encodings.idna` also implements the nameprep procedure, which
+performs certain normalizations on host names, to achieve case-insensitivity of
+international domain names, and to unify similar characters. The nameprep
+functions can be used directly if desired.
 
 
 .. function:: nameprep(label)
 
-   *label* を nameprep したバージョンを返します。現在の実装ではクエリ文字列を仮定しているので、 ``AllowUnassigned``
-   は真です。
+   Return the nameprepped version of *label*. The implementation currently assumes
+   query strings, so ``AllowUnassigned`` is true.
 
 
 .. function:: ToASCII(label)
 
-   :rfc:`3490` 仕様に従ってラベルを ASCIIに変換します。 ``UseSTD3ASCIIRules`` は偽であると仮定します。
+   Convert a label to ASCII, as specified in :rfc:`3490`. ``UseSTD3ASCIIRules`` is
+   assumed to be false.
 
 
 .. function:: ToUnicode(label)
 
-   :rfc:`3490` 仕様に従ってラベルを Unicode に変換します。
+   Convert a label to Unicode, as specified in :rfc:`3490`.
 
 
-:mod:`encodings.utf_8_sig` --- BOM 印付き UTF-8
------------------------------------------------
+:mod:`encodings.utf_8_sig` --- UTF-8 codec with BOM signature
+-------------------------------------------------------------
 
 .. module:: encodings.utf_8_sig
    :synopsis: UTF-8 codec with BOM signature
@@ -1288,10 +1311,8 @@ nameprep 関数は必要なら直接使うこともできます。
 
 .. versionadded:: 2.5
 
-このモジュールは UTF-8 codec の変種を実装します。エンコーディング時は、
-UTF-8 でエンコードしたバイト列の前に UTF-8 でエンコードした BOM を追加します。
-これは内部状態を持つエンコーダで、この動作は
-(バイトストリームの最初の書き込み時に) 一度だけ行なわれます。
-デコーディング時は、データの最初に UTF-8 でエンコードされた BOM があれば、
-それをスキップします。
+This module implements a variant of the UTF-8 codec: On encoding a UTF-8 encoded
+BOM will be prepended to the UTF-8 encoded bytes. For the stateful encoder this
+is only done once (on the first write to the byte stream).  For decoding an
+optional UTF-8 encoded BOM at the start of the data will be skipped.
 

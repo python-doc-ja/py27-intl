@@ -1,159 +1,180 @@
-
-:mod:`aifc` --- AIFFおよびAIFCファイルの読み書き
-================================================
+:mod:`aifc` --- Read and write AIFF and AIFC files
+==================================================
 
 .. module:: aifc
-   :synopsis: AIFFあるいはAIFCフォーマットのオーディオファイルの読み書き
+   :synopsis: Read and write audio files in AIFF or AIFC format.
 
-
-このモジュールはAIFFとAIFF-Cファイルの読み書きをサポートします。 AIFF（Audio Interchange File
-Format）はデジタルオーディオサンプルをファイルに保存するためのフォーマットです。
-AIFF-CはAIFFの新しいバージョンで、オーディオデータの圧縮に対応しています。
 
 .. index::
    single: Audio Interchange File Format
    single: AIFF
    single: AIFF-C
 
+**Source code:** :source:`Lib/aifc.py`
+
+--------------
+
+This module provides support for reading and writing AIFF and AIFF-C files.
+AIFF is Audio Interchange File Format, a format for storing digital audio
+samples in a file.  AIFF-C is a newer version of the format that includes the
+ability to compress the audio data.
+
 .. note::
 
-   操作のいくつかはIRIX上でのみ動作します；そういう操作ではIRIXでのみ利用できる :mod:`cl` モジュールをインポート
-   しようとして、 :exc:`ImportError` を発生します。
+   Some operations may only work under IRIX; these will raise :exc:`ImportError`
+   when attempting to import the :mod:`cl` module, which is only available on
+   IRIX.
 
-オーディオファイルには、オーディオデータについて記述したパラメータがたくさん含まれています。
-サンプリングレートあるいはフレームレートは、1秒あたりのオーディオサンプル数です。チャンネル数は、モノラル、ステレオ、4チャンネルかどうかを示します。
-フレームはそれぞれ、チャンネルごとに一つのサンプルからなります。サンプルサイズは、一つのサンプルの大きさをバイト数で示したものです。
-したがって、一つのフレームは *nchannels* \* *samplesize* バイト
-からなり、1秒間では *nchannels* \* *samplesize* \* *framerate* バイトで構成されます。
+Audio files have a number of parameters that describe the audio data. The
+sampling rate or frame rate is the number of times per second the sound is
+sampled.  The number of channels indicate if the audio is mono, stereo, or
+quadro.  Each frame consists of one sample per channel.  The sample size is the
+size in bytes of each sample.  Thus a frame consists of
+*nchannels*\*\ *samplesize* bytes, and a second's worth of audio consists of
+*nchannels*\*\ *samplesize*\*\ *framerate* bytes.
 
-例えば、CD品質のオーディオは2バイト（16ビット）のサンプルサイズを持っていて、2チャンネル（ステレオ）であり、44,100フレーム／秒のフレーム
-レートを持っています。そのため、フレームサイズは4バイト（2\*2）で、 1秒間では2\*2\*44100バイト（176,400バイト）になります。
+For example, CD quality audio has a sample size of two bytes (16 bits), uses two
+channels (stereo) and has a frame rate of 44,100 frames/second.  This gives a
+frame size of 4 bytes (2\*2), and a second's worth occupies 2\*2\*44100 bytes
+(176,400 bytes).
 
-:mod:`aifc` モジュールは以下の関数を定義しています：
+Module :mod:`aifc` defines the following function:
 
 
 .. function:: open(file[, mode])
 
-   AIFFあるいはAIFF-Cファイルを開き、後述するメソッドを持つインスタンスを返します。
-   引数 *file* はファイルを示す文字列か、ファイルオブジェクトのいずれかです。
-   *mode* は、読み込み用に開くときには ``'r'`` か ``'rb'`` のどちらか
-   で、書き込み用に開くときには ``'w'`` か ``'wb'`` のどちらかでなければなりません。
-   もし省略されたら、 ``file.mode`` が存在すればそれが使用され、なければ ``'rb'`` が使われます。
-   書き込み用にこのメソッドを使用するときには、これから全部でどれだけのサンプル数を書き込むのか分からなかったり、 :meth:`writeframesraw` と
-   :meth:`setnframes` を使わないなら、ファイルオブジェクトはシーク可能でなければなりません。
+   Open an AIFF or AIFF-C file and return an object instance with methods that are
+   described below.  The argument *file* is either a string naming a file or a file
+   object.  *mode* must be ``'r'`` or ``'rb'`` when the file must be opened for
+   reading, or ``'w'``  or ``'wb'`` when the file must be opened for writing.  If
+   omitted, ``file.mode`` is used if it exists, otherwise ``'rb'`` is used.  When
+   used for writing, the file object should be seekable, unless you know ahead of
+   time how many samples you are going to write in total and use
+   :meth:`writeframesraw` and :meth:`setnframes`.
 
-ファイルが :func:`.open` によって読み込み用に開かれたときに返されるオブジェクトには、以下のメソッドがあります：
+Objects returned by :func:`.open` when a file is opened for reading have the
+following methods:
 
 
 .. method:: aifc.getnchannels()
 
-   オーディオチャンネル数（モノラルなら1、ステレオなら2）を返します。
+   Return the number of audio channels (1 for mono, 2 for stereo).
 
 
 .. method:: aifc.getsampwidth()
 
-   サンプルサイズをバイト数で返します。
+   Return the size in bytes of individual samples.
 
 
 .. method:: aifc.getframerate()
 
-   サンプリングレート（1秒あたりのオーディオフレーム数）を返します。
+   Return the sampling rate (number of audio frames per second).
 
 
 .. method:: aifc.getnframes()
 
-   ファイルの中のオーディオフレーム数を返します。
+   Return the number of audio frames in the file.
 
 
 .. method:: aifc.getcomptype()
 
-   オーディオファイルで使用されている圧縮形式を示す4文字の文字列を返します。AIFFファイルでは ``'NONE'`` が返されます。
+   Return a four-character string describing the type of compression used in the
+   audio file.  For AIFF files, the returned value is ``'NONE'``.
 
 
 .. method:: aifc.getcompname()
 
-   オーディオファイルの圧縮形式を人に判読可能な形にしたものを返します。 AIFFファイルでは ``'not compressed'`` が返されます。
+   Return a human-readable description of the type of compression used in the audio
+   file.  For AIFF files, the returned value is ``'not compressed'``.
 
 
 .. method:: aifc.getparams()
 
-   以上の全ての値を上の順に並べたタプルを返します。
+   Return a tuple consisting of all of the above values in the above order.
 
 
 .. method:: aifc.getmarkers()
 
-   オーディオファイルのマーカーのリストを返します。一つのマーカーは三つの要素のタプルです。
-   要素の1番目はマークID（整数）、2番目はマーク位置のフレーム数をデータの始めから数えた値（整数）、3番目はマークの名称（文字列）です。
+   Return a list of markers in the audio file.  A marker consists of a tuple of
+   three elements.  The first is the mark ID (an integer), the second is the mark
+   position in frames from the beginning of the data (an integer), the third is the
+   name of the mark (a string).
 
 
 .. method:: aifc.getmark(id)
 
-   与えられた *id* のマークの要素を :meth:`getmarkers` で述べたタプルで返します。
+   Return the tuple as described in :meth:`getmarkers` for the mark with the given
+   *id*.
 
 
 .. method:: aifc.readframes(nframes)
 
-   オーディオファイルの次の *nframes* 個のフレームを読み込んで返します。返されるデータは、全チャンネルの圧縮されていないサンプルをフレームごとに
-   文字列にしたものです。
+   Read and return the next *nframes* frames from the audio file.  The returned
+   data is a string containing for each frame the uncompressed samples of all
+   channels.
 
 
 .. method:: aifc.rewind()
 
-   読み込むポインタをデータの始めに巻き戻します。次に :meth:`readframes` を使用すると、データの始めから読み込みます。
+   Rewind the read pointer.  The next :meth:`readframes` will start from the
+   beginning.
 
 
 .. method:: aifc.setpos(pos)
 
-   指定したフレーム数の位置にポインタを設定します。
+   Seek to the specified frame number.
 
 
 .. method:: aifc.tell()
 
-   現在のポインタのフレーム位置を返します。
+   Return the current frame number.
 
 
 .. method:: aifc.close()
 
-   AIFFファイルを閉じます。このメソッドを呼び出したあとでは、オブジェクトはもう使用できません。
+   Close the AIFF file.  After calling this method, the object can no longer be
+   used.
 
-ファイルが :func:`.open` によって書き込み用に開かれたときに返されるオ
-ブジェクトには、 :meth:`readframes` と :meth:`setpos` を除く上述の全てのメソッドがあります。
-さらに以下のメソッドが定義されています。 :meth:`get\*` メソッドは、対応する :meth:`set\*` を呼び出したあとでのみ呼び出し可能です。
-最初に :meth:`writeframes` あるいは :meth:`writeframesraw` を呼び出す
-前に、フレーム数を除く全てのパラメータが設定されていなければなりません。
+Objects returned by :func:`.open` when a file is opened for writing have all the
+above methods, except for :meth:`readframes` and :meth:`setpos`.  In addition
+the following methods exist.  The :meth:`get\*` methods can only be called after
+the corresponding :meth:`set\*` methods have been called.  Before the first
+:meth:`writeframes` or :meth:`writeframesraw`, all parameters except for the
+number of frames must be filled in.
 
 
 .. method:: aifc.aiff()
 
-   AIFFファイルを作ります。デフォルトではAIFF-Cファイルが作られますが、ファイル名が ``'.aiff'`` で
-   終わっていればAIFFファイルが作られます。
+   Create an AIFF file.  The default is that an AIFF-C file is created, unless the
+   name of the file ends in ``'.aiff'`` in which case the default is an AIFF file.
 
 
 .. method:: aifc.aifc()
 
-   AIFF-Cファイルを作ります。デフォルトではAIFF-Cファイルが作られますが、ファイル名が ``'.aiff'`` で
-   終わっていればAIFFファイルが作られます。
+   Create an AIFF-C file.  The default is that an AIFF-C file is created, unless
+   the name of the file ends in ``'.aiff'`` in which case the default is an AIFF
+   file.
 
 
 .. method:: aifc.setnchannels(nchannels)
 
-   オーディオファイルのチャンネル数を設定します。
+   Specify the number of channels in the audio file.
 
 
 .. method:: aifc.setsampwidth(width)
 
-   オーディオのサンプルサイズをバイト数で設定します。
+   Specify the size in bytes of audio samples.
 
 
 .. method:: aifc.setframerate(rate)
 
-   サンプリングレートを1秒あたりのフレーム数で設定します。
+   Specify the sampling frequency in frames per second.
 
 
 .. method:: aifc.setnframes(nframes)
 
-   オーディオファイルに書き込まれるフレーム数を設定します。もしこのパラメータが設定されていなかったり正しくなかったら、ファイルは
-   シークに対応していなければなりません。
+   Specify the number of frames that are to be written to the audio file. If this
+   parameter is not set, or not set correctly, the file needs to support seeking.
 
 
 .. method:: aifc.setcomptype(type, name)
@@ -163,39 +184,47 @@ AIFF-CはAIFFの新しいバージョンで、オーディオデータの圧縮�
       single: A-LAW
       single: G.722
 
-   圧縮形式を設定します。もし設定しなければ、オーディオデータは圧縮されません。 AIFFファイルは圧縮できません。
-   変数nameは圧縮形式を人に判読可能にしたもので、変数typeは4文字の文字列でなければなりません。現在のところ、以下の圧縮形式がサポートされています：
-   NONE, ULAW, ALAW, G722。
+   Specify the compression type.  If not specified, the audio data will not be
+   compressed.  In AIFF files, compression is not possible.  The name parameter
+   should be a human-readable description of the compression type, the type
+   parameter should be a four-character string.  Currently the following
+   compression types are supported: NONE, ULAW, ALAW, G722.
 
 
-.. method:: aifc.setparams(nchannels, sampwidth, framerate, com ptype, compname)
+.. method:: aifc.setparams(nchannels, sampwidth, framerate, comptype, compname)
 
-   上の全パラメータを一度に設定します。引数はそれぞれのパラメータからなるタプルです。
-   つまり、 :meth:`setparams` の引数として、 :meth:`getparams` を呼び出した結果を使うことができます。
+   Set all the above parameters at once.  The argument is a tuple consisting of the
+   various parameters.  This means that it is possible to use the result of a
+   :meth:`getparams` call as argument to :meth:`setparams`.
 
 
 .. method:: aifc.setmark(id, pos, name)
 
-   指定したID（1以上）、位置、名称でマークを加えます。このメソッドは、 :meth:`close` の前ならいつでも呼び出すことができます。
+   Add a mark with the given id (larger than 0), and the given name at the given
+   position.  This method can be called at any time before :meth:`close`.
 
 
 .. method:: aifc.tell()
 
-   出力ファイルの現在の書き込み位置を返します。 :meth:`setmark` との組み合わせで使うと便利です。
+   Return the current write position in the output file.  Useful in combination
+   with :meth:`setmark`.
 
 
 .. method:: aifc.writeframes(data)
 
-   出力ファイルにデータを書き込みます。このメソッドは、オーディオファイルのパラメータを設定したあとでのみ呼び出し可能です。
+   Write data to the output file.  This method can only be called after the audio
+   file parameters have been set.
 
 
 .. method:: aifc.writeframesraw(data)
 
-   オーディオファイルのヘッダ情報が更新されないことを除いて、 :meth:`writeframes` と同じです。
+   Like :meth:`writeframes`, except that the header of the audio file is not
+   updated.
 
 
 .. method:: aifc.close()
 
-   AIFFファイルを閉じます。ファイルのヘッダ情報は、オーディオデータの実際のサイズを反映して更新されます。
-   このメソッドを呼び出したあとでは、オブジェクトはもう使用できません。
+   Close the AIFF file.  The header of the file is updated to reflect the actual
+   size of the audio data. After calling this method, the object can no longer be
+   used.
 

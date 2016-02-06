@@ -1,65 +1,69 @@
-
-:mod:`modulefinder` --- スクリプト中で使われているモジュールを検索する
-=======================================================================
-
-.. sectionauthor:: A.M. Kuchling <amk@amk.ca>
-
+:mod:`modulefinder` --- Find modules used by a script
+=====================================================
 
 .. module:: modulefinder
-   :synopsis: スクリプト中で使われているモジュールを検索します。
+   :synopsis: Find modules used by a script.
+.. sectionauthor:: A.M. Kuchling <amk@amk.ca>
 
 
 .. versionadded:: 2.3
 
-このモジュールでは、スクリプト中で import されているモジュールセットを調べるために使える :class:`ModuleFinder`
-クラスを提供しています。 ``modulefinder.py`` はまた、Python スクリプトのファイル名を引数に指定してスクリプトとして実行し、
-import されているモジュールのレポートを出力させることもできます。
+**Source code:** :source:`Lib/modulefinder.py`
+
+--------------
+
+This module provides a :class:`ModuleFinder` class that can be used to determine
+the set of modules imported by a script. ``modulefinder.py`` can also be run as
+a script, giving the filename of a Python script as its argument, after which a
+report of the imported modules will be printed.
 
 
 .. function:: AddPackagePath(pkg_name, path)
 
-   *pkg_name* という名前のパッケージの在り処が *path* であることを記録します。
+   Record that the package named *pkg_name* can be found in the specified *path*.
 
 
 .. function:: ReplacePackage(oldname, newname)
 
-   実際にはパッケージ内で *oldname* という名前になっているモジュールを *newname* という名前で指定できるようにします。
-   この関数の主な用途は、 :mod:`_xmlplus` パッケージが :mod:`xml` パッケージに置き換わっている場合の処理でしょう。
+   Allows specifying that the module named *oldname* is in fact the package named
+   *newname*.  The most common usage would be  to handle how the :mod:`_xmlplus`
+   package replaces the :mod:`xml` package.
 
 
 .. class:: ModuleFinder([path=None, debug=0, excludes=[], replace_paths=[]])
 
-   このクラスでは :meth:`run_script` および :meth:`report`  メソッドを提供しています。これらのメソッドは何らかのスクリプト中で
-   import されているモジュールの集合を調べます。 *path* はモジュールを検索する先のディレクトリ名からなるリストです。 *path*
-   を指定しない場合、 ``sys.path`` を使います。 *debug* にはデバッグレベルを設定します; 値を大きくすると、
-   実行している内容を表すデバッグメッセージを出力します。 *excludes* は検索から除外するモジュール名です。 *replace_paths*
-   には、モジュールパス内で置き換えられるパスをタプル ``(oldpath, newpath)`` からなるリストで指定します。
+   This class provides :meth:`run_script` and :meth:`report` methods to determine
+   the set of modules imported by a script. *path* can be a list of directories to
+   search for modules; if not specified, ``sys.path`` is used.  *debug* sets the
+   debugging level; higher values make the class print  debugging messages about
+   what it's doing. *excludes* is a list of module names to exclude from the
+   analysis. *replace_paths* is a list of ``(oldpath, newpath)`` tuples that will
+   be replaced in module paths.
 
 
    .. method:: report()
 
-      スクリプトで import しているモジュールと、そのパスからなるリストを列挙した\
-      レポートを標準出力に出力します。モジュールを見つけられなかったり、
-      モジュールがないように見える場合にも報告します。
-
+      Print a report to standard output that lists the modules imported by the
+      script and their paths, as well as modules that are missing or seem to be
+      missing.
 
    .. method:: run_script(pathname)
 
-      *pathname* に指定したファイルの内容を解析します。
-      ファイルには Python コードが入っていなければなりません。
+      Analyze the contents of the *pathname* file, which must contain Python
+      code.
 
    .. attribute:: modules
 
-      モジュール名をモジュールに結びつける辞書。
-      :ref:`modulefinder-example` を参照して下さい。
+      A dictionary mapping module names to modules. See
+      :ref:`modulefinder-example`.
 
 
 .. _modulefinder-example:
 
-:class:`ModuleFinder` の使用例
+Example usage of :class:`ModuleFinder`
 --------------------------------------
 
-解析対象のスクリプトはこれ (bacon.py) です::
+The script that is going to get analyzed later on (bacon.py)::
 
    import re, itertools
 
@@ -74,7 +78,7 @@ import されているモジュールのレポートを出力させることも�
        pass
 
 
-bacon.py のレポートを出力するスクリプトです::
+The script that will output the report of bacon.py::
 
    from modulefinder import ModuleFinder
 
@@ -90,8 +94,7 @@ bacon.py のレポートを出力するスクリプトです::
    print 'Modules not imported:'
    print '\n'.join(finder.badmodules.iterkeys())
 
-
-出力例です (アーキテクチャに依って違ってくるかもしれません)::
+Sample output (may vary depending on the architecture)::
 
     Loaded modules:
     _types:
@@ -110,4 +113,5 @@ bacon.py のレポートを出力するスクリプトです::
     Modules not imported:
     guido.python.ham
     baconhameggs
+
 

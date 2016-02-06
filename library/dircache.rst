@@ -1,54 +1,50 @@
 
-:mod:`dircache` --- キャッシュされたディレクトリ一覧の生成
-==========================================================
+:mod:`dircache` --- Cached directory listings
+=============================================
 
 .. module:: dircache
-   :synopsis: キャッシュメカニズムを備えたディレクトリ一覧生成。
+   :synopsis: Return directory listing, with cache mechanism.
    :deprecated:
 
 .. deprecated:: 2.6
-   :mod:`dircache` モジュールは Python 3.0 で削除されました。
+   The :mod:`dircache` module has been removed in Python 3.
 
 
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 
-:mod:`durcache` モジュールはキャッシュされた情報を使って\
-ディレクトリ一覧を読み出すための関数を定義しています。
-キャッシュはディレクトリの *mtime* に応じて無効化されます。
-さらに、一覧中のディレクトリにスラッシュ ('/') を追加することで\
-ディレクトリであると分かるようにするための関数も定義しています。
+The :mod:`dircache` module defines a function for reading directory listing
+using a cache, and cache invalidation using the *mtime* of the directory.
+Additionally, it defines a function to annotate directories by appending a
+slash.
 
-:mod:`dircache` モジュールは以下の関数を定義しています:
+The :mod:`dircache` module defines the following functions:
 
 
 .. function:: reset()
 
-   ディレクトリキャッシュをリセットします。
+   Resets the directory cache.
 
 
 .. function:: listdir(path)
 
-   :func:`os.listdir` によって得た *path* のディレクトリ一覧を\
-   返します。 *path* を変えない限り、以降の :func:`listdir`
-   を呼び出してもディレクトリ構造を読み込みなおすことはしないので\
-   注意してください。
+   Return a directory listing of *path*, as gotten from :func:`os.listdir`. Note
+   that unless *path* changes, further call to :func:`listdir` will not re-read the
+   directory structure.
 
-   返されるリストは読み出し専用であると見なされるので注意してください
-   (おそらく将来のバージョンではタプルを返すように変更されるはず ? です)。
+   Note that the list returned should be regarded as read-only. (Perhaps a future
+   version should change it to return a tuple?)
 
 
 .. function:: opendir(path)
 
-   :func:`listdir` と同じです。以前のバージョンとの互換性のために\
-   定義されています。
+   Same as :func:`listdir`. Defined for backwards compatibility.
 
 
 .. function:: annotate(head, list)
 
-   *list* を *head* の相対パスからなるリストとして、
-   各パスがディレクトリを指す場合には ``'/'`` をパス名の後ろ\
-   に追加したものに置き換えます。
+   Assume *list* is a list of paths relative to *head*, and append, in place, a
+   ``'/'`` to each path which points to a directory.
 
 ::
 

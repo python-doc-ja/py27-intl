@@ -1,9 +1,9 @@
-:mod:`posixfile` --- ロック機構をサポートするファイル類似オブジェクト
-=====================================================================
+:mod:`posixfile` --- File-like objects with locking support
+===========================================================
 
 .. module:: posixfile
    :platform: Unix
-   :synopsis: ロック機構をサポートするファイル類似オブジェクト。
+   :synopsis: A file-like object with support for locking.
    :deprecated:
 .. moduleauthor:: Jaap Vermeulen
 .. sectionauthor:: Jaap Vermeulen
@@ -12,169 +12,176 @@
 .. index:: pair: POSIX; file object
 
 .. deprecated:: 1.5
-   このモジュールが提供しているよりもうまく処理ができ、可搬性も高いロック操作が
-   :func:`fcntl.lockf` で提供されています。
+   The locking operation that this module provides is done better and more portably
+   by the :func:`fcntl.lockf` call.
 
 .. index:: single: fcntl() (in module fcntl)
 
-このモジュールでは、組み込みのファイルオブジェクトの上にいくつかの追加
-機能を実装しています。特に、このオブジェクトはファイルのロック機構、ファ
-イルフラグへの操作、およびファイルオブジェクトを複製するための簡単なイ
-ンタフェースを実装しています。オブジェクトは全ての標準ファイルオブジェ
-クトのメソッドに加え、以下に述べるメソッドを持っています。このモジュー
-ルはファイルのロック機構に :func:`fcntl.fcntl` を用いるため、ある種の
-Unix でしか動作しません。
+This module implements some additional functionality over the built-in file
+objects.  In particular, it implements file locking, control over the file
+flags, and an easy interface to duplicate the file object. The module defines a
+new file object, the posixfile object.  It has all the standard file object
+methods and adds the methods described below.  This module only works for
+certain flavors of Unix, since it uses :func:`fcntl.fcntl` for file locking.
 
-posixfile オブジェクトをインスタンス化するには、 :func:`posixfile.open` 関数を
-使います。
-生成されるオブジェクトは標準ファイルオブジェクトとだいたい同じルック&フィールです。
+To instantiate a posixfile object, use the :func:`posixfile.open` function.  The
+resulting object looks and feels roughly the same as a standard file object.
 
-:mod:`posixfile` モジュールでは、以下の定数を定義しています:
+The :mod:`posixfile` module defines the following constants:
 
 
 .. data:: SEEK_SET
 
-   オフセットをファイルの先頭から計算します。
+   Offset is calculated from the start of the file.
 
 
 .. data:: SEEK_CUR
 
-   オフセットを現在のファイル位置から計算します。
+   Offset is calculated from the current position in the file.
 
 
 .. data:: SEEK_END
 
-   オフセットをファイルの末尾から計算します。
+   Offset is calculated from the end of the file.
 
-:mod:`posixfile` モジュールでは以下の関数を定義しています:
+The :mod:`posixfile` module defines the following functions:
 
 
 .. function:: open(filename[, mode[, bufsize]])
 
-   指定したファイル名とモードで新しい posixfile オブジェクトを作成します。
-   *filename* 、 *mode* および *bufsize* 引数は
-   組み込みの :func:`open` 関数と同じように解釈されます。
+   Create a new posixfile object with the given filename and mode.  The *filename*,
+   *mode* and *bufsize* arguments are interpreted the same way as by the built-in
+   :func:`open` function.
 
 
 .. function:: fileopen(fileobject)
 
-   指定した標準ファイルオブジェクトで新しい posixfile オブジェクトを作成します。
-   作成されるオブジェクトは元のファイルオブジェクトと
-   同じファイル名およびモードを持っています。
+   Create a new posixfile object with the given standard file object. The resulting
+   object has the same filename and mode as the original file object.
 
-posixfile オブジェクトでは以下の追加メソッドを定義しています:
+The posixfile object defines the following additional methods:
 
 
 .. method:: posixfile.lock(fmt, [len[, start[, whence]]])
 
-   ファイルオブジェクトが参照しているファイルの指定部分にロックをかけます。
-   指定の書式は下のテーブルで説明されています。
-   *len* 引数にはロックする部分の長さを指定します。標準の値は ``0`` です。
-   *start* にはロックする部分の先頭オフセットを指定し、その標準値は ``0`` です。
-   *whence* 引数はオフセットをどこからの相対位置にするかを指定します。
-   この値は定数 :const:`SEEK_SET` 、 :const:`SEEK_CUR` 、または :const:`SEEK_END` のいずれかになります。標準の値は :const:`SEEK_SET` です。
-   引数についてのより詳しい情報はシステムの :manpage:`fcntl(2)` マニュアルページを参照してください。
+   Lock the specified section of the file that the file object is referring to.
+   The format is explained below in a table.  The *len* argument specifies the
+   length of the section that should be locked. The default is ``0``. *start*
+   specifies the starting offset of the section, where the default is ``0``.  The
+   *whence* argument specifies where the offset is relative to. It accepts one of
+   the constants :const:`SEEK_SET`, :const:`SEEK_CUR` or :const:`SEEK_END`.  The
+   default is :const:`SEEK_SET`.  For more information about the arguments refer to
+   the :manpage:`fcntl(2)` manual page on your system.
 
 
 .. method:: posixfile.flags([flags])
 
-   ファイルオブジェクトが参照しているファイルに指定したフラグを設定します。
-   新しいフラグは特に指定しない限り以前のフラグと OR されます。
-   指定書式は下のテーブルで説明されています。
-   *flags* 引数なしの場合、現在のフラグを示す文字列が返されます(``?`` 修飾子と同じです) 。
-   フラグについてのより詳しい情報はシステムの :manpage:`fcntl(2)` マニュアルページを参照してください。
+   Set the specified flags for the file that the file object is referring to.  The
+   new flags are ORed with the old flags, unless specified otherwise.  The format
+   is explained below in a table.  Without the *flags* argument a string indicating
+   the current flags is returned (this is the same as the ``?`` modifier).  For
+   more information about the flags refer to the :manpage:`fcntl(2)` manual page on
+   your system.
 
 
 .. method:: posixfile.dup()
 
-   ファイルオブジェクトと、背後のファイルポインタおよびファイル記述子を複製します。
-   返されるオブジェクトは新たに開かれたファイルのように振舞います。
+   Duplicate the file object and the underlying file pointer and file descriptor.
+   The resulting object behaves as if it were newly opened.
 
 
 .. method:: posixfile.dup2(fd)
 
-   ファイルオブジェクトと、背後のファイルポインタおよびファイル記述子を複製します。
-   新たなオブジェクトは指定したファイル記述子を持ちます。
-   それ以外の点では、返されるオブジェクトは新たに開かれたファイルのように振舞います。
+   Duplicate the file object and the underlying file pointer and file descriptor.
+   The new object will have the given file descriptor. Otherwise the resulting
+   object behaves as if it were newly opened.
 
 
 .. method:: posixfile.file()
 
-   posixfile オブジェクトが参照している標準ファイルオブジェクトを返します。
-   この関数は標準ファイルオブジェクトを使うよう強制している関数を使う場合に便利です。
+   Return the standard file object that the posixfile object is based on.  This is
+   sometimes necessary for functions that insist on a standard file object.
 
-全てのメソッドで、要求された操作が失敗した場合には :exc:`IOError` が送出されます。
+All methods raise :exc:`IOError` when the request fails.
 
-:meth:`lock` の書式指定文字には以下のような意味があります:
+Format characters for the :meth:`lock` method have the following meaning:
 
-+----------+--------------------------------------+
-| 書式指定 | 意味                                 |
-+==========+======================================+
-| ``u``    | 指定領域のロックを解除します         |
-+----------+--------------------------------------+
-| ``r``    | 指定領域の読み出しロックを要求します |
-+----------+--------------------------------------+
-| ``w``    | 指定領域の書き込みロックを要求します |
-+----------+--------------------------------------+
++--------+-----------------------------------------------+
+| Format | Meaning                                       |
++========+===============================================+
+| ``u``  | unlock the specified region                   |
++--------+-----------------------------------------------+
+| ``r``  | request a read lock for the specified section |
++--------+-----------------------------------------------+
+| ``w``  | request a write lock for the specified        |
+|        | section                                       |
++--------+-----------------------------------------------+
 
-これに加え、以下の修飾子を書式に追加できます:
+In addition the following modifiers can be added to the format:
 
-+--------+------------------------------------------------------------------------+------+
-| 修飾子 | 意味                                                                   | 注釈 |
-+========+========================================================================+======+
-| ``|``  | ロック操作が処理されるまで待ちます                                     |      |
-+--------+------------------------------------------------------------------------+------+
-| ``?``  | 要求されたロックと衝突している第一のロックを返すか、衝突がない場合には | \(1) |
-|        | ``None`` を返します。                                                  |      |
-+--------+------------------------------------------------------------------------+------+
++----------+--------------------------------+-------+
+| Modifier | Meaning                        | Notes |
++==========+================================+=======+
+| ``|``    | wait until the lock has been   |       |
+|          | granted                        |       |
++----------+--------------------------------+-------+
+| ``?``    | return the first lock          | \(1)  |
+|          | conflicting with the requested |       |
+|          | lock, or ``None`` if there is  |       |
+|          | no conflict.                   |       |
++----------+--------------------------------+-------+
 
-注釈:
-
-(1)
-   返されるロックは ``(mode, len, start, whence, pid)`` の形式で、
-   *mode*  はロックの形式を表す文字 ('r' または 'w') です。
-   この修飾子はロック要求の許可を行わせません; すなわち、問い合わせの目的にしか使えません。
-
-:meth:`flags` の書式指定文字には以下のような意味があります:
-
-+-------+-----------------------------------------------------+
-| 書式  | 意味                                                |
-+=======+=====================================================+
-| ``a`` | 追記のみ (append only) フラグ                       |
-+-------+-----------------------------------------------------+
-| ``c`` | 実行時クローズ (close on exec) フラグ               |
-+-------+-----------------------------------------------------+
-| ``n`` | 無遅延 (no delay) フラグ (非ブロック (non-blocking) |
-|       | フラグとも呼ばれます)                               |
-+-------+-----------------------------------------------------+
-| ``s`` | 同期 (synchronization) フラグ                       |
-+-------+-----------------------------------------------------+
-
-これに加え、以下の修飾子を書式に追加できます:
-
-+--------+--------------------------------------------------------------+------+
-| 修飾子 | 意味                                                         | 注釈 |
-+========+==============================================================+======+
-| ``!``  | 指定したフラグを通常の 'オン' にせず 'オフ' にします         | \(1) |
-+--------+--------------------------------------------------------------+------+
-| ``=``  | フラグを標準の 'OR' 操作ではなく置換します。                 | \(1) |
-+--------+--------------------------------------------------------------+------+
-| ``?``  | 設定されているフラグを表現する文字からなる文字列を返します。 | \(2) |
-+--------+--------------------------------------------------------------+------+
-
-注釈:
+Note:
 
 (1)
-   ``!`` および ``=`` 修飾子は互いに排他の関係にあります。
+   The lock returned is in the format ``(mode, len, start, whence, pid)`` where
+   *mode* is a character representing the type of lock ('r' or 'w').  This modifier
+   prevents a request from being granted; it is for query purposes only.
+
+Format characters for the :meth:`flags` method have the following meanings:
+
++--------+-----------------------------------------------+
+| Format | Meaning                                       |
++========+===============================================+
+| ``a``  | append only flag                              |
++--------+-----------------------------------------------+
+| ``c``  | close on exec flag                            |
++--------+-----------------------------------------------+
+| ``n``  | no delay flag (also called non-blocking flag) |
++--------+-----------------------------------------------+
+| ``s``  | synchronization flag                          |
++--------+-----------------------------------------------+
+
+In addition the following modifiers can be added to the format:
+
++----------+---------------------------------+-------+
+| Modifier | Meaning                         | Notes |
++==========+=================================+=======+
+| ``!``    | turn the specified flags 'off', | \(1)  |
+|          | instead of the default 'on'     |       |
++----------+---------------------------------+-------+
+| ``=``    | replace the flags, instead of   | \(1)  |
+|          | the default 'OR' operation      |       |
++----------+---------------------------------+-------+
+| ``?``    | return a string in which the    | \(2)  |
+|          | characters represent the flags  |       |
+|          | that are set.                   |       |
++----------+---------------------------------+-------+
+
+Notes:
+
+(1)
+   The ``!`` and ``=`` modifiers are mutually exclusive.
 
 (2)
-   この文字列が表すフラグは同じ呼び出しによってフラグが置き換えられた後のものです。
+   This string represents the flags after they may have been altered by the same
+   call.
 
-以下に例を示します::
+Examples::
 
    import posixfile
 
-   file = posixfile.open('/tmp/test', 'w')
+   file = posixfile.open('testfile', 'w')
    file.lock('w|')
    ...
    file.lock('u')

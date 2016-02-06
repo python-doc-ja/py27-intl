@@ -1,51 +1,61 @@
-:mod:`poplib` --- POP3 プロトコルクライアント
-=============================================
+:mod:`poplib` --- POP3 protocol client
+======================================
 
 .. module:: poplib
-   :synopsis: POP3 プロトコルクライアント (socketsを必要とする)
+   :synopsis: POP3 protocol client (requires sockets).
 .. sectionauthor:: Andrew T. Csillag
 .. revised by ESR, January 2000
 
 .. index:: pair: POP3; protocol
 
-このモジュールは、 :class:`POP3` クラスを定義します。これはPOP3サーバへの接続と、 :rfc:`1725`
-に定められたプロトコルを実装します。 :class:`POP3` クラスは minimalとoptinalという2つのコマンドセットをサポートします。
-モジュールは :class:`POP3_SSL` クラスも提供します。このクラスは下位のプロトコルレイヤーにSSLを使ったPOP3サーバへの接続を提供します。
+**Source code:** :source:`Lib/poplib.py`
 
-POP3についての注意事項は、それが広くサポートされているにもかかわらず、既に時代遅れだということです。幾つも実装されているPOP3サーバーの品質は、
-貧弱なものが多数を占めています。もし、お使いのメールサーバーがIMAPをサポートしているなら、 ``imaplib や IMAP4`` が使えます。
-IMAPサーバーは、より良く実装されている傾向があります。
+--------------
 
-:mod:`poplib`  モジュールでは、ひとつのクラスが提供されています。
+This module defines a class, :class:`POP3`, which encapsulates a connection to a
+POP3 server and implements the protocol as defined in :rfc:`1725`.  The
+:class:`POP3` class supports both the minimal and optional command sets.
+Additionally, this module provides a class :class:`POP3_SSL`, which provides
+support for connecting to POP3 servers that use SSL as an underlying protocol
+layer.
+
+Note that POP3, though widely supported, is obsolescent.  The implementation
+quality of POP3 servers varies widely, and too many are quite poor. If your
+mailserver supports IMAP, you would be better off using the
+:class:`imaplib.IMAP4` class, as IMAP servers tend to be better implemented.
+
+The :mod:`poplib` module provides two classes:
 
 
 .. class:: POP3(host[, port[, timeout]])
 
-   このクラスが、実際にPOP3プロトコルを実装します。インスタンスが初期化されるときに、コネクションが作成されます。 *port*
-   が省略されると、POP3標準のポート(110)が使われます。
-   オプションの *timeout* 引数は、接続時のタイムアウト時間を秒数で指定します。
-   (指定されなかった場合は、グローバルのデフォルトタイムアウト設定が利用されます。)
+   This class implements the actual POP3 protocol.  The connection is created when
+   the instance is initialized. If *port* is omitted, the standard POP3 port (110)
+   is used. The optional *timeout* parameter specifies a timeout in seconds for the
+   connection attempt (if not specified, the global default timeout setting will
+   be used).
 
    .. versionchanged:: 2.6
-      *timeout* が追加されました
+      *timeout* was added.
 
 
 .. class:: POP3_SSL(host[, port[, keyfile[, certfile]]])
 
-   :class:`POP3` クラスのサブクラスで、SSLでカプセル化されたソケットによる POPサーバへの接続を提供します。 *port*
-   が指定されていない場合、 POP3-over-SSL標準の995番ポートが使われます。 *keyfile* と *certfile* もオプションで -
-   SSL接続に使われる PEMフォーマットの秘密鍵と信頼された＃＃を含みます。
+   This is a subclass of :class:`POP3` that connects to the server over an SSL
+   encrypted socket.  If *port* is not specified, 995, the standard POP3-over-SSL
+   port is used.  *keyfile* and *certfile* are also optional - they can contain a
+   PEM formatted private key and certificate chain file for the SSL connection.
 
    .. versionadded:: 2.4
 
-1つの例外が、 :mod:`poplib` モジュールのアトリビュートとして定義されています。
+One exception is defined as an attribute of the :mod:`poplib` module:
 
 
 .. exception:: error_proto
 
-   例外は、このモジュール内で起こったすべてのエラーで発生します。(:mod:`socket`
-   モジュールからのエラーは捕まえず、そのまま伝播します)
-   例外の理由は文字列としてコンストラクタに渡されます。
+   Exception raised on any errors from this module (errors from :mod:`socket`
+   module are not caught). The reason for the exception is passed to the
+   constructor as a string.
 
 
 .. seealso::
@@ -54,119 +64,126 @@ IMAPサーバーは、より良く実装されている傾向があります。
       The standard Python IMAP module.
 
    `Frequently Asked Questions About Fetchmail <http://www.catb.org/~esr/fetchmail/fetchmail-FAQ.html>`_
-      POP/IMAPクライアント :program:`fetchmail` のFAQ。POPプロトコルを
-      ベースにしたアプリケーションを書くときに有用な、POP3サーバの種類や RFCへの適合度といった情報を収集しています。
+      The FAQ for the :program:`fetchmail` POP/IMAP client collects information on
+      POP3 server variations and RFC noncompliance that may be useful if you need to
+      write an application based on the POP protocol.
 
 
 .. _pop3-objects:
 
-POP3 オブジェクト
------------------
+POP3 Objects
+------------
 
-POP3コマンドはすべて、それと同じ名前のメソッドとしてlower-caseで表現されます。そしてそのほとんどは、サーバからのレスポンスとなる
-テキストを返します。
+All POP3 commands are represented by methods of the same name, in lower-case;
+most return the response text sent by the server.
 
-:class:`POP3` クラスのインスタンスは以下のメソッドを持ちます。
+An :class:`POP3` instance has the following methods:
 
 
 .. method:: POP3.set_debuglevel(level)
 
-   インスタンスのデバッグレベルを指定します。これはデバッギングアウトプットの表示量をコントロールします。デフォルト値の ``0`` は、デバッギング
-   アウトプットを表示しません。値を ``1`` とすると、デバッギングアウトプットの表示量を適当な量にします。これは大体、リクエストごと1行になります。値を
-   ``2`` 以上にすると、デバッギングアウトプットの表示量を最大にします。コントロール中の接続で送受信される各行をログに出力します。
+   Set the instance's debugging level.  This controls the amount of debugging
+   output printed.  The default, ``0``, produces no debugging output.  A value of
+   ``1`` produces a moderate amount of debugging output, generally a single line
+   per request.  A value of ``2`` or higher produces the maximum amount of
+   debugging output, logging each line sent and received on the control connection.
 
 
 .. method:: POP3.getwelcome()
 
-   POP3サーバーから送られるグリーティングメッセージを返します。
+   Returns the greeting string sent by the POP3 server.
 
 
 .. method:: POP3.user(username)
 
-   userコマンドを送出します。応答はパスワード要求を表示します。
+   Send user command, response should indicate that a password is required.
 
 
 .. method:: POP3.pass_(password)
 
-   パスワードを送出します。応答は、メッセージ数とメールボックスのサイズを含みます。注：サーバー上のメールボックスは :meth:`quit`
-   が呼ばれるまでロックされます。
+   Send password, response includes message count and mailbox size. Note: the
+   mailbox on the server is locked until :meth:`~poplib.quit` is called.
 
 
 .. method:: POP3.apop(user, secret)
 
-   POP3サーバーにログオンするのに、よりセキュアなAPOP認証を使用します。
+   Use the more secure APOP authentication to log into the POP3 server.
 
 
 .. method:: POP3.rpop(user)
 
-   POP3サーバーにログオンするのに、（UNIXのr-コマンドと同様の）RPOP認証を使用します。
+   Use RPOP authentication (similar to UNIX r-commands) to log into POP3 server.
 
 
 .. method:: POP3.stat()
 
-   メールボックスの状態を得ます。結果は2つのintegerからなるタプルとなります。 ``(message count, mailbox size)``.
+   Get mailbox status.  The result is a tuple of 2 integers: ``(message count,
+   mailbox size)``.
 
 
 .. method:: POP3.list([which])
 
-   メッセージのリストを要求します。結果は ``(response, ['mesg_num octets', ...], octets)``
-   という形式で表されます。
-   *which* が与えられると、それによりメッセージを指定します。
+   Request message list, result is in the form ``(response, ['mesg_num octets',
+   ...], octets)``. If *which* is set, it is the message to list.
 
 
 .. method:: POP3.retr(which)
 
-   *which* 番のメッセージ全体を取り出し、そのメッセージに既読フラグを立てます。結果は ``(response, ['line', ...],
-   octets)`` という形式で表されます。
+   Retrieve whole message number *which*, and set its seen flag. Result is in form
+   ``(response, ['line', ...], octets)``.
 
 
 .. method:: POP3.dele(which)
 
-   *which* 番のメッセージに削除のためのフラグを立てます。ほとんどのサーバで、QUITコマンドが実行されるまでは実際の削除は行われません
-   （もっとも良く知られた例外は Eudora QPOPで、その配送メカニズムはRFCに違反しており、どんな切断状況でも削除操作を未解決にしています）。
+   Flag message number *which* for deletion.  On most servers deletions are not
+   actually performed until QUIT (the major exception is Eudora QPOP, which
+   deliberately violates the RFCs by doing pending deletes on any disconnect).
 
 
 .. method:: POP3.rset()
 
-   メールボックスの削除マークすべてを取り消します。
+   Remove any deletion marks for the mailbox.
 
 
 .. method:: POP3.noop()
 
-   何もしません。接続保持のために使われます。
+   Do nothing.  Might be used as a keep-alive.
 
 
 .. method:: POP3.quit()
 
    Signoff:  commit changes, unlock mailbox, drop connection.
-   サインオフ：変更をコミットし、メールボックスをアンロックして、接続を破棄します。
 
 
 .. method:: POP3.top(which, howmuch)
 
-   メッセージヘッダと *howmuch* で指定した行数のメッセージを、 *which* で指定したメッセージ分取り出します。結果は以下のような形式となります。
-   ``(response, ['line', ...], octets)``.
+   Retrieves the message header plus *howmuch* lines of the message after the
+   header of message number *which*. Result is in form ``(response, ['line', ...],
+   octets)``.
 
-   このメソッドはPOP3のTOPコマンドを利用し、RETRコマンドのように、メッセージに
-   既読フラグをセットしません。残念ながら、TOPコマンドはRFCでは貧弱な仕様しか定義されておらず、しばしばノーブランドのサーバーでは（その仕様が）守られて
-   いません。このメソッドを信用してしまう前に、実際に使用するPOPサーバーでテストをしてください。
+   The POP3 TOP command this method uses, unlike the RETR command, doesn't set the
+   message's seen flag; unfortunately, TOP is poorly specified in the RFCs and is
+   frequently broken in off-brand servers. Test this method by hand against the
+   POP3 servers you will use before trusting it.
 
 
 .. method:: POP3.uidl([which])
 
-   （ユニークIDによる）メッセージダイジェストのリストを返します。 *which* が設定されている場合、結果はユニークIDを含みます。それは
-   ``'response mesgnum uid`` という形式のメッセージ、または
-   ``(response, ['mesgnum uid', ...], octets)`` という形式のリストとなります。
+   Return message digest (unique id) list. If *which* is specified, result contains
+   the unique id for that message in the form ``'response mesgnum uid``, otherwise
+   result is list ``(response, ['mesgnum uid', ...], octets)``.
 
-:class:`POP3_SSL` クラスのインスタンスは追加のメソッドを持ちません。このサブクラスのインターフェイスは親クラスと同じです。
+Instances of :class:`POP3_SSL` have no additional methods. The interface of this
+subclass is identical to its parent.
 
 
 .. _pop3-example:
 
-POP3 の例
----------
+POP3 Example
+------------
 
-これは（エラーチェックもない）最も小さなサンプルで、メールボックスを開いて、すべてのメッセージを取り出し、プリントします。 ::
+Here is a minimal example (without error checking) that opens a mailbox and
+retrieves and prints all messages::
 
    import getpass, poplib
 
@@ -178,5 +195,6 @@ POP3 の例
        for j in M.retr(i+1)[1]:
            print j
 
-モジュールの末尾に、より広い範囲の使用例となるtestセクションがあります。
+At the end of the module, there is a test section that contains a more extensive
+example of usage.
 

@@ -1,73 +1,86 @@
-:mod:`dbm` --- UNIX dbmのシンプルなインタフェース
-=================================================
+:mod:`dbm` --- Simple "database" interface
+==========================================
 
 .. module:: dbm
    :platform: Unix
-   :synopsis: ndbmを基にした基本的なデータベースインタフェースです。
+   :synopsis: The standard "database" interface, based on ndbm.
 
 .. note::
-   .. The :mod:`dbm` module has been renamed to :mod:`dbm.ndbm` in Python 3.0.  The
-      :term:`2to3` tool will automatically adapt imports when converting your
-      sources to 3.0.
-
-   :mod:`dbm` モジュールは、Python 3.0では :mod:`dbm.ndbm` に変更されました。
-   :term:`2to3` ツールは、自動的に import を修正します。
+   The :mod:`dbm` module has been renamed to :mod:`dbm.ndbm` in Python 3.  The
+   :term:`2to3` tool will automatically adapt imports when converting your
+   sources to Python 3.
 
 
-:mod:`dbm` モジュールはUnixの"(n)dbm"ライブラリのインタフェースを提供します。
-dbmオブジェクトは、キーと値が必ず文字列である以外は
-辞書オブジェクトのようなふるまいをします。 print文などでdbmインスタンスを出力してもキーと値は出力されません。
-また、 :meth:`items` と :meth:`values` メソッドはサポートされません。
+The :mod:`dbm` module provides an interface to the Unix "(n)dbm" library.  Dbm
+objects behave like mappings (dictionaries), except that keys and values are
+always strings. Printing a dbm object doesn't print the keys and values, and the
+:meth:`items` and :meth:`values` methods are not supported.
 
-このモジュールは、BSD DB、GNU GDBM互換インタフェースを持ったクラシックなndbmインタフェースを使うことができます。
-Unix上のビルド時に :program:`configure` スクリプトで適切なヘッダファイルが割り当られます。
+This module can be used with the "classic" ndbm interface, the BSD DB
+compatibility interface, or the GNU GDBM compatibility interface. On Unix, the
+:program:`configure` script will attempt to locate the appropriate header file
+to simplify building this module.
 
-以下はこのモジュールの定義:
+The module defines the following:
 
 
 .. exception:: error
 
-   I/Oエラーのようなdbm特有のエラーが起ったときに上げられる値です。また、正しくないキーが与えられた場合に通常のマッピングエラーのような
-   :exc:`KeyError` が発生します。
+   Raised on dbm-specific errors, such as I/O errors. :exc:`KeyError` is raised for
+   general mapping errors like specifying an incorrect key.
 
 
 .. data:: library
 
-   ``ndbm`` が使用している実装ライブラリ名です。
+   Name of the ``ndbm`` implementation library used.
 
 
 .. function:: open(filename[, flag[, mode]])
 
-   dbmデータベースを開いてdbmオブジェクトを返します。引数 *filename* はデータベースのファイル名を指定します。
-   (拡張子 :file:`.dir` や :file:`.pag` は付けません。また、BSD DBは拡張子 :file:`.db` がついたファイルが一つ作成されます。)
+   Open a dbm database and return a dbm object.  The *filename* argument is the
+   name of the database file (without the :file:`.dir` or :file:`.pag` extensions;
+   note that the BSD DB implementation of the interface will append the extension
+   :file:`.db` and only create one file).
 
-   オプション引数 *flag* は次のような値を指定します:
+   The optional *flag* argument must be one of these values:
 
-   +---------+----------------------------------------------------------------+
-   | Value   | Meaning                                                        |
-   +=========+================================================================+
-   | ``'r'`` | 存在するデータベースを読取り専用で開きます。(デフォルト)       |
-   +---------+----------------------------------------------------------------+
-   | ``'w'`` | 存在するデータベースを読み書き可能な状態で開きます。           |
-   +---------+----------------------------------------------------------------+
-   | ``'c'`` | データベースを読み書き可能な状態で開きます。                   |
-   |         | また、データベースが存在しない場合は新たに作成します。         |
-   +---------+----------------------------------------------------------------+
-   | ``'n'`` | 常に空のデータベースが作成され、読み書き可能な状態で開きます。 |
-   +---------+----------------------------------------------------------------+
+   +---------+-------------------------------------------+
+   | Value   | Meaning                                   |
+   +=========+===========================================+
+   | ``'r'`` | Open existing database for reading only   |
+   |         | (default)                                 |
+   +---------+-------------------------------------------+
+   | ``'w'`` | Open existing database for reading and    |
+   |         | writing                                   |
+   +---------+-------------------------------------------+
+   | ``'c'`` | Open database for reading and writing,    |
+   |         | creating it if it doesn't exist           |
+   +---------+-------------------------------------------+
+   | ``'n'`` | Always create a new, empty database, open |
+   |         | for reading and writing                   |
+   +---------+-------------------------------------------+
 
-   オプション引数 *mode* はデータベース作成時に使用される Unixのファイルモードを指定します。
-   デフォルトでは8進数の ``0666`` です。(この値はumaskによってマスクされます)
+   The optional *mode* argument is the Unix mode of the file, used only when the
+   database has to be created.  It defaults to octal ``0666`` (and will be
+   modified by the prevailing umask).
+
+   In addition to the dictionary-like methods, ``dbm`` objects
+   provide the following method:
+
+
+   .. function:: close()
+
+      Close the ``dbm`` database.
 
 
 .. seealso::
 
    Module :mod:`anydbm`
-      ``dbm`` スタイルの一般的なインタフェース
+      Generic interface to ``dbm``\ -style databases.
 
    Module :mod:`gdbm`
-      GNU GDBMライブラリの類似したインタフェース
+      Similar interface to the GNU GDBM library.
 
    Module :mod:`whichdb`
-      存在しているデータベースの形式を決めるためのユーティリティモジュール
+      Utility module used to determine the type of an existing database.
 

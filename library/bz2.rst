@@ -1,215 +1,215 @@
-:mod:`bz2` --- :program:`bzip2` 互換の圧縮ライブラリ
-====================================================
+
+:mod:`bz2` --- Compression compatible with :program:`bzip2`
+===========================================================
 
 .. module:: bz2
-   :synopsis: bzip2 互換の圧縮／解凍ルーチンへのインタフェース
+   :synopsis: Interface to compression and decompression routines compatible with bzip2.
 .. moduleauthor:: Gustavo Niemeyer <niemeyer@conectiva.com>
 .. sectionauthor:: Gustavo Niemeyer <niemeyer@conectiva.com>
 
 
 .. versionadded:: 2.3
 
-このモジュールでは bz2 圧縮ライブラリのためのわかりやすいインタフェースを
-提供します。モジュールでは完全なファイルインタフェース、データを一括して
-圧縮/解凍する関数、データを逐次的に圧縮/解凍するための型を実装しています。
+This module provides a comprehensive interface for the bz2 compression library.
+It implements a complete file interface, one-shot (de)compression functions, and
+types for sequential (de)compression.
 
-その他のアーカイブフォーマットに関しては、 :mod:`gzip`, :mod:`zipfile`,
-:mod:`tarfile` モジュールを参照してください。
+Here is a summary of the features offered by the bz2 module:
 
-bz2 モジュールが提供している機能を以下にまとめます。
+* :class:`BZ2File` class implements a complete file interface, including
+  :meth:`~BZ2File.readline`, :meth:`~BZ2File.readlines`,
+  :meth:`~BZ2File.writelines`, :meth:`~BZ2File.seek`, etc;
 
-* :class:`BZ2File` クラスは、 :meth:`~BZ2File.readline`,
-  :meth:`~BZ2File.readlines`, :meth:`~BZ2File.writelines`, :meth:`~BZ2File.seek`
-  等を含む、完全なファイルインタフェースを実装します。
+* :class:`BZ2File` class implements emulated :meth:`~BZ2File.seek` support;
 
-* :class:`BZ2File` クラスは :meth:`~BZ2File.seek` をエミュレーションで
-  サポートします。
+* :class:`BZ2File` class implements universal newline support;
 
-* :class:`BZ2File` クラスは広範囲の改行文字バリエーション(universal newline)
-  をサポートします。
+* :class:`BZ2File` class offers an optimized line iteration using the readahead
+  algorithm borrowed from file objects;
 
-* :class:`BZ2File` クラスは、ファイルオブジェクトの先読みアルゴリズムを元にして
-  実装されている、最適化された行単位のイテレーション機能を提供します。
+* Sequential (de)compression supported by :class:`BZ2Compressor` and
+  :class:`BZ2Decompressor` classes;
 
-* :class:`BZ2Compressor` および :class:`BZ2Decompressor` クラスでは逐次的圧縮
-  （解凍）をサポートしています。
+* One-shot (de)compression supported by :func:`compress` and :func:`decompress`
+  functions;
 
-* :func:`compress` および :func:`decompress` 関数は、一括圧縮/解凍機能を
-  提供しています。
-
-* 個別のロックメカニズムによってスレッド安全性を持っています。
+* Thread safety uses individual locking mechanism.
 
 
-ファイルの圧縮/解凍
-----------------------
+(De)compression of files
+------------------------
 
-:class:`BZ2File` クラスは圧縮ファイルの操作機能を提供しています。
+Handling of compressed files is offered by the :class:`BZ2File` class.
 
+
+.. index::
+   single: universal newlines; bz2.BZ2File class
 
 .. class:: BZ2File(filename[, mode[, buffering[, compresslevel]]])
 
-   bz2 ファイルを開きます。 *mode* は ``'r'`` (デフォルト)または ``'w'`` で、
-   それぞれ読み込みと書き込みに対応します。書き込み用に開いた場合、ファイルが
-   存在しないなら新しく作成し、そうでない場合ファイルを切り詰ます。
-   *buffering* パラメタを与えた場合、 ``0`` はバッファリングなしを表し、
-   それよりも大きい値はバッファサイズになります。デフォルトでは ``0`` です。
-   圧縮レベル (*compresslevel*) を与える場合、値は ``1`` から ``9`` までの
-   整数値でなければなりません。デフォルトの値は ``9`` です。
-   ファイルを読み込む際に、広範囲の改行文字バリエーション(universal newline)を
-   サポートさせたい場合は ``'U'`` を *mode* に追加します。
-   このモードで開かれた入力ファイルの行末はどれも、Pythonからは ``'\n'``
-   として見えます。また、開かれているファイルオブジェクトは :attr:`newlines`
-   属性を持ち、 ``None`` (まだ改行文字を読み込んでいない時), ``'\r'``, ``'\n'``,
-   ``'\r\n'`` またはそれまでに読み込んだ全ての改行文字バリエーションを含む
-   タプルになります。広範囲の改行文字サポートが利用できるのは読み込みだけです。
-   :class:`BZ2File` が生成するインスタンスは通常のファイルインスタンスと同様の
-   イテレーション操作をサポートしています。
+   Open a bz2 file. Mode can be either ``'r'`` or ``'w'``, for reading (default)
+   or writing. When opened for writing, the file will be created if it doesn't
+   exist, and truncated otherwise. If *buffering* is given, ``0`` means
+   unbuffered, and larger numbers specify the buffer size; the default is
+   ``0``. If *compresslevel* is given, it must be a number between ``1`` and
+   ``9``; the default is ``9``. Add a ``'U'`` to mode to open the file for input
+   in :term:`universal newlines` mode. Any line ending in the input file will be
+   seen as a ``'\n'`` in Python.  Also, a file so opened gains the attribute
+   :attr:`newlines`; the value for this attribute is one of ``None`` (no newline
+   read yet), ``'\r'``, ``'\n'``, ``'\r\n'`` or a tuple containing all the
+   newline types seen. Universal newlines are available only when
+   reading. Instances support iteration in the same way as normal :class:`file`
+   instances.
 
-   :class:`BZ2File` は :keyword:`with` 構文をサポートしています。
+   :class:`BZ2File` supports the :keyword:`with` statement.
 
    .. versionchanged:: 2.7
-      :keyword:`with` 構文のサポートが追加されました。
+      Support for the :keyword:`with` statement was added.
+
+
+   .. note::
+
+      This class does not support input files containing multiple streams (such
+      as those produced by the :program:`pbzip2` tool). When reading such an
+      input file, only the first stream will be accessible. If you require
+      support for multi-stream files, consider using the third-party
+      :mod:`bz2file` module (available from
+      `PyPI <https://pypi.python.org/pypi/bz2file>`_). This module provides a
+      backport of Python 3.3's :class:`BZ2File` class, which does support
+      multi-stream files.
 
 
    .. method:: close()
 
-      ファイルを閉じます。オブジェクトのデータ属性 :attr:`closed` を真にします。
-      閉じたファイルはそれ以後入出力操作の対象にできません。
-      :meth:`close` 自体の呼び出しはエラーを引き起こすことなく何度も実行できます。
+      Close the file. Sets data attribute :attr:`closed` to true. A closed file
+      cannot be used for further I/O operations. :meth:`close` may be called
+      more than once without error.
 
 
    .. method:: read([size])
 
-      最大で *size* バイトの解凍されたデータを読み出し、文字列として返します。
-      *size* 引数を負の値にした場合や省略した場合、EOF まで読み出します。
+      Read at most *size* uncompressed bytes, returned as a string. If the
+      *size* argument is negative or omitted, read until EOF is reached.
 
 
    .. method:: readline([size])
 
-      ファイルから次の 1 行を読み出し、改行文字も含めて文字列を返します。
-      負でない *size* 値は、返される文字列の最大バイト長を制限します
-      (その場合不完全な行を返すこともあります)。 EOF の時には空文字列を
-      返します。
+      Return the next line from the file, as a string, retaining newline. A
+      non-negative *size* argument limits the maximum number of bytes to return
+      (an incomplete line may be returned then). Return an empty string at EOF.
 
 
    .. method:: readlines([size])
 
-      ファイルから読み取った各行の文字列からなるリストを返します。
-      オプション引数 *size* を与えた場合、文字列リストの
-      合計バイト数の大まかな上限の指定になります。
+      Return a list of lines read. The optional *size* argument, if given, is an
+      approximate bound on the total number of bytes in the lines returned.
 
 
    .. method:: xreadlines()
 
-      前のバージョンとの互換性のために用意されています。 :class:`BZ2File`
-      オブジェクトはかつて :mod:`xreadlines` モジュールで提供されていた
-      パフォーマンス最適化を含んでいます。
+      For backward compatibility. :class:`BZ2File` objects now include the
+      performance optimizations previously implemented in the :mod:`xreadlines`
+      module.
 
       .. deprecated:: 2.3
-         このメソッドは :class:`file` オブジェクトの同名のメソッドとの互換性の
-         ために用意されていますが、現在は推奨されないメソッドです。代りに
-         ``for line in file`` を使ってください。
+         This exists only for compatibility with the method by this name on
+         :class:`file` objects, which is deprecated.  Use ``for line in file``
+         instead.
 
 
    .. method:: seek(offset[, whence])
 
-      ファイルの読み書き位置を移動します。引数 *offset* はバイト数で指定した
-      オフセット値です。オプション引数 *whence* はデフォルトで ``os.SEEK_SET``
-      もしくは ``0`` (ファイルの先頭からのオフセットで、offset ``>= 0``
-      になるはず) です。他にとり得る値は ``1`` (現在のファイル位置からの
-      相対位置で、正負どちらの値もとり得る)、および ``2`` (ファイルの
-      終末端からの相対位置で、通常は負の値になるが、多くのプラットフォームでは
-      ファイルの終末端を越えて seek できる) です。
+      Move to new file position. Argument *offset* is a byte count. Optional
+      argument *whence* defaults to ``os.SEEK_SET`` or ``0`` (offset from start
+      of file; offset should be ``>= 0``); other values are ``os.SEEK_CUR`` or
+      ``1`` (move relative to current position; offset can be positive or
+      negative), and ``os.SEEK_END`` or ``2`` (move relative to end of file;
+      offset is usually negative, although many platforms allow seeking beyond
+      the end of a file).
 
-      bz2 ファイルの seek はエミュレーションであり、パラメタの設定によっては
-      処理が非常に低速になるかもしれないので注意してください。
+      Note that seeking of bz2 files is emulated, and depending on the
+      parameters the operation may be extremely slow.
 
 
    .. method:: tell()
 
-      現在のファイル位置を整数（long 整数になるかもしれません）で返します。
+      Return the current file position, an integer (may be a long integer).
 
 
    .. method:: write(data)
 
-      ファイルに文字列 *data* を書き込みます。バッファリングのため、ディスク上の
-      ファイルに書き込まれたデータを反映させるには :meth:`close` が必要になる
-      かもしれないので注意してください。
+      Write string *data* to file. Note that due to buffering, :meth:`close` may
+      be needed before the file on disk reflects the data written.
 
 
    .. method:: writelines(sequence_of_strings)
 
-      複数の文字列からなるシーケンスをファイルに書き込みます。
-      それぞれの文字列を書き込む際に改行文字を追加することはありません。
-      シーケンスはイテレーション処理で文字列を取り出せる任意のオブジェクトに
-      できます。この操作はそれぞれの文字列を write() を呼んで書き込むのと
-      同じ操作です。
+      Write the sequence of strings to the file. Note that newlines are not
+      added. The sequence can be any iterable object producing strings. This is
+      equivalent to calling write() for each string.
 
 
-逐次的な圧縮/解凍
---------------------
+Sequential (de)compression
+--------------------------
 
-逐次的な圧縮および解凍は :class:`BZ2Compressor` および :class:`BZ2Decompressor`
-クラスを用いて行います。
+Sequential compression and decompression is done using the classes
+:class:`BZ2Compressor` and :class:`BZ2Decompressor`.
 
 
 .. class:: BZ2Compressor([compresslevel])
 
-   新しい圧縮オブジェクトを作成します。このオブジェクトはデータを逐次的に
-   圧縮できます。一括してデータを圧縮したいのなら、代わりに :func:`compress`
-   関数を使ってください。
-   *compresslevel* パラメタを与える場合、この値は ``1`` と ``9`` の間の
-   整数でなければなりません。デフォルトの値は ``9`` です。
+   Create a new compressor object. This object may be used to compress data
+   sequentially. If you want to compress data in one shot, use the
+   :func:`compress` function instead. The *compresslevel* parameter, if given,
+   must be a number between ``1`` and ``9``; the default is ``9``.
 
 
    .. method:: compress(data)
 
-      圧縮オブジェクトに追加のデータを入力します。圧縮データのチャンクを
-      生成できた場合にはチャンクを返します。圧縮データの入力を終えた後は
-      圧縮処理を終えるために :meth:`flush` を呼んでください。
-      内部バッファに残っている未処理のデータを返します。
+      Provide more data to the compressor object. It will return chunks of
+      compressed data whenever possible. When you've finished providing data to
+      compress, call the :meth:`flush` method to finish the compression process,
+      and return what is left in internal buffers.
 
 
    .. method:: flush()
 
-      圧縮処理を終え、内部バッファに残されているデータを返します。
-      このメソッドの呼び出し以降は同じ圧縮オブジェクトを使ってはなりません。
+      Finish the compression process and return what is left in internal
+      buffers. You must not use the compressor object after calling this method.
 
 
 .. class:: BZ2Decompressor()
 
-   新しい解凍オブジェクトを生成します。このオブジェクトは逐次的にデータを
-   解凍できます。一括してデータを解凍したいのなら、代わりに :func:`decompress`
-   関数を使ってください。
+   Create a new decompressor object. This object may be used to decompress data
+   sequentially. If you want to decompress data in one shot, use the
+   :func:`decompress` function instead.
 
 
    .. method:: decompress(data)
 
-      解凍オブジェクトに追加のデータを入力します。可能な限り、解凍データの
-      チャンクを生成できた場合にはチャンクを返します。
-      ストリームの末端に到達した後に解凍処理を行おうとした場合には、例外
-      :exc:`EOFError` を送出します。ストリームの終末端の後ろに何らかのデータが
-      あった場合、解凍処理はこのデータを無視し、オブジェクトの
-      :attr:`unused_data`  属性に収めます。
+      Provide more data to the decompressor object. It will return chunks of
+      decompressed data whenever possible. If you try to decompress data after
+      the end of stream is found, :exc:`EOFError` will be raised. If any data
+      was found after the end of stream, it'll be ignored and saved in
+      :attr:`unused_data` attribute.
 
 
-一括圧縮/解凍
-----------------
+One-shot (de)compression
+------------------------
 
-一括での圧縮および解凍を行うための関数、 :func:`compress` および
-:func:`decompress` が提供されています。
+One-shot compression and decompression is provided through the :func:`compress`
+and :func:`decompress` functions.
 
 
 .. function:: compress(data[, compresslevel])
 
-   *data* を一括して圧縮します。データを逐次的に圧縮したいなら、代わりに
-   :class:`BZ2Compressor` を使ってください。
-   もし *compresslevel* パラメタを与えるなら、この値は ``1`` から ``9``
-   の間の値をとらなくてはなりません。デフォルトの値は ``9`` です。
+   Compress *data* in one shot. If you want to compress data sequentially, use
+   an instance of :class:`BZ2Compressor` instead. The *compresslevel* parameter,
+   if given, must be a number between ``1`` and ``9``; the default is ``9``.
 
 
 .. function:: decompress(data)
 
-   *data* を一括して解凍します。データを逐次的に解凍したいなら、代わりに
-   :class:`BZ2Decompressor` を使ってください。
+   Decompress *data* in one shot. If you want to decompress data sequentially,
+   use an instance of :class:`BZ2Decompressor` instead.
 

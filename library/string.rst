@@ -1,229 +1,229 @@
-
-:mod:`string` --- 一般的な文字列操作
-====================================
+:mod:`string` --- Common string operations
+==========================================
 
 .. module:: string
-   :synopsis: 一般的な文字列操作
+   :synopsis: Common string operations.
 
 
 .. index:: module: re
 
-:mod:`string` モジュールには便利な定数やクラスが数多く入っています。ま
-た、現在は文字列のメソッドとして利用できる、すでに撤廃された古い関数も
-入っています。
-さらに、 Python の組み込み文字列クラスは :ref:`typesseq` 節に記載のシー
-ケンス型のメソッドと、 :ref:`string-methods` 節に記載の文字列メソッド
-もサポートします。出力の書式指定には、テンプレート文字列、または、
-:ref:`string-formatting` に記載の ``%`` 演算子を使用して下さい。
-正規表現に関する文字列操作の関数は :mod:`re` を参照してください。
+**Source code:** :source:`Lib/string.py`
 
-.. seealso::
+--------------
 
-   最新のバージョンの `string モジュール Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/string.py?view=markup>`_
+The :mod:`string` module contains a number of useful constants and
+classes, as well as some deprecated legacy functions that are also
+available as methods on strings. In addition, Python's built-in string
+classes support the sequence type methods described in the
+:ref:`typesseq` section, and also the string-specific methods described
+in the :ref:`string-methods` section. To output formatted strings use
+template strings or the ``%`` operator described in the
+:ref:`string-formatting` section. Also, see the :mod:`re` module for
+string functions based on regular expressions.
 
+String constants
+----------------
 
-文字列定数
-----------
-
-このモジュールでは以下の定数を定義しています。
+The constants defined in this module are:
 
 
 .. data:: ascii_letters
 
-   後述の :const:`ascii_lowercase` と :const:`ascii_uppercase` を合わ
-   せたもの。この値はロケールに依存しません。
+   The concatenation of the :const:`ascii_lowercase` and :const:`ascii_uppercase`
+   constants described below.  This value is not locale-dependent.
 
 
 .. data:: ascii_lowercase
 
-   小文字 ``'abcdefghijklmnopqrstuvwxyz'`` 。この値はロケールに依存せ
-   ず、固定です。
+   The lowercase letters ``'abcdefghijklmnopqrstuvwxyz'``.  This value is not
+   locale-dependent and will not change.
 
 
 .. data:: ascii_uppercase
 
-   大文字 ``'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`` 。この値はロケールに依存せ
-   ず、固定です。
+   The uppercase letters ``'ABCDEFGHIJKLMNOPQRSTUVWXYZ'``.  This value is not
+   locale-dependent and will not change.
 
 
 .. data:: digits
 
-   文字列 ``'0123456789'`` です。
+   The string ``'0123456789'``.
 
 
 .. data:: hexdigits
 
-   文字列 ``'0123456789abcdefABCDEF'`` です。
+   The string ``'0123456789abcdefABCDEF'``.
 
 
 .. data:: letters
 
-   後述の :const:`lowercase` と :const:`uppercase` を合わせた文字列です。
-   具体的な値はロケールに依存しており、 :func:`locale.setlocale` が呼
-   ばれたときに更新されます。
+   The concatenation of the strings :const:`lowercase` and :const:`uppercase`
+   described below.  The specific value is locale-dependent, and will be updated
+   when :func:`locale.setlocale` is called.
 
 
 .. data:: lowercase
 
-   小文字として扱われる文字全てを含む文字列です。ほとんどのシステムで
-   は文字列 ``'abcdefghijklmnopqrstuvwxyz'`` です。
-   具体的な値はロケールに依存しており、 :func:`locale.setlocale` が呼
-   ばれたときに更新されます。
+   A string containing all the characters that are considered lowercase letters.
+   On most systems this is the string ``'abcdefghijklmnopqrstuvwxyz'``.  The
+   specific value is locale-dependent, and will be updated when
+   :func:`locale.setlocale` is called.
 
 
 .. data:: octdigits
 
-   文字列 ``'01234567'`` です。
+   The string ``'01234567'``.
 
 
 .. data:: punctuation
 
-   ``C`` ロケールにおいて、句読点として扱われる ASCII 文字の文字列です。
+   String of ASCII characters which are considered punctuation characters in the
+   ``C`` locale.
 
 
 .. data:: printable
 
-   印刷可能な文字で構成される文字列です。 :const:`digits`,
-   :const:`letters`, :const:`punctuation` および :const:`whitespace`
-   を組み合わせたものです。
+   String of characters which are considered printable.  This is a combination of
+   :const:`digits`, :const:`letters`, :const:`punctuation`, and
+   :const:`whitespace`.
 
 
 .. data:: uppercase
 
-   大文字として扱われる文字全てを含む文字列です。ほとんどのシステムで
-   は ``'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`` です。具体的な値はロケールに依
-   存しており、 :func:`locale.setlocale` が呼ばれたときに更新されます。
+   A string containing all the characters that are considered uppercase letters.
+   On most systems this is the string ``'ABCDEFGHIJKLMNOPQRSTUVWXYZ'``.  The
+   specific value is locale-dependent, and will be updated when
+   :func:`locale.setlocale` is called.
 
 
 .. data:: whitespace
 
-   空白 (whitespace) として扱われる文字全てを含む文字列です。ほとんど
-   のシステムでは、これはスペース (space)、タブ (tab)、改行 (linefeed)、
-   復帰 (return)、改頁 (formfeed)、垂直タブ (vertical tab) です。
+   A string containing all characters that are considered whitespace. On most
+   systems this includes the characters space, tab, linefeed, return, formfeed, and
+   vertical tab.
 
 
 .. _new-string-formatting:
 
-文字列の書式指定
-----------------
+String Formatting
+-----------------
 
 .. versionadded:: 2.6
 
-組み込みの str 、および、 unicode クラスは、
-:pep:`3101` に記載される :meth:`str.format` メソッドによる、
-複雑な変数置換と値の書式指定を提供します。
-:mod:`string` モジュールの :class:`Formatter` クラスは
-組み込みの :meth:`format` メソッドと同じ実装で、
-文字列の書式指定の作成とカスタマイズを可能にします。
+The built-in str and unicode classes provide the ability
+to do complex variable substitutions and value formatting via the
+:meth:`str.format` method described in :pep:`3101`.  The :class:`Formatter`
+class in the :mod:`string` module allows you to create and customize your own
+string formatting behaviors using the same implementation as the built-in
+:meth:`format` method.
 
 .. class:: Formatter
 
-   :class:`Formatter` クラスは、以下のメソッドを持ちます。 :
+   The :class:`Formatter` class has the following public methods:
 
    .. method:: format(format_string, *args, **kwargs)
 
-      :meth:`format` は主たる API メソッドです。引数は、書式指定テンプ
-      レート文字列、および、任意のポジション、キーワード引数をとります。
-      :meth:`format` は、 :meth:`vformat` を呼び出すだけのラッパーです。
+      :meth:`format` is the primary API method.  It takes a format string and
+      an arbitrary set of positional and keyword arguments.
+      :meth:`format` is just a wrapper that calls :meth:`vformat`.
 
    .. method:: vformat(format_string, args, kwargs)
 
-      この関数は、書式指定の操作を行います。 ``*args`` や ``**kwds``
-      を使った書式で辞書をアンパックやリパックするのではなく、予め定義
-      された辞書を引数として与えたいときなどでは、独立した関数として露
-      出されます。 :meth:`vformat` は書式テンプレート文字列を、文字デー
-      タや置換フィールドに展開します。この関数は、以下の様々なメソッド
-      を呼び出します。
+      This function does the actual work of formatting.  It is exposed as a
+      separate function for cases where you want to pass in a predefined
+      dictionary of arguments, rather than unpacking and repacking the
+      dictionary as individual arguments using the ``*args`` and ``**kwargs``
+      syntax.  :meth:`vformat` does the work of breaking up the format string
+      into character data and replacement fields.  It calls the various
+      methods described below.
 
-   付け加えると、 :class:`Formatter` はサブクラスで置き換えるためのい
-   くつかのメソッドを定義します。 :
+   In addition, the :class:`Formatter` defines a number of methods that are
+   intended to be replaced by subclasses:
 
    .. method:: parse(format_string)
 
-      format_stringを探査し、タプル、 (*literal_text*, *field_name*,
-      *format_spec*, *conversion*) のイテラブルを返します。これは
-      :meth:`vformat` が文字列を文字としての文字データや置換フィールド
-      に展開するために使用されます。
+      Loop over the format_string and return an iterable of tuples
+      (*literal_text*, *field_name*, *format_spec*, *conversion*).  This is used
+      by :meth:`vformat` to break the string into either literal text, or
+      replacement fields.
 
-      タプルの値は、概念的に文字としての文字データと、それに続く単一の
-      置換フィールドを表現します。文字としての文字データが無い場合は
-      (ふたつの置換フィールドが連続した場合などに起き得ます) 、
-      *literal_text* は長さが 0 の文字列となります。置換フィールドが無
-      い場合は、 *field_name*, *format_spec* および *conversion* が
-      ``None`` となります。
+      The values in the tuple conceptually represent a span of literal text
+      followed by a single replacement field.  If there is no literal text
+      (which can happen if two replacement fields occur consecutively), then
+      *literal_text* will be a zero-length string.  If there is no replacement
+      field, then the values of *field_name*, *format_spec* and *conversion*
+      will be ``None``.
 
    .. method:: get_field(field_name, args, kwargs)
 
-      引数として与えた :meth:`parse` (上記参照) により返される
-      *field_name* を書式指定対象オブジェクトに変換します。返り値はタ
-      プル、 (obj, used_key) です。デフォルトでは :pep:`3101` に規定さ
-      れる "0[name]" や "label.title" のような形式の文字列を引数として
-      とります。 *args* と *kwargs* は :meth:`vformat` に渡されます。
-      返り値 *used_key* は、 :meth:`get_value` の *key* 引数と同じ意味
-      を持ちます。
+      Given *field_name* as returned by :meth:`parse` (see above), convert it to
+      an object to be formatted.  Returns a tuple (obj, used_key).  The default
+      version takes strings of the form defined in :pep:`3101`, such as
+      "0[name]" or "label.title".  *args* and *kwargs* are as passed in to
+      :meth:`vformat`.  The return value *used_key* has the same meaning as the
+      *key* parameter to :meth:`get_value`.
 
    .. method:: get_value(key, args, kwargs)
 
-      与えられたフィールドの値を取り出します。 *key* 引数は整数でも文
-      字列でも構いません。整数の場合は、ポジション引数 *args* のインデッ
-      クス番号を示します。文字列の場合は、名前付きの引数 *kwargs* を意
-      味します。
+      Retrieve a given field value.  The *key* argument will be either an
+      integer or a string.  If it is an integer, it represents the index of the
+      positional argument in *args*; if it is a string, then it represents a
+      named argument in *kwargs*.
 
-      *args* 引数は、 :meth:`vformat` へのポジション引数のリストに設定
-      され、 *kwargs* 引数は、キーワード引数の辞書に設定されます。
+      The *args* parameter is set to the list of positional arguments to
+      :meth:`vformat`, and the *kwargs* parameter is set to the dictionary of
+      keyword arguments.
 
-      複合したフィールド名に対しては、これらの関数はフィールド名の最初
-      の要素に対してのみ呼び出されます ; あとに続く要素は通常の属性、
-      および、インデックス処理へと渡されます。
+      For compound field names, these functions are only called for the first
+      component of the field name; Subsequent components are handled through
+      normal attribute and indexing operations.
 
-      つまり、例えば、フィールドが '0.name' と表現されるとき、
-      :meth:`get_value` は、 *key* 引数が 0 として呼び出されます。属性 ``name``
-      は、組み込みの :func:`getattr` 関数が呼び出され、
-      :meth:`get_value` が返されたのちに検索されます。
+      So for example, the field expression '0.name' would cause
+      :meth:`get_value` to be called with a *key* argument of 0.  The ``name``
+      attribute will be looked up after :meth:`get_value` returns by calling the
+      built-in :func:`getattr` function.
 
-      もし、インデックス、もしくは、キーワードが存在しないアイテムを参
-      照したら、 :exc:`IndexError` 、もしくは、 :exc:`KeyError` が送出
-      されます。
+      If the index or keyword refers to an item that does not exist, then an
+      :exc:`IndexError` or :exc:`KeyError` should be raised.
 
    .. method:: check_unused_args(used_args, args, kwargs)
 
-      希望に応じ、未使用の引数がないか確認する機能を実装します。この関
-      数への引数は、書式指定文字列で参照される全てのキー引数の set 、
-      (ポジション引数への整数、名前付き引数への文字列) 、そして
-      vformat に渡される *args* と *kwargs* への参照です。
-      使用されない引数の set は、それらのパラメータから計算されます。
-      :meth:`check_unused_args` は、確認の結果が偽であると、例外を送出
-      するものとみなされます。
+      Implement checking for unused arguments if desired.  The arguments to this
+      function is the set of all argument keys that were actually referred to in
+      the format string (integers for positional arguments, and strings for
+      named arguments), and a reference to the *args* and *kwargs* that was
+      passed to vformat.  The set of unused args can be calculated from these
+      parameters.  :meth:`check_unused_args` is assumed to raise an exception if
+      the check fails.
 
    .. method:: format_field(value, format_spec)
 
-      :meth:`format_field` は単純に組み込みのグローバル関数
-      :func:`format` を呼び出します。
-      このメソッドは、サブクラスをオーバーライドするために提供されます。
+      :meth:`format_field` simply calls the global :func:`format` built-in.  The
+      method is provided so that subclasses can override it.
 
    .. method:: convert_field(value, conversion)
 
-      (:meth:`get_field` が返す) 値を、与えられた conversion 型に
-      (:meth:`parse` がタプルを返すように) 変換します。デフォルトでは
-      'r'(repr) と 's'(str) 変換型を解釈できます。
+      Converts the value (returned by :meth:`get_field`) given a conversion type
+      (as in the tuple returned by the :meth:`parse` method).  The default
+      version understands 's' (str), 'r' (repr) and 'a' (ascii) conversion
+      types.
 
 
 .. _formatstrings:
 
-書式指定文字列の文法
+Format String Syntax
 --------------------
 
-:meth:`str.format` メソッドと、 :class:`Formatter` クラスは、文字列の
-書式指定に同じ文法を共有します (しかしながら、 :class:`Formatter` サブ
-クラスの場合、それ自身の書式指定文法を定義することが可能です) 。
+The :meth:`str.format` method and the :class:`Formatter` class share the same
+syntax for format strings (although in the case of :class:`Formatter`,
+subclasses can define their own format string syntax).
 
-書式指定文字列は波括弧 ``{}`` に囲まれた "置換フィールド" を含みます。
-波括弧に囲まれた部分以外は全て単純な文字として扱われ、変更を加えること
-なく出力へコピーされます。波括弧を文字として扱う必要がある場合は、二重
-にすることでエスケープすることができます: ``{{`` および ``}}``
+Format strings contain "replacement fields" surrounded by curly braces ``{}``.
+Anything that is not contained in braces is considered literal text, which is
+copied unchanged to the output.  If you need to include a brace character in the
+literal text, it can be escaped by doubling: ``{{`` and ``}}``.
 
-置換フィールドの文法は以下です:
+The grammar for a replacement field is as follows:
 
    .. productionlist:: sf
       replacement_field: "{" [`field_name`] ["!" `conversion`] [":" `format_spec`] "}"
@@ -235,288 +235,303 @@
       conversion: "r" | "s"
       format_spec: <described in the next section>
 
-もっと簡単にいうと、置換フィールドは *field_name* で始められます。
-これによって指定したオブジェクトの値が、置換フィールドの代わりに
-書式化され出力に挿入されます。
-その後に、感嘆符 ``'!'`` を挟んで *conversion* フィールドを続けることができます。
-最後にコロン ``':'`` を挟んで、 *format_spec* を書くことができます。
-これは、置換される値の非デフォルトの書式を指定します。
+In less formal terms, the replacement field can start with a *field_name* that specifies
+the object whose value is to be formatted and inserted
+into the output instead of the replacement field.
+The *field_name* is optionally followed by a  *conversion* field, which is
+preceded by an exclamation point ``'!'``, and a *format_spec*, which is preceded
+by a colon ``':'``.  These specify a non-default format for the replacement value.
 
-:ref:`formatspec` 節も参照して下さい。
+See also the :ref:`formatspec` section.
 
-
-*field_name* 自体は、数字かキーワードである *arg_name* で始まります。
-数字である場合、ポジション引数を参照します。キーワードである場合、
-指名されたキーワード引数を参照します。
-書式指定文字列中の数の *arg_name* が 0, 1, 2, ... と並んでいるなら、
-これらは (一部ではなく) すべて省略でき、数 0, 1, 2, ... がその順に
-自動的に挿入されます。
-*arg_name* の後に数字インデックスや属性式を続けることができます。
-``'.name'`` 形式の式の場合、 :func:`getattr` 使って指名された属性が選択され、
-``'[index]'`` 形式の式の場合、 :func:`__getitem__` を使ってインデッ
-クス検索されます。
+The *field_name* itself begins with an *arg_name* that is either a number or a
+keyword.  If it's a number, it refers to a positional argument, and if it's a keyword,
+it refers to a named keyword argument.  If the numerical arg_names in a format string
+are 0, 1, 2, ... in sequence, they can all be omitted (not just some)
+and the numbers 0, 1, 2, ... will be automatically inserted in that order.
+Because *arg_name* is not quote-delimited, it is not possible to specify arbitrary
+dictionary keys (e.g., the strings ``'10'`` or ``':-]'``) within a format string.
+The *arg_name* can be followed by any number of index or
+attribute expressions. An expression of the form ``'.name'`` selects the named
+attribute using :func:`getattr`, while an expression of the form ``'[index]'``
+does an index lookup using :func:`__getitem__`.
 
 .. versionchanged:: 2.7
-   ポジション引数指定子は省略できるようになりました。
-   ``'{} {}'`` は ``'{0} {1}'`` と等価です。
+   The positional argument specifiers can be omitted, so ``'{} {}'`` is
+   equivalent to ``'{0} {1}'``.
 
-簡単な書式指定文字列の例を挙げます::
+Some simple format string examples::
 
-   "First, thou shalt count to {0}" # 最初のポジション引数を参照します
-   "Bring me a {}"                  # 暗示的に第一ポジション引数を参照します
-   "From {} to {}"                  # "From {0} to {1}" と同じです
-   "My quest is {name}"             # キーワード引数 'name' を参照します
-   "Weight in tons {0.weight}"      # 最初のポジション引数の属性 'weight' を参照します
-   "Units destroyed: {players[0]}"  # キーワード引数 'players' の最初の要素を参照します
+   "First, thou shalt count to {0}" # References first positional argument
+   "Bring me a {}"                  # Implicitly references the first positional argument
+   "From {} to {}"                  # Same as "From {0} to {1}"
+   "My quest is {name}"             # References keyword argument 'name'
+   "Weight in tons {0.weight}"      # 'weight' attribute of first positional arg
+   "Units destroyed: {players[0]}"  # First element of keyword argument 'players'.
 
-*置換 (conversion)* フィールドにより書式変換前に型の強制変換が実施されます。
-通常、値の書式変換は :meth:`__format__` によって実施されます。しかしな
-がら、場合によっては、文字列として変換することを強制したり、書式指定の
-定義をオーバーライドしたくなることもあります。 :meth:`__format__` の呼
-び出し前に値を文字列に変換すると、通常の書式変換の処理は飛ばされます。
+The *conversion* field causes a type coercion before formatting.  Normally, the
+job of formatting a value is done by the :meth:`__format__` method of the value
+itself.  However, in some cases it is desirable to force a type to be formatted
+as a string, overriding its own definition of formatting.  By converting the
+value to a string before calling :meth:`__format__`, the normal formatting logic
+is bypassed.
 
-現時点では、二種類の変換フラグがサポートされています: 値に対して
-:func:`str` を呼び出す ``'!s'`` と、 :func:`repr` を呼び出す ``'!r'``
-です。
+Two conversion flags are currently supported: ``'!s'`` which calls :func:`str`
+on the value, and ``'!r'`` which calls :func:`repr`.
 
-例::
+Some examples::
 
-   "Harold's a clever {0!s}"        # 引数に対して、最初に str() を呼び出します
-   "Bring out the holy {name!r}"    # 引数に対して、最初に repr() を呼び出します
+   "Harold's a clever {0!s}"        # Calls str() on the argument first
+   "Bring out the holy {name!r}"    # Calls repr() on the argument first
 
-*format_spec* フィールドは、フィールド幅、文字揃え、埋め方、精度などの、
-値を表現する仕様を含みます。それぞれの値の型は、 "formatting
-mini-language" 、または、 *format_spec* の実装で定義されます。
+The *format_spec* field contains a specification of how the value should be
+presented, including such details as field width, alignment, padding, decimal
+precision and so on.  Each value type can define its own "formatting
+mini-language" or interpretation of the *format_spec*.
 
-ほとんどの組み込み型は、共通の次のセクションに記載の formatting
-mini-language をサポートします。
+Most built-in types support a common formatting mini-language, which is
+described in the next section.
 
-*format_spec* フィールドは入れ子になった置換フィールドを含むこともでき
-ます。入れ子になった置換フィールドはフィールド名だけを含むことができま
-す; 変換フラグや書式指定は不可です。 format_spec 中の置換フィールドは
-*format_spec* 文字列が解釈される前に置き換えられます。これにより、値の
-書式動的に指定することが可能になります。
+A *format_spec* field can also include nested replacement fields within it.
+These nested replacement fields can contain only a field name; conversion flags
+and format specifications are not allowed.  The replacement fields within the
+format_spec are substituted before the *format_spec* string is interpreted.
+This allows the formatting of a value to be dynamically specified.
 
-:ref:`formatexamples` のいくつかの例も参照して下さい。
+See the :ref:`formatexamples` section for some examples.
+
 
 .. _formatspec:
 
-書式指定ミニ言語仕様 (Format Specification Mini-Language)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Format Specification Mini-Language
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-書式指定 ("Format specifications") は書式指定文字列の個々の値を表現す
-る方法を指定するための、置換フィールドで使用されます
-(:ref:`formatstrings` を参照下さい) 。
-それらは、組み込み関数の :func:`format` 関数に直接渡されます。それぞれ
-の書式指定可能な型について、書式指定がどのように解釈されるかが規定され
-ます。
+"Format specifications" are used within replacement fields contained within a
+format string to define how individual values are presented (see
+:ref:`formatstrings`).  They can also be passed directly to the built-in
+:func:`format` function.  Each formattable type may define how the format
+specification is to be interpreted.
 
-多くの組み込み型は、書式指定に関して以下のオプションを実装します。しか
-しながら、いくつかの書式指定オプションは数値型でのみサポートされます。
+Most built-in types implement the following options for format specifications,
+although some of the formatting options are only supported by the numeric types.
 
-一般的な取り決めとして、空の書式指定文字列 (``""``) は、
-値に対して :func:`str` を呼び出したときと同じ結果を与えます。
-通常、空でない書式指定文字列はその結果を変更します。
+A general convention is that an empty format string (``""``) produces
+the same result as if you had called :func:`str` on the value. A
+non-empty format string typically modifies the result.
 
-一般的な書式指定子 (*standard format specifier*) の書式は以下です:
+The general form of a *standard format specifier* is:
 
 .. productionlist:: sf
    format_spec: [[`fill`]`align`][`sign`][#][0][`width`][,][.`precision`][`type`]
-   fill(詰め方): <'}'以外の文字>
-   align(整列): "<" | ">" | "=" | "^"
-   sign(符号): "+" | "-" | " "
-   width(幅): `整数`
-   precision(精度): `整数`
+   fill: <any character>
+   align: "<" | ">" | "=" | "^"
+   sign: "+" | "-" | " "
+   width: `integer`
+   precision: `integer`
    type: "b" | "c" | "d" | "e" | "E" | "f" | "F" | "g" | "G" | "n" | "o" | "s" | "x" | "X" | "%"
 
-*fill* 文字は、'{' と '}' 以外のどんな文字でもかまいません。
-fill 文字があることは、 align オプションが続くことで示されます。
-もし、 *format_spec* の二つめの文字が align オプションで無い場合は、
-fill と align の両方のオプションが無いものと解釈されます。
+If a valid *align* value is specified, it can be preceded by a *fill*
+character that can be any character and defaults to a space if omitted.
+Note that it is not possible to use ``{`` and ``}`` as *fill* char while
+using the :meth:`str.format` method; this limitation however doesn't
+affect the :func:`format` function.
 
-様々な align オプションの意味は以下のとおりです :
+The meaning of the various alignment options is as follows:
 
-   +------------+----------------------------------------------------------+
-   | オプション | 意味                                                     |
-   +============+==========================================================+
-   | ``'<'``    | 利用可能なスペースにおいて、左詰めを強制します。         |
-   |            | (ほとんどのオブジェクトにおいてのデフォルト)             |
-   +------------+----------------------------------------------------------+
-   | ``'>'``    | 利用可能なスペースにおいて、右詰めを強制します。         |
-   |            | (いくつかのオブジェクトにおいてのデフォルト)             |
-   +------------+----------------------------------------------------------+
-   | ``'='``    | 符号 (があれば) の後ろを埋めます。                       |
-   |            | '+000000120' のような形で表示されます。                  |
-   |            | このオプションは数値型に対してのみ有効です。             |
-   +------------+----------------------------------------------------------+
-   | ``'^'``    | 利用可能なスペースにおいて、中央寄せを強制します。       |
-   |            |                                                          |
-   +------------+----------------------------------------------------------+
+   +---------+----------------------------------------------------------+
+   | Option  | Meaning                                                  |
+   +=========+==========================================================+
+   | ``'<'`` | Forces the field to be left-aligned within the available |
+   |         | space (this is the default for most objects).            |
+   +---------+----------------------------------------------------------+
+   | ``'>'`` | Forces the field to be right-aligned within the          |
+   |         | available space (this is the default for numbers).       |
+   +---------+----------------------------------------------------------+
+   | ``'='`` | Forces the padding to be placed after the sign (if any)  |
+   |         | but before the digits.  This is used for printing fields |
+   |         | in the form '+000000120'. This alignment option is only  |
+   |         | valid for numeric types.                                 |
+   +---------+----------------------------------------------------------+
+   | ``'^'`` | Forces the field to be centered within the available     |
+   |         | space.                                                   |
+   +---------+----------------------------------------------------------+
 
-最小のフィールド幅が定義されない限り、フィールド幅はデータを表示するた
-めに必要な幅と同じになることに注意して下さい。そのため、その場合には、
-align オプションは意味を持ちません。
+Note that unless a minimum field width is defined, the field width will always
+be the same size as the data to fill it, so that the alignment option has no
+meaning in this case.
 
-*sign* オプションは数値型に対してのみ有効ですであり、以下のうちのひと
-つとなります :
+The *sign* option is only valid for number types, and can be one of the
+following:
 
-   +------------+----------------------------------------------------------+
-   | オプション | 意味                                                     |
-   +============+==========================================================+
-   | ``'+'``    | 符号の使用を、正数、負数の両方に対して指定します。       |
-   |            |                                                          |
-   +------------+----------------------------------------------------------+
-   | ``'-'``    | 符号の使用を、負数に対してのみ指定します。               |
-   |            | (デフォルトの挙動です)                                   |
-   +------------+----------------------------------------------------------+
-   | 空白       | 空白を正数の前に付け、負号を負数の前に使用することを     |
-   |            | 指定します。                                             |
-   +------------+----------------------------------------------------------+
+   +---------+----------------------------------------------------------+
+   | Option  | Meaning                                                  |
+   +=========+==========================================================+
+   | ``'+'`` | indicates that a sign should be used for both            |
+   |         | positive as well as negative numbers.                    |
+   +---------+----------------------------------------------------------+
+   | ``'-'`` | indicates that a sign should be used only for negative   |
+   |         | numbers (this is the default behavior).                  |
+   +---------+----------------------------------------------------------+
+   | space   | indicates that a leading space should be used on         |
+   |         | positive numbers, and a minus sign on negative numbers.  |
+   +---------+----------------------------------------------------------+
 
-``'#'`` オプションは、整数、かつ、2進数、8進数、16進数の出力に対してのみ有効です。
-指定されれば、出力は、 ``'0b'``, ``'0o'``, もしくは ``'0x'``, のプリフィックスが
-付与されます。
+The ``'#'`` option is only valid for integers, and only for binary, octal, or
+hexadecimal output.  If present, it specifies that the output will be prefixed
+by ``'0b'``, ``'0o'``, or ``'0x'``, respectively.
 
-``','`` オプションは、千の位のセパレータにカンマを使うことを合図します。
-ロケール依存のセパレータには、代わりに ``'n'`` の整数表現形式を使ってください。
+The ``','`` option signals the use of a comma for a thousands separator.
+For a locale aware separator, use the ``'n'`` integer presentation type
+instead.
 
 .. versionchanged:: 2.7
-   ``','`` オプションを追加しました (:pep:`378` も参照してください)。
+   Added the ``','`` option (see also :pep:`378`).
 
-*width* は10進数の整数で、最小のフィールド幅を規程します。
-もし指定されなければ、フィールド幅は内容により規程されます。
+*width* is a decimal integer defining the minimum field width.  If not
+specified, then the field width will be determined by the content.
 
-もし *width* フィールドがゼロ (``'0'``) で始まる場合、ゼロ埋めとなります。
-これは、 *alignment* 型が ``'='`` で、 *fill* 文字が ``'0'`` であることと等価です。
+Preceding the *width* field by a zero (``'0'``) character enables
+sign-aware zero-padding for numeric types.  This is equivalent to a *fill*
+character of ``'0'`` with an *alignment* type of ``'='``.
 
-*precision* は10進数で、 ``'f'`` および ``'F'`` 、あるいは、  ``'g'`` および ``'G'`` で
-指定される浮動小数点数の、小数点以下に続く桁数を指定します。
-非数型に対しては、最大フィールド幅を規程します。言い換えると、フィールドの内容から、
-何文字使用するかを規程します。
-*precision* は整数型に対しては、許されません。
+The *precision* is a decimal number indicating how many digits should be
+displayed after the decimal point for a floating point value formatted with
+``'f'`` and ``'F'``, or before and after the decimal point for a floating point
+value formatted with ``'g'`` or ``'G'``.  For non-number types the field
+indicates the maximum field size - in other words, how many characters will be
+used from the field content. The *precision* is not allowed for integer values.
 
-最後に、 *type* は、データがどのように表現されるかを規程します。
+Finally, the *type* determines how the data should be presented.
 
-利用可能な文字列の表現型は以下です：
-
-   +------------+----------------------------------------------------------+
-   | 型         | 意味                                                     |
-   +============+==========================================================+
-   | ``'s'``    | 文字列。デフォルトの値で多くの場合省略されます           |
-   +------------+----------------------------------------------------------+
-   | 空白       | ``'s'`` と同じです。                                     |
-   +------------+----------------------------------------------------------+
-
-利用可能な整数の表現型は以下です :
+The available string presentation types are:
 
    +---------+----------------------------------------------------------+
-   | 型      | 意味                                                     |
+   | Type    | Meaning                                                  |
    +=========+==========================================================+
-   | ``'b'`` | 2進数。出力される数値は2を基数とします。                 |
+   | ``'s'`` | String format. This is the default type for strings and  |
+   |         | may be omitted.                                          |
    +---------+----------------------------------------------------------+
-   | ``'c'`` | 文字。数値を対応するユニコード文字に変換します。         |
-   |         |                                                          |
-   +---------+----------------------------------------------------------+
-   | ``'d'`` | 10進数。出力される数値は10を基数とします。               |
-   +---------+----------------------------------------------------------+
-   | ``'o'`` | 8進数。出力される数値は8を基数とします。                 |
-   +---------+----------------------------------------------------------+
-   | ``'x'`` | 16進数。出力される数値は16を基数とします。               |
-   |         | 10進で9を越える数字には小文字が使われます。              |
-   +---------+----------------------------------------------------------+
-   | ``'X'`` | 16進数。出力される数値は16を基数とします。               |
-   |         | 10進で9を越える数字には大文字が使われます。              |
-   +---------+----------------------------------------------------------+
-   | ``'n'`` | 数値。現在のロケールに従い、区切り文字を挿入すること     |
-   |         | を除けば、 ``'d'`` と同じです。                          |
-   |         |                                                          |
-   +---------+----------------------------------------------------------+
-   | 空白    | ``'d'`` と同じです。                                     |
+   | None    | The same as ``'s'``.                                     |
    +---------+----------------------------------------------------------+
 
-これらの表現型に加えて、整数は (``'n'`` と空白を除く)
-以下の浮動小数点型の表現型で書式指定できます。
-そうすることで整数は書式変換される前に :func:`float` を使って
-浮動小数点数に変換されます。
-
-利用可能な浮動小数点数と10進数の表現型は以下です :
+The available integer presentation types are:
 
    +---------+----------------------------------------------------------+
-   | 型      | 意味                                                     |
+   | Type    | Meaning                                                  |
    +=========+==========================================================+
-   | ``'e'`` | 指数指定です。指数を示す 'e' を使って数値を表示します。  |
+   | ``'b'`` | Binary format. Outputs the number in base 2.             |
+   +---------+----------------------------------------------------------+
+   | ``'c'`` | Character. Converts the integer to the corresponding     |
+   |         | unicode character before printing.                       |
+   +---------+----------------------------------------------------------+
+   | ``'d'`` | Decimal Integer. Outputs the number in base 10.          |
+   +---------+----------------------------------------------------------+
+   | ``'o'`` | Octal format. Outputs the number in base 8.              |
+   +---------+----------------------------------------------------------+
+   | ``'x'`` | Hex format. Outputs the number in base 16, using lower-  |
+   |         | case letters for the digits above 9.                     |
+   +---------+----------------------------------------------------------+
+   | ``'X'`` | Hex format. Outputs the number in base 16, using upper-  |
+   |         | case letters for the digits above 9.                     |
+   +---------+----------------------------------------------------------+
+   | ``'n'`` | Number. This is the same as ``'d'``, except that it uses |
+   |         | the current locale setting to insert the appropriate     |
+   |         | number separator characters.                             |
+   +---------+----------------------------------------------------------+
+   | None    | The same as ``'d'``.                                     |
+   +---------+----------------------------------------------------------+
+
+In addition to the above presentation types, integers can be formatted
+with the floating point presentation types listed below (except
+``'n'`` and None). When doing so, :func:`float` is used to convert the
+integer to a floating point number before formatting.
+
+The available presentation types for floating point and decimal values are:
+
+   +---------+----------------------------------------------------------+
+   | Type    | Meaning                                                  |
+   +=========+==========================================================+
+   | ``'e'`` | Exponent notation. Prints the number in scientific       |
+   |         | notation using the letter 'e' to indicate the exponent.  |
+   |         | The default precision is ``6``.                          |
+   +---------+----------------------------------------------------------+
+   | ``'E'`` | Exponent notation. Same as ``'e'`` except it uses an     |
+   |         | upper case 'E' as the separator character.               |
+   +---------+----------------------------------------------------------+
+   | ``'f'`` | Fixed point. Displays the number as a fixed-point        |
+   |         | number.  The default precision is ``6``.                 |
+   +---------+----------------------------------------------------------+
+   | ``'F'`` | Fixed point. Same as ``'f'``.                            |
+   +---------+----------------------------------------------------------+
+   | ``'g'`` | General format.  For a given precision ``p >= 1``,       |
+   |         | this rounds the number to ``p`` significant digits and   |
+   |         | then formats the result in either fixed-point format     |
+   |         | or in scientific notation, depending on its magnitude.   |
    |         |                                                          |
-   +---------+----------------------------------------------------------+
-   | ``'E'`` | 指数指定です。大文字の 'E' を使うことを除いては、        |
-   |         | ``'e'`` と同じです。                                     |
-   +---------+----------------------------------------------------------+
-   | ``'f'`` | 固定小数点数です。数値を固定小数点数として表示します。   |
+   |         | The precise rules are as follows: suppose that the       |
+   |         | result formatted with presentation type ``'e'`` and      |
+   |         | precision ``p-1`` would have exponent ``exp``.  Then     |
+   |         | if ``-4 <= exp < p``, the number is formatted            |
+   |         | with presentation type ``'f'`` and precision             |
+   |         | ``p-1-exp``.  Otherwise, the number is formatted         |
+   |         | with presentation type ``'e'`` and precision ``p-1``.    |
+   |         | In both cases insignificant trailing zeros are removed   |
+   |         | from the significand, and the decimal point is also      |
+   |         | removed if there are no remaining digits following it.   |
    |         |                                                          |
-   +---------+----------------------------------------------------------+
-   | ``'F'`` | 固定小数点数です。 ``'f'`` と同じです。                  |
-   +---------+----------------------------------------------------------+
-   | ``'g'`` | 標準フォーマットです。精度を ``p >= 1`` の数値で         |
-   |         | 与えた場合、数値を有効桁 ``p`` で丸め、桁に応じて        |
-   |         | 固定小数点か指数指定で表示します。                       |
+   |         | Positive and negative infinity, positive and negative    |
+   |         | zero, and nans, are formatted as ``inf``, ``-inf``,      |
+   |         | ``0``, ``-0`` and ``nan`` respectively, regardless of    |
+   |         | the precision.                                           |
    |         |                                                          |
-   |         | 精度のルールは以下のように決まっています:                |
-   |         | 書式指定の結果が ``'e'`` 型で ``p-1`` の精度の場合、     |
-   |         | 指数は ``exp`` になると仮定します。                      |
-   |         | そうすると、 ``-4 <= exp < p`` のとき数値は              |
-   |         | 表現型 ``'f'`` で精度 ``p-1-exp`` に書式変換されます。   |
-   |         | それ以外の場合、数値は ``'e'`` 型で精度 ``p-1`` に       |
-   |         | 書式指定されます。この両方の場合で重要でない、           |
-   |         | 連続した 0 は取り除かれます, そして残った桁が無い場合    |
-   |         | 小数点は取り除かれます。                                 |
-   |         |                                                          |
-   |         | 正と負の無限大と 0 および NaN は精度に関係なくそれぞれ   |
-   |         | ``inf``, ``-inf``, ``0``, ``-0`` および ``nan``          |
-   |         | となります。                                             |
-   |         |                                                          |
-   |         | ``0`` の精度は ``1`` の精度と同等に扱われます。          |
+   |         | A precision of ``0`` is treated as equivalent to a       |
+   |         | precision of ``1``.  The default precision is ``6``.     |
    +---------+----------------------------------------------------------+
-   | ``'G'`` | 標準フォーマットです。数値が大きくなったとき、 ``'E'``   |
-   |         | に切り替わることを除き、 ``'g'`` と同じです。            |
-   |         | 無限大と NaN の表示も大文字になります。                  |
+   | ``'G'`` | General format. Same as ``'g'`` except switches to       |
+   |         | ``'E'`` if the number gets too large. The                |
+   |         | representations of infinity and NaN are uppercased, too. |
    +---------+----------------------------------------------------------+
-   | ``'n'`` | 数値です。現在のロケールに合わせて、数値分割文字が挿入   |
-   |         | されることを除き、 ``'g'`` と同じです。                  |
-   |         |                                                          |
+   | ``'n'`` | Number. This is the same as ``'g'``, except that it uses |
+   |         | the current locale setting to insert the appropriate     |
+   |         | number separator characters.                             |
    +---------+----------------------------------------------------------+
-   | ``'%'`` | パーセンテージです。数値は 100 倍され、固定小数点数フォ  |
-   |         | ーマット (``'f'``) でパーセント記号付きで表示されます。  |
+   | ``'%'`` | Percentage. Multiplies the number by 100 and displays    |
+   |         | in fixed (``'f'``) format, followed by a percent sign.   |
    +---------+----------------------------------------------------------+
-   | None    | ``'g'`` と同じです。                                     |
+   | None    | The same as ``'g'``.                                     |
    +---------+----------------------------------------------------------+
+
+
 
 .. _formatexamples:
 
-書式指定例
-^^^^^^^^^^
+Format examples
+^^^^^^^^^^^^^^^
 
-この節には新しい書式指定構文と古い ``%``-書式の比較例が載っています。
+This section contains examples of the new format syntax and comparison with
+the old ``%``-formatting.
 
-多くの場合、 ``%`` の代わりに ``{}`` を加えることで新構文は
-古い ``%``-書式に類似した書式になります。
-例えば、 ``'%03.2f'`` は ``'{:03.2f}'`` に翻訳できます。
+In most of the cases the syntax is similar to the old ``%``-formatting, with the
+addition of the ``{}`` and with ``:`` used instead of ``%``.
+For example, ``'%03.2f'`` can be translated to ``'{:03.2f}'``.
 
-以下の例で示すように、新構文はさらに新たに様々なオプションもサポートしています、
+The new format syntax also supports new and different options, shown in the
+follow examples.
 
-ポジション引数を使ったアクセス::
+Accessing arguments by position::
 
    >>> '{0}, {1}, {2}'.format('a', 'b', 'c')
    'a, b, c'
-   >>> '{}, {}, {}'.format('a', 'b', 'c')  # 2.7+ 専用
+   >>> '{}, {}, {}'.format('a', 'b', 'c')  # 2.7+ only
    'a, b, c'
    >>> '{2}, {1}, {0}'.format('a', 'b', 'c')
    'c, b, a'
-   >>> '{2}, {1}, {0}'.format(*'abc')      # 引数シークエンスをアンパック
+   >>> '{2}, {1}, {0}'.format(*'abc')      # unpacking argument sequence
    'c, b, a'
-   >>> '{0}{1}{0}'.format('abra', 'cad')   # 引数のインデクスは繰り返すことができます
+   >>> '{0}{1}{0}'.format('abra', 'cad')   # arguments' indices can be repeated
    'abracadabra'
 
-
-名前を使ったアクセス::
+Accessing arguments by name::
 
    >>> 'Coordinates: {latitude}, {longitude}'.format(latitude='37.24N', longitude='-115.81W')
    'Coordinates: 37.24N, -115.81W'
@@ -524,7 +539,7 @@ align オプションは意味を持ちません。
    >>> 'Coordinates: {latitude}, {longitude}'.format(**coord)
    'Coordinates: 37.24N, -115.81W'
 
-引数の属性へのアクセス::
+Accessing arguments' attributes::
 
    >>> c = 3-5j
    >>> ('The complex number {0} is formed from the real part {0.real} '
@@ -539,18 +554,19 @@ align オプションは意味を持ちません。
    >>> str(Point(4, 2))
    'Point(4, 2)'
 
-引数の要素へのアクセス::
+
+Accessing arguments' items::
 
    >>> coord = (3, 5)
    >>> 'X: {0[0]};  Y: {0[1]}'.format(coord)
    'X: 3;  Y: 5'
 
-``%s`` と ``%r`` の置換::
+Replacing ``%s`` and ``%r``::
 
    >>> "repr() shows quotes: {!r}; str() doesn't: {!s}".format('test1', 'test2')
    "repr() shows quotes: 'test1'; str() doesn't: test2"
 
-テキストの幅を指定した整列::
+Aligning the text and specifying a width::
 
    >>> '{:<30}'.format('left aligned')
    'left aligned                  '
@@ -558,20 +574,19 @@ align オプションは意味を持ちません。
    '                 right aligned'
    >>> '{:^30}'.format('centered')
    '           centered           '
-   >>> '{:*^30}'.format('centered')  # 詰め文字に '*' を使う
+   >>> '{:*^30}'.format('centered')  # use '*' as a fill char
    '***********centered***********'
 
+Replacing ``%+f``, ``%-f``, and ``% f`` and specifying a sign::
 
-``%+f`` と ``%-f``, ``% f`` の置換、そして符号の指定::
-
-   >>> '{:+f}; {:+f}'.format(3.14, -3.14)  # 常に表示する
+   >>> '{:+f}; {:+f}'.format(3.14, -3.14)  # show it always
    '+3.140000; -3.140000'
-   >>> '{: f}; {: f}'.format(3.14, -3.14)  # 正の数にはスペースを表示
+   >>> '{: f}; {: f}'.format(3.14, -3.14)  # show a space for positive numbers
    ' 3.140000; -3.140000'
-   >>> '{:-f}; {:-f}'.format(3.14, -3.14)  # マイナスだけを表示 -- '{:f}; {:f}' と同じ
+   >>> '{:-f}; {:-f}'.format(3.14, -3.14)  # show only the minus -- same as '{:f}; {:f}'
    '3.140000; -3.140000'
 
-``%x`` と ``%o`` の置換、そして値に対する異なる底の変換::
+Replacing ``%x`` and ``%o`` and converting the value to different bases::
 
    >>> # format also supports binary numbers
    >>> "int: {0:d};  hex: {0:x};  oct: {0:o};  bin: {0:b}".format(42)
@@ -580,36 +595,36 @@ align オプションは意味を持ちません。
    >>> "int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}".format(42)
    'int: 42;  hex: 0x2a;  oct: 0o52;  bin: 0b101010'
 
-千の位のセパレータにカンマを使用する::
+Using the comma as a thousands separator::
 
    >>> '{:,}'.format(1234567890)
    '1,234,567,890'
 
-パーセントを表示する::
+Expressing a percentage::
 
    >>> points = 19.5
    >>> total = 22
-   >>> 'Correct answers: {:.2%}.'.format(points/total)
+   >>> 'Correct answers: {:.2%}'.format(points/total)
    'Correct answers: 88.64%'
 
-型特有の書式指定を使う::
+Using type-specific formatting::
 
    >>> import datetime
    >>> d = datetime.datetime(2010, 7, 4, 12, 15, 58)
    >>> '{:%Y-%m-%d %H:%M:%S}'.format(d)
    '2010-07-04 12:15:58'
 
-引数をネストする、さらに複雑な例::
+Nesting arguments and more complex examples::
 
    >>> for align, text in zip('<^>', ['left', 'center', 'right']):
-   ...     '{:{align}{fill}16}'.format(text, fill=align, align=align)
+   ...     '{0:{fill}{align}16}'.format(text, fill=align, align=align)
    ...
    'left<<<<<<<<<<<<'
    '^^^^^center^^^^^'
    '>>>>>>>>>>>right'
    >>>
    >>> octets = [192, 168, 0, 1]
-   >>> '{:0X}{:02X}{:02X}{:02X}'.format(*octets)
+   >>> '{:02X}{:02X}{:02X}{:02X}'.format(*octets)
    'C0A80001'
    >>> int(_, 16)
    3232235521
@@ -630,78 +645,70 @@ align オプションは意味を持ちません。
 
 
 
-テンプレート文字列
-------------------
+Template strings
+----------------
 
 .. versionadded:: 2.4
 
-テンプレート (template) を使うと、 :pep:`292` で解説されているようによ
-り簡潔に文字列置換 (string substitution) を行えるようになります。通常
-の ``%`` ベースの置換に代わって、テンプレートでは以下のような規則に従っ
-た ``$`` ベースの置換をサポートしています:
+Templates provide simpler string substitutions as described in :pep:`292`.
+Instead of the normal ``%``\ -based substitutions, Templates support ``$``\
+-based substitutions, using the following rules:
 
-* ``$$`` はエスケープ文字です; ``$`` 一つに置換されます。
+* ``$$`` is an escape; it is replaced with a single ``$``.
 
-* ``$identifier`` は置換プレースホルダの指定で、 ``"identifier"``
-  というキーへの対応付けに相当します。デフォルトは、 ``"identifier"`` の部
-  分には Python の識別子が書かれていなければなりません。 ``$``
-  の後に識別子に使えない文字が出現すると、そこでプレースホルダ名の指定
-  が終わります。
+* ``$identifier`` names a substitution placeholder matching a mapping key of
+  ``"identifier"``.  By default, ``"identifier"`` must spell a Python
+  identifier.  The first non-identifier character after the ``$`` character
+  terminates this placeholder specification.
 
-* ``${identifier}`` は ``$identifier`` と同じです。プレースホルダ名の
-  後ろに識別子として使える文字列が続いていて、それをプレースホルダ名の
-  一部として扱いたくない場合、例えば ``"${noun}ification"`` のような場
-  合に必要な書き方です。
+* ``${identifier}`` is equivalent to ``$identifier``.  It is required when valid
+  identifier characters follow the placeholder but are not part of the
+  placeholder, such as ``"${noun}ification"``.
 
-上記以外の書き方で文字列中に ``$`` を使うと :exc:`ValueError` を送出します。
+Any other appearance of ``$`` in the string will result in a :exc:`ValueError`
+being raised.
 
-:mod:`string` モジュールでは、上記のような規則を実装した
-:class:`Template` クラスを提供しています。 :class:`Template` のメソッ
-ドを以下に示します:
+The :mod:`string` module provides a :class:`Template` class that implements
+these rules.  The methods of :class:`Template` are:
 
 
 .. class:: Template(template)
 
-   コンストラクタはテンプレート文字列になる引数を一つだけ取ります。
+   The constructor takes a single argument which is the template string.
 
 
    .. method:: substitute(mapping[, **kws])
 
-      テンプレート置換を行い、新たな文字列を生成して返します。
-      *mapping* はテンプレート中のプレースホルダに対応するキーを持つよ
-      うな任意の辞書類似オブジェクトです。辞書を指定する代わりに、キー
-      ワード引数も指定でき、その場合にはキーワードをプレースホルダ名に
-      対応させます。 *mapping* と *kws* の両方が指定され、内容が重複し
-      た場合には、 *kws* に指定したプレースホルダを優先します。
+      Performs the template substitution, returning a new string.  *mapping* is
+      any dictionary-like object with keys that match the placeholders in the
+      template.  Alternatively, you can provide keyword arguments, where the
+      keywords are the placeholders.  When both *mapping* and *kws* are given
+      and there are duplicates, the placeholders from *kws* take precedence.
 
 
    .. method:: safe_substitute(mapping[, **kws])
 
-      :meth:`substitute` と同じですが、プレースホルダに対応するものを
-      *mapping* や *kws* から見つけられなかった場合に、 :exc:`KeyError`
-      例外を送出する代わりにもとのプレースホルダがそのまま入ります。また、
-      :meth:`substitute` とは違い、規則外の書き方で ``$`` を使った場合で
-      も、 :exc:`ValueError` を送出せず単に ``$`` を返します。
+      Like :meth:`substitute`, except that if placeholders are missing from
+      *mapping* and *kws*, instead of raising a :exc:`KeyError` exception, the
+      original placeholder will appear in the resulting string intact.  Also,
+      unlike with :meth:`substitute`, any other appearances of the ``$`` will
+      simply return ``$`` instead of raising :exc:`ValueError`.
 
-      その他の例外も発生し得る一方で、このメソッドが「安全 (safe) 」と
-      呼ばれているのは、置換操作が常に例外を送出する代わりに利用可能な
-      文字列を返そうとするからです。別の見方をすれば、
-      :meth:`safe_substitute` は区切り間違いによるぶら下がり (dangling
-      delimiter) や波括弧の非対応、 Python の識別子として無効なプレース
-      ホルダ名を含むような不正なテンプレートを何も警告せずに無視するた
-      め、安全とはいえないのです。
+      While other exceptions may still occur, this method is called "safe"
+      because substitutions always tries to return a usable string instead of
+      raising an exception.  In another sense, :meth:`safe_substitute` may be
+      anything other than safe, since it will silently ignore malformed
+      templates containing dangling delimiters, unmatched braces, or
+      placeholders that are not valid Python identifiers.
 
-   :class:`Template` のインスタンスは、次のような public な属性を提供しています:
-
+   :class:`Template` instances also provide one public data attribute:
 
    .. attribute:: template
 
-   コンストラクタの引数 *template* に渡されたオブジェクトです。通常、
-   この値を変更すべきではありませんが、読み込み専用アクセスを強制して
-   いるわけではありません。
+      This is the object passed to the constructor's *template* argument.  In
+      general, you shouldn't change it, but read-only access is not enforced.
 
-
-Templateの使い方の例を以下に示します::
+Here is an example of how to use a Template::
 
    >>> from string import Template
    >>> s = Template('$who likes $what')
@@ -710,101 +717,98 @@ Templateの使い方の例を以下に示します::
    >>> d = dict(who='tim')
    >>> Template('Give $who $100').substitute(d)
    Traceback (most recent call last):
-   [...]
-   ValueError: Invalid placeholder in string: line 1, col 10
+   ...
+   ValueError: Invalid placeholder in string: line 1, col 11
    >>> Template('$who likes $what').substitute(d)
    Traceback (most recent call last):
-   [...]
+   ...
    KeyError: 'what'
    >>> Template('$who likes $what').safe_substitute(d)
    'tim likes $what'
 
-さらに進んだ使い方: :class:`Template` のサブクラスを派生して、プレース
-ホルダの書式、区切り文字、テンプレート文字列の解釈に使われている正規表
-現全体をカスタマイズできます。こうした作業には、以下のクラス属性をオー
-バライドします:
+Advanced usage: you can derive subclasses of :class:`Template` to customize the
+placeholder syntax, delimiter character, or the entire regular expression used
+to parse template strings.  To do this, you can override these class attributes:
 
-* *delimiter* -- プレースホルダの開始を示すリテラル文字列です。デフォ
-  ルトの値は ``$`` です。実装系はこの文字列に対して必要に応じて
-  :meth:`re.escape` を呼び出すので、正規表現を表すような文字列にして
-  は *なりません* 。
+* *delimiter* -- This is the literal string describing a placeholder introducing
+  delimiter.  The default value is ``$``.  Note that this should *not* be a
+  regular expression, as the implementation will call :meth:`re.escape` on this
+  string as needed.
 
-* *idpattern* -- 波括弧でくくらない形式のプレースホルダの表記パターン
-  を示す正規表現です (波括弧は自動的に適切な場所に追加されます)　。デ
-  フォルトの値は ``[_a-z][_a-z0-9]*`` という正規表現です。
+* *idpattern* -- This is the regular expression describing the pattern for
+  non-braced placeholders (the braces will be added automatically as
+  appropriate).  The default value is the regular expression
+  ``[_a-z][_a-z0-9]*``.
 
-他にも、クラス属性 *pattern* をオーバライドして、正規表現パターン全体
-を指定できます。オーバライドを行う場合、 *pattern* の値は 4 つの名前つ
-きキャプチャグループ (capturing group) を持った正規表現オブジェクトで
-なければなりません。これらのキャプチャグループは、上で説明した規則と、
-無効なプレースホルダに対する規則に対応しています:
+Alternatively, you can provide the entire regular expression pattern by
+overriding the class attribute *pattern*.  If you do this, the value must be a
+regular expression object with four named capturing groups.  The capturing
+groups correspond to the rules given above, along with the invalid placeholder
+rule:
 
-* *escaped* -- このグループはエスケープシーケンス、すなわちデフォルト
-  パターンにおける ``$$`` に対応します。
+* *escaped* -- This group matches the escape sequence, e.g. ``$$``, in the
+  default pattern.
 
-* *named* -- このグループは波括弧でくくらないプレースホルダ名に対応し
-  ます; キャプチャグループに区切り文字を含めてはなりません。
+* *named* -- This group matches the unbraced placeholder name; it should not
+  include the delimiter in capturing group.
 
-* *braced* -- このグループは波括弧でくくったプレースホルダ名に対応しま
-  す; キャプチャグループに区切り文字を含めてはなりません。
+* *braced* -- This group matches the brace enclosed placeholder name; it should
+  not include either the delimiter or braces in the capturing group.
 
-* *invalid* -- このグループはそのほかの区切り文字のパターン (通常は区
-  切り文字一つ) に対応し、正規表現の末尾に出現せねばなりません。
+* *invalid* -- This group matches any other delimiter pattern (usually a single
+  delimiter), and it should appear last in the regular expression.
 
 
-文字列操作関数
---------------
+String functions
+----------------
 
-以下の関数は文字列または Unicode オブジェクトを操作できます。これらの
-関数は文字列型のメソッドにはありません。
+The following functions are available to operate on string and Unicode objects.
+They are not available as string methods.
 
 
 .. function:: capwords(s[, sep])
 
-   :func:`split` を使って引数を単語に分割し、 :func:`capitalize` を使っ
-   てそれぞれの単語の先頭の文字を大文字に変換し、 :func:`join` を使っ
-   てつなぎ合わせます。
-   オプションの第2引数 *sep* が与えられないか ``None`` の場合、
-   この置換処理は文字列中の連続する空白文字をスペース一つに置き換え、
-   先頭と末尾の空白を削除します、
-   それ以外の場合には *sep* は split と join に使われます。
+   Split the argument into words using :meth:`str.split`, capitalize each word
+   using :meth:`str.capitalize`, and join the capitalized words using
+   :meth:`str.join`.  If the optional second argument *sep* is absent
+   or ``None``, runs of whitespace characters are replaced by a single space
+   and leading and trailing whitespace are removed, otherwise *sep* is used to
+   split and join the words.
 
 
 .. function:: maketrans(from, to)
 
-   :func:`translate` に渡すのに適した変換テーブルを返します。このテー
-   ブルは、 *from* 内の各文字を *to* の同じ位置にある文字に対応付けま
-   す; *from* と *to* は同じ長さでなければなりません。
+   Return a translation table suitable for passing to :func:`translate`, that will
+   map each character in *from* into the character at the same position in *to*;
+   *from* and *to* must have the same length.
 
    .. note::
 
-      :const:`lowercase` と :const:`uppercase` から取り出した文字列を
-      引数に使ってはなりません;
-      ロケールによっては、これらは同じ長さになりません。大文字小文字の
-      変換には、常に :meth:`str.lower` または :meth:`str.upper` を使ってください。
+      Don't use strings derived from :const:`lowercase` and :const:`uppercase` as
+      arguments; in some locales, these don't have the same length.  For case
+      conversions, always use :meth:`str.lower` and :meth:`str.upper`.
 
 
-撤廃された文字列関数
---------------------
+Deprecated string functions
+---------------------------
 
-以下の一連の関数は、文字列型や Unicode 型のオブジェクトのメソッドとし
-ても定義されています; 詳しくは、それらの :ref:`string-methods` の項を
-参照してください。ここに挙げた関数は Python 3.0 で削除されることはない
-はずですが、撤廃された関数とみなして下さい。このモジュールで定義されて
-いる関数は以下の通りです:
+The following list of functions are also defined as methods of string and
+Unicode objects; see section :ref:`string-methods` for more information on
+those.  You should consider these functions as deprecated, although they will
+not be removed until Python 3.  The functions defined in this module are:
 
 
 .. function:: atof(s)
 
    .. deprecated:: 2.0
-      組み込み関数 :func:`float` を使ってください。
+      Use the :func:`float` built-in function.
 
    .. index:: builtin: float
 
-   文字列を浮動小数点型の数値に変換します。文字列は Python における標
-   準的なの浮動小数点リテラルの文法に従っていなければなりません。
-   先頭に符号 (``+`` または ``-``)が付くのは構いません。この関数に文字
-   列を渡した場合は、組み込み関数 :func:`float` と同じように振舞います。
+   Convert a string to a floating point number.  The string must have the standard
+   syntax for a floating point literal in Python, optionally preceded by a sign
+   (``+`` or ``-``).  Note that this behaves identical to the built-in function
+   :func:`float` when passed a string.
 
    .. note::
 
@@ -812,226 +816,224 @@ Templateの使い方の例を以下に示します::
          single: NaN
          single: Infinity
 
-      文字列を渡した場合、根底にある C ライブラリによって NaN や
-      Infinity を返す場合があります。
-      こうした値を返させるのがどんな文字列の集合であるかは、全て C ラ
-      イブラリに依存しており、ライブラリによって異なると知られています。
+      When passing in a string, values for NaN and Infinity may be returned, depending
+      on the underlying C library.  The specific set of strings accepted which cause
+      these values to be returned depends entirely on the C library and is known to
+      vary.
 
 
 .. function:: atoi(s[, base])
 
    .. deprecated:: 2.0
-      組み込み関数 :func:`int` を使ってください。
+      Use the :func:`int` built-in function.
 
    .. index:: builtin: eval
 
-   文字列 *s* を、 *base* を基数とする整数に変換します。文字列は 1 桁
-   またはそれ以上の数字からなっていなければなりません。先頭に符号
-   (``+`` または ``-``) が付くのは構いません。 *base* のデフォルト値は
-   10 です。 *base* が 0 の場合、 (符号を剥ぎ取った後の) 文字列の先頭
-   にある文字列に従ってデフォルトの基数を決定します。 ``0x`` か ``0X``
-   なら 16 、 ``0`` なら 8 、その他の場合は 10 が基数になります。
-   *base* が 16 の場合、先頭の ``0x`` や ``0X`` が付いていても受け付け
-   ますが、必須ではありません。文字列を渡す場合、この関数は組み込み関
-   数 :func:`int` と同じように振舞います。
-   (数値リテラルをより柔軟に解釈したい場合には、組み込み関数
-   :func:`eval` を使ってください。)
+   Convert string *s* to an integer in the given *base*.  The string must consist
+   of one or more digits, optionally preceded by a sign (``+`` or ``-``).  The
+   *base* defaults to 10.  If it is 0, a default base is chosen depending on the
+   leading characters of the string (after stripping the sign): ``0x`` or ``0X``
+   means 16, ``0`` means 8, anything else means 10.  If *base* is 16, a leading
+   ``0x`` or ``0X`` is always accepted, though not required.  This behaves
+   identically to the built-in function :func:`int` when passed a string.  (Also
+   note: for a more flexible interpretation of numeric literals, use the built-in
+   function :func:`eval`.)
 
 
 .. function:: atol(s[, base])
 
    .. deprecated:: 2.0
-      組み込み関数 :func:`long` を使ってください。
+      Use the :func:`long` built-in function.
 
    .. index:: builtin: long
 
-   文字列 *s* を、 *base* を基数とする長整数に変換します。文字列は 1
-   桁またはそれ以上の数字からなっていなければなりません。先頭に符号
-   (``+`` または ``-``) が付くのは構いません。 *base* は :func:`atoi`
-   と同じ意味です。基数が 0 の場合を除き、文字列末尾に ``l`` や ``L``
-   を付けてはなりません。 *base* を指定しないか、 10 を指定して文字列
-   を渡した場合には、この関数は組み込み関数 :func:`long` と同じように
-   振舞います。
+   Convert string *s* to a long integer in the given *base*. The string must
+   consist of one or more digits, optionally preceded by a sign (``+`` or ``-``).
+   The *base* argument has the same meaning as for :func:`atoi`.  A trailing ``l``
+   or ``L`` is not allowed, except if the base is 0.  Note that when invoked
+   without *base* or with *base* set to 10, this behaves identical to the built-in
+   function :func:`long` when passed a string.
 
 
 .. function:: capitalize(word)
 
-   先頭文字だけ大文字にした *word* のコピーを返します。
+   Return a copy of *word* with only its first character capitalized.
 
 
 .. function:: expandtabs(s[, tabsize])
 
-   現在のカラムと指定タブ幅に従って文字列中のタブを展開し、一つまたは
-   それ以上のスペースに置き換えます。文字列中に改行が出現するたびにカ
-   ラム番号は 0 にリセットされます。この関数は、他の非表示文字やエスケー
-   プシーケンスを解釈しません。タブ幅のデフォルトは 8 です。
+   Expand tabs in a string replacing them by one or more spaces, depending on the
+   current column and the given tab size.  The column number is reset to zero after
+   each newline occurring in the string. This doesn't understand other non-printing
+   characters or escape sequences.  The tab size defaults to 8.
 
 
 .. function:: find(s, sub[, start[,end]])
 
-   ``s[start:end]`` の中で、部分文字列 *sub* が完全な形で入っている場
-   所のうち、最初のものを *s* のインデクスで返します。見つからなかった
-   場合は ``-1`` を返します。 *start* と *end* のデフォルト値、および、
-   負の値を指定した場合の解釈は文字列のスライスと同じです。
+   Return the lowest index in *s* where the substring *sub* is found such that
+   *sub* is wholly contained in ``s[start:end]``.  Return ``-1`` on failure.
+   Defaults for *start* and *end* and interpretation of negative values is the same
+   as for slices.
 
 
 .. function:: rfind(s, sub[, start[, end]])
 
-   :func:`find` と同じですが、最後に見つかったもののインデックスを返します。
+   Like :func:`find` but find the highest index.
 
 
 .. function:: index(s, sub[, start[, end]])
 
-   :func:`find` と同じですが、部分文字列が見つからなかったときに
-   :exc:`ValueError` を送出します。
+   Like :func:`find` but raise :exc:`ValueError` when the substring is not found.
 
 
 .. function:: rindex(s, sub[, start[, end]])
 
-   :func:`rfind` と同じですが、部分文字列が見つからなかったときに
-   :exc:`ValueError` 送出します。
+   Like :func:`rfind` but raise :exc:`ValueError` when the substring is not found.
 
 
 .. function:: count(s, sub[, start[, end]])
 
-   ``s[start:end]`` における、部分文字列 *sub* の (重複しない) 出現回
-   数を返します。 *start* と *end* のデフォルト値、および、負の値を指
-   定した場合の解釈は文字列のスライスと同じです。
+   Return the number of (non-overlapping) occurrences of substring *sub* in string
+   ``s[start:end]``. Defaults for *start* and *end* and interpretation of negative
+   values are the same as for slices.
 
 
 .. function:: lower(s)
 
-   *s* のコピーを大文字を小文字に変換して返します。
+   Return a copy of *s*, but with upper case letters converted to lower case.
 
 
 .. function:: split(s[, sep[, maxsplit]])
 
-   文字列 *s* 内の単語からなるリストを返します。オプションの第二引数
-   *sep* を指定しないか、または ``None`` にした場合、空白文字 (スペー
-   ス、タブ、改行、リターン、改頁) からなる任意の文字列で単語に区切り
-   ます。 *sep* を ``None`` 以外の値に指定した場合、単語の分割に使う文
-   字列の指定になります。戻り値のリストには、文字列中に分割文字列が重
-   複せずに出現する回数より一つ多い要素が入るはずです。オプションの第
-   三引数 *maxsplit* はデフォルトで 0 です。この値がゼロでない場合、最
-   大でも *maxsplit* 回の分割しか行わず、リストの最後の要素は未分割の
-   残りの文字列になります (従って、リスト中の要素数は最大でも
-   ``maxsplit+1`` です)。
+   Return a list of the words of the string *s*.  If the optional second argument
+   *sep* is absent or ``None``, the words are separated by arbitrary strings of
+   whitespace characters (space, tab, newline, return, formfeed).  If the second
+   argument *sep* is present and not ``None``, it specifies a string to be used as
+   the  word separator.  The returned list will then have one more item than the
+   number of non-overlapping occurrences of the separator in the string.
+   If *maxsplit* is given, at most *maxsplit* number of splits occur, and the
+   remainder of the string is returned as the final element of the list (thus,
+   the list will have at most ``maxsplit+1`` elements).  If *maxsplit* is not
+   specified or ``-1``, then there is no limit on the number of splits (all
+   possible splits are made).
 
-   空文字列に対する分割を行った場合の挙動は *sep* の値に依存します。
-   *sep* を指定しないか ``None`` にした場合、結果は空のリストになります。
-   *sep* に文字列を指定した場合、空文字列一つの入ったリストになります。
+   The behavior of split on an empty string depends on the value of *sep*. If *sep*
+   is not specified, or specified as ``None``, the result will be an empty list.
+   If *sep* is specified as any string, the result will be a list containing one
+   element which is an empty string.
 
 
 .. function:: rsplit(s[, sep[, maxsplit]])
 
-   *s* 中の単語からなるリストを *s* の末尾から検索して生成し返します。
-   関数の返す語のリストは全ての点で :func:`split` の返すものと同じにな
-   ります。ただし、オプションの第三引数 *maxsplit* をゼロでない値に指
-   定した場合には必ずしも同じにはなりません。 *maxsplit* がゼロでない
-   場合には、最大で *maxsplit* 個の分割を *右端から* 行います - 未分割
-   の残りの文字列はリストの最初の要素として返されます (従って、リスト
-   中の要素数は最大でも ``maxsplit+1`` です)。
+   Return a list of the words of the string *s*, scanning *s* from the end.  To all
+   intents and purposes, the resulting list of words is the same as returned by
+   :func:`split`, except when the optional third argument *maxsplit* is explicitly
+   specified and nonzero.  If *maxsplit* is given, at most *maxsplit* number of
+   splits -- the *rightmost* ones -- occur, and the remainder of the string is
+   returned as the first element of the list (thus, the list will have at most
+   ``maxsplit+1`` elements).
 
    .. versionadded:: 2.4
 
 
 .. function:: splitfields(s[, sep[, maxsplit]])
 
-   この関数は :func:`split` と同じように振舞います。 (以前は
-   :func:`split` は単一引数の場合にのみ使い、 :func:`splitfields` は引
-   数 2 つの場合でのみ使っていました)。
+   This function behaves identically to :func:`split`.  (In the past, :func:`split`
+   was only used with one argument, while :func:`splitfields` was only used with
+   two arguments.)
 
 
 .. function:: join(words[, sep])
 
-   単語のリストやタプルを間に *sep* を入れて連結します。 *sep* のデフォ
-   ルト値はスペース文字 1 つです。
-   ``string.join(string.split(s, sep), sep)`` は常に *s* になります。
+   Concatenate a list or tuple of words with intervening occurrences of  *sep*.
+   The default value for *sep* is a single space character.  It is always true that
+   ``string.join(string.split(s, sep), sep)`` equals *s*.
 
 
 .. function:: joinfields(words[, sep])
 
-   この関数は :func:`join` と同じふるまいをします (以前は、
-   :func:`join` を使えるのは引数が 1 つの場合だけで、
-   :func:`joinfields` は引数 2 つの場合だけでした)。文字列オブジェクト
-   には :meth:`joinfields` メソッドがないので注意してください。代わり
-   に :meth:`join` メソッドを使ってください。
+   This function behaves identically to :func:`join`.  (In the past,  :func:`join`
+   was only used with one argument, while :func:`joinfields` was only used with two
+   arguments.) Note that there is no :meth:`joinfields` method on string objects;
+   use the :meth:`join` method instead.
 
 
 .. function:: lstrip(s[, chars])
 
-   文字列の先頭から文字を取り除いたコピーを生成して返します。 *chars*
-   を指定しない場合や ``None`` にした場合、先頭の空白を取り除きます。
-   *chars* を ``None`` 以外の値にする場合、 *chars* は文字列でなければ
-   なりません。
+   Return a copy of the string with leading characters removed.  If *chars* is
+   omitted or ``None``, whitespace characters are removed.  If given and not
+   ``None``, *chars* must be a string; the characters in the string will be
+   stripped from the beginning of the string this method is called on.
 
    .. versionchanged:: 2.2.3
-      *chars* パラメタを追加しました。初期の 2.2 バージョンでは、
-      *chars* パラメータを渡せませんでした。
+      The *chars* parameter was added.  The *chars* parameter cannot be passed in
+      earlier 2.2 versions.
 
 
 .. function:: rstrip(s[, chars])
 
-   文字列の末尾から文字を取り除いたコピーを生成して返します。 *chars*
-   を指定しない場合や ``None`` にした場合、末尾の空白を取り除きます。
-   *chars* を ``None`` 以外の値にする場合、 *chars* は文字列でなければ
-   なりません。
+   Return a copy of the string with trailing characters removed.  If *chars* is
+   omitted or ``None``, whitespace characters are removed.  If given and not
+   ``None``, *chars* must be a string; the characters in the string will be
+   stripped from the end of the string this method is called on.
 
    .. versionchanged:: 2.2.3
-      *chars* パラメタを追加しました。初期の 2.2 バージョンでは、
-      *chars* パラメータを渡せませんでした。
+      The *chars* parameter was added.  The *chars* parameter cannot be passed in
+      earlier 2.2 versions.
 
 
 .. function:: strip(s[, chars])
 
-   文字列の先頭と末尾から文字を取り除いたコピーを生成して返します。
-   *chars* を指定しない場合や ``None`` にした場合、先頭と末尾の空白を
-   取り除きます。 *chars* を ``None`` 以外に指定する場合、 *chars* は
-   文字列でなければなりません。
+   Return a copy of the string with leading and trailing characters removed.  If
+   *chars* is omitted or ``None``, whitespace characters are removed.  If given and
+   not ``None``, *chars* must be a string; the characters in the string will be
+   stripped from the both ends of the string this method is called on.
 
    .. versionchanged:: 2.2.3
-      *chars* パラメタを追加しました。初期の 2.2 バージョンでは、
-      *chars* パラメータを渡せませんでした。
+      The *chars* parameter was added.  The *chars* parameter cannot be passed in
+      earlier 2.2 versions.
 
 
 .. function:: swapcase(s)
 
-   *s* の大文字と小文字を入れ替えたものを返します。
+   Return a copy of *s*, but with lower case letters converted to upper case and
+   vice versa.
 
 
 .. function:: translate(s, table[, deletechars])
 
-   *s* の中から、 (もし指定されていれば) *deletechars* に入っている文
-   字を削除し、 *table* を使って文字変換を行って返します。
-   *table* は 256 文字からなる文字列で、各文字はそのインデクスを序数と
-   する文字に対する変換先の文字の指定になります。もし、 *table* が
-   ``None`` であれば、文字削除のみが行われます。
+   Delete all characters from *s* that are in *deletechars* (if  present), and then
+   translate the characters using *table*, which  must be a 256-character string
+   giving the translation for each character value, indexed by its ordinal.  If
+   *table* is ``None``, then only the character deletion step is performed.
 
 
 .. function:: upper(s)
 
-   *s* に含まれる小文字を大文字に置換して返します。
+   Return a copy of *s*, but with lower case letters converted to upper case.
 
 
 .. function:: ljust(s, width[, fillchar])
               rjust(s, width[, fillchar])
               center(s, width[, fillchar])
 
-   文字列を指定した文字幅のフィールド中でそれぞれ左寄せ、右寄せ、中央
-   寄せします。これらの関数は指定幅になるまで文字列 *s* の左側、右側、
-   および、両側のいずれかに *fillchar* （デフォルトでは空白）を追加して、
-   少なくとも *width* 文字からなる文字列にして返します。
-   文字列を切り詰めることはありません。
+   These functions respectively left-justify, right-justify and center a string in
+   a field of given width.  They return a string that is at least *width*
+   characters wide, created by padding the string *s* with the character *fillchar*
+   (default is a space) until the given width on the right, left or both sides.
+   The string is never truncated.
 
 
 .. function:: zfill(s, width)
 
-   数値を表現する文字列の左側に、指定の幅になるまでゼロを付加します。
-   符号付きの数字も正しく処理します。
+   Pad a numeric string *s* on the left with zero digits until the
+   given *width* is reached.  Strings starting with a sign are handled
+   correctly.
 
 
-.. function:: replace(str, old, new[, maxreplace])
+.. function:: replace(s, old, new[, maxreplace])
 
-   *s* 内の部分文字列 *old* を全て *new* に置換したものを返します。
-   *maxreplace* を指定した場合、最初に見つかった *maxreplace* 個分だ
-   け置換します。
+   Return a copy of string *s* with all occurrences of substring *old* replaced
+   by *new*.  If the optional argument *maxreplace* is given, the first
+   *maxreplace* occurrences are replaced.
+

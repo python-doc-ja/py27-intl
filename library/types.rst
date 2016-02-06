@@ -1,17 +1,22 @@
-:mod:`types` --- 組み込み型の名前
-=================================
+:mod:`types` --- Names for built-in types
+=========================================
 
 .. module:: types
-   :synopsis: 組み込み型の名前
+   :synopsis: Names for built-in types.
 
+**Source code:** :source:`Lib/types.py`
 
-このモジュールは標準のPythonインタプリタで使われているオブジェクトの型について、
-名前を定義しています(拡張モジュールで定義されている型を除く)。
-また、このモジュールには ``listiterator`` 型のような処理中に例外が起きる型は含まれません。
-``from types import *`` のように使っても安全です -- モジュールはここでリストされている以外の名前をエクスポートしません。
-このモジュールの将来のバージョンで追加される名前は、 ``Type`` で終わる予定です。
+--------------
 
-典型的な利用方法は、関数が以下のように引数の型によって異なる動作をする場合です::
+This module defines names for some object types that are used by the standard
+Python interpreter, but not for the types defined by various extension modules.
+Also, it does not include some of the types that arise during processing such as
+the ``listiterator`` type. It is safe to use ``from types import *`` --- the
+module does not export any names besides the ones listed here. New names
+exported by future versions of this module will all end in ``Type``.
+
+Typical use is for functions that do different things depending on their
+argument types, like the following::
 
    from types import *
    def delete(mylist, item):
@@ -20,9 +25,10 @@
        else:
           mylist.remove(item)
 
-Python 2.2以降では、 :func:`int` や :func:`str` のような
-ファクトリ関数は、型の名前となりましたので、 :mod:`types` を使用する必要はなくなりました。上記のサンプルは、以下のように記述する事が
-推奨されています。 ::
+Starting in Python 2.2, built-in factory functions such as :func:`int` and
+:func:`str` are also names for the corresponding types.  This is now the
+preferred way to access the type instead of using the :mod:`types` module.
+Accordingly, the example above should be written as follows::
 
    def delete(mylist, item):
        if isinstance(item, int):
@@ -30,95 +36,99 @@ Python 2.2以降では、 :func:`int` や :func:`str` のような
        else:
           mylist.remove(item)
 
-このモジュールは以下の名前を定義しています。
+The module defines the following names:
 
 
 .. data:: NoneType
 
-   ``None`` の型です。
+   The type of ``None``.
 
 
 .. data:: TypeType
 
    .. index:: builtin: type
 
-   typeオブジェクトの型です (:func:`type` などによって返されます)。
-   組み込みの :class:`type` のエイリアスになります。
+   The type of type objects (such as returned by :func:`type`); alias of the
+   built-in :class:`type`.
 
 
 .. data:: BooleanType
 
-   :class:`bool` の ``True`` と ``False`` の型です。これは組み込みの :class:`bool` のエイリアスです。
+   The type of the :class:`bool` values ``True`` and ``False``; alias of the
+   built-in :class:`bool`.
 
    .. versionadded:: 2.3
 
+
 .. data:: IntType
 
-   整数の型です(e.g. ``1``)。
-   組み込みの :class:`int` のエイリアスになります。
+   The type of integers (e.g. ``1``); alias of the built-in :class:`int`.
 
 
 .. data:: LongType
 
-   長整数の型です(e.g. ``1L``)。
-   組み込みの :class:`long` のエイリアスになります。
+   The type of long integers (e.g. ``1L``); alias of the built-in :class:`long`.
 
 
 .. data:: FloatType
 
-   浮動小数点数の型です(e.g. ``1.0``)。
-   組み込みの :class:`float` のエイリアスになります。
+   The type of floating point numbers (e.g. ``1.0``); alias of the built-in
+   :class:`float`.
 
 
 .. data:: ComplexType
 
-   複素数の型です(e.g. ``1.0j``)。 Pythonが複素数のサポートなしでコンパイルされていた場合には定義されません。
+   The type of complex numbers (e.g. ``1.0j``).  This is not defined if Python was
+   built without complex number support.
 
 
 .. data:: StringType
 
-   文字列の型です(e.g. ``'Spam'``)。
-   組み込みの :class:`str` のエイリアスになります。
+   The type of character strings (e.g. ``'Spam'``); alias of the built-in
+   :class:`str`.
 
 
 .. data:: UnicodeType
 
-   Unicode文字列の型です(e.g. ``u'Spam'``)。 Pythonがユニコードのサポートなしでコンパイルされていた場合には定義されません。
-   組み込みの :class:`Unicode` のエイリアスになります。
+   The type of Unicode character strings (e.g. ``u'Spam'``).  This is not defined
+   if Python was built without Unicode support.  It's an alias of the built-in
+   :class:`unicode`.
 
 
 .. data:: TupleType
 
-   タプルの型です(e.g. ``(1, 2, 3, 'Spam')``)。
-   組み込みの :class:`tuple` のエイリアスになります。
+   The type of tuples (e.g. ``(1, 2, 3, 'Spam')``); alias of the built-in
+   :class:`tuple`.
 
 
 .. data:: ListType
 
-   リストの型です(e.g. ``[0, 1, 2, 3]``)。
-   組み込みの :class:`list` のエイリアスになります。
+   The type of lists (e.g. ``[0, 1, 2, 3]``); alias of the built-in
+   :class:`list`.
 
 
 .. data:: DictType
 
-   辞書の型です(e.g. ``{'Bacon': 1, 'Ham': 0}``)。
-   組み込みの :class:`dict` のエイリアスになります。
+   The type of dictionaries (e.g. ``{'Bacon': 1, 'Ham': 0}``); alias of the
+   built-in :class:`dict`.
 
 
 .. data:: DictionaryType
 
-   ``DictType`` の別名です。
+   An alternate name for ``DictType``.
 
 
 .. data:: FunctionType
           LambdaType
 
-   ユーザー定義の関数または :keyword:`lambda` 式によって作成された関数の型です。
+   The type of user-defined functions and functions created by :keyword:`lambda`
+   expressions.
 
 
 .. data:: GeneratorType
 
-   ジェネレータ(:term:`generator`)関数の呼び出しによって生成されたイテレータオブジェクトの型です。
+   The type of :term:`generator`-iterator objects, produced by calling a
+   generator function.
 
    .. versionadded:: 2.2
 
@@ -127,124 +137,128 @@ Python 2.2以降では、 :func:`int` や :func:`str` のような
 
    .. index:: builtin: compile
 
-   :func:`compile` 関数などによって返されるコードオブジェクトの型です。
+   The type for code objects such as returned by :func:`compile`.
 
 
 .. data:: ClassType
 
-   ユーザー定義の、古いスタイルのクラスの型です。
+   The type of user-defined old-style classes.
 
 
 .. data:: InstanceType
 
-   ユーザー定義のクラスのインスタンスの型です。
+   The type of instances of user-defined classes.
 
 
 .. data:: MethodType
 
-   ユーザー定義のクラスのインスタンスのメソッドの型です。
+   The type of methods of user-defined class instances.
 
 
 .. data:: UnboundMethodType
 
-   ``MethodType`` の別名です。
+   An alternate name for ``MethodType``.
 
 
 .. data:: BuiltinFunctionType
           BuiltinMethodType
 
-   :func:`len` や :func:`sys.exit` のような組み込み関数や、組み込み型のメソッドの型です。
-   (ここでは、"組み込み"という単語を、"Cで書かれた"という意味で使っています)
+   The type of built-in functions like :func:`len` or :func:`sys.exit`, and
+   methods of built-in classes.  (Here, the term "built-in" means "written in
+   C".)
+
 
 .. data:: ModuleType
 
-   モジュールの型です。
+   The type of modules.
 
 
 .. data:: FileType
 
-   ``sys.stdout`` のようなopenされたファイルオブジェクトの型です。
-   組み込みの :class:`file` のエイリアスになります。
+   The type of open file objects such as ``sys.stdout``; alias of the built-in
+   :class:`file`.
 
 
 .. data:: XRangeType
 
    .. index:: builtin: xrange
 
-   :func:`xrange` 関数によって返されるrangeオブジェクトの型です。
-   組み込みの :class:`xrange` のエイリアスになります。
+   The type of range objects returned by :func:`xrange`; alias of the built-in
+   :class:`xrange`.
 
 
 .. data:: SliceType
 
    .. index:: builtin: slice
 
-   :func:`slice` 関数によって返されるオブジェクトの型です。
-   組み込みの :class:`slice` のエイリアスになります。
+   The type of objects returned by :func:`slice`; alias of the built-in
+   :class:`slice`.
 
 
 .. data:: EllipsisType
 
-   ``Ellipsis`` の型です。
+   The type of ``Ellipsis``.
 
 
 .. data:: TracebackType
 
-   ``sys.exc_traceback`` に含まれるようなトレースバックオブジェクトの型です。
+   The type of traceback objects such as found in ``sys.exc_traceback``.
 
 
 .. data:: FrameType
 
-   フレームオブジェクトの型です。トレースバックオブジェクト ``tb`` の ``tb.tb_frame`` などです。
+   The type of frame objects such as found in ``tb.tb_frame`` if ``tb`` is a
+   traceback object.
 
 
 .. data:: BufferType
 
    .. index:: builtin: buffer
 
-   :func:`buffer` 関数によって作られるバッファオブジェクトの型です。
+   The type of buffer objects created by the :func:`buffer` function.
 
 
 .. data:: DictProxyType
 
-   ``TypeType.__dict__`` のような dictへのプロキシ型です。
+   The type of dict proxies, such as ``TypeType.__dict__``.
 
 
 .. data:: NotImplementedType
 
-   ``NotImplemented`` の型です。
+   The type of ``NotImplemented``
 
 
 .. data:: GetSetDescriptorType
 
-   ``FrameType.f_locals`` や ``array.array.typecode`` のような、拡張モジュールにおいて ``PyGetSetDef``
-   によって定義されたオブジェクトの型です。
-   この型はオブジェクト属性のディスクリプタとして利用されます。
-   :class:`property` 型と同じ目的を持った型ですが、こちらは拡張モジュールで定義された型の\
-   ためのものです。
+   The type of objects defined in extension modules with ``PyGetSetDef``, such
+   as ``FrameType.f_locals`` or ``array.array.typecode``.  This type is used as
+   descriptor for object attributes; it has the same purpose as the
+   :class:`property` type, but for classes defined in extension modules.
 
    .. versionadded:: 2.5
 
 
 .. data:: MemberDescriptorType
 
-   ``datetime.timedelta.days`` のような、拡張モジュールにおいて ``PyMemberDef`` によって定義されたオブジェクトの型です。
-   この型は、標準の変換関数を利用するような、Cのシンプルなデータメンバで利用されます。
-   :class:`property` 型と同じ目的を持った型ですが、こちらは拡張モジュールで定義された型の\
-   ためのものです。
+   The type of objects defined in extension modules with ``PyMemberDef``, such
+   as ``datetime.timedelta.days``.  This type is used as descriptor for simple C
+   data members which use standard conversion functions; it has the same purpose
+   as the :class:`property` type, but for classes defined in extension modules.
 
    .. impl-detail::
 
-      Pythonの他の実装では、この型は ``GetSetDescriptorType`` と同一かもしれません。
+      In other implementations of Python, this type may be identical to
+      ``GetSetDescriptorType``.
 
    .. versionadded:: 2.5
 
 
 .. data:: StringTypes
 
-   文字列型のチェックを簡単にするための ``StringType`` と ``UnicodeType`` を含むシーケンスです。
-   ``UnicodeType`` は実行中の版のPythonに含まれている場合にだけ含まれるの
-   で、2つの文字列型のシーケンスを使うよりこれを使う方が移植性が高くなります。例: ``isinstance(s, types.StringTypes)``.
+   A sequence containing ``StringType`` and ``UnicodeType`` used to facilitate
+   easier checking for any string object.  Using this is more portable than using a
+   sequence of the two string types constructed elsewhere since it only contains
+   ``UnicodeType`` if it has been built in the running version of Python.  For
+   example: ``isinstance(s, types.StringTypes)``.
 
    .. versionadded:: 2.2
-
