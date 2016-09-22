@@ -22,7 +22,6 @@
    copyright.rst
    license.rst
 
-
 .. to include legacy packaging docs in build
 
 .. toctree::
@@ -30,4 +29,3 @@
 
    distutils/index.rst
    install/index.rst
-   documenting/index.rst
