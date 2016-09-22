@@ -7,32 +7,36 @@ History and License
 *******************
 
 
-Python の歴史
-=============
+History of the software
+=======================
 
-Python は 1990 年代の始め、オランダにある Stichting Mathematisch Centrum (CWI,
-http://www.cwi.nl/ 参照)  で Guido van Rossum によって ABC と呼ばれる言語の後継言語として生み
-出されました。その後多くの人々が Python に貢献していますが、 Guido は今日でも Python 製作者の先頭に立っています。
+Python was created in the early 1990s by Guido van Rossum at Stichting
+Mathematisch Centrum (CWI, see http://www.cwi.nl/) in the Netherlands as a
+successor of a language called ABC.  Guido remains Python's principal author,
+although it includes many contributions from others.
 
-1995 年、 Guido は米国ヴァージニア州レストンにある Corporation for National Reserch Initiatives
-(CNRI,  http://www.cnri.reston.va.us/ 参照) で Python の開発に携わり、
-いくつかのバージョンをリリースしました。
+In 1995, Guido continued his work on Python at the Corporation for National
+Research Initiatives (CNRI, see http://www.cnri.reston.va.us/) in Reston,
+Virginia where he released several versions of the software.
 
-2000 年 3 月、 Guido と Python のコア開発チームは BeOpen.com に移り、 BeOpen PythonLabs
-チームを結成しました。同年 10 月、 PythonLabs チームは Digital Creations (現在の Zope Corporation,
-http://www.zope.com/ 参照) に移りました。そして 2001 年、  Python に関する知的財産を保有するための非営利組織
-Python Software  Foundation (PSF、 http://www.python.org/psf/ 参照)
-を立ち上げました。このとき Zope Corporation は PSF の賛助会員になりました。
+In May 2000, Guido and the Python core development team moved to BeOpen.com to
+form the BeOpen PythonLabs team.  In October of the same year, the PythonLabs
+team moved to Digital Creations (now Zope Corporation; see
+http://www.zope.com/).  In 2001, the Python Software Foundation (PSF, see
+https://www.python.org/psf/) was formed, a non-profit organization created
+specifically to own Python-related Intellectual Property.  Zope Corporation is a
+sponsoring member of the PSF.
 
-Python のリリースは全てオープンソース (オープンソースの定義は http://www.opensource.org/ を参照してください)
-です。歴史的にみて、ごく一部を除くほとんどの Python リリースは GPL 互換になっています; 各リリースについては下表にまとめてあります。
+All Python releases are Open Source (see http://opensource.org/ for the Open
+Source Definition). Historically, most, but not all, Python releases have also
+been GPL-compatible; the table below summarizes the various releases.
 
 +----------------+--------------+-----------+------------+-----------------+
-| リリース       | ベース       | 年        | 権利       | GPL 互換        |
+| Release        | Derived from | Year      | Owner      | GPL compatible? |
 +================+==============+===========+============+=================+
-| 0.9.0 - 1.2    | n/a          | 1991-1995 | CWI        | yes             |
+| 0.9.0 thru 1.2 | n/a          | 1991-1995 | CWI        | yes             |
 +----------------+--------------+-----------+------------+-----------------+
-| 1.3 - 1.5.2    | 1.2          | 1995-1999 | CNRI       | yes             |
+| 1.3 thru 1.5.2 | 1.2          | 1995-1999 | CNRI       | yes             |
 +----------------+--------------+-----------+------------+-----------------+
 | 1.6            | 1.5.2        | 2000      | CNRI       | no              |
 +----------------+--------------+-----------+------------+-----------------+
@@ -46,68 +50,23 @@ Python のリリースは全てオープンソース (オープンソースの�
 +----------------+--------------+-----------+------------+-----------------+
 | 2.1.1          | 2.1+2.0.1    | 2001      | PSF        | yes             |
 +----------------+--------------+-----------+------------+-----------------+
-| 2.2            | 2.1.1        | 2001      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
 | 2.1.2          | 2.1.1        | 2002      | PSF        | yes             |
 +----------------+--------------+-----------+------------+-----------------+
 | 2.1.3          | 2.1.2        | 2002      | PSF        | yes             |
 +----------------+--------------+-----------+------------+-----------------+
-| 2.2.1          | 2.2          | 2002      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.2.2          | 2.2.1        | 2002      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.2.3          | 2.2.2        | 2002-2003 | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.3            | 2.2.2        | 2002-2003 | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.3.1          | 2.3          | 2002-2003 | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.3.2          | 2.3.1        | 2003      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.3.3          | 2.3.2        | 2003      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.3.4          | 2.3.3        | 2004      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.3.5          | 2.3.4        | 2005      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.4            | 2.3          | 2004      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.4.1          | 2.4          | 2005      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.4.2          | 2.4.1        | 2005      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.4.3          | 2.4.2        | 2006      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.4.4          | 2.4.3        | 2006      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.5            | 2.4          | 2006      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.5.1          | 2.5          | 2007      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.5.2          | 2.5.1        | 2008      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.5.3          | 2.5.2        | 2008      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.6            | 2.5          | 2008      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.6.1          | 2.6          | 2008      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.6.2          | 2.6.1        | 2009      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.6.3          | 2.6.2        | 2009      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.6.4          | 2.6.3        | 2010      | PSF        | yes             |
-+----------------+--------------+-----------+------------+-----------------+
-| 2.7            | 2.6          | 2010      | PSF        | yes             |
+| 2.2 and above  | 2.1.1        | 2001-now  | PSF        | yes             |
 +----------------+--------------+-----------+------------+-----------------+
 
 .. note::
 
-   「GPL 互換」という表現は、Python が GPL で配布されているという意味ではありません。Python のライセンスは全て、 GPL と違い、
-   変更したバージョンを配布する際に変更をオープンソースにしなくてもかまいません。 GPL 互換のライセンスの下では、GPL でリリースされて
-   いる他のソフトウェアと Python を組み合わせられますが、それ以外のライセンスではそうではありません。
+   GPL-compatible doesn't mean that we're distributing Python under the GPL.  All
+   Python licenses, unlike the GPL, let you distribute a modified version without
+   making your changes open source. The GPL-compatible licenses make it possible to
+   combine Python with other software that is released under the GPL; the others
+   don't.
 
-Guido の指示の下、これらのリリースを可能にしてくださった多くのボランティアのみなさんに感謝します。
+Thanks to the many outside volunteers who have worked under Guido's direction to
+make these releases possible.
 
 
 Terms and conditions for accessing or otherwise using Python
@@ -125,7 +84,7 @@ Terms and conditions for accessing or otherwise using Python
    analyze, test, perform and/or display publicly, prepare derivative works,
    distribute, and otherwise use Python |release| alone or in any derivative
    version, provided, however, that PSF's License Agreement and PSF's notice of
-   copyright, i.e., "Copyright © 2001-2010 Python Software Foundation; All Rights
+   copyright, i.e., "Copyright © 2001-2015 Python Software Foundation; All Rights
    Reserved" are retained in Python |release| alone or in any derivative version
    prepared by Licensee.
 
@@ -302,8 +261,8 @@ Mersenne Twister
 ----------------
 
 The :mod:`_random` module includes code based on a download from
-http://www.math.keio.ac.jp/ matumoto/MT2002/emt19937ar.html . The following
-are the verbatim comments from the original code::
+http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/emt19937ar.html. The following are
+the verbatim comments from the original code::
 
    A C-program for MT19937, with initialization improved 2002/1/26.
    Coded by Takuji Nishimura and Makoto Matsumoto.
@@ -343,8 +302,8 @@ are the verbatim comments from the original code::
 
 
    Any feedback is very welcome.
-   http://www.math.keio.ac.jp/matumoto/emt.html
-   email: matumoto@math.keio.ac.jp
+   http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
+   email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
 
 
 Sockets
@@ -527,36 +486,6 @@ The :mod:`Cookie` module contains the following notice::
    WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
    ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
    PERFORMANCE OF THIS SOFTWARE.
-
-
-Profiling
----------
-
-The :mod:`profile` and :mod:`pstats` modules contain the following notice::
-
-   Copyright 1994, by InfoSeek Corporation, all rights reserved.
-   Written by James Roskind
-
-   Permission to use, copy, modify, and distribute this Python software
-   and its associated documentation for any purpose (subject to the
-   restriction in the following sentence) without fee is hereby granted,
-   provided that the above copyright notice appears in all copies, and
-   that both that copyright notice and this permission notice appear in
-   supporting documentation, and that the name of InfoSeek not be used in
-   advertising or publicity pertaining to distribution of the software
-   without specific, written prior permission.  This permission is
-   explicitly restricted to the copying and modification of the software
-   to remain in Python, compiled Python, or other languages (such as C)
-   wherein the modified or derived code is exclusively imported into a
-   Python module.
-
-   INFOSEEK CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
-   SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
-   FITNESS. IN NO EVENT SHALL INFOSEEK CORPORATION BE LIABLE FOR ANY
-   SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
-   RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
-   CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
 Execution tracing
@@ -746,9 +675,9 @@ OpenSSL
 
 The modules :mod:`hashlib`, :mod:`posix`, :mod:`ssl`, :mod:`crypt` use
 the OpenSSL library for added performance if made available by the
-operating system. Additionally, the Windows installers for Python
-include a copy of the OpenSSL libraries, so we include a copy of the
-OpenSSL license here::
+operating system. Additionally, the Windows and Mac OS X installers for
+Python may include a copy of the OpenSSL libraries, so we include a copy
+of the OpenSSL license here::
 
 
   LICENSE ISSUES
@@ -817,8 +746,8 @@ OpenSSL license here::
      *
      */
 
- Original SSLeay License
- -----------------------
+  Original SSLeay License
+  -----------------------
 
     /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
      * All rights reserved.
@@ -882,7 +811,7 @@ expat
 -----
 
 The :mod:`pyexpat` extension is built using an included copy of the expat
-sources unless the build is configured :option:`--with-system-expat`::
+sources unless the build is configured ``--with-system-expat``::
 
   Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd
                                  and Clark Cooper
@@ -911,7 +840,7 @@ libffi
 ------
 
 The :mod:`_ctypes` extension is built using an included copy of the libffi
-sources unless the build is configured :option:`--with-system-libffi`::
+sources unless the build is configured ``--with-system-libffi``::
 
    Copyright (c) 1996-2008  Red Hat, Inc and others.
 
@@ -940,7 +869,7 @@ zlib
 ----
 
 The :mod:`zlib` extension is built using an included copy of the zlib
-sources unless the zlib version found on the system is too old to be
+sources if the zlib version found on the system is too old to be
 used for the build::
 
   Copyright (C) 1995-2010 Jean-loup Gailly and Mark Adler
