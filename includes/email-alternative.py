@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#!/usr/bin/env python
 
 import smtplib
 
@@ -17,14 +17,14 @@ msg['From'] = me
 msg['To'] = you
 
 # Create the body of the message (a plain-text and an HTML version).
-text = "Hi!\nHow are you?\nHere is the link you wanted:\nhttp://www.python.org"
+text = "Hi!\nHow are you?\nHere is the link you wanted:\nhttps://www.python.org"
 html = """\
 <html>
   <head></head>
   <body>
     <p>Hi!<br>
        How are you?<br>
-       Here is the <a href="http://www.python.org">link</a> you wanted.
+       Here is the <a href="https://www.python.org">link</a> you wanted.
     </p>
   </body>
 </html>
@@ -45,4 +45,4 @@ s = smtplib.SMTP('localhost')
 # sendmail function takes 3 arguments: sender's address, recipient's address
 # and message to send - here it is sent as one string.
 s.sendmail(me, you, msg.as_string())
-s.close()
+s.quit()

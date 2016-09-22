@@ -35,9 +35,9 @@ Usage: %prog [options] msgfile
 
     try:
         os.mkdir(opts.directory)
-    except OSError, e:
+    except OSError as e:
         # Ignore directory exists error
-        if e.errno <> errno.EEXIST:
+        if e.errno != errno.EEXIST:
             raise
 
     fp = open(msgfile)
@@ -53,7 +53,7 @@ Usage: %prog [options] msgfile
         # email message can't be used to overwrite important files
         filename = part.get_filename()
         if not filename:
-            ext = mimetypes.guess_extension(part.get_type())
+            ext = mimetypes.guess_extension(part.get_content_type())
             if not ext:
                 # Use a generic bag-of-bits extension
                 ext = '.bin'

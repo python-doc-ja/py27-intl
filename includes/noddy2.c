@@ -56,7 +56,7 @@ Noddy_init(Noddy *self, PyObject *args, PyObject *kwds)
         return -1; 
 
     if (first) {
-	tmp = self->first;
+        tmp = self->first;
         Py_INCREF(first);
         self->first = first;
         Py_XDECREF(tmp);
