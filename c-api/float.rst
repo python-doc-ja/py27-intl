@@ -2,112 +2,119 @@
 
 .. _floatobjects:
 
-浮動小数点型オブジェクト (floating point object)
-------------------------------------------------
+Floating Point Objects
+----------------------
 
 .. index:: object: floating point
 
 
 .. c:type:: PyFloatObject
 
-   この :c:type:`PyObject` のサブタイプは Python 浮動小数点型オブジェクトを表現します。
+   This subtype of :c:type:`PyObject` represents a Python floating point object.
 
 
 .. c:var:: PyTypeObject PyFloat_Type
 
    .. index:: single: FloatType (in modules types)
 
-   この :c:type:`PyTypeObject` のインスタンスは Python 浮動小数点型を表現します。これは
-   ``float`` や ``types.FloatType`` と同じオブジェクトです。
+   This instance of :c:type:`PyTypeObject` represents the Python floating point
+   type.  This is the same object as ``float`` and ``types.FloatType``.
 
 
 .. c:function:: int PyFloat_Check(PyObject *p)
 
-   引数が :c:type:`PyFloatObject` か :c:type:`PyFloatObject` のサブタイプのときに真を返します。
+   Return true if its argument is a :c:type:`PyFloatObject` or a subtype of
+   :c:type:`PyFloatObject`.
 
    .. versionchanged:: 2.2
-      サブタイプを引数にとれるようになりました.
+      Allowed subtypes to be accepted.
 
 
 .. c:function:: int PyFloat_CheckExact(PyObject *p)
 
-   引数が :c:type:`PyFloatObject` 型で、かつ :c:type:`PyFloatObject` 型のサブタイプでないときに真を返します。
+   Return true if its argument is a :c:type:`PyFloatObject`, but not a subtype of
+   :c:type:`PyFloatObject`.
 
    .. versionadded:: 2.2
 
 
 .. c:function:: PyObject* PyFloat_FromString(PyObject *str, char **pend)
 
-   *str* の文字列値をもとに :c:type:`PyFloatObject` オブジェクトを生成します。失敗すると *NULL* を返します。引数
-   *pend* は無視されます。この引数は後方互換性のためだけに残されています。
+   Create a :c:type:`PyFloatObject` object based on the string value in *str*, or
+   *NULL* on failure.  The *pend* argument is ignored.  It remains only for
+   backward compatibility.
 
 
 .. c:function:: PyObject* PyFloat_FromDouble(double v)
 
-   *v* から :c:type:`PyFloatObject` オブジェクトを生成して返します。失敗すると *NULL* を返します。
+   Create a :c:type:`PyFloatObject` object from *v*, or *NULL* on failure.
 
 
 .. c:function:: double PyFloat_AsDouble(PyObject *pyfloat)
 
-   *pyfloat* の指す値を、 C の :c:type:`double` 型表現で返します。
-   *pyfloat* が Python 浮動小数点オブジェクトではなく、かつ
-   :meth:`__float__` メソッドを持っていれば、 *pyfloat* を浮動小数点に
-   変換するためにこのメソッドが最初に呼ばれます。失敗した場合 ``-1.0``
-   を返します。そのため呼び出し元は :c:func:`PyErr_Occurred` を呼んで
-   エラーをチェックすべきです。
+   Return a C :c:type:`double` representation of the contents of *pyfloat*.  If
+   *pyfloat* is not a Python floating point object but has a :meth:`__float__`
+   method, this method will first be called to convert *pyfloat* into a float.
+   This method returns ``-1.0`` upon failure, so one should call
+   :c:func:`PyErr_Occurred` to check for errors.
 
 
 .. c:function:: double PyFloat_AS_DOUBLE(PyObject *pyfloat)
 
-   *pyfloat* の指す値を、 C の :c:type:`double` 型表現で返しますが、エラーチェックを行いません。
+   Return a C :c:type:`double` representation of the contents of *pyfloat*, but
+   without error checking.
 
 
 .. c:function:: PyObject* PyFloat_GetInfo(void)
 
-   float の精度、最小値、最大値に関する情報を含む structseq インスタンスを返します。
-   これは、 :file:`float.h` ファイルの薄いラッパーです。
+   Return a structseq instance which contains information about the
+   precision, minimum and maximum values of a float. It's a thin wrapper
+   around the header file :file:`float.h`.
 
    .. versionadded:: 2.6
 
 
 .. c:function:: double PyFloat_GetMax()
 
-   float の表現できる最大限解値 *DBL_MAX* を C の :c:type:`double` 型で返します。
+   Return the maximum representable finite float *DBL_MAX* as C :c:type:`double`.
 
    .. versionadded:: 2.6
 
 
 .. c:function:: double PyFloat_GetMin()
 
-   float の正規化された最小の正の値 *DBL_MIN* を C の :c:type:`double` 型で返します。
+   Return the minimum normalized positive float *DBL_MIN* as C :c:type:`double`.
 
    .. versionadded:: 2.6
 
+
 .. c:function:: int PyFloat_ClearFreeList()
 
-   float の free list をクリアします。
-   解放できなかったアイテム数を返します。
+   Clear the float free list. Return the number of items that could not
+   be freed.
 
    .. versionadded:: 2.6
 
 
 .. c:function:: void PyFloat_AsString(char *buf, PyFloatObject *v)
 
-   :func:`str` と同じルールで *v* を文字列に変換します。
-   *buf* の長さは 100 以上でなければなりません。
+   Convert the argument *v* to a string, using the same rules as
+   :func:`str`. The length of *buf* should be at least 100.
 
-   この関数は長さを知らないバッファに書きこむので安全ではありません。
+   This function is unsafe to call because it writes to a buffer whose
+   length it does not know.
 
    .. deprecated:: 2.7
-      代わりに func:`PyObject_Str` か :func:`PyOS_double_to_string` を利用してください。
+      Use :func:`PyObject_Str` or :func:`PyOS_double_to_string` instead.
 
 
 .. c:function:: void PyFloat_AsReprString(char *buf, PyFloatObject *v)
 
-   PyFloat_AsString とほとんど同じですが、 :func:`repr` とおなじルールを使います。
-   *buf* の長さは 100 以上でなければなりません。
+   Same as PyFloat_AsString, except uses the same rules as
+   :func:`repr`.  The length of *buf* should be at least 100.
 
-   この関数は長さを知らないバッファに書きこむので安全ではありません。
+   This function is unsafe to call because it writes to a buffer whose
+   length it does not know.
 
    .. deprecated:: 2.7
-      代わりに :func:`PyObject_Repr` か :func:`PyOS_double_to_string` を利用してください。
+      Use :func:`PyObject_Repr` or :func:`PyOS_double_to_string` instead.

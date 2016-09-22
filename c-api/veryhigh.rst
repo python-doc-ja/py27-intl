@@ -3,280 +3,313 @@
 
 .. _veryhigh:
 
-****************
-超高レベルレイヤ
-****************
+*************************
+The Very High Level Layer
+*************************
 
-この章の関数を使うとファイルまたはバッファにあるPythonソースコードを実行できますが、より詳細なやり取りをインタプリタとすることはできないでしょう。
+The functions in this chapter will let you execute Python source code given in a
+file or a buffer, but they will not let you interact in a more detailed way with
+the interpreter.
 
-これらの関数のいくつかは引数として文法の開始記号を受け取ります。
-使用できる開始記号は :const:`Py_eval_input` と :const:`Py_file_input` 、
-:const:`Py_single_input` です。開始期号の説明はこれらを引数として取る関数の後にあります。
+Several of these functions accept a start symbol from the grammar as a
+parameter.  The available start symbols are :const:`Py_eval_input`,
+:const:`Py_file_input`, and :const:`Py_single_input`.  These are described
+following the functions which accept them as parameters.
 
-これらの関数のいくつかが :c:type:`FILE\*` 引数をとることにも注意してください。
-注意深く扱う必要がある特別な問題の1つは、異なるCライブラリの :c:type:`FILE` 構造体は異なっていて互換性がない可能性があるということです。
-実際に(少なくとも)Windowsでは、動的リンクされる拡張が異なるライブラリを
-使うことが可能であり、したがって、 :c:type:`FILE\*` 引数がPythonランタイムが
-使っているライブラリと同じライブラリによって作成されたことが確かならば、単にこれらの関数へ渡すだけということに注意すべきです。
+Note also that several of these functions take :c:type:`FILE\*` parameters.  One
+particular issue which needs to be handled carefully is that the :c:type:`FILE`
+structure for different C libraries can be different and incompatible.  Under
+Windows (at least), it is possible for dynamically linked extensions to actually
+use different libraries, so care should be taken that :c:type:`FILE\*` parameters
+are only passed to these functions if it is certain that they were created by
+the same library that the Python runtime is using.
 
 
 .. c:function:: int Py_Main(int argc, char **argv)
 
-   標準インタプリタのためのメインプログラム。Pythonを組み込むプログラムのためにこれを利用できるようにしています。
-   *argc* と *argv* 引数をCプログラムの :c:func:`main` 関数へ渡されるものとまったく同じに作成すべきです。
-   引数リストが変更される可能性があるという点に注意することは重要です。
-   (しかし、引数リストが指している文字列の内容は変更されません)。
-   戻り値はインタプリタが(例外などではなく)普通に終了した時は ``0`` に、
-   例外で終了したときには ``1`` に、引数リストが正しい Python コマンドラインが
-   渡されなかったときは ``2`` になります。
+   The main program for the standard interpreter.  This is made available for
+   programs which embed Python.  The *argc* and *argv* parameters should be
+   prepared exactly as those which are passed to a C program's :c:func:`main`
+   function.  It is important to note that the argument list may be modified (but
+   the contents of the strings pointed to by the argument list are not). The return
+   value will be ``0`` if the interpreter exits normally (ie, without an
+   exception), ``1`` if the interpreter exits due to an exception, or ``2``
+   if the parameter list does not represent a valid Python command line.
 
-   ``Py_InspectFlag`` が設定されていない場合、未処理の :exc:`SystemExit` 例外が発生すると、
-   この関数は ``1`` を返すのではなくプロセスを exit することに気をつけてください。
+   Note that if an otherwise unhandled :exc:`SystemExit` is raised, this
+   function will not return ``1``, but exit the process, as long as
+   ``Py_InspectFlag`` is not set.
+
 
 .. c:function:: int PyRun_AnyFile(FILE *fp, const char *filename)
 
-   下記の :c:func:`PyRun_AnyFileExFlags` の *closeit* を ``0`` に、 *flags* を
-   *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_AnyFileExFlags` below, leaving
+   *closeit* set to ``0`` and *flags* set to *NULL*.
 
 
 .. c:function:: int PyRun_AnyFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
-   下記の :c:func:`PyRun_AnyFileExFlags` の *closeit* を ``0`` にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_AnyFileExFlags` below, leaving
+   the *closeit* argument set to ``0``.
 
 
 .. c:function:: int PyRun_AnyFileEx(FILE *fp, const char *filename, int closeit)
 
-   下記の :c:func:`PyRun_AnyFileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_AnyFileExFlags` below, leaving
+   the *flags* argument set to *NULL*.
 
 
 .. c:function:: int PyRun_AnyFileExFlags(FILE *fp, const char *filename, int closeit, PyCompilerFlags *flags)
 
-   *fp* が対話的デバイス(コンソールや端末入力あるいはUnix仮想端末)と関連づけられたファイルを参照しているならば、
-   :c:func:`PyRun_InteractiveLoop` の値を返します。それ以外の場合は、
-   :c:func:`PyRun_SimpleFile` の結果を返します。 *filename* が
-   *NULL* ならば、この関数はファイル名として ``"???"`` を使います。
+   If *fp* refers to a file associated with an interactive device (console or
+   terminal input or Unix pseudo-terminal), return the value of
+   :c:func:`PyRun_InteractiveLoop`, otherwise return the result of
+   :c:func:`PyRun_SimpleFile`.  If *filename* is *NULL*, this function uses
+   ``"???"`` as the filename.
 
 
 .. c:function:: int PyRun_SimpleString(const char *command)
 
-   下記の :c:func:`PyRun_SimpleStringFlags` の *PyCompilerFlags\** を
-   *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_SimpleStringFlags` below,
+   leaving the *PyCompilerFlags\** argument set to NULL.
 
 
 .. c:function:: int PyRun_SimpleStringFlags(const char *command, PyCompilerFlags *flags)
 
-   :mod:`__main__` モジュールの中で *flags* に従って *command* に含まれる Python ソースコードを
-   実行します。 :mod:`__main__` がまだ存在しない場合は作成されます。正常終了の場合は ``0`` を返し、また例外が発生した場合は ``-1`` を
-   返します。エラーがあっても、例外情報を得る方法はありません。
-   *flags* の意味については、後述します。
+   Executes the Python source code from *command* in the :mod:`__main__` module
+   according to the *flags* argument. If :mod:`__main__` does not already exist, it
+   is created.  Returns ``0`` on success or ``-1`` if an exception was raised.  If
+   there was an error, there is no way to get the exception information. For the
+   meaning of *flags*, see below.
 
-   ``Py_InspectFlag`` が設定されていない場合、未処理の :exc:`SystemExit` 例外が発生すると、
-   この関数は ``1`` を返すのではなくプロセスを exit することに気をつけてください。
+   Note that if an otherwise unhandled :exc:`SystemExit` is raised, this
+   function will not return ``-1``, but exit the process, as long as
+   ``Py_InspectFlag`` is not set.
 
 
 .. c:function:: int PyRun_SimpleFile(FILE *fp, const char *filename)
 
-   下記の :c:func:`PyRun_SimpleStringFileExFlags` の *closeit* を ``0`` に、 *flags* を
-   *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_SimpleFileExFlags` below,
+   leaving *closeit* set to ``0`` and *flags* set to *NULL*.
 
 
 .. c:function:: int PyRun_SimpleFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
-   下記の :c:func:`PyRun_SimpleStringFileExFlags` の *closeit* を ``0``
-   にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_SimpleFileExFlags` below,
+   leaving *closeit* set to ``0``.
 
 
 .. c:function:: int PyRun_SimpleFileEx(FILE *fp, const char *filename, int closeit)
 
-   下記の :c:func:`PyRun_SimpleStringFileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_SimpleFileExFlags` below,
+   leaving *flags* set to *NULL*.
 
 
 .. c:function:: int PyRun_SimpleFileExFlags(FILE *fp, const char *filename, int closeit, PyCompilerFlags *flags)
 
-   Similar to :c:func:`PyRun_SimpleStringFlags`, but the Python source
-   :c:func:`PyRun_SimpleString` と似ていますが、Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。
-   *filename* はそのファイルの名前でなければなりません。 *closeit* が真ならば、PyRun_SimpleFileExFlags は処理を戻す前に
-   ファイルを閉じます。
+   Similar to :c:func:`PyRun_SimpleStringFlags`, but the Python source code is read
+   from *fp* instead of an in-memory string. *filename* should be the name of the
+   file.  If *closeit* is true, the file is closed before PyRun_SimpleFileExFlags
+   returns.
 
 
 .. c:function:: int PyRun_InteractiveOne(FILE *fp, const char *filename)
 
-   下記の :c:func:`PyRun_InteractiveOneFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_InteractiveOneFlags` below,
+   leaving *flags* set to *NULL*.
 
 
 .. c:function:: int PyRun_InteractiveOneFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
-   対話的デバイスに関連付けられたファイルから文を一つ読み込み、 *flags* に従って実行します。
-   ``sys.ps1`` と ``sys.ps2`` を使って、ユーザにプロンプトを表示します。
-   入力が正常に実行されたときは ``0`` を返します。例外が発生した場合は
-   ``-1`` を返します。パースエラーの場合はPythonの一部として配布されている
-   :file:`errcode.h` インクルードファイルにあるエラーコードを返します。
-   (:file:`Python.h` は :file:`errcode.h` をインクルードしません。したがって、
-   必要ならば特別にインクルードしなければならないことに注意してください。)
+   Read and execute a single statement from a file associated with an
+   interactive device according to the *flags* argument.  The user will be
+   prompted using ``sys.ps1`` and ``sys.ps2``.  Returns ``0`` when the input was
+   executed successfully, ``-1`` if there was an exception, or an error code
+   from the :file:`errcode.h` include file distributed as part of Python if
+   there was a parse error.  (Note that :file:`errcode.h` is not included by
+   :file:`Python.h`, so must be included specifically if needed.)
 
 
 .. c:function:: int PyRun_InteractiveLoop(FILE *fp, const char *filename)
 
-   下記の :c:func:`PyRun_InteractiveLoopFlags` の *flags* を ``0`` にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_InteractiveLoopFlags` below,
+   leaving *flags* set to *NULL*.
 
 
 .. c:function:: int PyRun_InteractiveLoopFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
-   対話的デバイスに関連付けられたファイルからEOF に達するまで複数の文を
-   読み込み実行します。
-   使われます。 ``sys.ps1`` と ``sys.ps2`` を使って、ユーザにプロンプトを表示します。
-   EOFに達すると ``0`` を返します。
+   Read and execute statements from a file associated with an interactive device
+   until EOF is reached.  The user will be prompted using ``sys.ps1`` and
+   ``sys.ps2``.  Returns ``0`` at EOF.
 
 
 .. c:function:: struct _node* PyParser_SimpleParseString(const char *str, int start)
 
-   下記の :c:func:`PyRun_SimpleParseStringFlagsFilename` の *filename* を *NULL*
-   に、 *flags* を ``0`` にして単純化したインタフェースです。
+   This is a simplified interface to
+   :c:func:`PyParser_SimpleParseStringFlagsFilename` below, leaving  *filename* set
+   to *NULL* and *flags* set to ``0``.
 
 
 .. c:function:: struct _node* PyParser_SimpleParseStringFlags( const char *str, int start, int flags)
 
-   下記の :c:func:`PyRun_SimpleParseStringFlagsFilename` の *filename* を *NULL*
-   にして単純化したインタフェースです。
+   This is a simplified interface to
+   :c:func:`PyParser_SimpleParseStringFlagsFilename` below, leaving  *filename* set
+   to *NULL*.
 
 
 .. c:function:: struct _node* PyParser_SimpleParseStringFlagsFilename( const char *str, const char *filename, int start, int flags)
 
-   開始トークン *start* を使って *str* に含まれる Python ソースコードを *flags* 引数に従ってパースします。効率的に評価可能なコードオブジェ
-   クトを作成するためにその結果を使うことができます。コード断片を何度も評価しなければならない場合に役に立ちます。
+   Parse Python source code from *str* using the start token *start* according to
+   the *flags* argument.  The result can be used to create a code object which can
+   be evaluated efficiently. This is useful if a code fragment must be evaluated
+   many times.
 
 
 .. c:function:: struct _node* PyParser_SimpleParseFile(FILE *fp, const char *filename, int start)
 
-   下記の :c:func:`PyRun_SimpleParseFileFlags` の *flags* を ``0`` にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyParser_SimpleParseFileFlags` below,
+   leaving *flags* set to ``0``.
 
 
 .. c:function:: struct _node* PyParser_SimpleParseFileFlags(FILE *fp, const char *filename, int start, int flags)
 
-   :c:func:`PyParser_SimpleParseStringFlagsFilename` に似ていますが、
-   Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。 *filename* はそのファイルの名前でなけれななりません。
+   Similar to :c:func:`PyParser_SimpleParseStringFlagsFilename`, but the Python
+   source code is read from *fp* instead of an in-memory string.
 
 
 .. c:function:: PyObject* PyRun_String(const char *str, int start, PyObject *globals, PyObject *locals)
 
-   下記の :c:func:`PyRun_StringFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_StringFlags` below, leaving
+   *flags* set to *NULL*.
 
 
 .. c:function:: PyObject* PyRun_StringFlags(const char *str, int start, PyObject *globals, PyObject *locals, PyCompilerFlags *flags)
 
-   辞書 *globals* と *locals* で指定されるコンテキストにおいて、 *str* に含まれるPythonソースコードをコンパイラフラグ *flags* の
-   もとで実行します。パラメータ *start* はソースコードをパースするために使われるべき開始トークンを指定します。
+   Execute Python source code from *str* in the context specified by the
+   dictionaries *globals* and *locals* with the compiler flags specified by
+   *flags*.  The parameter *start* specifies the start token that should be used to
+   parse the source code.
 
-   コードを実行した結果をPythonオブジェクトとして返します。または、例外が発生したならば *NULL* を返します。
+   Returns the result of executing the code as a Python object, or *NULL* if an
+   exception was raised.
 
 
 .. c:function:: PyObject* PyRun_File(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals)
 
-   下記の :c:func:`PyRun_FileExFlags` の *closeit* を ``0`` にし、 *flags*
-   を *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_FileExFlags` below, leaving
+   *closeit* set to ``0`` and *flags* set to *NULL*.
 
 
 .. c:function:: PyObject* PyRun_FileEx(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, int closeit)
 
-   下記の :c:func:`PyRun_FileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_FileExFlags` below, leaving
+   *flags* set to *NULL*.
 
 
 .. c:function:: PyObject* PyRun_FileFlags(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, PyCompilerFlags *flags)
 
-   下記の :c:func:`PyRun_FileExFlags` の *closeit* を ``0`` にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`PyRun_FileExFlags` below, leaving
+   *closeit* set to ``0``.
 
 
 .. c:function:: PyObject* PyRun_FileExFlags(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, int closeit, PyCompilerFlags *flags)
 
-   :c:func:`PyRun_String` と似ていますが、Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。 *closeit*
-   を真にすると、 :c:func:`PyRun_FileExFlags` から処理を戻す前にファイルを閉じます。
-   *filename* はそのファイルの名前でなければなりません。
+   Similar to :c:func:`PyRun_StringFlags`, but the Python source code is read from
+   *fp* instead of an in-memory string. *filename* should be the name of the file.
+   If *closeit* is true, the file is closed before :c:func:`PyRun_FileExFlags`
+   returns.
 
 
 .. c:function:: PyObject* Py_CompileString(const char *str, const char *filename, int start)
 
-   下記の :c:func:`Py_CompileStringFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   This is a simplified interface to :c:func:`Py_CompileStringFlags` below, leaving
+   *flags* set to *NULL*.
 
 
 .. c:function:: PyObject* Py_CompileStringFlags(const char *str, const char *filename, int start, PyCompilerFlags *flags)
 
-   *str* 内のPythonソースコードをパースしてコンパイルし、作られたコードオブジェクトを返します。開始トークンは
-   *start* によって与えられます。これはコンパイル可能なコードを制限するために使うことができ、 :const:`Py_eval_input` 、
-   :const:`Py_file_input` もしくは :const:`Py_single_input` であるべきです。
-   *filename* で指定されるファイル名はコードオブジェクトを構築するために使われ、
-   トレースバックあるいは :exc:`SyntaxError` 例外メッセージに出てくる可能性があります。
-   コードがパースできなかったりコンパイルできなかったりした場合に、これは *NULL* を返します。
+   Parse and compile the Python source code in *str*, returning the resulting code
+   object.  The start token is given by *start*; this can be used to constrain the
+   code which can be compiled and should be :const:`Py_eval_input`,
+   :const:`Py_file_input`, or :const:`Py_single_input`.  The filename specified by
+   *filename* is used to construct the code object and may appear in tracebacks or
+   :exc:`SyntaxError` exception messages.  This returns *NULL* if the code cannot
+   be parsed or compiled.
 
 
 .. c:function:: PyObject* PyEval_EvalCode(PyCodeObject *co, PyObject *globals, PyObject *locals)
 
-   :c:func:`PyEval_EvalCodeEx` に対するシンプルなインタフェースで、
-   コードオブジェクトと、グローバル・ローカル変数辞書だけを受け取ります。
-   他の引数には *NULL* が渡されます。
+   This is a simplified interface to :c:func:`PyEval_EvalCodeEx`, with just
+   the code object, and the dictionaries of global and local variables.
+   The other arguments are set to *NULL*.
 
 
 .. c:function:: PyObject* PyEval_EvalCodeEx(PyCodeObject *co, PyObject *globals, PyObject *locals, PyObject **args, int argcount, PyObject **kws, int kwcount, PyObject **defs, int defcount, PyObject *closure)
 
-   与えられた特定の環境で、コンパイル済みのコードオブジェクトを評価します。
-   環境はグローバルとローカルの辞書、引き数の配列、キーワードとデフォルト値、
-   クロージャーのためのセルのタプルで構成されています。
+   Evaluate a precompiled code object, given a particular environment for its
+   evaluation.  This environment consists of dictionaries of global and local
+   variables, arrays of arguments, keywords and defaults, and a closure tuple of
+   cells.
 
 
 .. c:function:: PyObject* PyEval_EvalFrame(PyFrameObject *f)
 
-   実行フレームを評価します。
-   これは PyEval_EvalFrameEx に対するシンプルなインタフェースで、
-   後方互換性のためのものです。
+   Evaluate an execution frame.  This is a simplified interface to
+   PyEval_EvalFrameEx, for backward compatibility.
 
 
 .. c:function:: PyObject* PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
 
-   Python のインタープリタの主要な、直接的な関数です。
-   この関数には 2000 行ほどあります。
-   実行フレーム *f* に関連付けられたコードオブジェクトを実行します。
-   バイトコードを解釈して、必要に応じて呼び出しを実行します。
-   追加の *throwflag* 引数はほとんど無視できます。 - もし true なら、
-   すぐに例外を発生させます。これはジェネレータオブジェクトの :meth:`throw`
-   メソッドで利用されます。
+   This is the main, unvarnished function of Python interpretation.  It is
+   literally 2000 lines long.  The code object associated with the execution
+   frame *f* is executed, interpreting bytecode and executing calls as needed.
+   The additional *throwflag* parameter can mostly be ignored - if true, then
+   it causes an exception to immediately be thrown; this is used for the
+   :meth:`~generator.throw` methods of generator objects.
 
 
 .. c:function:: int PyEval_MergeCompilerFlags(PyCompilerFlags *cf)
 
-   現在の評価フレームのフラグを変更します。
-   成功したら true を、失敗したら false を返します。
+   This function changes the flags of the current evaluation frame, and returns
+   true on success, false on failure.
 
 
 .. c:var:: int Py_eval_input
 
    .. index:: single: Py_CompileString()
 
-   単独の式に対するPython文法の開始記号で、 :c:func:`Py_CompileString` と一緒に使います。
+   The start symbol from the Python grammar for isolated expressions; for use with
+   :c:func:`Py_CompileString`.
 
 
 .. c:var:: int Py_file_input
 
    .. index:: single: Py_CompileString()
 
-   ファイルあるいは他のソースから読み込まれた文の並びに対するPython文法の開始記号で、 :c:func:`Py_CompileString` と
-   一緒に使います。これは任意の長さのPythonソースコードをコンパイルするときに使う記号です。
+   The start symbol from the Python grammar for sequences of statements as read
+   from a file or other source; for use with :c:func:`Py_CompileString`.  This is
+   the symbol to use when compiling arbitrarily long Python source code.
 
 
 .. c:var:: int Py_single_input
 
    .. index:: single: Py_CompileString()
 
-   単一の文に対するPython文法の開始記号で、 :c:func:`Py_CompileString` と一緒に使います。
-   これは対話式のインタプリタループのための記号です。
+   The start symbol from the Python grammar for a single statement; for use with
+   :c:func:`Py_CompileString`. This is the symbol used for the interactive
+   interpreter loop.
 
 
 .. c:type:: struct PyCompilerFlags
 
-   コンパイラフラグを収めておくための構造体です。コードをコンパイルするだけの場合、この構造体が ``int flags`` として渡されます。コードを実
-   行する場合には ``PyCompilerFlags *flags`` として渡されます。この場合、 ``from __future__  import`` は
-   *flags* の内容を変更できます。
+   This is the structure used to hold compiler flags.  In cases where code is only
+   being compiled, it is passed as ``int flags``, and in cases where code is being
+   executed, it is passed as ``PyCompilerFlags *flags``.  In this case, ``from
+   __future__ import`` can modify *flags*.
 
-   ``PyCompilerFlags *flags`` が *NULL* の場合、 :attr:`cf_flags` は ``0`` として扱われ、
-   ``from __future__ import`` による変更は無視されます。 ::
+   Whenever ``PyCompilerFlags *flags`` is *NULL*, :attr:`cf_flags` is treated as
+   equal to ``0``, and any modification due to ``from __future__ import`` is
+   discarded.  ::
 
       struct PyCompilerFlags {
           int cf_flags;
@@ -285,6 +318,6 @@
 
 .. c:var:: int CO_FUTURE_DIVISION
 
-   このビットを *flags* にセットすると、除算演算子 ``/`` は :pep:`238` による「真の除算 (true division)」
-   として扱われます。
+   This bit can be set in *flags* to cause division operator ``/`` to be
+   interpreted as "true division" according to :pep:`238`.
 

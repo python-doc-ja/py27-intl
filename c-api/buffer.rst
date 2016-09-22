@@ -2,8 +2,8 @@
 
 .. _bufferobjects:
 
-buffer オブジェクトと memoryview オブジェクト
-----------------------------------------------
+Buffers and Memoryview Objects
+------------------------------
 
 .. sectionauthor:: Greg Stein <gstein@lyra.org>
 .. sectionauthor:: Benjamin Peterson
@@ -13,86 +13,97 @@ buffer オブジェクトと memoryview オブジェクト
    object: buffer
    single: buffer interface
 
-C で実装された Python オブジェクトは、"バッファインタフェース (buffer interface)" と呼ばれる一連の
-関数を公開していることがあります。これらの関数は、あるオブジェクトのデータを生 (raw) のバイト列形式で公開するために使います。
-このオブジェクトの使い手は、バッファインタフェースを使うことで、オブジェクトをあらかじめコピーしておく必要なしに、オブジェクトの
-データに直接アクセスできます。
+Python objects implemented in C can export a group of functions called the
+"buffer interface."  These functions can be used by an object to expose its
+data in a raw, byte-oriented format. Clients of the object can use the buffer
+interface to access the object data directly, without needing to copy it
+first.
 
-バッファインタフェースをサポートするオブジェクトの例として、文字列型とアレイ (array) 型の二つがあります。文字列オブジェクトは、
-その内容をバッファインタフェースのバイト単位形式で公開しています。アレイもその内容を公開していますが、注意する必要が
-あるのはアレイの要素は複数バイトの値になりうる、ということです。
+Two examples of objects that support the buffer interface are strings and
+arrays. The string object exposes the character contents in the buffer
+interface's byte-oriented form. An array can only expose its contents via the
+old-style buffer interface. This limitation does not apply to Python 3,
+where :class:`memoryview` objects can be constructed from arrays, too.
+Array elements may be multi-byte values.
 
-バッファインタフェースの使い手の一例として、ファイルオブジェクトの :meth:`write` メソッドがあります。バッファインタフェースを
-介してバイト列を公開しているオブジェクトは全て、ファイルへの書き出しができます。オブジェクトのバッファインタフェースを操作し、
-対象となるオブジェクトからデータを返させる  :c:func:`PyArg_ParseTuple` には数多くのデータ書式化コードがあります。
+An example user of the buffer interface is the file object's :meth:`write`
+method. Any object that can export a series of bytes through the buffer
+interface can be written to a file. There are a number of format codes to
+:c:func:`PyArg_ParseTuple` that operate against an object's buffer interface,
+returning data from the target object.
 
-バージョン 1.6 から、Python は Python レベルのバッファオブジェクトと、
-C 言語レベルのバッファ API を提供しており、任意のビルトイン型やユーザー定義型は
-その文字列表現を公開することができます。
-しかし、両方共、幾つかの欠点のために廃止予定扱いされていて、
-Python 3.0 では公式に削除され、新しい C 言語レベルのバッファ API と
-新しい Python レベルの :class:`memoryview` という名前のオブジェクトに
-置き換えられています。
+Starting from version 1.6, Python has been providing Python-level buffer
+objects and a C-level buffer API so that any built-in or used-defined type can
+expose its characteristics. Both, however, have been deprecated because of
+various shortcomings, and have been officially removed in Python 3 in favour
+of a new C-level buffer API and a new Python-level object named
+:class:`memoryview`.
 
-新しいバッファ API は Python 2.6 に逆移植されており、 :class:`memoryviews`
-オブジェクトは Python 2.7 に逆移植されています。
-古いバージョンとの互換性が必要なければ、古いAPIの代わりにこれらを使うことをおすすめします。
+The new buffer API has been backported to Python 2.6, and the
+:class:`memoryview` object has been backported to Python 2.7. It is strongly
+advised to use them rather than the old APIs, unless you are blocked from
+doing so for compatibility reasons.
 
 
-新スタイル Py_buffer 構造体
-===========================
+The new-style Py_buffer struct
+==============================
 
 
 .. c:type:: Py_buffer
 
    .. c:member:: void *buf
 
-      オブジェクトのメモリの開始位置へのポインタ
+      A pointer to the start of the memory for the object.
 
    .. c:member:: Py_ssize_t len
       :noindex:
 
-      メモリのトータルサイズ [byte]
+      The total length of the memory in bytes.
 
    .. c:member:: int readonly
 
-      バッファが読み込み専用かどうかを示す
+      An indicator of whether the buffer is read only.
 
    .. c:member:: const char *format
       :noindex:
 
-      バッファを通してアクセスできる要素の形式を指定する、 :mod:`struct`
-      モジュールスタイル文法の、 *NULL* 終端文字列。
-      このポインタの値が *NULL* なら、 ``"B"`` (符号無しバイト) として扱われます。
+      A *NULL* terminated string in :mod:`struct` module style syntax giving
+      the contents of the elements available through the buffer.  If this is
+      *NULL*, ``"B"`` (unsigned bytes) is assumed.
 
    .. c:member:: int ndim
 
-      メモリが多次元配列を表している時の次元数。 0 の場合、 :c:data:`strides`
-      と :c:data:`suboffsets` は *NULL* でなければなりません。
+      The number of dimensions the memory represents as a multi-dimensional
+      array.  If it is 0, :c:data:`strides` and :c:data:`suboffsets` must be
+      *NULL*.
 
    .. c:member:: Py_ssize_t *shape
 
-      メモリが多次元配列を表しているとき、その形を示す長さ :c:data:`ndim` の
-      :c:type:`Py_ssize_t` の配列。
-      ``((*shape)[0] * ... * (*shape)[ndims-1])*itemsize`` は :c:data:`len`
-      と等しくなければならないことに気をつけてください。
+      An array of :c:type:`Py_ssize_t`\s the length of :c:data:`ndim` giving the
+      shape of the memory as a multi-dimensional array.  Note that
+      ``((*shape)[0] * ... * (*shape)[ndims-1])*itemsize`` should be equal to
+      :c:data:`len`.
 
    .. c:member:: Py_ssize_t *strides
 
-      各次元で次の要素を得るためにスキップするバイト数を示す、長さ :c:data:`ndim`
-      の :c:type:`Py_ssize_t` の配列。
+      An array of :c:type:`Py_ssize_t`\s the length of :c:data:`ndim` giving the
+      number of bytes to skip to get to a new element in each dimension.
 
    .. c:member:: Py_ssize_t *suboffsets
 
-      長さ :c:data:`ndim` の :c:type:`Py_ssize_t` の配列。
-      suboffset の各数値が 0 以上であるとき、その次元に格納されているのはポインタで、
-      suboffset の値はそのポインタの参照を解決するときに何バイトのオフセットを足すかを
-      示しています。
-      suboffset に負の数が格納されているときは、参照解決が不要であること
-      (連続したメモリブロック内に直接配置されていること)を意味しています。
+      An array of :c:type:`Py_ssize_t`\s the length of :c:data:`ndim`.  If these
+      suboffset numbers are greater than or equal to 0, then the value stored
+      along the indicated dimension is a pointer and the suboffset value
+      dictates how many bytes to add to the pointer after de-referencing. A
+      suboffset value that it negative indicates that no de-referencing should
+      occur (striding in a contiguous memory block).
 
-      次の例は、 strides も suboffsets も非NULL の時に、N次元配列からN次元インデックスで
-      示される要素のポインタを返す関数です。 ::
+      If all suboffsets are negative (i.e. no de-referencing is needed, then
+      this field must be NULL (the default value).
+
+      Here is a function that returns a pointer to the element in an N-D array
+      pointed to by an N-dimensional index when there are both non-NULL strides
+      and suboffsets::
 
           void *get_item_pointer(int ndim, void *buf, Py_ssize_t *strides,
               Py_ssize_t *suboffsets, Py_ssize_t *indices) {
@@ -110,303 +121,335 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 
    .. c:member:: Py_ssize_t itemsize
 
-      これは共有メモリ上の各要素のbyte単位のサイズを格納する変数です。
-      これは :c:func:`PyBuffer_SizeFromFormat` を使って計算できる値なので
-      技術的には不要なのですが、バッファを提供する側はフォーマット文字列を
-      解析しなくてもこの情報を知っているでしょうし、バッファを受け取る側に
-      とっては正しく解釈するのに必要な情報です。なので、要素サイズを格納する
-      ほうが便利ですし高速です。
+      This is a storage for the itemsize (in bytes) of each element of the
+      shared memory. It is technically un-necessary as it can be obtained
+      using :c:func:`PyBuffer_SizeFromFormat`, however an exporter may know
+      this information without parsing the format string and it is necessary
+      to know the itemsize for proper interpretation of striding. Therefore,
+      storing it is more convenient and faster.
 
    .. c:member:: void *internal
 
-      バッファを提供する側のオブジェクトが内部的に利用するための変数です。
-      例えば、提供側はこの変数に整数型をキャストして、 shape, strides, suboffsets
-      といった配列をバッファを解放するときに同時に解放するべきかどうかを
-      管理するフラグに使うことができるでしょう。
-      バッファを受け取る側は、この値を変更してはなりません。
+      This is for use internally by the exporting object. For example, this
+      might be re-cast as an integer by the exporter and used to store flags
+      about whether or not the shape, strides, and suboffsets arrays must be
+      freed when the buffer is released. The consumer should never alter this
+      value.
 
 
-バッファ関連関数
+Buffer related functions
 ========================
 
 
 .. c:function:: int PyObject_CheckBuffer(PyObject *obj)
 
-   *obj* がバッファインタフェースをサポートしている場合に 1 を、
-   それ以外の場合に 0 を返します。
+   Return 1 if *obj* supports the buffer interface otherwise 0.
 
 
 .. c:function:: int PyObject_GetBuffer(PyObject *obj, Py_buffer *view, int flags)
 
-      *obj* を :c:type:`Py_buffer` *view* へエクスポートします。
-      これらの引数は *NULL* であってはなりません。
-      *flag* 引数は呼び出し側がどんなバッファを扱おうとしているのか、
-      バッファ提供側がどんなバッファを返すことが許されているのかを示す、
-      ビットフィールドです。
-      バッファインタフェースは複雑なメモリ共有を可能にしていますが、呼び出し元は
-      すべての複雑なバッファを扱えるとは限らず、バッファ提供側がシンプルなビューを
-      提供できるならそれを利用したいとかもしれません。
+      Export *obj* into a :c:type:`Py_buffer`, *view*.  These arguments must
+      never be *NULL*.  The *flags* argument is a bit field indicating what
+      kind of buffer the caller is prepared to deal with and therefore what
+      kind of buffer the exporter is allowed to return.  The buffer interface
+      allows for complicated memory sharing possibilities, but some caller may
+      not be able to handle all the complexity but may want to see if the
+      exporter will let them take a simpler view to its memory.
 
-      バッファ提供側はすべての方法でメモリを共有できるとは限らず、呼び出し側に
-      何かが不可能であることを伝えるためにエラーを発生させる必要があるかもしれません。
-      その場合のエラーは、もしその問題を実際に引き起こしているのが別のエラーだったとしても、
-      :exc:`BufferError` でなければなりません。
-      バッファ提供側は flag の情報を使って :c:data:`Py_buffer` 構造体のどのフィールドへの
-      非デフォルト値の設定を省略したり、要求されたシンプルな view を提供できない場合は
-      エラーを発生させたりすることができます。
+      Some exporters may not be able to share memory in every possible way and
+      may need to raise errors to signal to some consumers that something is
+      just not possible. These errors should be a :exc:`BufferError` unless
+      there is another error that is actually causing the problem. The
+      exporter can use flags information to simplify how much of the
+      :c:data:`Py_buffer` structure is filled in with non-default values and/or
+      raise an error if the object can't support a simpler view of its memory.
 
-      成功したら 0 が、エラー時には -1 が返されます。
+      0 is returned on success and -1 on error.
 
-      次のテーブルは、 *flags* 引数が取りうる値です。
+      The following table gives possible values to the *flags* arguments.
 
-      +-----------------------------------+--------------------------------------------------------------+
-      | Flag                              | 説明                                                         |
-      +===================================+==============================================================+
-      | :c:macro:`PyBUF_SIMPLE`           | これはデフォルトの flag の状態です。                         |
-      |                                   | 結果のバッファは書き込み可能かもしれませんし、不可能かも     |
-      |                                   | しれません。データのフォーマットは unsigned byte とします。  |
-      |                                   | これは "スタンドアロン" のフラグ定数です。他の定数と '|'     |
-      |                                   | を取る必要はありません。                                     |
-      |                                   | 提供側はこのような連続したバイト列のバッファを提供できない   |
-      |                                   | 場合に、エラーを発生させるかもしれません。                   |
-      |                                   |                                                              |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_WRITABLE`         | 結果のバッファは書込み可能でなければなりません。             |
-      |                                   | 書き込み不可能な場合はエラーを発生させます。                 |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_STRIDES`          | この値は :c:macro:`PyBUF_ND` を含みます。                    |
-      |                                   | バッファは strides 情報を提供しなければなりません。          |
-      |                                   | (言い換えると、 strides は NULL であってはいけません。)      |
-      |                                   | このフラグは、呼び出し元が、要素間に隙間のある不連続な       |
-      |                                   | 配列を扱えるときに使われます。 strides を扱うことは、        |
-      |                                   | 自動的に shape も扱えることを要求されます。                  |
-      |                                   | 提供側は stride 形式のバッファを提供できないとき(例えば、    |
-      |                                   | suboffset が必要な場合)はエラーを発生させます。              |
-      |                                   |                                                              |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_ND`               | バッファは shape 情報を提供しなければなりません。            |
-      |                                   | メモリは C スタイルの並び (最後の次元が一番高速) だと仮定    |
-      |                                   | されます。提供側はこの種類の連続バッファを提供できない場合は |
-      |                                   | エラーを発生させます。このフラグが指定されていな場合は shape |
-      |                                   | は *NULL* になります。                                       |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_C_CONTIGUOUS`     | これらのフラグは、返されるバッファの並びを指定します。       |
-      | :c:macro:`PyBUF_F_CONTIGUOUS`     | それぞれ、C並び(最後の次元が一番高速)、Fortran並び(最初の    |
-      | :c:macro:`PyBUF_ANY_CONTIGUOUS`   | 次元が一番高速), そのどちらでも、を意味します。              |
-      |                                   | これらのフラグは :c:macro:`PyBUF_STRIDES` を含んでおり、     |
-      |                                   | strides 情報が正しく格納されていることを保証します。         |
-      |                                   |                                                              |
-      |                                   |                                                              |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_INDIRECT`         | このフラグは、返されるバッファが suboffsets 情報を含んで     |
-      |                                   | いることを示します。(suboffsets が必要無いときは NULL でも   |
-      |                                   | かまいません。) このフラグは、バッファ利用側が suboffsets    |
-      |                                   | を使って参照されている間接配列を扱えるときに利用されます。   |
-      |                                   | このフラグは :c:macro:`PyBUF_STRIDES` を含みます。           |
-      |                                   |                                                              |
-      |                                   |                                                              |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_FORMAT`           | 返されるバッファは正しい format 情報を持っていなければ       |
-      |                                   | なりません。このフラグは、バッファ利用側が実際に格納されて   |
-      |                                   | いるデータの '種類' をチェックするときに利用します。         |
-      |                                   | バッファ提供側は、要求された場合は常にこの情報を提供できる   |
-      |                                   | べきです。 format が明示的に要求されていない場合は format は |
-      |                                   | *NULL* (``'B'``, unsigned byte を意味する)であるべきです。   |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_STRIDED`          | ``(PyBUF_STRIDES | PyBUF_WRITABLE)`` と同じ                  |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_STRIDED_RO`       | ``(PyBUF_STRIDES)`` と同じ                                   |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_RECORDS`          | ``(PyBUF_STRIDES | PyBUF_FORMAT | PyBUF_WRITABLE)`` と同じ   |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_RECORDS_RO`       | ``(PyBUF_STRIDES | PyBUF_FORMAT)`` と同じ                    |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_FULL`             | ``(PyBUF_INDIRECT | PyBUF_FORMAT | PyBUF_WRITABLE)`` と同じ  |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_FULL_RO`          | ``(PyBUF_INDIRECT | PyBUF_FORMAT)`` と同じ                   |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_CONTIG`           | ``(PyBUF_ND | PyBUF_WRITABLE)`` と同じ                       |
-      +-----------------------------------+--------------------------------------------------------------+
-      | :c:macro:`PyBUF_CONTIG_RO`        | ``(PyBUF_ND)`` と同じ                                        |
-      +-----------------------------------+--------------------------------------------------------------+
+      +-------------------------------+---------------------------------------------------+
+      | Flag                          | Description                                       |
+      +===============================+===================================================+
+      | :c:macro:`PyBUF_SIMPLE`       | This is the default flag state.  The returned     |
+      |                               | buffer may or may not have writable memory.  The  |
+      |                               | format of the data will be assumed to be unsigned |
+      |                               | bytes.  This is a "stand-alone" flag constant. It |
+      |                               | never needs to be '|'d to the others. The exporter|
+      |                               | will raise an error if it cannot provide such a   |
+      |                               | contiguous buffer of bytes.                       |
+      |                               |                                                   |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_WRITABLE`     | The returned buffer must be writable.  If it is   |
+      |                               | not writable, then raise an error.                |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_STRIDES`      | This implies :c:macro:`PyBUF_ND`. The returned    |
+      |                               | buffer must provide strides information (i.e. the |
+      |                               | strides cannot be NULL). This would be used when  |
+      |                               | the consumer can handle strided, discontiguous    |
+      |                               | arrays.  Handling strides automatically assumes   |
+      |                               | you can handle shape.  The exporter can raise an  |
+      |                               | error if a strided representation of the data is  |
+      |                               | not possible (i.e. without the suboffsets).       |
+      |                               |                                                   |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_ND`           | The returned buffer must provide shape            |
+      |                               | information. The memory will be assumed C-style   |
+      |                               | contiguous (last dimension varies the             |
+      |                               | fastest). The exporter may raise an error if it   |
+      |                               | cannot provide this kind of contiguous buffer. If |
+      |                               | this is not given then shape will be *NULL*.      |
+      |                               |                                                   |
+      |                               |                                                   |
+      |                               |                                                   |
+      +-------------------------------+---------------------------------------------------+
+      |:c:macro:`PyBUF_C_CONTIGUOUS`  | These flags indicate that the contiguity returned |
+      |:c:macro:`PyBUF_F_CONTIGUOUS`  | buffer must be respectively, C-contiguous (last   |
+      |:c:macro:`PyBUF_ANY_CONTIGUOUS`| dimension varies the fastest), Fortran contiguous |
+      |                               | (first dimension varies the fastest) or either    |
+      |                               | one.  All of these flags imply                    |
+      |                               | :c:macro:`PyBUF_STRIDES` and guarantee that the   |
+      |                               | strides buffer info structure will be filled in   |
+      |                               | correctly.                                        |
+      |                               |                                                   |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_INDIRECT`     | This flag indicates the returned buffer must have |
+      |                               | suboffsets information (which can be NULL if no   |
+      |                               | suboffsets are needed).  This can be used when    |
+      |                               | the consumer can handle indirect array            |
+      |                               | referencing implied by these suboffsets. This     |
+      |                               | implies :c:macro:`PyBUF_STRIDES`.                 |
+      |                               |                                                   |
+      |                               |                                                   |
+      |                               |                                                   |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_FORMAT`       | The returned buffer must have true format         |
+      |                               | information if this flag is provided. This would  |
+      |                               | be used when the consumer is going to be checking |
+      |                               | for what 'kind' of data is actually stored. An    |
+      |                               | exporter should always be able to provide this    |
+      |                               | information if requested. If format is not        |
+      |                               | explicitly requested then the format must be      |
+      |                               | returned as *NULL* (which means ``'B'``, or       |
+      |                               | unsigned bytes)                                   |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_STRIDED`      | This is equivalent to ``(PyBUF_STRIDES |          |
+      |                               | PyBUF_WRITABLE)``.                                |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_STRIDED_RO`   | This is equivalent to ``(PyBUF_STRIDES)``.        |
+      |                               |                                                   |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_RECORDS`      | This is equivalent to ``(PyBUF_STRIDES |          |
+      |                               | PyBUF_FORMAT | PyBUF_WRITABLE)``.                 |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_RECORDS_RO`   | This is equivalent to ``(PyBUF_STRIDES |          |
+      |                               | PyBUF_FORMAT)``.                                  |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_FULL`         | This is equivalent to ``(PyBUF_INDIRECT |         |
+      |                               | PyBUF_FORMAT | PyBUF_WRITABLE)``.                 |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_FULL_RO`      | This is equivalent to ``(PyBUF_INDIRECT |         |
+      |                               | PyBUF_FORMAT)``.                                  |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_CONTIG`       | This is equivalent to ``(PyBUF_ND |               |
+      |                               | PyBUF_WRITABLE)``.                                |
+      +-------------------------------+---------------------------------------------------+
+      | :c:macro:`PyBUF_CONTIG_RO`    | This is equivalent to ``(PyBUF_ND)``.             |
+      |                               |                                                   |
+      +-------------------------------+---------------------------------------------------+
 
 
 .. c:function:: void PyBuffer_Release(Py_buffer *view)
 
-   *view* バッファを解放します。
-   バッファが利用されなくなったときに、そのメモリを解放できるようにこの関数を呼び出すべきです。
+   Release the buffer *view*.  This should be called when the buffer
+   is no longer being used as it may free memory from it.
+
 
 .. c:function:: Py_ssize_t PyBuffer_SizeFromFormat(const char *)
 
-   :c:data:`~Py_buffer.itemsize` の値を :c:data:`~PyBuffer.format` から計算して返します。
+   Return the implied :c:data:`~Py_buffer.itemsize` from the struct-stype
+   :c:data:`~Py_buffer.format`.
 
 
 .. c:function:: int PyBuffer_IsContiguous(Py_buffer *view, char fortran)
 
-   *view* で定義されているメモリが、 C スタイル (*fortran* == ``'C'``) のときか、
-   Fortran スタイル (*fortran* == ``'F'``) のときか、そのいずれか
-   (*fortran* == ``'A'``) であれば 1 を返します。
-   それ以外の場合は 0 を返します。
+   Return 1 if the memory defined by the *view* is C-style (*fortran* is
+   ``'C'``) or Fortran-style (*fortran* is ``'F'``) contiguous or either one
+   (*fortran* is ``'A'``).  Return 0 otherwise.
 
 
 .. c:function:: void PyBuffer_FillContiguousStrides(int ndim, Py_ssize_t *shape, Py_ssize_t *strides, Py_ssize_t itemsize, char fortran)
 
-   *strides* 配列を、 *itemsize* の大きさの要素がバイト単位で連続した、
-   *shape* の形をした (*fortran* が ``'C'`` なら C-style, ``'F'``
-   なら Fortran-style の) 多次元配列として埋める。
+   Fill the *strides* array with byte-strides of a contiguous (C-style if
+   *fortran* is ``'C'`` or Fortran-style if *fortran* is ``'F'``) array of the
+   given shape with the given number of bytes per element.
 
 
 .. c:function:: int PyBuffer_FillInfo(Py_buffer *view, PyObject *obj, void *buf, Py_ssize_t len, int readonly, int infoflags)
 
-   バッファ提供側が与えられた長さの "unsigned bytes" の連続した1つのメモリブロックしか
-   提供できないものとして、 *view* バッファ情報構造体を正しく埋める。
-   成功したら 0 を、エラー時には (例外を発生させつつ) -1 を返す。
+   Fill in a buffer-info structure, *view*, correctly for an exporter that can
+   only share a contiguous chunk of memory of "unsigned bytes" of the given
+   length.  Return 0 on success and -1 (with raising an error) on error.
 
 
-.. MemoryView objects
-
-memoryview オブジェクト
-========================
+MemoryView objects
+==================
 
 .. versionadded:: 2.7
 
-:class:`memoryview` オブジェクトは、新しい、他のオブジェクトと同じように扱える
-Python オブジェクトの形をした C言語レベルのバッファへのインタフェースです。
+A :class:`memoryview` object exposes the new C level buffer interface as a
+Python object which can then be passed around like any other object.
 
 .. c:function:: PyObject *PyMemoryView_FromObject(PyObject *obj)
 
-   新しいバッファインタフェースを定義しているオブジェクトから memoryview
-   オブジェクトを作ります。
+   Create a memoryview object from an object that defines the new buffer
+   interface.
 
 
 .. c:function:: PyObject *PyMemoryView_FromBuffer(Py_buffer *view)
 
-   buffer-info 構造体 *view* をラップする memoryview オブジェクトを作ります。
-   作られた memoryview オブジェクトはバッファを所有することになるので、
-   *view* を解放してはいけません。このバッファは memoryview オブジェクトが削除されるときに
-   解放されます。
+   Create a memoryview object wrapping the given buffer-info structure *view*.
+   The memoryview object then owns the buffer, which means you shouldn't
+   try to release it yourself: it will be released on deallocation of the
+   memoryview object.
 
 
 .. c:function:: PyObject *PyMemoryView_GetContiguous(PyObject *obj, int buffertype, char order)
 
-   buffer インタフェースを定義しているオブジェクトから ('C' か 'F'ortran の *order* で)
-   連続したメモリチャンクへの memoryview オブジェクトを作ります。
-   メモリが連続している場合、 memoryview オブジェクトは元のメモリを参照します。
-   それ以外の場合、メモリはコピーされて、 memoryview オブジェクトは新しい bytes
-   オブジェクトを参照します。
+   Create a memoryview object to a contiguous chunk of memory (in either
+   'C' or 'F'ortran *order*) from an object that defines the buffer
+   interface. If memory is contiguous, the memoryview object points to the
+   original memory. Otherwise copy is made and the memoryview points to a
+   new bytes object.
 
 
 .. c:function:: int PyMemoryView_Check(PyObject *obj)
 
-   *obj* が memoryview オブジェクトの場合に真を返します。
-   現在のところ、 :class:`memoryview` のサブクラスの作成は許可されていません。
+   Return true if the object *obj* is a memoryview object.  It is not
+   currently allowed to create subclasses of :class:`memoryview`.
 
 
 .. c:function:: Py_buffer *PyMemoryView_GET_BUFFER(PyObject *obj)
 
-   与えられたオブジェクトにラップされた buffer-info 構造体へのポインタを返します。
-   オブジェクトは memoryview インスタンスで **なければなりません** 。
-   このマクロはオブジェクトの型をチェックしないので、呼び出し側で保証しなければ
-   クラッシュする可能性があります。
+   Return a pointer to the buffer-info structure wrapped by the given
+   object.  The object **must** be a memoryview instance; this macro doesn't
+   check its type, you must do it yourself or you will risk crashes.
 
 
-旧スタイルバッファオブジェクト
-=================================
+Old-style buffer objects
+========================
 
 .. index:: single: PyBufferProcs
 
-古いバッファインタフェースに関するより詳しい情報は、 "バッファオブジェクト構造体" 節 ( :ref:`buffer-structs` 節) の、
-:c:type:`PyBufferProcs` の説明のところにあります。
+More information on the old buffer interface is provided in the section
+:ref:`buffer-structs`, under the description for :c:type:`PyBufferProcs`.
 
-"バッファオブジェクト" はヘッダファイル :file:`bufferobject.h`  の中で定義されています (このファイルは
-:file:`Python.h` がインクルードしています)。バッファオブジェクトは、 Python プログラミングの
-レベルからは文字列オブジェクトと非常によく似ているように見えます: スライス、インデックス指定、結合、その他標準の文字列操作をサポート
-しています。しかし、バッファオブジェクトのデータは二つのデータソース: 何らかのメモリブロックか、バッファインタフェースを公開している
-別のオブジェクト、のいずれかに由来しています。
+A "buffer object" is defined in the :file:`bufferobject.h` header (included by
+:file:`Python.h`). These objects look very similar to string objects at the
+Python programming level: they support slicing, indexing, concatenation, and
+some other standard string operations. However, their data can come from one
+of two sources: from a block of memory, or from another object which exports
+the buffer interface.
 
-バッファオブジェクトは、他のオブジェクトのバッファインタフェースから Python プログラマにデータを公開する方法として便利です。
-バッファオブジェクトはゼロコピーなスライス機構 (zero-copy slicing  mechanism) としても使われます。ブロックメモリを参照するという
-バッファオブジェクトの機能を使うことで、任意のデータをきわめて簡単に Python プログラマに公開できます。メモリブロックは巨大でもかまいませんし、C
-拡張モジュール内の定数配列でもかまいません。また、オペレーティングシステムライブラリ側に渡す前の、操作用の生のブロックメモリでもかまいませんし、
-構造化されたデータをネイティブのメモリ配置形式でやりとりするためにも使えます。
+Buffer objects are useful as a way to expose the data from another object's
+buffer interface to the Python programmer. They can also be used as a
+zero-copy slicing mechanism. Using their ability to reference a block of
+memory, it is possible to expose any data to the Python programmer quite
+easily. The memory could be a large, constant array in a C extension, it could
+be a raw block of memory for manipulation before passing to an operating
+system library, or it could be used to pass around structured data in its
+native, in-memory format.
 
 
 .. c:type:: PyBufferObject
 
-   この :c:type:`PyObject` のサブタイプはバッファオブジェクトを表現します。
+   This subtype of :c:type:`PyObject` represents a buffer object.
 
 
 .. c:var:: PyTypeObject PyBuffer_Type
 
    .. index:: single: BufferType (in module types)
 
-   Python バッファ型 (buffer type) を表現する :c:type:`PyTypeObject` です; Python レイヤにおける
-   ``buffer`` や ``types.BufferType`` と同じオブジェクトです。
+   The instance of :c:type:`PyTypeObject` which represents the Python buffer type;
+   it is the same object as ``buffer`` and  ``types.BufferType`` in the Python
+   layer. .
 
 
 .. c:var:: int Py_END_OF_BUFFER
 
-   この定数は、 :c:func:`PyBuffer_FromObject` や :c:func:`PyBuffer_FromReadWriteObject` に
-   *size* パラメタとして渡します。このパラメタを渡すと、 :c:type:`PyBufferObject` は指定された *offset*
-   からバッファの終わりまでを *base* オブジェクトとして参照します。このパラメタを使うことで、関数の呼び出し側が *base* オブジェクト
-   のサイズを調べる必要がなくなります。
+   This constant may be passed as the *size* parameter to
+   :c:func:`PyBuffer_FromObject` or :c:func:`PyBuffer_FromReadWriteObject`.  It
+   indicates that the new :c:type:`PyBufferObject` should refer to *base*
+   object from the specified *offset* to the end of its exported buffer.
+   Using this enables the caller to avoid querying the *base* object for its
+   length.
 
 
 .. c:function:: int PyBuffer_Check(PyObject *p)
 
-   引数が :c:data:`PyBuffer_Type` 型のときに真を返します。
+   Return true if the argument has type :c:data:`PyBuffer_Type`.
 
 
 .. c:function:: PyObject* PyBuffer_FromObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
 
-   新たな読み出し専用バッファオブジェクトを返します。 *base* が読み出し専用バッファに必要なバッファプロトコルをサポートしていない
-   場合や、厳密に一つのバッファセグメントを提供していない場合には :exc:`TypeError` を送出し、 *offset* がゼロ以下の場合には
-   :exc:`ValueError` を送出します。バッファオブジェクトは *base* オブジェクトに対する参照を保持し、バッファオブジェクトの内容は
-   *base* オブジェクトの *offset* から *size* バイトのバッファインタフェースへの参照になります。 *size* が
-   :const:`Py_END_OF_BUFFER` の場合、新たに作成するバッファオブジェクトの内容は *base* から公開されているバッファの
-   末尾までにわたります。
+   Return a new read-only buffer object.  This raises :exc:`TypeError` if
+   *base* doesn't support the read-only buffer protocol or doesn't provide
+   exactly one buffer segment, or it raises :exc:`ValueError` if *offset* is
+   less than zero.  The buffer will hold a reference to the *base* object, and
+   the buffer's contents will refer to the *base* object's buffer interface,
+   starting as position *offset* and extending for *size* bytes. If *size* is
+   :const:`Py_END_OF_BUFFER`, then the new buffer's contents extend to the
+   length of the *base* object's exported buffer data.
 
    .. versionchanged:: 2.5
-      この関数は以前は *offset*, *size* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *offset* and *size*. This
+      might require changes in your code for properly supporting 64-bit
+      systems.
+
 
 .. c:function:: PyObject* PyBuffer_FromReadWriteObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
 
-   新たな書き込み可能バッファオブジェクトを返します。パラメタおよび例外は :c:func:`PyBuffer_FromObject` と同じです。 *base*
-   オブジェクトが書き込み可能バッファに必要なバッファプロトコルを公開していない場合、 :exc:`TypeError` を送出します。
+   Return a new writable buffer object.  Parameters and exceptions are similar
+   to those for :c:func:`PyBuffer_FromObject`.  If the *base* object does not
+   export the writeable buffer protocol, then :exc:`TypeError` is raised.
 
    .. versionchanged:: 2.5
-      この関数は以前は *offset*, *size* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *offset* and *size*. This
+      might require changes in your code for properly supporting 64-bit
+      systems.
 
 
 .. c:function:: PyObject* PyBuffer_FromMemory(void *ptr, Py_ssize_t size)
 
-   メモリ上の指定された場所から指定されたサイズのデータを読み出せる、新たな読み出し専用バッファオブジェクトを返します。
-   この関数が返すバッファオブジェクトが存続する間、 *ptr* で与えられたメモリバッファがデアロケートされないようにするのは呼び出し側の責任です。 *size*
-   がゼロ以下の場合には :exc:`ValueError` を送出します。 *size* には :const:`Py_END_OF_BUFFER` を指定しては
-   *いけません* ; 指定すると、 :exc:`ValueError` を送出します。
+   Return a new read-only buffer object that reads from a specified location
+   in memory, with a specified size.  The caller is responsible for ensuring
+   that the memory buffer, passed in as *ptr*, is not deallocated while the
+   returned buffer object exists.  Raises :exc:`ValueError` if *size* is less
+   than zero.  Note that :const:`Py_END_OF_BUFFER` may *not* be passed for the
+   *size* parameter; :exc:`ValueError` will be raised in that case.
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *size*. This might require
+      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: PyObject* PyBuffer_FromReadWriteMemory(void *ptr, Py_ssize_t size)
 
-   :c:func:`PyBuffer_FromMemory` に似ていますが、書き込み可能なバッファを返します。
+   Similar to :c:func:`PyBuffer_FromMemory`, but the returned buffer is
+   writable.
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *size*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: PyObject* PyBuffer_New(Py_ssize_t size)
 
-   *size* バイトのメモリバッファを独自に維持する新たな書き込み可能バッファオブジェクトを返します。 *size*
-   がゼロまたは正の値でない場合、 :exc:`ValueError` を送出します。( :c:func:`PyObject_AsWriteBuffer`
-   が返すような) メモリバッファは特に整列されていないので注意して下さい。
+   Return a new writable buffer object that maintains its own memory buffer of
+   *size* bytes.  :exc:`ValueError` is returned if *size* is not zero or
+   positive.  Note that the memory buffer (as returned by
+   :c:func:`PyObject_AsWriteBuffer`) is not specifically aligned.
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
-
+      This function used an :c:type:`int` type for *size*. This might require
+      changes in your code for properly supporting 64-bit systems.

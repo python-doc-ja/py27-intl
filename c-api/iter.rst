@@ -2,48 +2,52 @@
 
 .. _iterator:
 
-イテレータプロトコル (iterator protocol)
-========================================
+Iterator Protocol
+=================
 
 .. versionadded:: 2.2
 
-イテレータを扱うための固有の関数は二つしかありません。
+There are two functions specifically for working with iterators.
 
 
 .. c:function:: int PyIter_Check(PyObject *o)
 
-   *o* がイテレータプロトコルをサポートする場合に真を返します。
+   Return true if the object *o* supports the iterator protocol.
 
+   This function can return a false positive in the case of old-style
+   classes because those classes always define a :c:member:`tp_iternext`
+   slot with logic that either invokes a :meth:`next` method or raises
+   a :exc:`TypeError`.
 
 .. c:function:: PyObject* PyIter_Next(PyObject *o)
 
-   反復処理 *o* における次の値を返します。オブジェクトがイテレータの場合、この関数は反復処理における次の値を取り出します。
-   要素が何も残っていない場合には例外がセットされていない状態で *NULL* を返します。オブジェクトがイテレータでない場合には
-   :exc:`TypeError` を送出します。要素を取り出す際にエラーが生じると *NULL* を返し、発生した例外を送出します。
+   Return the next value from the iteration *o*.  The object must be an iterator
+   (it is up to the caller to check this).  If there are no remaining values,
+   returns *NULL* with no exception set.  If an error occurs while retrieving
+   the item, returns *NULL* and passes along the exception.
 
-イテレータの返す要素にわたって反復処理を行うループを書くと、 C のコードは以下のようになるはずです::
+To write a loop which iterates over an iterator, the C code should look
+something like this::
 
    PyObject *iterator = PyObject_GetIter(obj);
    PyObject *item;
 
    if (iterator == NULL) {
-       /* エラーの伝播処理をここに書く */
+       /* propagate error */
    }
 
    while (item = PyIter_Next(iterator)) {
-       /* 取り出した要素で何らかの処理を行う */
+       /* do something with item */
        ...
-       /* 終わったら参照を放棄する */
+       /* release reference when done */
        Py_DECREF(item);
    }
 
    Py_DECREF(iterator);
 
    if (PyErr_Occurred()) {
-       /* エラーの伝播処理をここに書く */
+       /* propagate error */
    }
    else {
-       /* 別の処理を続ける */
+       /* continue doing useful work */
    }
-
-

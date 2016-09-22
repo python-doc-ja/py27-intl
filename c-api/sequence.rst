@@ -2,194 +2,217 @@
 
 .. _sequence:
 
-シーケンス型プロトコル (sequence protocol)
-==========================================
+Sequence Protocol
+=================
 
 
 .. c:function:: int PySequence_Check(PyObject *o)
 
-   オブジェクトがシーケンス型プロトコルを提供している場合に ``1`` を返し、そうでないときには ``0`` を返します。この関数呼び出しは常に成功します。
+   Return ``1`` if the object provides sequence protocol, and ``0`` otherwise.
+   This function always succeeds.
 
 
 .. c:function:: Py_ssize_t PySequence_Size(PyObject *o)
-                Py_ssize_t PySequence_Length(PyObject *o)
+               Py_ssize_t PySequence_Length(PyObject *o)
 
    .. index:: builtin: len
 
-   成功するとシーケンス *o* 中のオブジェクトの数を返し、失敗すると ``-1`` を返します。
-   シーケンス型プロトコルをサポートしないオブジェクトに対しては、 Python の式 ``len(o)`` と同じになります。
+   Returns the number of objects in sequence *o* on success, and ``-1`` on failure.
+   For objects that do not provide sequence protocol, this is equivalent to the
+   Python expression ``len(o)``.
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :c:type:`int` を返していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      These functions returned an :c:type:`int` type. This might require
+      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: PyObject* PySequence_Concat(PyObject *o1, PyObject *o2)
 
-   成功すると *o1* と *o2* の連結 (concatenation) を返し、失敗すると *NULL* を返します。
-   Python の式 ``o1 + o2`` と同じです。
+   Return the concatenation of *o1* and *o2* on success, and *NULL* on failure.
+   This is the equivalent of the Python expression ``o1 + o2``.
 
 
 .. c:function:: PyObject* PySequence_Repeat(PyObject *o, Py_ssize_t count)
 
-   成功するとオブジェクト *o* の *count* 回繰り返しを返し、失敗すると *NULL* を返します。
-   Python の式 ``o * count`` と同じです。
+   Return the result of repeating sequence object *o* *count* times, or *NULL* on
+   failure.  This is the equivalent of the Python expression ``o * count``.
 
    .. versionchanged:: 2.5
-      この関数は以前は *count* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *count*. This might require
+      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: PyObject* PySequence_InPlaceConcat(PyObject *o1, PyObject *o2)
 
-   成功すると *o1* と *o2* の連結 (concatenation) を返し、失敗すると *NULL* を返します。 *o1* が *in-place*
-   演算をサポートする場合、in-place 演算を行います。 Python の式 ``o1 += o2`` と同じです。
+   Return the concatenation of *o1* and *o2* on success, and *NULL* on failure.
+   The operation is done *in-place* when *o1* supports it.  This is the equivalent
+   of the Python expression ``o1 += o2``.
 
 
 .. c:function:: PyObject* PySequence_InPlaceRepeat(PyObject *o, Py_ssize_t count)
 
-   成功するとオブジェクト *o* の *count* 回繰り返しを返し、失敗すると *NULL* を返します。 *o1* が *in-place*
-   演算をサポートする場合、in-place 演算を行います。 Python の式 ``o *= count`` と同じです。
+   Return the result of repeating sequence object *o* *count* times, or *NULL* on
+   failure.  The operation is done *in-place* when *o* supports it.  This is the
+   equivalent of the Python expression ``o *= count``.
 
    .. versionchanged:: 2.5
-      この関数は以前は *count* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *count*. This might require
+      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: PyObject* PySequence_GetItem(PyObject *o, Py_ssize_t i)
 
-   成功すると *o* の *i* 番目の要素を返し、失敗すると *NULL* を返します。
-   Python の式 ``o[i]`` と同じです。
+   Return the *i*\ th element of *o*, or *NULL* on failure. This is the equivalent of
+   the Python expression ``o[i]``.
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *i*. This might require
+      changes in your code for properly supporting 64-bit systems.
 
 
 .. c:function:: PyObject* PySequence_GetSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2)
 
-   成功すると *o* の *i1* から *i2* までの間のスライスを返し、失敗すると *NULL* を返します。 Python の式 ``o[i1:i2]``
-   と同じです。
+   Return the slice of sequence object *o* between *i1* and *i2*, or *NULL* on
+   failure. This is the equivalent of the Python expression ``o[i1:i2]``.
 
    .. versionchanged:: 2.5
-      この関数は以前は *i1*, *i2* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *i1* and *i2*. This might
+      require changes in your code for properly supporting 64-bit systems.
 
-.. c:function:: int PySequence_SetItem(PyObject *o, int Py_ssize_t i, PyObject *v)
 
-   *o* の *i* 番目の要素に *v* を代入します。失敗すると ``-1`` を返します。 Python の文 ``o[i] = v`` と同じです。
-   この関数は *v* への参照を盗み取り *ません* 。
+.. c:function:: int PySequence_SetItem(PyObject *o, Py_ssize_t i, PyObject *v)
+
+   Assign object *v* to the *i*\ th element of *o*.  Returns ``-1`` on failure.  This
+   is the equivalent of the Python statement ``o[i] = v``.  This function *does
+   not* steal a reference to *v*.
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *i*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: int PySequence_DelItem(PyObject *o, Py_ssize_t i)
 
-   *o* の *i* 番目の要素を削除します。失敗すると ``-1`` を返します。 Python の文 ``del o[i]`` と同じです。
+   Delete the *i*\ th element of object *o*.  Returns ``-1`` on failure.  This is the
+   equivalent of the Python statement ``del o[i]``.
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *i*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: int PySequence_SetSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2, PyObject *v)
 
-   *o* の *i1* から *i2* までの間のスライスに *v* を代入します。 Python の文 ``o[i1:i2] = v`` と同じです。
+   Assign the sequence object *v* to the slice in sequence object *o* from *i1* to
+   *i2*.  This is the equivalent of the Python statement ``o[i1:i2] = v``.
 
    .. versionchanged:: 2.5
-      この関数は以前は *i1*, *i2* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *i1* and *i2*. This might
+      require changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: int PySequence_DelSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2)
 
-   シーケンスオブジェクト *o* の *i1* から *i2* までの間のスライスを削除します。失敗すると ``-1`` を返します。 Python の文
-   ``del o[i1:i2]`` と同じです。
+   Delete the slice in sequence object *o* from *i1* to *i2*.  Returns ``-1`` on
+   failure.  This is the equivalent of the Python statement ``del o[i1:i2]``.
 
    .. versionchanged:: 2.5
-      この関数は以前は *i1*, *i2* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *i1* and *i2*. This might
+      require changes in your code for properly supporting 64-bit systems.
 
-.. c:function:: int PySequence_Count(PyObject *o, PyObject *value)
 
-   *o* における *value* の出現回数、すなわち  ``o[key] == value`` となる *key* の個数を返します。失敗すると
-   ``-1`` を返します。 Python の式 ``o.count(value)`` と同じです。
+.. c:function:: Py_ssize_t PySequence_Count(PyObject *o, PyObject *value)
+
+   Return the number of occurrences of *value* in *o*, that is, return the number
+   of keys for which ``o[key] == value``.  On failure, return ``-1``.  This is
+   equivalent to the Python expression ``o.count(value)``.
 
    .. versionchanged:: 2.5
-      この関数は以前は :c:type:`int` を返していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function returned an :c:type:`int` type. This might require changes
+      in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: int PySequence_Contains(PyObject *o, PyObject *value)
 
-   *o* に *value* が入っているか判定します。 *o* のある要素が *value* と等価 (equal) ならば ``1`` を
-   返し、それ以外の場合には ``0`` を返します。エラーが発生すると ``-1`` を返します。 Python の式 ``value in o``
-   と同じです。
+   Determine if *o* contains *value*.  If an item in *o* is equal to *value*,
+   return ``1``, otherwise return ``0``. On error, return ``-1``.  This is
+   equivalent to the Python expression ``value in o``.
 
 
-.. c:function:: int PySequence_Index(PyObject *o, PyObject *value)
+.. c:function:: Py_ssize_t PySequence_Index(PyObject *o, PyObject *value)
 
-   ``o[i] == value`` となる最初に見つかったインデクス *i* を返します。エラーが発生すると ``-1`` を返します。 Python の式
-   ``o.index(value)`` と同じです。
+   Return the first index *i* for which ``o[i] == value``.  On error, return
+   ``-1``.    This is equivalent to the Python expression ``o.index(value)``.
 
    .. versionchanged:: 2.5
-      この関数は以前は :c:type:`int` を返していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function returned an :c:type:`int` type. This might require changes
+      in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: PyObject* PySequence_List(PyObject *o)
 
-   任意のシーケンス *o* と同じ内容を持つリストオブジェクトを返します。返されるリストは必ず新しいリストオブジェクトになります。
+   Return a list object with the same contents as the arbitrary sequence *o*.  The
+   returned list is guaranteed to be new.
 
 
 .. c:function:: PyObject* PySequence_Tuple(PyObject *o)
 
    .. index:: builtin: tuple
 
-   任意のシーケンス *o* と同じ内容を持つタプルオブジェクトを返します。失敗したら *NULL* を返します。 *o* がタプルの場合、新たな参照を返します。
-   それ以外の場合、適切な内容が入ったタプルを構築して返します。 Pythonの式 ``tuple(o)`` と同じです。
+   Return a tuple object with the same contents as the arbitrary sequence *o* or
+   *NULL* on failure.  If *o* is a tuple, a new reference will be returned,
+   otherwise a tuple will be constructed with the appropriate contents.  This is
+   equivalent to the Python expression ``tuple(o)``.
 
 
 .. c:function:: PyObject* PySequence_Fast(PyObject *o, const char *m)
 
-   シーケンス *o* がすでにタプルやリストであれば *o* を返し、そうでなければ *o* をタプルで返します。返されるタプルのメンバにアクセスするには
-   :c:func:`PySequence_Fast_GET_ITEM` を使ってください。失敗すると *NULL* を返します。
-   オブジェクトがシーケンスでなければ、 *m* がメッセージテキストになっている :exc:`TypeError` を送出します。
+   Return the sequence *o* as a list, unless it is already a tuple or list, in
+   which case *o* is returned.  Use :c:func:`PySequence_Fast_GET_ITEM` to access
+   the members of the result.  Returns *NULL* on failure.  If the object is not
+   a sequence, raises :exc:`TypeError` with *m* as the message text.
 
 
 .. c:function:: PyObject* PySequence_Fast_GET_ITEM(PyObject *o, Py_ssize_t i)
 
-   *o* が *NULL* でなく、 :c:func:`PySequence_Fast` が返したオブジェクトであり、かつ *i* がインデクスの範囲内にあると
-   仮定して、 *o* の *i* 番目の要素を返します。
+   Return the *i*\ th element of *o*, assuming that *o* was returned by
+   :c:func:`PySequence_Fast`, *o* is not *NULL*, and that *i* is within bounds.
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *i*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: PyObject** PySequence_Fast_ITEMS(PyObject *o)
 
-   PyObject ポインタの背後にあるアレイを返します．
-   この関数では， *o* は :c:func:`PySequence_Fast` の返したオブジェクトであり，
-   *NULL* でないものと仮定しています．
+   Return the underlying array of PyObject pointers.  Assumes that *o* was returned
+   by :c:func:`PySequence_Fast` and *o* is not *NULL*.
 
-   リストのサイズが変更されるとき、メモリ再確保が要素の配列を再配置するかもしれない
-   ことに注意してください。そのため、シーケンスの変更が発生しないコンテキストでのみ
-   背後にあるポインタを使ってください。
+   Note, if a list gets resized, the reallocation may relocate the items array.
+   So, only use the underlying array pointer in contexts where the sequence
+   cannot change.
 
    .. versionadded:: 2.4
 
 
 .. c:function:: PyObject* PySequence_ITEM(PyObject *o, Py_ssize_t i)
 
-   成功すると *o* の *i* 番目の要素を返し、失敗すると *NULL* を返します。
-   :c:func:`PySequence_GetItem` ですが、 :c:func:`PySequence_Check(o)` が真になるかチェックせず、
-   負のインデクスに対する調整を行いません。
+   Return the *i*\ th element of *o* or *NULL* on failure. Macro form of
+   :c:func:`PySequence_GetItem` but without checking that
+   :c:func:`PySequence_Check` on *o* is true and without adjustment for negative
+   indices.
 
    .. versionadded:: 2.3
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *i*. This might require
+      changes in your code for properly supporting 64-bit systems.
 
-.. c:function:: int PySequence_Fast_GET_SIZE(PyObject *o)
 
-   *o* が *NULL* でなく、 :c:func:`PySequence_Fast` が返したオブジェクトであると仮定して、 *o* の長さを返します。 *o*
-   のサイズは :c:func:`PySequence_Size` を呼び出しても得られますが、 :c:func:`PySequence_Fast_GET_SIZE`
-   の方が *o* をリストかタプルであると仮定して処理するため、より高速です。
+.. c:function:: Py_ssize_t PySequence_Fast_GET_SIZE(PyObject *o)
+
+   Returns the length of *o*, assuming that *o* was returned by
+   :c:func:`PySequence_Fast` and that *o* is not *NULL*.  The size can also be
+   gotten by calling :c:func:`PySequence_Size` on *o*, but
+   :c:func:`PySequence_Fast_GET_SIZE` is faster because it can assume *o* is a list
+   or tuple.

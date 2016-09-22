@@ -10,152 +10,180 @@ List Objects
 
 .. c:type:: PyListObject
 
-   この :c:type:`PyObject` のサブタイプは Python のリストオブジェクトを表現します。
+   This subtype of :c:type:`PyObject` represents a Python list object.
 
 
 .. c:var:: PyTypeObject PyList_Type
 
-   この :c:type:`PyTypeObject` のインスタンスは Python のタプル型を表現します。
-   これは Python レイヤにおける ``list`` と同じオブジェクトです。
+   This instance of :c:type:`PyTypeObject` represents the Python list type.  This
+   is the same object as ``list`` in the Python layer.
 
 
 .. c:function:: int PyList_Check(PyObject *p)
 
-   引数が :c:type:`PyListObject` である場合に真を返します。
+   Return true if *p* is a list object or an instance of a subtype of the list
+   type.
+
+   .. versionchanged:: 2.2
+      Allowed subtypes to be accepted.
+
+
+.. c:function:: int PyList_CheckExact(PyObject *p)
+
+   Return true if *p* is a list object, but not an instance of a subtype of
+   the list type.
+
+   .. versionadded:: 2.2
 
 
 .. c:function:: PyObject* PyList_New(Py_ssize_t len)
 
-   サイズが *len* 新たなリストオブジェクトを返します。失敗すると *NULL* を返します。
+   Return a new list of length *len* on success, or *NULL* on failure.
 
    .. note::
 
-      *len* が0より大きいとき、返されるリストオブジェクトの要素には ``NULL`` がセットされています。
-      なので、 :c:func:`PyList_SetItem` で本当にオブジェクトをセットする
-      までは、Pythonコードにこのオブジェクトを渡したり、 :c:func:`PySequence_SetItem` のような抽象APIを利用してはいけません。
+      If *len* is greater than zero, the returned list object's items are
+      set to ``NULL``.  Thus you cannot use abstract API functions such as
+      :c:func:`PySequence_SetItem`  or expose the object to Python code before
+      setting all items to a real object with :c:func:`PyList_SetItem`.
 
    .. versionchanged:: 2.5
-      この関数は以前は *len* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` for *size*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: Py_ssize_t PyList_Size(PyObject *list)
 
    .. index:: builtin: len
 
-   リストオブジェクト *list* の長さを返します;  リストオブジェクトにおける ``len(list)`` と同じです。
+   Return the length of the list object in *list*; this is equivalent to
+   ``len(list)`` on a list object.
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :c:type:`int` を返していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function returned an :c:type:`int`. This might require changes in
+      your code for properly supporting 64-bit systems.
+
 
 .. c:function:: Py_ssize_t PyList_GET_SIZE(PyObject *list)
 
-   マクロ形式でできた :c:func:`PyList_Size` で、エラーチェックをしません。
+   Macro form of :c:func:`PyList_Size` without error checking.
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :c:type:`int` を返していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This macro returned an :c:type:`int`. This might require changes in your
+      code for properly supporting 64-bit systems.
+
 
 .. c:function:: PyObject* PyList_GetItem(PyObject *list, Py_ssize_t index)
 
-   *list* の指すリストオブジェクト内の、位置 *index* にあるオブジェクトを返します。
-   位置は正である必要があり、リスト終端からのインデックスはサポートされていません。
-   *index* が範囲を超えている場合、 *NULL* を返して :exc:`IndexError` 例外をセットします。
+   Return the object at position *index* in the list pointed to by *list*.  The
+   position must be positive, indexing from the end of the list is not
+   supported.  If *index* is out of bounds, return *NULL* and set an
+   :exc:`IndexError` exception.
 
    .. versionchanged:: 2.5
-      この関数は以前は *index* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` for *index*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: PyObject* PyList_GET_ITEM(PyObject *list, Py_ssize_t i)
 
-   マクロ形式でできた :c:func:`PyList_GetItem` で、エラーチェックをしません。
+   Macro form of :c:func:`PyList_GetItem` without error checking.
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This macro used an :c:type:`int` for *i*. This might require changes in
+      your code for properly supporting 64-bit systems.
+
 
 .. c:function:: int PyList_SetItem(PyObject *list, Py_ssize_t index, PyObject *item)
 
-   リストオブジェクト内の位置 *index* に、オブジェクト *item* を挿入します。
-   成功した場合には ``0`` を返し、失敗すると ``-1`` を返します。
+   Set the item at index *index* in list to *item*.  Return ``0`` on success
+   or ``-1`` on failure.
 
    .. note::
 
-      この関数は *item* への参照を "盗み取り" ます。また、変更先のインデクスにすでに別の要素が入っている場合、その要素に対する参照を放棄します。
+      This function "steals" a reference to *item* and discards a reference to
+      an item already in the list at the affected position.
 
    .. versionchanged:: 2.5
-      この関数は以前は *index* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` for *index*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: void PyList_SET_ITEM(PyObject *list, Py_ssize_t i, PyObject *o)
 
-   :c:func:`PyList_SetItem` をマクロによる実装で、エラーチェックを行いません。
-   このマクロは、新たなリストのまだ要素を入れたことのない位置に要素を入れるときにのみ使います。
+   Macro form of :c:func:`PyList_SetItem` without error checking. This is
+   normally only used to fill in new lists where there is no previous content.
 
    .. note::
 
-      このマクロは *item* への参照を "盗み取り" ます。また、 :c:func:`PyList_SetItem` と違って、要素の置き換えが生じても
-      置き換えられるオブジェクトへの参照を放棄 *しません* ; その結果、 *list* 中の位置 *i* で参照されていたオブジェクト
-      がメモリリークを引き起こします。
+      This macro "steals" a reference to *item*, and, unlike
+      :c:func:`PyList_SetItem`, does *not* discard a reference to any item that
+      it being replaced; any reference in *list* at position *i* will be
+      leaked.
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This macro used an :c:type:`int` for *i*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: int PyList_Insert(PyObject *list, Py_ssize_t index, PyObject *item)
 
-   要素 *item* をインデックス *index* の前に挿入します。成功すると ``0`` を返します。
-   失敗すると ``-1`` を返し、例外をセットします。
-   ``list.insert(index, item)`` に類似した機能です。
+   Insert the item *item* into list *list* in front of index *index*.  Return
+   ``0`` if successful; return ``-1`` and set an exception if unsuccessful.
+   Analogous to ``list.insert(index, item)``.
 
    .. versionchanged:: 2.5
-      この関数は以前は *index* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` for *index*. This might require
+      changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: int PyList_Append(PyObject *list, PyObject *item)
 
-   オブジェクト *item* を *list* の末尾に追加します。成功すると ``0`` を返します; 失敗すると ``-1`` を返し、
-   例外をセットします。 ``list.append(item)``  に類似した機能です。
+   Append the object *item* at the end of list *list*. Return ``0`` if
+   successful; return ``-1`` and set an exception if unsuccessful.  Analogous
+   to ``list.append(item)``.
 
 
 .. c:function:: PyObject* PyList_GetSlice(PyObject *list, Py_ssize_t low, Py_ssize_t high)
 
-   *list* 内の、 *low* から *high* の *間の* オブジェクトからなるリストを返します。
-   失敗すると *NULL* を返し、例外をセットします。
-   ``list[low:high]`` に類似した機能です。
-   ただし、 Python のスライスにある負のインデックスはサポートされていません。
+   Return a list of the objects in *list* containing the objects *between* *low*
+   and *high*.  Return *NULL* and set an exception if unsuccessful.  Analogous
+   to ``list[low:high]``.  Negative indices, as when slicing from Python, are not
+   supported.
 
    .. versionchanged:: 2.5
-      この関数は以前は *low*, *high* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` for *low* and *high*. This might
+      require changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: int PyList_SetSlice(PyObject *list, Py_ssize_t low, Py_ssize_t high, PyObject *itemlist)
 
-   *list* 内の、 *low* から *high* の間のオブジェクトを、 *itemlist* の内容にします。 ``list[low:high] =
-   itemlist`` と類似の機能です。 *itemlist* は *NULL* でもよく、空リストの代入 (指定スライスの削除) になります。
-   成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
-   Python のスライスにある負のインデックスはサポートされていません。
+   Set the slice of *list* between *low* and *high* to the contents of
+   *itemlist*.  Analogous to ``list[low:high] = itemlist``. The *itemlist* may
+   be *NULL*, indicating the assignment of an empty list (slice deletion).
+   Return ``0`` on success, ``-1`` on failure.  Negative indices, as when
+   slicing from Python, are not supported.
 
    .. versionchanged:: 2.5
-      この関数は以前は *low*, *high* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` for *low* and *high*. This might
+      require changes in your code for properly supporting 64-bit systems.
+
 
 .. c:function:: int PyList_Sort(PyObject *list)
 
-   *list* の内容をインプレースでソートします。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
-   ``list.sort()`` と同じです。
+   Sort the items of *list* in place.  Return ``0`` on success, ``-1`` on
+   failure.  This is equivalent to ``list.sort()``.
 
 
 .. c:function:: int PyList_Reverse(PyObject *list)
 
-   *list* の要素をインプレースで反転します。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
-   ``list.reverse()`` と同じです。
+   Reverse the items of *list* in place.  Return ``0`` on success, ``-1`` on
+   failure.  This is the equivalent of ``list.reverse()``.
 
 
 .. c:function:: PyObject* PyList_AsTuple(PyObject *list)
 
    .. index:: builtin: tuple
 
-   *list* の内容が入った新たなタプルオブジェクトを返します; ``tuple(list)`` と同じです。
-
-
+   Return a new tuple object containing the contents of *list*; equivalent to
+   ``tuple(list)``.

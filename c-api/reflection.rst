@@ -2,54 +2,54 @@
 
 .. _reflection:
 
-リフレクション
-=================
+Reflection
+==========
 
 .. c:function:: PyObject* PyEval_GetBuiltins()
 
-   現在の実行フレーム内のビルトインの辞書か、もし実行中のフレームがなければ
-   スレッド状態のインタプリタのビルトイン辞書を返します。
+   Return a dictionary of the builtins in the current execution frame,
+   or the interpreter of the thread state if no frame is currently executing.
 
 
 .. c:function:: PyObject* PyEval_GetLocals()
 
-   現在の実行フレーム内のローカル変数の辞書か、実行中のフレームがなければ
-   *NULL* を返します。
+   Return a dictionary of the local variables in the current execution frame,
+   or *NULL* if no frame is currently executing.
 
 
 .. c:function:: PyObject* PyEval_GetGlobals()
 
-   現在の実行フレームのグローバル変数の辞書か、実行中のフレームがなければ
-   *NULL* を返します。
+   Return a dictionary of the global variables in the current execution frame,
+   or *NULL* if no frame is currently executing.
 
 
 .. c:function:: PyFrameObject* PyEval_GetFrame()
 
-   現在のスレッド状態のフレームを返します。
-   現在実行中のフレームがなければ *NULL* を返します。
+   Return the current thread state's frame, which is *NULL* if no frame is
+   currently executing.
 
 
 .. c:function:: int PyFrame_GetLineNumber(PyFrameObject *frame)
 
-   *frame* が現在実行している行番号を返します。
+   Return the line number that *frame* is currently executing.
 
 
 .. c:function:: int PyEval_GetRestricted()
 
-   現在のフレームがありそれが制限モードで実行していた場合、真を返します。
-   それ以外の場合は偽を返します。
+   If there is a current frame and it is executing in restricted mode, return true,
+   otherwise false.
 
 
 .. c:function:: const char* PyEval_GetFuncName(PyObject *func)
 
-   *func* が 関数、クラス、インスタンスオブジェクトであればその名前を、
-   そうでなければ *func* の型を返します。
+   Return the name of *func* if it is a function, class or instance object, else the
+   name of *func*\s type.
 
 
 .. c:function:: const char* PyEval_GetFuncDesc(PyObject *func)
 
-   *func* の型に依存する、解説文字列(description string)を返します。
-   戻り値は、関数とメソッドに対しては "()", " constructor", " instance",
-   " object" です。
-   :c:func:`PyEval_GetFuncName` と連結された結果、 *func* の解説になります。
-   
+   Return a description string, depending on the type of *func*.
+   Return values include "()" for functions and methods, " constructor",
+   " instance", and " object".  Concatenated with the result of
+   :c:func:`PyEval_GetFuncName`, the result will be a description of
+   *func*.

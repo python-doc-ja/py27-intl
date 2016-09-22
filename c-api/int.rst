@@ -2,108 +2,123 @@
 
 .. _intobjects:
 
-(通常)整数型オブジェクト (plain integer object)
------------------------------------------------
+Plain Integer Objects
+---------------------
 
 .. index:: object: integer
 
 
 .. c:type:: PyIntObject
 
-   この :c:type:`PyObject` のサブタイプは Python の整数型オブジェクトを表現します。
+   This subtype of :c:type:`PyObject` represents a Python integer object.
 
 
 .. c:var:: PyTypeObject PyInt_Type
 
    .. index:: single: IntType (in modules types)
 
-   この :c:type:`PyTypeObject` のインスタンスは Python の (長整数でない)整数型を表現します。これは
-   ``int`` や ``types.IntType`` と同じオブジェクトです。
+   This instance of :c:type:`PyTypeObject` represents the Python plain integer type.
+   This is the same object as ``int`` and ``types.IntType``.
 
 
 .. c:function:: int PyInt_Check(PyObject *o)
 
-   *o* が :c:data:`PyInt_Type` 型か :c:data:`PyInt_Type` 型のサブタイプであるときに真を返します。
+   Return true if *o* is of type :c:data:`PyInt_Type` or a subtype of
+   :c:data:`PyInt_Type`.
 
    .. versionchanged:: 2.2
-      サブタイプを引数にとれるようになりました.
+      Allowed subtypes to be accepted.
 
 
 .. c:function:: int PyInt_CheckExact(PyObject *o)
 
-   *o* が :c:data:`PyInt_Type` 型で、かつ :c:data:`PyInt_Type` 型のサブタイプでないときに真を返します。
+   Return true if *o* is of type :c:data:`PyInt_Type`, but not a subtype of
+   :c:data:`PyInt_Type`.
 
    .. versionadded:: 2.2
 
 
 .. c:function:: PyObject* PyInt_FromString(char *str, char **pend, int base)
 
-   *str* の文字列値に基づいて、新たな :c:type:`PyIntObject` または :c:type:`PyLongObject` を返します。このとき
-   *base* を基数として文字列を解釈します。 *pend* が *NULL* でなければ、 ``*pend`` は *str* 中で
-   数が表現されている部分以後の先頭の文字のアドレスを指しています。 *base* が ``0`` ならば、 *str* の先頭の文字列に基づいて基数を決定します:
-   もし *str* が ``'0x'`` または ``'0X'`` で始まっていれば、基数に 16 を使います; *str* が ``'0'``
-   で始まっていれば、基数に 8 を使います; その他の場合には基数に 10 を使います。 *base* が ``0`` でなければ、 *base* は ``2``
-   以上 ``36`` 以下の数でなければなりません。先頭に空白がある場合は無視されます。数字が全くない場合、 :exc:`ValueError` が送出
-   されます。使用しているマシンの :c:type:`long int` 型で表現し切れないくらい大きな数が文字列に入っており、オーバフロー警告が抑制されていれば、
-   :c:type:`PyLongObject` を返します。オーバフロー警告が抑制されていなければ、 *NULL* を返します。
+   Return a new :c:type:`PyIntObject` or :c:type:`PyLongObject` based on the string
+   value in *str*, which is interpreted according to the radix in *base*.  If
+   *pend* is non-*NULL*, ``*pend`` will point to the first character in *str* which
+   follows the representation of the number.  If *base* is ``0``, the radix will be
+   determined based on the leading characters of *str*: if *str* starts with
+   ``'0x'`` or ``'0X'``, radix 16 will be used; if *str* starts with ``'0'``, radix
+   8 will be used; otherwise radix 10 will be used.  If *base* is not ``0``, it
+   must be between ``2`` and ``36``, inclusive.  Leading spaces are ignored.  If
+   there are no digits, :exc:`ValueError` will be raised.  If the string represents
+   a number too large to be contained within the machine's :c:type:`long int` type
+   and overflow warnings are being suppressed, a :c:type:`PyLongObject` will be
+   returned.  If overflow warnings are not being suppressed, *NULL* will be
+   returned in this case.
 
 
 .. c:function:: PyObject* PyInt_FromLong(long ival)
 
-   *ival* の値を使って新たな整数オブジェクトを生成します。
+   Create a new integer object with a value of *ival*.
 
-   現在の実装では、 ``-5`` から ``256`` までの全ての整数に対する整数オブジェクトの配列を保持するようにしており、
-   この範囲の数を生成すると、実際には既存のオブジェクトに対する参照が返るようになっています。従って、 ``1`` の
-   値を変えることすら可能です。変えてしまった場合の Python の挙動は未定義です :-)
+   The current implementation keeps an array of integer objects for all integers
+   between ``-5`` and ``256``, when you create an int in that range you actually
+   just get back a reference to the existing object. So it should be possible to
+   change the value of ``1``.  I suspect the behaviour of Python in this case is
+   undefined. :-)
 
 
 .. c:function:: PyObject* PyInt_FromSsize_t(Py_ssize_t ival)
 
-   *ival* の値を使って新たな整数オブジェクトを生成します。
-   値が ``LONG_MAX`` を超えている場合、長整数オブジェクトを返します。
+   Create a new integer object with a value of *ival*. If the value is larger
+   than ``LONG_MAX`` or smaller than ``LONG_MIN``, a long integer object is
+   returned.
 
    .. versionadded:: 2.5
 
 
 .. c:function:: PyObject* PyInt_FromSize_t(size_t ival)
 
-   *ival* の値を使って新たな整数オブジェクトを生成します。
-   値が ``LONG_MAX`` を超えている場合、長整数オブジェクトを返します。
+   Create a new integer object with a value of *ival*. If the value exceeds
+   ``LONG_MAX``, a long integer object is returned.
 
    .. versionadded:: 2.5
 
 
 .. c:function:: long PyInt_AsLong(PyObject *io)
 
-   オブジェクトがまだ :c:type:`PyIntObject` でなければまず型キャストを試み、次にその値を返します。
-   エラーが発生した場合、 ``-1`` が返されます。その時呼び出し側は、 ``PyErr_Occurred()`` を使って、エラーが発生したのか、
-   単に値が-1だったのかを判断するべきです。
+   Will first attempt to cast the object to a :c:type:`PyIntObject`, if it is not
+   already one, and then return its value. If there is an error, ``-1`` is
+   returned, and the caller should check ``PyErr_Occurred()`` to find out whether
+   there was an error, or whether the value just happened to be -1.
 
 
 .. c:function:: long PyInt_AS_LONG(PyObject *io)
 
-   オブジェクト *io* の値を返します。エラーチェックを行いません。
+   Return the value of the object *io*.  No error checking is performed.
 
 
 .. c:function:: unsigned long PyInt_AsUnsignedLongMask(PyObject *io)
 
-   オブジェクトがまだ :c:type:`PyIntObject` または :c:type:`PyLongObject` で
-   なければまず型キャストを試み、次にその値を :c:type:`unsigned long` 型で返します。この関数はオーバフローをチェックしません。
+   Will first attempt to cast the object to a :c:type:`PyIntObject` or
+   :c:type:`PyLongObject`, if it is not already one, and then return its value as
+   unsigned long.  This function does not check for overflow.
 
    .. versionadded:: 2.3
 
 
 .. c:function:: unsigned PY_LONG_LONG PyInt_AsUnsignedLongLongMask(PyObject *io)
 
-   オブジェクトがまだ :c:type:`PyIntObject` または :c:type:`PyLongObject` で
-   なければまず型キャストを試み、次にその値を :c:type:`unsigned long long` 型で返します。オーバフローをチェックしません。
+   Will first attempt to cast the object to a :c:type:`PyIntObject` or
+   :c:type:`PyLongObject`, if it is not already one, and then return its value as
+   unsigned long long, without checking for overflow.
 
    .. versionadded:: 2.3
 
 
 .. c:function:: Py_ssize_t PyInt_AsSsize_t(PyObject *io)
 
-   オブジェクトがまだ :c:type:`PyIntObject` でなければまず型キャストを試み、次にその値を :c:type:`Py_ssize_t` 型で返します。
+   Will first attempt to cast the object to a :c:type:`PyIntObject` or
+   :c:type:`PyLongObject`, if it is not already one, and then return its value as
+   :c:type:`Py_ssize_t`.
 
    .. versionadded:: 2.5
 
@@ -112,11 +127,13 @@
 
    .. index:: single: LONG_MAX
 
-   システムの知識に基づく、扱える最大の整数値 (システムのヘッダファイルに定義されている :const:`LONG_MAX`) を返します。
+   Return the system's idea of the largest integer it can handle
+   (:const:`LONG_MAX`, as defined in the system header files).
+
 
 .. c:function:: int PyInt_ClearFreeList()
 
-   整数の free list をクリアします。
-   解放できなかった要素の数を返します。
+   Clear the integer free list. Return the number of items that could not
+   be freed.
 
    .. versionadded:: 2.6

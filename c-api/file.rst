@@ -2,44 +2,42 @@
 
 .. _fileobjects:
 
-ファイルオブジェクト
---------------------
+File Objects
+------------
 
 .. index:: object: file
 
-Python の組み込みファイルオブジェクトは、全て標準 C ライブラリの
-:c:type:`FILE\*` サポートの上に実装されています。以下の詳細説明は
-一実装に関するもので、将来の Python のリリースで変更されるかもしれません。
+Python's built-in file objects are implemented entirely on the :c:type:`FILE\*`
+support from the C standard library.  This is an implementation detail and may
+change in future releases of Python.
 
 
 .. c:type:: PyFileObject
 
-   この :c:type:`PyObject` のサブタイプは Python のファイル型オブジェクトを
-   表現します。
+   This subtype of :c:type:`PyObject` represents a Python file object.
 
 
 .. c:var:: PyTypeObject PyFile_Type
 
    .. index:: single: FileType (in module types)
 
-   この :c:type:`PyTypeObject` のインスタンスは Python のファイル型を表現します。
-   このオブジェクトは ``file`` および ``types.FileType`` として Python
-   プログラムで公開されています。
+   This instance of :c:type:`PyTypeObject` represents the Python file type.  This is
+   exposed to Python programs as ``file`` and ``types.FileType``.
 
 
 .. c:function:: int PyFile_Check(PyObject *p)
 
-   引数が :c:type:`PyFileObject` か :c:type:`PyFileObject` のサブタイプのときに
-   真を返します。
+   Return true if its argument is a :c:type:`PyFileObject` or a subtype of
+   :c:type:`PyFileObject`.
 
    .. versionchanged:: 2.2
-      サブタイプを引数にとれるようになりました.
+      Allowed subtypes to be accepted.
 
 
 .. c:function:: int PyFile_CheckExact(PyObject *p)
 
-   引数が :c:type:`PyFileObject` 型で、かつ :c:type:`PyFileObject` 型の
-   サブタイプでないときに真を返します。
+   Return true if its argument is a :c:type:`PyFileObject`, but not a subtype of
+   :c:type:`PyFileObject`.
 
    .. versionadded:: 2.2
 
@@ -48,43 +46,41 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    .. index:: single: fopen()
 
-   成功すると、 *filename* に指定した名前のファイルを *mode* に指定した
-   ファイルモードで開いて得た新たなファイルオブジェクトを返します。
-   *mode* のセマンティクスは標準 C ルーチン :c:func:`fopen` と同じです。
-   失敗すると *NULL* を返します。
+   On success, return a new file object that is opened on the file given by
+   *filename*, with a file mode given by *mode*, where *mode* has the same
+   semantics as the standard C routine :c:func:`fopen`.  On failure, return *NULL*.
 
 
 .. c:function:: PyObject* PyFile_FromFile(FILE *fp, char *name, char *mode, int (*close)(FILE*))
 
-   すでに開かれている標準 C ファイルポインタ *fp* から新たな
-   :c:type:`PyFileObject` を生成します。この関数で生成したファイルオブジェクト
-   は、閉じる際に *close* に指定した関数を呼び出します。失敗すると
-   *NULL* を返します。
+   Create a new :c:type:`PyFileObject` from the already-open standard C file
+   pointer, *fp*.  The function *close* will be called when the file should be
+   closed.  Return *NULL* and close the file using *close* on failure.
+   *close* is optional and can be set to *NULL*.
 
 
-.. c:function:: FILE* PyFile_AsFile(PyObject *p)
+.. c:function:: FILE* PyFile_AsFile(PyObject \*p)
 
-   *p* に関連付けられたファイルオブジェクトを :c:type:`FILE\*` で返します。
+   Return the file object associated with *p* as a :c:type:`FILE\*`.
 
-   呼び出し側が :term:`GIL` を解放している間もこの関数が返した :c:type:`FILE\*`
-   オブジェクトを使うのであれば、以下に解説されている :c:func:`PyFile_IncUseCount`
-   と :c:func:`PyFile_DecUseCount` 関数を適切に呼び出さなければなりません。
+   If the caller will ever use the returned :c:type:`FILE\*` object while
+   the :term:`GIL` is released it must also call the :c:func:`PyFile_IncUseCount` and
+   :c:func:`PyFile_DecUseCount` functions described below as appropriate.
 
 
 .. c:function:: void PyFile_IncUseCount(PyFileObject \*p)
 
-   PyFileObject 内部の、 :c:type:`FILE\*` が使用中であることを示す使用数カウント
-   をインクリメントします。
-   これは、別のスレッドで使用中の :c:type:`FILE\*` に対して Python が
-   fclose() を呼び出すことを防ぎます。
-   この関数の呼び出し側は、 :c:type:`FILE\*` を使い終わったときに必ず
-   :c:func:`PyFile_DecUseCount` を呼び出さなければなりません。
-   そうしなければ、 Python はそのファイルオブジェクトを永遠に閉じません。
+   Increments the PyFileObject's internal use count to indicate
+   that the underlying :c:type:`FILE\*` is being used.
+   This prevents Python from calling f_close() on it from another thread.
+   Callers of this must call :c:func:`PyFile_DecUseCount` when they are
+   finished with the :c:type:`FILE\*`.  Otherwise the file object will
+   never be closed by Python.
 
-   この関数を呼び出すときは、 :term:`GIL` を取得していなければなりません。
+   The :term:`GIL` must be held while calling this function.
 
-   例えば、 :c:func:`PyFile_AsFile` を呼び出した後、GILを解放する前に
-   この関数を呼び出します。 ::
+   The suggested use is to call this after :c:func:`PyFile_AsFile` and before
+   you release the GIL::
 
       FILE *fp = PyFile_AsFile(p);
       PyFile_IncUseCount(p);
@@ -100,58 +96,56 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
 .. c:function:: void PyFile_DecUseCount(PyFileObject \*p)
 
-   PyFileObject 内部の、 :c:type:`FILE\*` が使用中であることを示す unlocked_count
-   メンバーをデクリメントして、呼び出し元が :c:type:`FILE\*` を使い終わった
-   ことを示します。
-   これは、先に行った :c:func:`PyFile_IncUseCount` の呼び出しを取り消すため
-   だけに呼び出されるでしょう。
+   Decrements the PyFileObject's internal unlocked_count member to
+   indicate that the caller is done with its own use of the :c:type:`FILE\*`.
+   This may only be called to undo a prior call to :c:func:`PyFile_IncUseCount`.
 
-   この関数を呼び出すときは、 :term:`GIL` を取得していなければなりません。
-   (上の例を参照してください)
+   The :term:`GIL` must be held while calling this function (see the example
+   above).
 
    .. versionadded:: 2.6
+
 
 .. c:function:: PyObject* PyFile_GetLine(PyObject *p, int n)
 
    .. index:: single: EOFError (built-in exception)
 
-   ``p.readline([*n*])`` と同じで、この関数はオブジェクト *p*
-   の各行を読み出します。 *p* はファイルオブジェクトか、 :meth:`readline`
-   メソッドを持つ何らかのオブジェクトでかまいません。
-   *n* が ``0`` の場合、行の長さに関係なく正確に 1 行だけ読み出します。
-   *n* が ``0`` より大きければ、 *n* バイト以上のデータは読み出しません;
-   従って、行の一部だけが返される場合があります。
-   どちらの場合でも、読み出し後すぐにファイルの終端に到達した場合には空文字列を
-   返します。 *n* が ``0`` より小さければ、長さに関わらず 1 行だけを
-   読み出しますが、すぐにファイルの終端に到達した場合には :exc:`EOFError`
-   を送出します。
+   Equivalent to ``p.readline([n])``, this function reads one line from the
+   object *p*.  *p* may be a file object or any object with a
+   :meth:`~io.IOBase.readline`
+   method.  If *n* is ``0``, exactly one line is read, regardless of the length of
+   the line.  If *n* is greater than ``0``, no more than *n* bytes will be read
+   from the file; a partial line can be returned.  In both cases, an empty string
+   is returned if the end of the file is reached immediately.  If *n* is less than
+   ``0``, however, one line is read regardless of length, but :exc:`EOFError` is
+   raised if the end of the file is reached immediately.
 
 
 .. c:function:: PyObject* PyFile_Name(PyObject *p)
 
-   *p* に指定したファイルの名前を文字列オブジェクトで返します。
+   Return the name of the file specified by *p* as a string object.
 
 
 .. c:function:: void PyFile_SetBufSize(PyFileObject *p, int n)
 
    .. index:: single: setvbuf()
 
-   :c:func:`setvbuf` があるシステムでのみ利用できます。
-   この関数を呼び出してよいのはファイルオブジェクトの生成直後のみです。
+   Available on systems with :c:func:`setvbuf` only.  This should only be called
+   immediately after file object creation.
 
 
 .. c:function:: int PyFile_SetEncoding(PyFileObject *p, const char *enc)
 
-   Unicode オブジェクトをファイルに出力するときにのエンコーディングを *enc*
-   にします。成功すると ``1`` を、失敗すると ``0`` を返します。
+   Set the file's encoding for Unicode output to *enc*. Return 1 on success and 0
+   on failure.
 
    .. versionadded:: 2.3
 
 
 .. c:function:: int PyFile_SetEncodingAndErrors(PyFileObject *p, const char *enc, *errors)
 
-   Unicode オブジェクトをファイルに出力するときにのエンコーディングを *enc*
-   に設定し、そのエラーモードを *err* に設定します。
+   Set the file's encoding for Unicode output to *enc*, and its error
+   mode to *err*. Return 1 on success and 0 on failure.
 
    .. versionadded:: 2.6
 
@@ -160,31 +154,27 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    .. index:: single: softspace (file attribute)
 
-   この関数はインタプリタの内部的な利用のために存在します。
-   この関数は *p* の :attr:`softspace` 属性を *newflag* に設定し、
-   以前の設定値を返します。この関数を正しく動作させるために、 *p*
-   がファイルオブジェクトである必然性はありません; 任意のオブジェクトを
-   サポートします (:attr:`softspace` 属性が設定されているかどうかのみが
-   問題だと思ってください)。
-   この関数は全てのエラーを解消し、属性値が存在しない場合や属性値を
-   取得する際にエラーが生じると、 ``0`` を以前の値として返します。
-   この関数からはエラーを検出できませんが、そもそもそういう必要はありません。
+   This function exists for internal use by the interpreter.  Set the
+   :attr:`softspace` attribute of *p* to *newflag* and return the previous value.
+   *p* does not have to be a file object for this function to work properly; any
+   object is supported (thought its only interesting if the :attr:`softspace`
+   attribute can be set).  This function clears any errors, and will return ``0``
+   as the previous value if the attribute either does not exist or if there were
+   errors in retrieving it.  There is no way to detect errors from this function,
+   but doing so should not be needed.
 
 
 .. c:function:: int PyFile_WriteObject(PyObject *obj, PyObject *p, int flags)
 
    .. index:: single: Py_PRINT_RAW
 
-   オブジェクト *obj* をファイルオブジェクト *p* に書き込みます。
-   *flag* がサポートするフラグは :const:`Py_PRINT_RAW` だけです;
-   このフラグを指定すると、オブジェクトに :func:`repr` ではなく :func:`str`
-   を適用した結果をファイルに書き出します。
-   成功した場合には ``0`` を返し、失敗すると ``-1`` を返して適切な例外を
-   セットします。
+   Write object *obj* to file object *p*.  The only supported flag for *flags* is
+   :const:`Py_PRINT_RAW`; if given, the :func:`str` of the object is written
+   instead of the :func:`repr`.  Return ``0`` on success or ``-1`` on failure; the
+   appropriate exception will be set.
 
 
 .. c:function:: int PyFile_WriteString(const char *s, PyObject *p)
 
-   文字列 *s* をファイルオブジェクト *p* に書き出します。成功した場合には
-   ``0`` を返し、失敗すると ``-1`` を返して適切な例外をセットします。
-
+   Write string *s* to file object *p*.  Return ``0`` on success or ``-1`` on
+   failure; the appropriate exception will be set.

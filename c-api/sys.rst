@@ -2,119 +2,128 @@
 
 .. _os:
 
-オペレーティングシステム関連のユーティリティ
-============================================
+Operating System Utilities
+==========================
 
 
 .. c:function:: int Py_FdIsInteractive(FILE *fp, const char *filename)
 
-   *filename* という名前の標準 I/O ファイル *fp* が対話的 (interactive) であると考えられる場合に真 (非ゼロ) を返します。
-   これは ``isatty(fileno(fp))`` が真になるファイルの場合です。グローバルなフラグ :c:data:`Py_InteractiveFlag`
-   が真の場合には、 *filename* ポインタが *NULL* か、名前が ``'<stdin>'`` または ``'???'``
-   のいずれかに等しい場合にも真を返します。
+   Return true (nonzero) if the standard I/O file *fp* with name *filename* is
+   deemed interactive.  This is the case for files for which ``isatty(fileno(fp))``
+   is true.  If the global flag :c:data:`Py_InteractiveFlag` is true, this function
+   also returns true if the *filename* pointer is *NULL* or if the name is equal to
+   one of the strings ``'<stdin>'`` or ``'???'``.
 
 
 .. c:function:: void PyOS_AfterFork()
 
-   プロセスが fork した後の内部状態を更新するための関数です; fork 後 Python インタプリタを使い続ける場合、新たなプロセス内で
-   この関数を呼び出さねばなりません。新たなプロセスに新たな実行可能物をロードする場合、この関数を呼び出す必要はありません。
+   Function to update some internal state after a process fork; this should be
+   called in the new process if the Python interpreter will continue to be used.
+   If a new executable is loaded into the new process, this function does not need
+   to be called.
 
 
 .. c:function:: int PyOS_CheckStack()
 
-   インタプリタがスタック空間を使い尽くしたときに真を返します。このチェック関数には信頼性がありますが、 :const:`USE_STACKCHECK`
-   が定義されている場合 (現状では Microsoft Visual C++ コンパイラでビルドした Windows 版) にしか利用できません .
-   :const:`USE_CHECKSTACK` は自動的に定義されます; 自前のコードでこの定義を変更してはなりません。
+   Return true when the interpreter runs out of stack space.  This is a reliable
+   check, but is only available when :const:`USE_STACKCHECK` is defined (currently
+   on Windows using the Microsoft Visual C++ compiler).  :const:`USE_STACKCHECK`
+   will be defined automatically; you should never change the definition in your
+   own code.
 
 
 .. c:function:: PyOS_sighandler_t PyOS_getsig(int i)
 
-   シグナル *i* に対する現在のシグナルハンドラを返します。この関数は :c:func:`sigaction` または :c:func:`signal`
-   のいずれかに対する薄いラッパです。 :c:func:`sigaction` や :c:func:`signal` を直接呼び出してはなりません!
-   :c:type:`PyOS_sighandler_t` は :c:type:`void (\*)(int)` の typedef  による別名です。
+   Return the current signal handler for signal *i*.  This is a thin wrapper around
+   either :c:func:`sigaction` or :c:func:`signal`.  Do not call those functions
+   directly! :c:type:`PyOS_sighandler_t` is a typedef alias for :c:type:`void
+   (\*)(int)`.
 
 
 .. c:function:: PyOS_sighandler_t PyOS_setsig(int i, PyOS_sighandler_t h)
 
-   シグナル *i* に対する現在のシグナルハンドラを *h* に設定します; 以前のシグナルハンドラを返します。この関数は
-   :c:func:`sigaction` または :c:func:`signal` のいずれかに対する薄いラッパです。 :c:func:`sigaction` や
-   :c:func:`signal` を直接呼び出してはなりません!  :c:type:`PyOS_sighandler_t` は :c:type:`void
-   (\*)(int)` の typedef  による別名です。
-
+   Set the signal handler for signal *i* to be *h*; return the old signal handler.
+   This is a thin wrapper around either :c:func:`sigaction` or :c:func:`signal`.  Do
+   not call those functions directly!  :c:type:`PyOS_sighandler_t` is a typedef
+   alias for :c:type:`void (\*)(int)`.
 
 .. _systemfunctions:
 
-システム関数
+System Functions
 ================
 
-:mod:`sys` モジュールが提供している機能にCのコードからアクセスする関数です。
-すべての関数は現在のインタプリタスレッドの :mod:`sys` モジュールの辞書に対して動作します。
-この辞書は内部のスレッド状態構造体に格納されています。
+These are utility functions that make functionality from the :mod:`sys` module
+accessible to C code.  They all work with the current interpreter thread's
+:mod:`sys` module's dict, which is contained in the internal thread state structure.
 
 .. c:function:: PyObject *PySys_GetObject(char *name)
 
-   :mod:`sys` モジュールの *name* オブジェクトを返すか、存在しなければ
-   例外を設定せずに *NULL* を返します。
+   Return the object *name* from the :mod:`sys` module or *NULL* if it does
+   not exist, without setting an exception.
 
 .. c:function:: FILE *PySys_GetFile(char *name, FILE *def)
 
-   :mod:`sys` モジュールの *name* に関連付けられた :c:type:`FILE*` を返します。
-   *name* がなかった場合や :c:type:`FILE*` に関連付けられていなかった場合は *def* を返します。
+   Return the :c:type:`FILE*` associated with the object *name* in the
+   :mod:`sys` module, or *def* if *name* is not in the module or is not associated
+   with a :c:type:`FILE*`.
 
 .. c:function:: int PySys_SetObject(char *name, PyObject *v)
 
-   *v* が *NULL* で無い場合、 :mod:`sys` モジュールの *name* に *v* を設定します。
-   *v* が *NULL* なら、 sys モジュールから *name* を削除します。
-   成功したら ``0`` を、エラー時は ``-1`` を返します。
+   Set *name* in the :mod:`sys` module to *v* unless *v* is *NULL*, in which
+   case *name* is deleted from the sys module. Returns ``0`` on success, ``-1``
+   on error.
 
 .. c:function:: void PySys_ResetWarnOptions()
 
-   :data:`sys.warnoptions` を、空リストにリセットします。
+   Reset :data:`sys.warnoptions` to an empty list.
 
 .. c:function:: void PySys_AddWarnOption(char *s)
 
-   :data:`sys.warnoptions` に *s* を追加します。
+   Append *s* to :data:`sys.warnoptions`.
 
 .. c:function:: void PySys_SetPath(char *path)
 
-   :data:`sys.path` を *path* に含まれるパスの、リストオブジェクトに設定します。
-   *path* はプラットフォームの検索パスデリミタ(Unixでは ``:``, Windows では ``;``)
-   で区切られたパスのリストでなければなりません。
+   Set :data:`sys.path` to a list object of paths found in *path* which should
+   be a list of paths separated with the platform's search path delimiter
+   (``:`` on Unix, ``;`` on Windows).
 
 .. c:function:: void PySys_WriteStdout(const char *format, ...)
 
-   *format* で指定された出力文字列を :data:`sys.stdout` に出力します。
-   切り詰めが起こった場合を含め、例外は一切発生しません。(後述)
+   Write the output string described by *format* to :data:`sys.stdout`.  No
+   exceptions are raised, even if truncation occurs (see below).
 
-   *format* は、フォーマット後の出力文字列のトータルの大きさを1000バイト以下に
-   抑えるべきです。 -- 1000 バイト以降の出力文字列は切り詰められます。
-   特に、制限のない "%s" フォーマットを使うべきではありません。
-   "%.<N>s" のようにして N に10進数の値を指定し、<N> + その他のフォーマット後の
-   最大サイズが1000を超えないように設定するべきです。
-   同じように "%f" にも気を付ける必要があります。非常に大きい数値に対して、
-   数百の数字を出力する可能性があります。
+   *format* should limit the total size of the formatted output string to
+   1000 bytes or less -- after 1000 bytes, the output string is truncated.
+   In particular, this means that no unrestricted "%s" formats should occur;
+   these should be limited using "%.<N>s" where <N> is a decimal number
+   calculated so that <N> plus the maximum size of other formatted text does not
+   exceed 1000 bytes.  Also watch out for "%f", which can print hundreds of
+   digits for very large numbers.
 
-   問題が発生したり、 :data:`sys.stdout` が設定されていなかった場合、
-   フォーマット後のメッセージは本物の(Cレベルの) *stdout* に出力されます。
+   If a problem occurs, or :data:`sys.stdout` is unset, the formatted message
+   is written to the real (C level) *stdout*.
 
 .. c:function:: void PySys_WriteStderr(const char *format, ...)
 
-   上と同じですが、 :data:`sys.stderr` か *stderr* に出力します。
+   As above, but write to :data:`sys.stderr` or *stderr* instead.
+
 
 .. _processcontrol:
 
-プロセス制御
-============
+Process Control
+===============
 
 
 .. c:function:: void Py_FatalError(const char *message)
 
    .. index:: single: abort()
 
-   致命的エラーメッセージ (fatal error message) を出力してプロセスを強制終了 (kill)
-   します。後始末処理は行われません。この関数は、Python  インタプリタを使い続けるのが危険であるような状況が検出されたとき;
-   例えば、オブジェクト管理が崩壊していると思われるときにのみ、呼び出されるようにしなければなりません。Unixでは、標準 C ライブラリ関数
-   :c:func:`abort` を呼び出して :file:`core` を生成しようと試みます。
+   Print a fatal error message and kill the process.  No cleanup is performed.
+   This function should only be invoked when a condition is detected that would
+   make it dangerous to continue using the Python interpreter; e.g., when the
+   object administration appears to be corrupted.  On Unix, the standard C library
+   function :c:func:`abort` is called which will attempt to produce a :file:`core`
+   file.
 
 
 .. c:function:: void Py_Exit(int status)
@@ -123,8 +132,8 @@
       single: Py_Finalize()
       single: exit()
 
-   現在のプロセスを終了 (exit) します。この関数は :c:func:`Py_Finalize` を呼び出し、次いで標準 C ライブラリ関数
-   ``exit(status)`` を呼び出します。
+   Exit the current process.  This calls :c:func:`Py_Finalize` and then calls the
+   standard C library function ``exit(status)``.
 
 
 .. c:function:: int Py_AtExit(void (*func) ())
@@ -133,7 +142,10 @@
       single: Py_Finalize()
       single: cleanup functions
 
-   :c:func:`Py_Finalize` から呼び出される後始末処理を行う関数 (cleanup function) を登録します。
-   後始末関数は引数無しで呼び出され、値を返しません。最大で 32 の後始末処理関数を登録できます。登録に成功すると、 :c:func:`Py_AtExit` は
-   ``0`` を返します;  失敗すると ``-1`` を返します。最後に登録した後始末処理関数から先に呼び出されます。各関数は高々一度しか呼び出されません。
-   Python の内部的な終了処理は後始末処理関数より以前に完了しているので、 *func* からはいかなる Python API も呼び出してはなりません。
+   Register a cleanup function to be called by :c:func:`Py_Finalize`.  The cleanup
+   function will be called with no arguments and should return no value.  At most
+   32 cleanup functions can be registered.  When the registration is successful,
+   :c:func:`Py_AtExit` returns ``0``; on failure, it returns ``-1``.  The cleanup
+   function registered last is called first. Each cleanup function will be called
+   at most once.  Since Python's internal finalization will have completed before
+   the cleanup function, no Python APIs should be called by *func*.

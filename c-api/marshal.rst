@@ -2,86 +2,99 @@
 
 .. _marshalling-utils:
 
-データ整列化 (data marshalling) のサポート
-==========================================
+Data marshalling support
+========================
 
-以下のルーチン群は、 :mod:`marshal` モジュールと同じ形式を使った整列化オブジェクトを C コードから使えるようにします。
-整列化形式でデータを書き出す関数に加えて、データを読み戻す関数もあります。整列化されたデータを記録するファイルはバイナリモードで
-開かれていなければなりません。
+These routines allow C code to work with serialized objects using the same
+data format as the :mod:`marshal` module.  There are functions to write data
+into the serialization format, and additional functions that can be used to
+read the data back.  Files used to store marshalled data must be opened in
+binary mode.
 
-数値は最小桁が先にくるように記録されます。
+Numeric values are stored with the least significant byte first.
 
-このモジュールでは、3つのバージョンのデータ形式をサポートしています。
-バージョン 0 は従来のもので、(Python 2.4 で新たに追加された) バージョン
-1  は intern 化された文字列をファイル内で共有し、逆マーシャル化の時にも共有されるようにします。
-(Python 2.5 で新たに追加された) バージョン2は、浮動小数点数に対してバイナリフォーマットを利用します。
-*PY_MARSHAL_VERSION* は現在のバージョン (バージョン 2) を示します。
+The module supports two versions of the data format: version 0 is the
+historical version, version 1 (new in Python 2.4) shares interned strings in
+the file, and upon unmarshalling.  Version 2 (new in Python 2.5) uses a binary
+format for floating point numbers.  *Py_MARSHAL_VERSION* indicates the current
+file format (currently 2).
 
 
 .. c:function:: void PyMarshal_WriteLongToFile(long value, FILE *file, int version)
 
-   :c:type:`long` 型の整数値 *value* を *file* へ整列化します。この関数は *value* の下桁 32 ビットを書き込むだけです;
-   ネイティブの :c:type:`long` 型サイズには関知しません。
+   Marshal a :c:type:`long` integer, *value*, to *file*.  This will only write
+   the least-significant 32 bits of *value*; regardless of the size of the
+   native :c:type:`long` type.
 
    .. versionchanged:: 2.4
-      ファイル形式を示す *version* が追加されました.
+      *version* indicates the file format.
 
 
 .. c:function:: void PyMarshal_WriteObjectToFile(PyObject *value, FILE *file, int version)
 
-   Python オブジェクト *value* を *file* へ整列化します。
+   Marshal a Python object, *value*, to *file*.
 
    .. versionchanged:: 2.4
-      ファイル形式を示す *version* が追加されました.
+      *version* indicates the file format.
 
 
 .. c:function:: PyObject* PyMarshal_WriteObjectToString(PyObject *value, int version)
 
-   *value* の整列化表現が入った文字列オブジェクトを返します。
+   Return a string object containing the marshalled representation of *value*.
 
    .. versionchanged:: 2.4
-      ファイル形式を示す *version* が追加されました.
+      *version* indicates the file format.
 
-以下の関数を使うと、整列化された値を読み戻せます。
 
-.. XXX What about error detection?  It appears that reading past the end
-.. of the file will always result in a negative numeric value (where
-.. that's relevant), but it's not clear that negative values won't be
-.. handled properly when there's no error.  What's the right way to tell?
-.. Should only non-negative values be written using these routines?
+The following functions allow marshalled values to be read back in.
+
+XXX What about error detection?  It appears that reading past the end of the
+file will always result in a negative numeric value (where that's relevant),
+but it's not clear that negative values won't be handled properly when there's
+no error.  What's the right way to tell? Should only non-negative values be
+written using these routines?
+
 
 .. c:function:: long PyMarshal_ReadLongFromFile(FILE *file)
 
-   読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 C の :c:type:`long` 型データを読み出して返します。
-   この関数は、ネイティブの :c:type:`long` のサイズに関係なく、 32 ビットの値だけを読み出せます。
+   Return a C :c:type:`long` from the data stream in a :c:type:`FILE\*` opened
+   for reading.  Only a 32-bit value can be read in using this function,
+   regardless of the native size of :c:type:`long`.
 
 
 .. c:function:: int PyMarshal_ReadShortFromFile(FILE *file)
 
-   読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 C の :c:type:`short` 型データを読み出して返します。
-   この関数は、ネイティブの :c:type:`short` のサイズに関係なく、 16 ビットの値だけを読み出せます。
+   Return a C :c:type:`short` from the data stream in a :c:type:`FILE\*` opened
+   for reading.  Only a 16-bit value can be read in using this function,
+   regardless of the native size of :c:type:`short`.
 
 
 .. c:function:: PyObject* PyMarshal_ReadObjectFromFile(FILE *file)
 
-   読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
-   エラーが生じた場合、適切な例外 (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
+   Return a Python object from the data stream in a :c:type:`FILE\*` opened for
+   reading.  On error, sets the appropriate exception (:exc:`EOFError` or
+   :exc:`TypeError`) and returns *NULL*.
 
 
 .. c:function:: PyObject* PyMarshal_ReadLastObjectFromFile(FILE *file)
 
-   読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
-   :c:func:`PyMarshal_ReadObjectFromFile` と違い、この関数はファイル中に後続のオブジェクトが存在しないと仮定し、ファイルから
-   メモリ上にファイルデータを一気にメモリにロードして、逆整列化機構がファイルから一バイトづつ読み出す代わりにメモリ上のデータを操作
-   できるようにします。対象のファイルから他に何も読み出さないと分かっている場合にのみ、この関数を使ってください。エラーが生じた場合、適切な例外
-   (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
+   Return a Python object from the data stream in a :c:type:`FILE\*` opened for
+   reading.  Unlike :c:func:`PyMarshal_ReadObjectFromFile`, this function
+   assumes that no further objects will be read from the file, allowing it to
+   aggressively load file data into memory so that the de-serialization can
+   operate from data in memory rather than reading a byte at a time from the
+   file.  Only use these variant if you are certain that you won't be reading
+   anything else from the file.  On error, sets the appropriate exception
+   (:exc:`EOFError` or :exc:`TypeError`) and returns *NULL*.
 
 
 .. c:function:: PyObject* PyMarshal_ReadObjectFromString(char *string, Py_ssize_t len)
 
-   *string* が指している *len* バイトの文字列バッファに納められたデータストリームから Python オブジェクトを読み出して返します。
-   エラーが生じた場合、適切な例外 (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
+   Return a Python object from the data stream in a character buffer
+   containing *len* bytes pointed to by *string*.  On error, sets the
+   appropriate exception (:exc:`EOFError` or :exc:`TypeError`) and returns
+   *NULL*.
 
    .. versionchanged:: 2.5
-      この関数は以前は *len* の型に :c:type:`int` を利用していました。
-      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+      This function used an :c:type:`int` type for *len*. This might require
+      changes in your code for properly supporting 64-bit systems.
